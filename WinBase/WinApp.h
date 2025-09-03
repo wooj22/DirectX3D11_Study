@@ -37,11 +37,11 @@ public:
 	bool Init();
 	void Uninit();
 	bool Run(HINSTANCE hInstance);
-	virtual void Update();
-	virtual void Render();
+	void Update();
+	void Render();
 	
 	// window message
-	virtual LRESULT CALLBACK MessageProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	
 public:
 	// 콘텐츠 프로젝트에서 override해서 사용

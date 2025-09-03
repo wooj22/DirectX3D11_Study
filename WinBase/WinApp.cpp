@@ -10,23 +10,38 @@ HWND	 WinApp::hWnd = nullptr;
 
 
 /*------------------------- 윈도우 메시지 프로시저 -------------------------*/
-LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK DefaultWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	return  WinApp::Instance->MessageProc(hWnd, message, wParam, lParam);
+	return  WinApp::Instance->WindowProc(hWnd, message, wParam, lParam);
 }
 
-LRESULT CALLBACK WinApp::MessageProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WinApp::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
+	case WM_ACTIVATEAPP:
+	case WM_INPUT:
+	case WM_MOUSEMOVE:
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONUP:
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONUP:
+	case WM_MOUSEWHEEL:
+	case WM_XBUTTONDOWN:
+	case WM_XBUTTONUP:
+	case WM_MOUSEHOVER:
+	case WM_KEYDOWN:
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
-
-	// 게임 콘텐츠에서 override
+	return 0;
 }
 
 
@@ -88,12 +103,12 @@ LONG WINAPI CustomExceptionHandler(EXCEPTION_POINTERS* pExceptionPointers)
 /*----------------------- window process ---------------------------*/
 WinApp::WinApp()
 {
-	Instance = this;
+	WinApp::Instance = this;
 }
 
 WinApp::~WinApp()
 {
-	
+	WinApp::Instance = nullptr;
 }
 
 bool WinApp::Init()
@@ -115,7 +130,7 @@ bool WinApp::Init()
 
 	// window class
 	wc.cbSize = sizeof(WNDCLASSEX);
-	wc.lpfnWndProc = WindowProc;
+	wc.lpfnWndProc = DefaultWindowProc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.hInstance = hInstance;
 	wc.lpszClassName = winClassName.c_str();
@@ -164,7 +179,7 @@ bool WinApp::Run(HINSTANCE hInstance)
 	wc.hInstance = hInstance;
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = WindowProc;
+	wc.lpfnWndProc = DefaultWindowProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
