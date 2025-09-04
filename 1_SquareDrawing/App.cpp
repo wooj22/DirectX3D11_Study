@@ -9,6 +9,18 @@ using namespace DirectX::SimpleMath;
 
 #define USE_FLIPMODE 1
 
+// Vertex Structure
+struct Vertex
+{
+	Vector3 position;		
+	Vector4 color;			
+
+	Vertex(float x, float y, float z) : position(x, y, z) {}
+	Vertex(Vector3 position) : position(position) {}
+	Vertex(Vector3 position, Vector4 color) : position(position), color(color) {}
+};
+
+// Main process
 App::App()
 {
 	
@@ -19,82 +31,101 @@ App::~App()
 
 }
 
+bool App::OnInit()
+{
+	if (!InitD3D()) return false;
+	if (!InitRenderPipeLine()) return false;
+	return true;
+}
+
+void App::OnUninit()
+{
+	UninitD3D();
+	UninitRenderPipeLine();
+}
+
+void App::OnUpdate()
+{
+
+}
+
+void App::OnRender()
+{
+	// RTV clear
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, NULL);
+	deviceContext->ClearRenderTargetView(renderTargetView, backGroundColor);
+
+	// render pipeline bind (stage setting)
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
+	deviceContext->IASetInputLayout(inputLayout);
+	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+	deviceContext->VSSetShader(vertexShader, NULL, 0);
+	deviceContext->PSSetShader(pixelShader, NULL, 0);
+
+	// render
+	deviceContext->DrawIndexed(indexCount, 0, 0);
+
+	// present
+	swapChain->Present(1, 0);
+}
+
+// D3D
 bool App::InitD3D()
 {
 	HRESULT hr = 0;
 
-	// 1. D3D11 Device,DeviceContext 생성
-	UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+	// swap chain setup struct
+	DXGI_SWAP_CHAIN_DESC swapDesc = {};
+	swapDesc.BufferCount = 1;
+	swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapDesc.OutputWindow = hWnd;
+	swapDesc.Windowed = true;
+	swapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapDesc.BufferDesc.Width = screenWidth;
+	swapDesc.BufferDesc.Height = screenHeight;
+	swapDesc.BufferDesc.RefreshRate.Numerator = 60;
+	swapDesc.BufferDesc.RefreshRate.Denominator = 1;
+	swapDesc.SampleDesc.Count = 1;
+	swapDesc.SampleDesc.Quality = 0;
+
+	// deviec create debug flag
+	UINT creationFlags = 0;
 #ifdef _DEBUG
 	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
-	// 그래픽 카드 하드웨어의 스펙으로 호환되는 가장 높은 DirectX 기능레벨로 생성하여 드라이버가 작동 한다.
-	// 인터페이스는 Direc3D11 이지만 GPU드라이버는 D3D12 드라이버가 작동할수도 있다.
-	D3D_FEATURE_LEVEL featureLevels[] = { // index 0부터 순서대로 시도한다.
-		D3D_FEATURE_LEVEL_12_2,D3D_FEATURE_LEVEL_12_1,D3D_FEATURE_LEVEL_12_0,D3D_FEATURE_LEVEL_11_1,D3D_FEATURE_LEVEL_11_0
-	};
-	D3D_FEATURE_LEVEL actualFeatureLevel; // 최종 피처 레벨을 저장할 변수
 
-	HR_T(D3D11CreateDevice(
-		nullptr,
-		D3D_DRIVER_TYPE_HARDWARE,
-		0,
-		creationFlags,
-		featureLevels,
-		ARRAYSIZE(featureLevels),
-		D3D11_SDK_VERSION,
-		&device,
-		&actualFeatureLevel,
-		&deviceContext
-	));
+	// create device, device context, swap chain
+	HR_T(D3D11CreateDeviceAndSwapChain(
+		NULL, 
+		D3D_DRIVER_TYPE_HARDWARE, 
+		NULL, 
+		creationFlags, 
+		NULL, 
+		NULL,
+		D3D11_SDK_VERSION, 
+		&swapDesc, 
+		&swapChain, 
+		&device, 
+		NULL, 
+		&deviceContext));
 
-	// 2. 스왑체인 생성을 위한 DXGI Factory 생성
-	UINT dxgiFactoryFlags = 0;
-#ifdef _DEBUG
-	dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-#endif
+	// create RTV
+	ID3D11Texture2D* pBackBufferTexture = nullptr;
+	HR_T(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture));	// backbuffer get
+	HR_T(device->CreateRenderTargetView(pBackBufferTexture, NULL, &renderTargetView));	    // RTV create
+	SAFE_RELEASE(pBackBufferTexture);													    // RTV에서 backbuffer texture 참조중 (메모리 관리)
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, NULL);							// render targetview  binding
 
-	ComPtr<IDXGIFactory2> pFactory;
-	HR_T(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&pFactory)));
-
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-#if USE_FLIPMODE==1
-	swapChainDesc.BufferCount = 2;
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-#else
-	swapChainDesc.BufferCount = 1;
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-#endif
-	swapChainDesc.Width = screenWidth;
-	swapChainDesc.Height = screenHeight;
-	// 하나의 픽셀이 채널 RGBA 각 8비트 형식으로 표현되며 
-	// Unsigned Normalized Integer 8비트 정수(0~255)단계를 부동소수점으로 정규화한 0.0~1.0으로 매핑하여 표현한다.
-	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // 스왑 체인의 백 버퍼가 렌더링 파이프라인의 최종 출력 대상으로 사용
-	swapChainDesc.SampleDesc.Count = 1;  // 멀티샘플링 사용 안함
-	swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE; // Recommended for flip models
-	swapChainDesc.Stereo = FALSE;  // 스테레오 3D 렌더링을 비활성화
-	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // 전체 화면 전환을 허용
-	swapChainDesc.Scaling = DXGI_SCALING_NONE; //  창의 크기와 백 버퍼의 크기가 다를 때. 백버퍼 크기에 맞게 스케일링 하지 않는다.
-
-	HR_T(pFactory->CreateSwapChainForHwnd(
-		device,
-		hWnd,
-		&swapChainDesc,
-		nullptr,
-		nullptr,
-		&swapChain
-	));
-
-	// 3. 렌더타겟 뷰 생성.  렌더 타겟 뷰는 "여기다가 그림을 그려라"라고 GPU에게 알려주는 역할을 하는 객체.
-	// 텍스처와 영구적 연결되는 객체이다. 
-	ComPtr<ID3D11Texture2D> pBackBufferTexture;
-	HR_T(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture));
-	HR_T(device->CreateRenderTargetView(pBackBufferTexture.Get(), nullptr, &renderTargetView));
-
-#if !USE_FLIPMODE
-	m_pDeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
-#endif
+	// viewport
+	D3D11_VIEWPORT viewport = {};
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = (float)screenWidth;
+	viewport.Height = (float)screenHeight;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	deviceContext->RSSetViewports(1, &viewport);	// viewport binding
 
 	return true;
 }
@@ -107,36 +138,86 @@ void App::UninitD3D()
 	SAFE_RELEASE(device);
 }
 
-bool App::OnInit()
+bool App::InitRenderPipeLine()
 {
-	if (!InitD3D()) return false;
+	HRESULT hr = 0;
+
+	// IA - vertex buffer create
+	Vertex vertices[] =
+	{
+		Vertex(Vector3(-0.5f,  0.5f, 0.5f), Vector4(0, 0, 0, 1.0f)),
+		Vertex(Vector3(0.5f,  0.5f, 0.5f), Vector4(1.0f, 1.0f, 1.0f, 1.0f)),
+		Vertex(Vector3(-0.5f, -0.5f, 0.5f), Vector4(1.0f, 1.0f, 1.0f, 1.0f)),
+		Vertex(Vector3(0.5f, -0.5f, 0.5f), Vector4(0, 0, 0, 1.0f))
+	};
+
+	D3D11_BUFFER_DESC vbDesc = {};
+	vbDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(vertices);	// buffer size
+	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;				// bind 용도
+	vbDesc.Usage = D3D11_USAGE_DEFAULT;							// buffer 사용 용도	
+
+	D3D11_SUBRESOURCE_DATA vbData = {};
+	vbData.pSysMem = vertices;								    // vertex data
+
+	HR_T(device->CreateBuffer(&vbDesc, &vbData, &vertexBuffer));
+	vertexBufferStride = sizeof(Vertex);
+	vertexBufferOffset = 0;
+
+
+	// IA - index buffer create
+	WORD indices[] =
+	{
+		0, 1, 2,
+		2, 1, 3
+	};
+	indexCount = ARRAYSIZE(indices);
+
+	D3D11_BUFFER_DESC ibDesc = {};
+	ibDesc.ByteWidth = sizeof(WORD) * ARRAYSIZE(indices);	// buffer size
+	ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;			    // bind 용도		
+	ibDesc.Usage = D3D11_USAGE_DEFAULT;						// buffer 사용 용도
+
+	D3D11_SUBRESOURCE_DATA ibData = {};
+	ibData.pSysMem = indices;								// index data
+
+	HR_T(device->CreateBuffer(&ibDesc, &ibData, &indexBuffer));
+
+
+	// IA - input layout create
+	D3D11_INPUT_ELEMENT_DESC layout[] = 
+	{   // SemanticName , SemanticIndex , Format , InputSlot , AlignedByteOffset , InputSlotClass , InstanceDataStepRate	
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+
+	ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
+	HR_T(CompileShaderFromFile(L"VertexShader.hlsl", "main", "vs_4_0", &vertexShaderBuffer));
+	HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
+		vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout));
+
+
+	// VS - vertex shader create
+	HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
+		vertexShaderBuffer->GetBufferSize(), NULL, &vertexShader));
+	SAFE_RELEASE(vertexShaderBuffer);
+
+
+	// PS - pixel shader create
+	ID3D10Blob* pixelShaderBuffer = nullptr;
+	HR_T(CompileShaderFromFile(L"PixelShader.hlsl", "main", "ps_4_0", &pixelShaderBuffer));
+	HR_T(device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+		pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader));
+	SAFE_RELEASE(pixelShaderBuffer);
+
 	return true;
 }
 
-void App::OnUninit()
+void App::UninitRenderPipeLine()
 {
-	UninitD3D();
-}
-
-void App::OnUpdate()
-{
-
-}
-
-void App::OnRender()
-{
-	// render target set (Flip모드에서는 매프레임 설정 필요)
-#if USE_FLIPMODE==1
-	deviceContext->OMSetRenderTargets(1, &renderTargetView, NULL);
-#endif
-
-	// color
-	Color color(0.0f, 0.5f, 0.5f, 1.0f);
-
-	// render
-	deviceContext->ClearRenderTargetView(renderTargetView, color);
-
-	// present
-	swapChain->Present(0, 0);
+	SAFE_RELEASE(vertexBuffer);
+	SAFE_RELEASE(indexBuffer);
+	SAFE_RELEASE(inputLayout);
+	SAFE_RELEASE(vertexShader);
+	SAFE_RELEASE(pixelShader);
 }
 
