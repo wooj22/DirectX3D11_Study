@@ -68,6 +68,7 @@ bool D3DBase::Init(HWND& hWnd, int screenWidth, int screenHeight)
 
 void D3DBase::UnInit()
 {
+	// 스마트 포인터이므로 알아서 해제됨
 	renderTargetView.Reset();
 	deviceContext.Reset();
 	swapChain.Reset();

@@ -30,7 +30,7 @@ public:
 	UINT indexCount = 0;						// 인덱스 개수
 
 	// else
-	float backGroundColor[4] = { 0, 0, 0, 1.0f };
+	float clearColor[4] = { 0, 0, 0, 1.0f };
 
 public:
 	// main process

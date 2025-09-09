@@ -53,7 +53,7 @@ void App::OnRender()
 {
 	// RTV clear
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, NULL);
-	deviceContext->ClearRenderTargetView(renderTargetView, backGroundColor);
+	deviceContext->ClearRenderTargetView(renderTargetView, clearColor);
 
 	// render pipeline bind (stage setting)
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
