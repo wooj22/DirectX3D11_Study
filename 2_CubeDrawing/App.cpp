@@ -12,8 +12,8 @@ using namespace DirectX::SimpleMath;
 // Vertex Structure
 struct Vertex
 {
-	Vector3 position;		
-	Vector4 color;			
+	Vector3 position;
+	Vector4 color;
 
 	Vertex(float x, float y, float z) : position(x, y, z) {}
 	Vertex(Vector3 position) : position(position) {}
@@ -23,7 +23,7 @@ struct Vertex
 // Main process
 App::App()
 {
-	
+
 }
 
 App::~App()
@@ -97,17 +97,17 @@ bool App::InitD3D()
 
 	// create device, device context, swap chain
 	HR_T(D3D11CreateDeviceAndSwapChain(
-		NULL, 
-		D3D_DRIVER_TYPE_HARDWARE, 
-		NULL, 
-		creationFlags, 
-		NULL, 
 		NULL,
-		D3D11_SDK_VERSION, 
-		&swapDesc, 
-		&swapChain, 
-		&device, 
-		NULL, 
+		D3D_DRIVER_TYPE_HARDWARE,
+		NULL,
+		creationFlags,
+		NULL,
+		NULL,
+		D3D11_SDK_VERSION,
+		&swapDesc,
+		&swapChain,
+		&device,
+		NULL,
 		&deviceContext));
 
 	// create RTV
@@ -182,7 +182,7 @@ bool App::InitRenderPipeLine()
 
 
 	// IA - input layout create
-	D3D11_INPUT_ELEMENT_DESC layout[] = 
+	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{   // SemanticName , SemanticIndex , Format , InputSlot , AlignedByteOffset , InputSlotClass , InstanceDataStepRate	
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
