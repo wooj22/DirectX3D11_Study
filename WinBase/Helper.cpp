@@ -2,10 +2,17 @@
 #include "Helper.h"
 #include <comdef.h>
 #include <d3dcompiler.h>
-#pragma comment(lib, "d3dcompiler.lib")
-
 #include <directXTK/DDSTextureLoader.h>
 #include <directXTK/WICTextureLoader.h>
+#include <dxgidebug.h>
+#include <dxgi1_3.h>    // DXGIGetDebugInterface1
+
+#pragma comment(lib, "dxguid.lib")  // 꼭 필요!
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "d3dcompiler.lib")
+
+
+
 
 LPCWSTR GetComErrorString(HRESULT hr)
 {
@@ -27,6 +34,8 @@ std::string GetComErrorStringA(HRESULT hr)
 
 	return msg; // std::string으로 반환 (내부적으로 LPCSTR과 호환)
 }
+
+
 
 HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
 {
@@ -77,4 +86,22 @@ HRESULT CreateTextureFromFile(ID3D11Device* d3dDevice, const wchar_t* szFileName
 		}
 	}
 	return S_OK;
+}
+
+
+
+void CheckDXGIDebug()
+{
+	IDXGIDebug1* pDebug = nullptr;
+
+	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug))))
+	{
+		// 현재 살아있는 DXGI/D3D 객체 출력
+		pDebug->ReportLiveObjects(
+			DXGI_DEBUG_ALL,                 // 모든 DXGI/D3D 컴포넌트
+			DXGI_DEBUG_RLO_ALL              // 전체 리포트 옵션
+		);
+
+		pDebug->Release();
+	}
 }
