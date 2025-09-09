@@ -44,13 +44,14 @@ bool D3DBase::Init(HWND& hWnd, int screenWidth, int screenHeight)
 		NULL,
 		&deviceContext));
 
-	// create RTV					// TODO :: 여기 RTV이 null임. 일단 라이브러리 사용 x
+	// create RTV					
 	ID3D11Texture2D* pBackBufferTexture = nullptr;
-	HR_T(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture));	// backbuffer get
+	HR_T(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture));					// backbuffer get
 	HR_T(device->CreateRenderTargetView(pBackBufferTexture, NULL, renderTargetView.GetAddressOf()));	    // RTV create
-	SAFE_RELEASE(pBackBufferTexture);													    // RTV에서 backbuffer texture 참조중 (메모리 관리)
+	SAFE_RELEASE(pBackBufferTexture);															            // RTV에서 backbuffer texture 참조중 (메모리 관리)
+	
 	ID3D11RenderTargetView* rtv = renderTargetView.Get();
-	deviceContext->OMSetRenderTargets(1, &rtv, nullptr);						// render targetview  binding
+	deviceContext->OMSetRenderTargets(1, &rtv, nullptr);	// render targetview  binding
 
 	// viewport
 	D3D11_VIEWPORT viewport = {};

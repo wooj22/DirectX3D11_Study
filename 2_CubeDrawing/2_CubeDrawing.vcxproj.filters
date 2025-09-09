@@ -39,6 +39,8 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shared.fxh" />
+    <None Include="Shared.fxh">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>
