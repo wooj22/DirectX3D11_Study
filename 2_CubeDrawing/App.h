@@ -37,9 +37,13 @@ private:
 	XMVECTOR cube3_position = { 2,0,0 };
 
 	// camera
-	XMVECTOR eye;
-	XMVECTOR at;
-	XMVECTOR up;
+	XMVECTOR eye = { 0,1,-5 };		// camera position
+	XMVECTOR at = { 0,1, 0 };		// look at point
+	XMVECTOR up = { 0,1, 0 };		// y-up vector
+	float FovY = 90.0f;	
+	float Near = 0.01f;			
+	float Fal = 100.0f;
+
 	// TODO
 	/*
 	e. 카메라의 FOV 각도(degree) 변경
@@ -47,11 +51,11 @@ private:
 	*/
 
 	// matrix
-	Matrix cube1_matrix;
-	Matrix cube2_matrix;
-	Matrix cube3_matrix;
-	Matrix viewMatrix;
-	Matrix projectionMatrix;
+	Matrix cube1_world;
+	Matrix cube2_world;
+	Matrix cube3_world;
+	Matrix view;
+	Matrix projection;
 
 	// else
 	float time = 0.0f;

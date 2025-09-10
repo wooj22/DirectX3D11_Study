@@ -51,18 +51,18 @@ void App::OnUpdate()
 	// cube 1
 	Matrix t1 = XMMatrixTranslationFromVector(cube1_position);
 	Matrix r1 = XMMatrixRotationY(-time);					
-	cube1_matrix = r1 * t1;
+	cube1_world = r1 * t1;
 
 	// cube 2
 	Matrix t2 = XMMatrixTranslationFromVector(cube2_position); 
 	Matrix r2 = XMMatrixRotationY(time * 3);					
 	Matrix s2 = XMMatrixScaling(0.5f, 0.5f, 0.5f);
-	cube2_matrix = s2 * r2 * t2 * cube1_matrix;
+	cube2_world = s2 * r2 * t2 * cube1_world;
 
 	// cube 3
 	Matrix t3 = XMMatrixTranslationFromVector(cube3_position);
 	Matrix s3 = XMMatrixScaling(0.5f, 0.5f, 0.5f);
-	cube3_matrix = s3 * t3 * cube2_matrix;
+	cube3_world = s3 * t3 * cube2_world;
 }
 
 void App::OnRender()
@@ -86,25 +86,25 @@ void App::OnRender()
 	// render
 	// cube 1
 	ConstantBuffer cube1_constBuffer;
-	cube1_constBuffer.world = XMMatrixTranspose(cube1_matrix);
-	cube1_constBuffer.view = XMMatrixTranspose(viewMatrix);
-	cube1_constBuffer.projection = XMMatrixTranspose(projectionMatrix);
+	cube1_constBuffer.world = XMMatrixTranspose(cube1_world);
+	cube1_constBuffer.view = XMMatrixTranspose(view);
+	cube1_constBuffer.projection = XMMatrixTranspose(projection);
 	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube1_constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
 	// cube 2
 	ConstantBuffer cube2_constBuffer;
-	cube2_constBuffer.world = XMMatrixTranspose(cube2_matrix);
-	cube2_constBuffer.view = XMMatrixTranspose(viewMatrix);
-	cube2_constBuffer.projection = XMMatrixTranspose(projectionMatrix);
+	cube2_constBuffer.world = XMMatrixTranspose(cube2_world);
+	cube2_constBuffer.view = XMMatrixTranspose(view);
+	cube2_constBuffer.projection = XMMatrixTranspose(projection);
 	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube2_constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
 	// cube 3
 	ConstantBuffer cube3_constBuffer;
-	cube3_constBuffer.world = XMMatrixTranspose(cube3_matrix);
-	cube3_constBuffer.view = XMMatrixTranspose(viewMatrix);
-	cube3_constBuffer.projection = XMMatrixTranspose(projectionMatrix);
+	cube3_constBuffer.world = XMMatrixTranspose(cube3_world);
+	cube3_constBuffer.view = XMMatrixTranspose(view);
+	cube3_constBuffer.projection = XMMatrixTranspose(projection);
 	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube3_constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
@@ -216,7 +216,6 @@ bool App::InitRenderPipeLine()
 	HR_T(D3DBase::device->CreateDepthStencilView(pTextureDepthStencil.Get(), &descDSV, &depthStencilView));
 	
 	// constant buffer create (vs에 전달할 사용할 행렬 data)
-	// update에서 계속 udpate되기 때문에 초기화만 해둔다.
 	D3D11_BUFFER_DESC constBuffer_Desc = {};
 	constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
 	constBuffer_Desc.ByteWidth = sizeof(ConstantBuffer);
@@ -224,16 +223,17 @@ bool App::InitRenderPipeLine()
 	constBuffer_Desc.CPUAccessFlags = 0;
 	HR_T(D3DBase::device->CreateBuffer(&constBuffer_Desc, nullptr, &constantBuffer));
 
-	cube1_matrix = XMMatrixIdentity();
-	cube2_matrix = XMMatrixIdentity();
-	cube1_matrix = XMMatrixIdentity();
+	// wolrd init
+	cube1_world = XMMatrixIdentity();
+	cube2_world = XMMatrixIdentity();
+	cube1_world = XMMatrixIdentity();
 
-	eye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
-	at = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	viewMatrix = XMMatrixLookAtLH(eye, at, up);
+	// view init - camera 역행렬 (view행렬)
+	view = XMMatrixLookAtLH(eye, at, up);
 
-	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV2, screenWidth / (FLOAT)screenHeight, 0.01f, 100.0f);
+	// projection init 
+	// XMMatrixPerspectiveFovLH(Fov, AspectRatio, NearZ, FarZ)
+	projection = XMMatrixPerspectiveFovLH(FovY, screenWidth / (FLOAT)screenHeight, Near, Fal);
 
 	return true;
 }
