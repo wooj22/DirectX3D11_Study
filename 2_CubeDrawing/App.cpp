@@ -48,15 +48,17 @@ void App::OnUpdate()
 {
 	time = Time::GetTotalTime();
 
-	// cube 1 rotation
-	cube1_matrix - XMMatrixRotationY(-time);
+	// world update
+	// cube 1
+	cube1_matrix = XMMatrixRotationY(-time);
 
-	// cube 2 rotation (원점을 기준으로 회전 + 일정거리 이동하여 회전)
-	XMMATRIX spin = XMMatrixRotationZ(-time);
-	XMMATRIX orbit = XMMatrixRotationY(-time * 2.0f);
-	XMMATRIX translate = XMMatrixTranslation(-4.0f, 0.0f, 0.0f);
-	XMMATRIX scale = XMMatrixScaling(0.3f, 0.3f, 0.3f);
-	cube2_matrix = scale * spin * translate * orbit;
+	// cube 2
+	Matrix translate = XMMatrixTranslation(3.0f, 0.0f, 0.0f);   // cube1로 부터 떨어진 거리
+	Matrix spin = XMMatrixRotationY(time * 3);					// 자전
+	Matrix scale = XMMatrixScaling(0.5f, 0.5f, 0.5f);
+
+	// cube1 기준으로 변환 적용
+	cube2_matrix = scale * spin * translate * cube1_matrix;
 }
 
 void App::OnRender()
@@ -78,7 +80,6 @@ void App::OnRender()
 	D3DBase::deviceContext->PSSetShader(pixelShader, NULL, 0);
 
 	// render
-	// D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 	// cube 1
 	ConstantBuffer cube1_constBuffer;
 	cube1_constBuffer.world = XMMatrixTranspose(cube1_matrix);
@@ -129,14 +130,16 @@ bool App::InitRenderPipeLine()
 	
 
 	// IA - index buffer create
+	// 삼각형 정점 순서(CCW : 반시계방향, 앞면)
+	// 만약 삼각형 그리는 순서를 시계방향(CW)로 그리면 뒷면이 그려질 수 있음
 	WORD indices[] =
 	{
-		0,1,2,  1,3,2,		// front
-		4,6,5,  5,6,7,		// back
-		0,2,4,  4,2,6,		// left
-		1,5,3,  5,7,3,		// right
-		2,3,6,  3,7,6,		// up
-		0,4,1,  1,4,5		// down
+		0,2,1, 2,3,1,		// front
+		4,5,6, 5,7,6,		// back
+		0,4,2, 4,6,2,		// left
+		1,3,5, 3,7,5,		// right
+		2,6,3, 6,7,3,		// up
+		0,1,4, 1,5,4		// down
 	};
 	
 	D3D11_BUFFER_DESC indexBuffer_Desc = {};
@@ -209,8 +212,13 @@ bool App::InitRenderPipeLine()
 	constBuffer_Desc.CPUAccessFlags = 0;
 	HR_T(D3DBase::device->CreateBuffer(&constBuffer_Desc, nullptr, &constantBuffer));
 
+	
+
 	cube1_matrix = XMMatrixIdentity();
 	cube2_matrix = XMMatrixIdentity();
+
+	cube1_matrix = XMMatrixTranslation(0.5f, 0.5f, 0.5f);
+	cube2_matrix = XMMatrixTranslation(0.5f, 0.5f, 0.5f);
 
 	XMVECTOR eye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
 	XMVECTOR at = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
