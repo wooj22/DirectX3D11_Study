@@ -1,6 +1,5 @@
 #include "App.h"
 #include "../WinBase/Helper.h"
-#include <DirectXMath.h>
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib, "dxguid.lib") 
@@ -50,18 +49,20 @@ void App::OnUpdate()
 
 	// world update
 	// cube 1
-	cube1_matrix = XMMatrixRotationY(-time);
+	Matrix t1 = XMMatrixTranslationFromVector(cube1_position);
+	Matrix r1 = XMMatrixRotationY(-time);					
+	cube1_matrix = r1 * t1;
 
 	// cube 2
-	Matrix translate = XMMatrixTranslation(3.0f, 0.0f, 0.0f);   // cube1로 부터 떨어진 거리
-	Matrix spin = XMMatrixRotationY(time * 3);					// 자전
-	Matrix scale = XMMatrixScaling(0.5f, 0.5f, 0.5f);
-	cube2_matrix = scale * spin * translate * cube1_matrix;
+	Matrix t2 = XMMatrixTranslationFromVector(cube2_position); 
+	Matrix r2 = XMMatrixRotationY(time * 3);					
+	Matrix s2 = XMMatrixScaling(0.5f, 0.5f, 0.5f);
+	cube2_matrix = s2 * r2 * t2 * cube1_matrix;
 
 	// cube 3
-	Matrix translate2 = XMMatrixTranslation(2.0f, 0.0f, 0.0f);	// cube2로 부터 떨어진 거리
-	Matrix scale2 = XMMatrixScaling(0.5f, 0.5f, 0.5f);
-	cube3_matrix = scale2 * translate2 * cube2_matrix;
+	Matrix t3 = XMMatrixTranslationFromVector(cube3_position);
+	Matrix s3 = XMMatrixScaling(0.5f, 0.5f, 0.5f);
+	cube3_matrix = s3 * t3 * cube2_matrix;
 }
 
 void App::OnRender()
@@ -223,17 +224,13 @@ bool App::InitRenderPipeLine()
 	constBuffer_Desc.CPUAccessFlags = 0;
 	HR_T(D3DBase::device->CreateBuffer(&constBuffer_Desc, nullptr, &constantBuffer));
 
-	
-
 	cube1_matrix = XMMatrixIdentity();
 	cube2_matrix = XMMatrixIdentity();
+	cube1_matrix = XMMatrixIdentity();
 
-	cube1_matrix = XMMatrixTranslation(0.5f, 0.5f, 0.5f);
-	cube2_matrix = XMMatrixTranslation(0.5f, 0.5f, 0.5f);
-
-	XMVECTOR eye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
-	XMVECTOR at = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	eye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
+	at = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	viewMatrix = XMMatrixLookAtLH(eye, at, up);
 
 	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV2, screenWidth / (FLOAT)screenHeight, 0.01f, 100.0f);

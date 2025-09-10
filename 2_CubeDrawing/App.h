@@ -5,10 +5,13 @@
 #include <dxgidebug.h>
 #include <dxgi1_3.h>
 #include <wrl/client.h>
-using Microsoft::WRL::ComPtr;
-
+#include <DirectXMath.h>
 #include <directxtk/simplemath.h>
+
+using Microsoft::WRL::ComPtr;
+using namespace DirectX;
 using namespace DirectX::SimpleMath;
+
 
 // Cube 메쉬를 렌더링하고, OutputMerger단계의 깊이 테스트를 확인하는 프로젝트입니다.
 class App : public WinApp
@@ -27,6 +30,21 @@ private:
 	UINT vertexBufferStride = 0;				// 버텍스 하나의 크기
 	UINT vertexBufferOffset = 0;				// 버텍스 버퍼의 오프셋
 	UINT indexCount = 0;						// 인덱스 개수
+
+	// cube
+	XMVECTOR cube1_position = { 0,0,0 };
+	XMVECTOR cube2_position = { 3,0,0 };
+	XMVECTOR cube3_position = { 2,0,0 };
+
+	// camera
+	XMVECTOR eye;
+	XMVECTOR at;
+	XMVECTOR up;
+	// TODO
+	/*
+	e. 카메라의 FOV 각도(degree) 변경
+	f. 카메라의 Near,Far 변경
+	*/
 
 	// matrix
 	Matrix cube1_matrix;
