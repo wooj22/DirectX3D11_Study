@@ -33,11 +33,13 @@ bool App::OnInit()
 {
 	if (!D3DBase::Init(hWnd,screenWidth,screenHeight)) return false;
 	if (!InitRenderPipeLine()) return false;
+	if (!InitGUI()) return false;
 	return true;
 }
 
 void App::OnUninit()
 {
+	UninitGUI();
 	UninitRenderPipeLine();
 	D3DBase::UnInit();
 	CheckDXGIDebug();
@@ -107,6 +109,9 @@ void App::OnRender()
 	cube3_constBuffer.projection = XMMatrixTranspose(projection);
 	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube3_constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
+
+	// GUI
+	RenderGUI();
 
 	// present
 	D3DBase::swapChain->Present(1, 0);
@@ -233,7 +238,7 @@ bool App::InitRenderPipeLine()
 
 	// projection init 
 	// XMMatrixPerspectiveFovLH(Fov, AspectRatio, NearZ, FarZ)
-	projection = XMMatrixPerspectiveFovLH(FovY, screenWidth / (FLOAT)screenHeight, Near, Fal);
+	projection = XMMatrixPerspectiveFovLH(FovY, screenWidth / (FLOAT)screenHeight, Near, Far);
 
 	return true;
 }
@@ -249,3 +254,78 @@ void App::UninitRenderPipeLine()
 	SAFE_RELEASE(depthStencilView);
 }
 
+bool App::InitGUI()
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(hWnd);
+	ImGui_ImplDX11_Init(D3DBase::device.Get(), D3DBase::deviceContext.Get());
+
+	return true;
+}
+
+void App::UninitGUI()
+{
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+}
+
+void App::RenderGUI()
+{
+	// ÀÚ·áÇü ¸ÂÃã
+	// GUI
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+	// Start the Dear ImGui frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+	ImGui::Text("Cube Positions");
+	ImGui::InputFloat3("Cube1", &cube1_pos.x);
+	ImGui::InputFloat3("Cube2", &cube2_pos.x);
+	ImGui::InputFloat3("Cube3", &cube3_pos.x);
+
+	ImGui::Text("Camera Settings");
+	ImGui::InputFloat3("Eye", &camera_eye.x);
+	ImGui::InputFloat3("At", &camera_at.x);
+	ImGui::InputFloat3("Up", &camera_up.x);
+	ImGui::SliderAngle("FOV Y", &FovY, 30.0f, 120.0f);
+	ImGui::InputFloat("Near Plane", &Near);
+	ImGui::InputFloat("Far Plane", &Far);
+
+	// save
+	cube1_position = XMLoadFloat3(&cube1_pos);
+	cube2_position = XMLoadFloat3(&cube2_pos);
+	cube3_position = XMLoadFloat3(&cube3_pos);
+
+	eye = XMLoadFloat3(&camera_eye);
+	at = XMLoadFloat3(&camera_at);
+	up = XMLoadFloat3(&camera_up);
+
+	// matrix udpate
+	cube1_world = XMMatrixTranslationFromVector(cube1_position);
+	cube2_world = XMMatrixTranslationFromVector(cube2_position);
+	cube3_world = XMMatrixTranslationFromVector(cube3_position);
+	view = XMMatrixLookAtLH(eye, at, up);
+	projection = XMMatrixPerspectiveFovLH(FovY, screenWidth / (float)screenHeight, Near, Far);
+	
+	ImGui::End();
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+LRESULT CALLBACK App::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+		return true;
+
+	return __super::WindowProc(hWnd, message, wParam, lParam);
+}

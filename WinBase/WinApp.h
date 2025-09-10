@@ -41,7 +41,7 @@ public:
 	void Render();
 	
 	// window message
-	LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	virtual LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	
 public:
 	// 콘텐츠 프로젝트에서 override해서 사용
