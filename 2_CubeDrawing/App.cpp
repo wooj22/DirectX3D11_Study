@@ -62,7 +62,7 @@ void App::OnUpdate()
 void App::OnRender()
 {
 	// RTV clear
-	D3DBase::deviceContext->OMSetRenderTargets(1, D3DBase::renderTargetView.GetAddressOf(), NULL);
+	D3DBase::deviceContext->OMSetRenderTargets(1, D3DBase::renderTargetView.GetAddressOf(), depthStencilView);
 	D3DBase::deviceContext->ClearRenderTargetView(D3DBase::renderTargetView.Get(), clearColor);
 
 	// death buffer clear
@@ -105,14 +105,14 @@ bool App::InitRenderPipeLine()
 	Vertex vertices[] =
 	{
 		// index buffer를 사용하므로 cube정점 8개 data만 넣으면 된다.
-		Vertex(Vector3(0,0,0), Vector4(1, 0, 0, 1.0f)),
-		Vertex(Vector3(1,0,0), Vector4(0, 0, 0, 1.0f)),
-		Vertex(Vector3(0,1,0), Vector4(0, 0, 0, 1.0f)),
-		Vertex(Vector3(1,1,0), Vector4(0, 1, 0, 1.0f)),
-		Vertex(Vector3(0,0,1), Vector4(0, 1, 0, 1.0f)),
-		Vertex(Vector3(1,0,1), Vector4(0, 0, 0, 1.0f)),
-		Vertex(Vector3(0,1,1), Vector4(0, 0, 0, 1.0f)),
-		Vertex(Vector3(1,1,1), Vector4(0, 0, 1, 1.0f)),
+		Vertex(Vector3(0,0,0), Vector4(1, 0, 0, 1.0f)),   
+		Vertex(Vector3(1,0,0), Vector4(0, 1, 0, 1.0f)),  
+		Vertex(Vector3(0,1,0), Vector4(0, 0, 1, 1.0f)),  
+		Vertex(Vector3(1,1,0), Vector4(1, 1, 0, 1.0f)),  
+		Vertex(Vector3(0,0,1), Vector4(1, 0, 1, 1.0f)),   
+		Vertex(Vector3(1,0,1), Vector4(0, 1, 1, 1.0f)),   
+		Vertex(Vector3(0,1,1), Vector4(1, 0.5f, 0, 1.0f)),
+		Vertex(Vector3(1,1,1), Vector4(1, 1, 1, 1.0f)),   
 	};
 
 	D3D11_BUFFER_DESC vertexBuffer_Desc = {};
@@ -131,18 +131,12 @@ bool App::InitRenderPipeLine()
 	// IA - index buffer create
 	WORD indices[] =
 	{
-		// 앞면 (Z = 0)
-	0, 1, 2,   1, 3, 2,
-	// 뒷면 (Z = 1)
-	4, 6, 5,   5, 6, 7,
-	// 왼쪽면 (X = 0)
-	0, 2, 4,   4, 2, 6,
-	// 오른쪽면 (X = 1)
-	1, 5, 3,   5, 7, 3,
-	// 윗면 (Y = 1)
-	2, 3, 6,   3, 7, 6,
-	// 아랫면 (Y = 0)
-	0, 4, 1,   1, 4, 5
+		0,1,2,  1,3,2,		// front
+		4,6,5,  5,6,7,		// back
+		0,2,4,  4,2,6,		// left
+		1,5,3,  5,7,3,		// right
+		2,3,6,  3,7,6,		// up
+		0,4,1,  1,4,5		// down
 	};
 	
 	D3D11_BUFFER_DESC indexBuffer_Desc = {};
@@ -205,8 +199,7 @@ bool App::InitRenderPipeLine()
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSV.Texture2D.MipSlice = 0;
 	HR_T(D3DBase::device->CreateDepthStencilView(pTextureDepthStencil.Get(), &descDSV, &depthStencilView));
-
-
+	
 	// constant buffer create (vs에 전달할 사용할 행렬 data)
 	// update에서 계속 udpate되기 때문에 초기화만 해둔다.
 	D3D11_BUFFER_DESC constBuffer_Desc = {};
