@@ -56,9 +56,12 @@ void App::OnUpdate()
 	Matrix translate = XMMatrixTranslation(3.0f, 0.0f, 0.0f);   // cube1로 부터 떨어진 거리
 	Matrix spin = XMMatrixRotationY(time * 3);					// 자전
 	Matrix scale = XMMatrixScaling(0.5f, 0.5f, 0.5f);
-
-	// cube1 기준으로 변환 적용
 	cube2_matrix = scale * spin * translate * cube1_matrix;
+
+	// cube 3
+	Matrix translate2 = XMMatrixTranslation(2.0f, 0.0f, 0.0f);	// cube2로 부터 떨어진 거리
+	Matrix scale2 = XMMatrixScaling(0.5f, 0.5f, 0.5f);
+	cube3_matrix = scale2 * translate2 * cube2_matrix;
 }
 
 void App::OnRender()
@@ -94,6 +97,14 @@ void App::OnRender()
 	cube2_constBuffer.view = XMMatrixTranspose(viewMatrix);
 	cube2_constBuffer.projection = XMMatrixTranspose(projectionMatrix);
 	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube2_constBuffer, 0, 0);
+	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
+
+	// cube 3
+	ConstantBuffer cube3_constBuffer;
+	cube3_constBuffer.world = XMMatrixTranspose(cube3_matrix);
+	cube3_constBuffer.view = XMMatrixTranspose(viewMatrix);
+	cube3_constBuffer.projection = XMMatrixTranspose(projectionMatrix);
+	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube3_constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
 	// present

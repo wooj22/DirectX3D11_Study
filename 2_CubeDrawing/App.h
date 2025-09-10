@@ -31,6 +31,7 @@ private:
 	// matrix
 	Matrix cube1_matrix;
 	Matrix cube2_matrix;
+	Matrix cube3_matrix;
 	Matrix viewMatrix;
 	Matrix projectionMatrix;
 
