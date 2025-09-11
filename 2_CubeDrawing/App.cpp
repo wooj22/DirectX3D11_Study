@@ -87,27 +87,21 @@ void App::OnRender()
 
 	// render
 	// cube 1
-	ConstantBuffer cube1_constBuffer;
-	cube1_constBuffer.world = XMMatrixTranspose(cube1_world);
-	cube1_constBuffer.view = XMMatrixTranspose(view);
-	cube1_constBuffer.projection = XMMatrixTranspose(projection);
-	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube1_constBuffer, 0, 0);
+	ConstantBuffer cube_constBuffer;
+	cube_constBuffer.world = XMMatrixTranspose(cube1_world);
+	cube_constBuffer.view = XMMatrixTranspose(view);
+	cube_constBuffer.projection = XMMatrixTranspose(projection);
+	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube_constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
 	// cube 2
-	ConstantBuffer cube2_constBuffer;
-	cube2_constBuffer.world = XMMatrixTranspose(cube2_world);
-	cube2_constBuffer.view = XMMatrixTranspose(view);
-	cube2_constBuffer.projection = XMMatrixTranspose(projection);
-	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube2_constBuffer, 0, 0);
+	cube_constBuffer.world = XMMatrixTranspose(cube2_world);
+	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube_constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
 	// cube 3
-	ConstantBuffer cube3_constBuffer;
-	cube3_constBuffer.world = XMMatrixTranspose(cube3_world);
-	cube3_constBuffer.view = XMMatrixTranspose(view);
-	cube3_constBuffer.projection = XMMatrixTranspose(projection);
-	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube3_constBuffer, 0, 0);
+	cube_constBuffer.world = XMMatrixTranspose(cube3_world);
+	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube_constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
 	// GUI

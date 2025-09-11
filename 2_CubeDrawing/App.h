@@ -17,6 +17,7 @@ using namespace DirectX::SimpleMath;
 
 
 // Cube 메쉬를 렌더링하고, OutputMerger단계의 깊이 테스트를 확인하는 프로젝트입니다.
+
 class App : public WinApp
 {
 private:
