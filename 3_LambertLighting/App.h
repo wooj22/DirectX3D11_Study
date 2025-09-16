@@ -79,6 +79,12 @@ struct Camera
 	float Far = 100.0f;
 };
 
+struct DirectionalLight
+{
+	// 원래 direction은 light의 방향이지만, 연산 생략을 위해 표면->light의 방향을 써둠
+	Vector4 direction = { -0.577f, 0.577f, -0.577f, 1.0f };		
+	Vector4 color{ 1.0, 1.0f, 1.0, 1.0 };
+};
 
 class App : public WinApp
 {
@@ -97,12 +103,11 @@ private:
 	UINT vertexBufferOffset = 0;				// 버텍스 버퍼의 오프셋
 	UINT indexCount = 0;						// 인덱스 개수
 
-	// cube
+	// Objects
 	Object cube1;
 	Object cube2;
-
-	// camera
 	Camera camera;
+	DirectionalLight light;
 
 	// matrix
 	Matrix view;
@@ -110,7 +115,7 @@ private:
 
 	// else
 	float time = 0.0f;
-	float clearColor[4] = { 0, 0, 0, 1.0f };
+	float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
 
 public:
 	// main process

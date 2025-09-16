@@ -2,5 +2,6 @@
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
-    return input.color = (1.0f, 1.0f, 1.0f);
+    float4 materialColor = {1,1,1,1 };
+    return saturate(dot((float3) lightDirection, input.normal) * (lightColor * materialColor));
 }

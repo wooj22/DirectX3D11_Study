@@ -12,13 +12,12 @@ using namespace DirectX::SimpleMath;
 struct Vertex
 {
 	Vector3 position;    // vertex 위치
-	//Vector3 normal;      // vertex 법선
+	Vector3 normal;      // vertex 법선
 
-	Vertex(Vector3 position) : position(position) {}
-	//Vertex(Vector3 position, Vector3 normal) : position(position), normal(normal) {}
+	Vertex(Vector3 position, Vector3 normal) : position(position), normal(normal) {}
 };
 
-// 정점 쉐이더에 전달할 상수 버퍼
+// HLSL에 전달할 상수 버퍼
 struct alignas(16) ConstantBuffer
 {
 	Matrix world;					// world 행렬
@@ -80,19 +79,22 @@ void App::OnRender()
 	D3DBase::deviceContext->VSSetShader(vertexShader, NULL, 0);
 	D3DBase::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
 	D3DBase::deviceContext->PSSetShader(pixelShader, NULL, 0);
+	D3DBase::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
 
 	// render
 	// cube 1
-	ConstantBuffer cube_constBuffer;
-	cube_constBuffer.world = XMMatrixTranspose(cube1.world);
-	cube_constBuffer.view = XMMatrixTranspose(view);
-	cube_constBuffer.projection = XMMatrixTranspose(projection);
-	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube_constBuffer, 0, 0);
+	ConstantBuffer constBuffer;
+	constBuffer.world = XMMatrixTranspose(cube1.world);
+	constBuffer.view = XMMatrixTranspose(view);
+	constBuffer.projection = XMMatrixTranspose(projection);
+	constBuffer.lightDirection = light.direction;
+	constBuffer.lightColor = light.color;
+	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
 	// cube 2
-	cube_constBuffer.world = XMMatrixTranspose(cube2.world);
-	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube_constBuffer, 0, 0);
+	constBuffer.world = XMMatrixTranspose(cube2.world);
+	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
 	// GUI
@@ -105,18 +107,46 @@ void App::OnRender()
 bool App::InitRenderPipeLine()
 {
 	// IA - vertex buffer create
+	// Vertex가 normal벡터 정보를 가져야하므로 정육면체의 각 면마다의 vertex 정보를 넣어주어야 한다.
 	Vertex vertices[] =
 	{
-		// index buffer를 사용하므로 cube정점 8개 data만 넣으면 된다.
-		Vertex(Vector3(0,0,0)),
-		Vertex(Vector3(1,0,0)),
-		Vertex(Vector3(0,1,0)),
-		Vertex(Vector3(1,1,0)),
-		Vertex(Vector3(0,0,1)),
-		Vertex(Vector3(1,0,1)),
-		Vertex(Vector3(0,1,1)),
-		Vertex(Vector3(1,1,1)),
+		// Top (normal : +Y)
+		Vertex({-1.0f,  1.0f, -1.0f}, { 0.0f, 1.0f, 0.0f}),
+		Vertex({ 1.0f,  1.0f, -1.0f}, { 0.0f, 1.0f, 0.0f}),
+		Vertex({ 1.0f,  1.0f,  1.0f}, { 0.0f, 1.0f, 0.0f}),
+		Vertex({-1.0f,  1.0f,  1.0f}, { 0.0f, 1.0f, 0.0f}),
+
+		// Bottom (normal : -Y)
+		Vertex({-1.0f, -1.0f, -1.0f}, { 0.0f,-1.0f, 0.0f}),
+		Vertex({ 1.0f, -1.0f, -1.0f}, { 0.0f,-1.0f, 0.0f}),
+		Vertex({ 1.0f, -1.0f,  1.0f}, { 0.0f,-1.0f, 0.0f}),
+		Vertex({-1.0f, -1.0f,  1.0f}, { 0.0f,-1.0f, 0.0f}),
+
+		// Left (normal : -X)
+		Vertex({-1.0f, -1.0f,  1.0f}, {-1.0f, 0.0f, 0.0f}),
+		Vertex({-1.0f, -1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f}),
+		Vertex({-1.0f,  1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f}),
+		Vertex({-1.0f,  1.0f,  1.0f}, {-1.0f, 0.0f, 0.0f}),
+
+		// Right (normal : +X)
+		Vertex({ 1.0f, -1.0f,  1.0f}, { 1.0f, 0.0f, 0.0f}),
+		Vertex({ 1.0f, -1.0f, -1.0f}, { 1.0f, 0.0f, 0.0f}),
+		Vertex({ 1.0f,  1.0f, -1.0f}, { 1.0f, 0.0f, 0.0f}),
+		Vertex({ 1.0f,  1.0f,  1.0f}, { 1.0f, 0.0f, 0.0f}),
+
+		// Back (normal : -Z)
+		Vertex({-1.0f, -1.0f, -1.0f}, { 0.0f, 0.0f,-1.0f}),
+		Vertex({ 1.0f, -1.0f, -1.0f}, { 0.0f, 0.0f,-1.0f}),
+		Vertex({ 1.0f,  1.0f, -1.0f}, { 0.0f, 0.0f,-1.0f}),
+		Vertex({-1.0f,  1.0f, -1.0f}, { 0.0f, 0.0f,-1.0f}),
+
+		// Front (normal : +Z)
+		Vertex({-1.0f, -1.0f,  1.0f}, { 0.0f, 0.0f, 1.0f}),
+		Vertex({ 1.0f, -1.0f,  1.0f}, { 0.0f, 0.0f, 1.0f}),
+		Vertex({ 1.0f,  1.0f,  1.0f}, { 0.0f, 0.0f, 1.0f}),
+		Vertex({-1.0f,  1.0f,  1.0f}, { 0.0f, 0.0f, 1.0f})
 	};
+
 
 	D3D11_BUFFER_DESC vertexBuffer_Desc = {};
 	vertexBuffer_Desc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(vertices);		// buffer size
@@ -132,16 +162,15 @@ bool App::InitRenderPipeLine()
 
 
 	// IA - index buffer create
-	// 삼각형 정점 순서(CCW : 반시계방향, 앞면)
-	// 만약 삼각형 그리는 순서를 시계방향(CW)로 그리면 뒷면이 그려질 수 있음
+	// 삼각형 그리는 순서(CW : 시계방향)
 	WORD indices[] =
 	{
-		0,2,1, 2,3,1,		// front
-		4,5,6, 5,7,6,		// back
-		0,4,2, 4,6,2,		// left
-		1,3,5, 3,7,5,		// right
-		2,6,3, 6,7,3,		// up
-		0,1,4, 1,5,4		// down
+		3,1,0,	  2,1,3,		// top
+		6,4,5,	  7,4,6,		// bottom
+		11,9,8,	  10,9,11,		// left
+		14,12,13, 15,12,14,		// right
+		19,17,16, 18,17,19,     // back
+		22,20,21, 23,20,22		// front
 	};
 
 	D3D11_BUFFER_DESC indexBuffer_Desc = {};
@@ -160,6 +189,7 @@ bool App::InitRenderPipeLine()
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{   // SemanticName , SemanticIndex , Format , InputSlot , AlignedByteOffset , InputSlotClass , InstanceDataStepRate	
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 12,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
@@ -204,7 +234,7 @@ bool App::InitRenderPipeLine()
 	descDSV.Texture2D.MipSlice = 0;
 	HR_T(D3DBase::device->CreateDepthStencilView(pTextureDepthStencil.Get(), &descDSV, &depthStencilView));
 
-	// constant buffer create (vs에 전달할 사용할 행렬 data)
+	// constant buffer create (vs, ps에 전달할 사용할 행렬 data)
 	D3D11_BUFFER_DESC constBuffer_Desc = {};
 	constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
 	constBuffer_Desc.ByteWidth = sizeof(ConstantBuffer);

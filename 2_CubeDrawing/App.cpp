@@ -141,8 +141,7 @@ bool App::InitRenderPipeLine()
 	
 
 	// IA - index buffer create
-	// 삼각형 정점 순서(CCW : 반시계방향, 앞면)
-	// 만약 삼각형 그리는 순서를 시계방향(CW)로 그리면 뒷면이 그려질 수 있음
+	// 삼각형 그리는 순서(CW : 시계방향)
 	WORD indices[] =
 	{
 		0,2,1, 2,3,1,		// front
