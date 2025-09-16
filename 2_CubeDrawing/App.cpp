@@ -268,7 +268,6 @@ void App::UninitGUI()
 
 void App::RenderGUI()
 {
-	// ÀÚ·áÇü ¸ÂÃã
 	// GUI
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
@@ -281,26 +280,17 @@ void App::RenderGUI()
 
 	ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 	ImGui::Text("Cube Positions");
-	ImGui::InputFloat3("Cube1", &cube1_pos.x);
-	ImGui::InputFloat3("Cube2", &cube2_pos.x);
-	ImGui::InputFloat3("Cube3", &cube3_pos.x);
+	ImGui::InputFloat3("Cube1", &cube1_position.x);
+	ImGui::InputFloat3("Cube2", &cube2_position.x);
+	ImGui::InputFloat3("Cube3", &cube3_position.x);
 
 	ImGui::Text("Camera Settings");
-	ImGui::InputFloat3("Eye", &camera_eye.x);
-	ImGui::InputFloat3("At", &camera_at.x);
-	ImGui::InputFloat3("Up", &camera_up.x);
+	ImGui::InputFloat3("Eye", &eye.x);
+	ImGui::InputFloat3("At", &at.x);
+	ImGui::InputFloat3("Up", &up.x);
 	ImGui::SliderAngle("FOV Y", &FovY, 30.0f, 120.0f);
 	ImGui::InputFloat("Near Plane", &Near);
 	ImGui::InputFloat("Far Plane", &Far);
-
-	// save
-	cube1_position = XMLoadFloat3(&cube1_pos);
-	cube2_position = XMLoadFloat3(&cube2_pos);
-	cube3_position = XMLoadFloat3(&cube3_pos);
-
-	eye = XMLoadFloat3(&camera_eye);
-	at = XMLoadFloat3(&camera_at);
-	up = XMLoadFloat3(&camera_up);
 
 	// matrix udpate
 	cube1_world = XMMatrixTranslationFromVector(cube1_position);

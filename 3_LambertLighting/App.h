@@ -36,13 +36,13 @@ private:
 	UINT indexCount = 0;						// 인덱스 개수
 
 	// cube
-	XMVECTOR cube1_position = { 0,0,0 };
-	XMVECTOR cube2_position = { 3,0,0 };
+	Vector3 cube1_position = { 0,0,0 };
+	Vector3 cube2_position = { 3,0,0 };
 
 	// camera
-	XMVECTOR eye = { 0,1,-5 };		// camera position
-	XMVECTOR at = { 0,1, 0 };		// look at point
-	XMVECTOR up = { 0,1, 0 };		// y-up vector
+	Vector3 eye = { 0,1,-5 };		// camera position
+	Vector3 at = { 0,1, 0 };		// look at point
+	Vector3 up = { 0,1, 0 };		// y-up vector
 	float FovY = 90.0f;
 	float Near = 0.01f;
 	float Far = 100.0f;
@@ -56,13 +56,6 @@ private:
 	// else
 	float time = 0.0f;
 	float clearColor[4] = { 0, 0, 0, 1.0f };
-
-	// gui 자료형 호환용
-	XMFLOAT3 cube1_pos = { 0,0,0 };
-	XMFLOAT3 cube2_pos = { 3,0,0 };
-	XMFLOAT3 camera_eye = { 0,1,-5 };
-	XMFLOAT3 camera_at = { 0,1,0 };
-	XMFLOAT3 camera_up = { 0,1,0 };
 
 public:
 	// main process
