@@ -102,12 +102,7 @@ private:
 	Object cube2;
 
 	// camera
-	Vector3 eye = { 0,1,-5 };		// camera position
-	Vector3 at = { 0,1, 0 };		// look at point
-	Vector3 up = { 0,1, 0 };		// y-up vector
-	float FovY = 90.0f;
-	float Near = 0.01f;
-	float Far = 100.0f;
+	Camera camera;
 
 	// matrix
 	Matrix view;
