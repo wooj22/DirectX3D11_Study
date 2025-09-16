@@ -17,7 +17,7 @@ struct Vertex
 	Vertex(Vector3 position, Vector3 normal) : position(position), normal(normal) {}
 };
 
-// HLSL에 전달할 상수 버퍼
+// ConstantBuffer
 struct alignas(16) ConstantBuffer
 {
 	Matrix world;					// world 행렬
@@ -52,13 +52,17 @@ void App::OnUpdate()
 	// world update
 	// cube 1
 	Matrix t1 = XMMatrixTranslationFromVector(cube1.position);
-	Matrix r1 = XMMatrixRotationY(-time);
+	//Matrix r1 = XMMatrixRotationY(-time);
+
+	XMVECTOR q = XMQuaternionRotationRollPitchYaw(cube1.rotation.x, cube1.rotation.y, cube1.rotation.z);
+	Matrix r1 = XMMatrixRotationQuaternion(q);
+
 	cube1.world = r1 * t1;
 
 	// cube 2
 	Matrix t2 = XMMatrixTranslationFromVector(cube2.position);
 	Matrix r2 = XMMatrixRotationY(time * 3);
-	Matrix s2 = XMMatrixScaling(0.5f, 0.5f, 0.5f);
+	Matrix s2 = XMMatrixScalingFromVector(cube2.scale);
 	cube2.world = s2 * r2 * t2 * cube1.world;
 }
 
@@ -246,16 +250,13 @@ bool App::InitRenderPipeLine()
 	cube1.Init();
 	cube2.Init();
 	cube2.position = { 3, 0, 0 };
-
-	// Camera Init
-	
+	cube2.scale = { 0.4,0.4,0.4 };
 
 	// Matrix Init
-	// view init - camera 역행렬 (view행렬)
+	// view init
 	view = XMMatrixLookAtLH(camera.eye, camera.at, camera.up);
 
 	// projection init 
-	// XMMatrixPerspectiveFovLH(Fov, AspectRatio, NearZ, FarZ)
 	projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 
 	return true;
@@ -303,21 +304,22 @@ void App::RenderGUI()
 	ImGui::NewFrame();
 
 	ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
-	ImGui::Text("Cube Positions");
-	ImGui::InputFloat3("Cube1", &cube1.position.x);
-	ImGui::InputFloat3("Cube2", &cube2.position.x);
+	ImGui::Text("Directional Light");
+	ImGui::InputFloat3("Direction", &light.direction.x);
+	ImGui::InputFloat3("Color", &light.color.x);
 
-	ImGui::Text("Camera Settings");
-	ImGui::InputFloat3("Eye", &camera.eye.x);
-	ImGui::InputFloat3("At", &camera.at.x);
-	ImGui::InputFloat3("Up", &camera.up.x);
+	ImGui::Text("Cube");
+	ImGui::SliderAngle("Pitch", &cube1.rotation.x, 0.0f, 360.0f);
+	ImGui::SliderAngle("Yaw", &cube1.rotation.y, 0.0f, 360.0f);
+	ImGui::SliderAngle("Roll", &cube1.rotation.z, 0.0f, 360.0f);
+
+	ImGui::Text("Camera");
+	ImGui::InputFloat3("Position", &camera.eye.x);
 	ImGui::SliderAngle("FOV Y", &camera.FovY, 30.0f, 120.0f);
 	ImGui::InputFloat("Near Plane", &camera.Near);
 	ImGui::InputFloat("Far Plane", &camera.Far);
 
 	// matrix udpate
-	cube1.world = XMMatrixTranslationFromVector(cube1.position);
-	cube2.world = XMMatrixTranslationFromVector(cube2.position);
 	view = XMMatrixLookAtLH(camera.eye, camera.at, camera.up);
 	projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (float)screenHeight, camera.Near, camera.Far);
 

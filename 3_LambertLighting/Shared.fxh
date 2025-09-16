@@ -21,5 +21,5 @@ struct VS_INPUT
 struct PS_INPUT
 {
     float4 pos : SV_POSITION;
-    float3 normal : TEXCOORD0;
+    float3 normal : NORMAL;
 };
