@@ -15,8 +15,70 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
+// 램버트 법칙에 따른 Directional Light Test 프로젝트입니다.
 
-// Direction Light Test 프로젝트입니다.
+class Object
+{
+public:
+	Vector3 position;		// 위치
+	Vector3 rotation;		// 회전
+	Vector3 scale;		    // 스케일
+	Matrix world;			// 월드 행렬
+
+	Object()
+	{
+		position = Vector3::Zero;
+		rotation = Vector3::Zero;
+		scale = Vector3::One;
+		world = XMMatrixIdentity();
+	}
+
+	Object(Vector3 p, Vector3 r, Vector3 s)
+	{
+		position = p;
+		rotation = r;
+		scale = s;
+		
+		Matrix tm = XMMatrixTranslationFromVector(p);
+		XMVECTOR q = XMQuaternionRotationRollPitchYaw(r.x, r.y, r.z);
+		Matrix rm = XMMatrixRotationQuaternion(q);
+		Matrix sm = XMMatrixScalingFromVector(s);
+		world = sm * rm * tm;
+	}
+
+	void Init()
+	{
+		position = Vector3::Zero;
+		rotation = Vector3::Zero;
+		scale = Vector3::One;
+		world = XMMatrixIdentity();
+	}
+
+	void Set(Vector3 p, Vector3 r, Vector3 s)
+	{
+		position = p;
+		rotation = r;
+		scale = s;
+
+		Matrix tm = XMMatrixTranslationFromVector(p);
+		XMVECTOR q = XMQuaternionRotationRollPitchYaw(r.x, r.y, r.z);
+		Matrix rm = XMMatrixRotationQuaternion(q);
+		Matrix sm = XMMatrixScalingFromVector(s);
+		world = sm * rm * tm;
+	}
+};
+
+struct Camera
+{
+	Vector3 eye = { 0,1,-5 };		// camera position
+	Vector3 at = { 0,1, 0 };		// look at point
+	Vector3 up = { 0,1, 0 };		// y-up vector
+
+	float FovY = 90.0f;
+	float Near = 0.01f;
+	float Far = 100.0f;
+};
+
 
 class App : public WinApp
 {
@@ -36,8 +98,8 @@ private:
 	UINT indexCount = 0;						// 인덱스 개수
 
 	// cube
-	Vector3 cube1_position = { 0,0,0 };
-	Vector3 cube2_position = { 3,0,0 };
+	Object cube1;
+	Object cube2;
 
 	// camera
 	Vector3 eye = { 0,1,-5 };		// camera position
@@ -48,8 +110,6 @@ private:
 	float Far = 100.0f;
 
 	// matrix
-	Matrix cube1_world;
-	Matrix cube2_world;
 	Matrix view;
 	Matrix projection;
 

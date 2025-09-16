@@ -11,19 +11,22 @@ using namespace DirectX::SimpleMath;
 // Vertex Structure
 struct Vertex
 {
-	Vector3 position;
+	Vector3 position;    // vertex 위치
+	//Vector3 normal;      // vertex 법선
 
-	Vertex(float x, float y, float z) : position(x, y, z) {}
 	Vertex(Vector3 position) : position(position) {}
+	//Vertex(Vector3 position, Vector3 normal) : position(position), normal(normal) {}
 };
 
-// Constant Buffer 상수 버퍼
-// VS에 전달할 행렬 데이터로 맵핑할 cbuffer와 정렬 규칙 확인 필수!
+// 정점 쉐이더에 전달할 상수 버퍼
 struct alignas(16) ConstantBuffer
 {
-	Matrix world;			// flaot 4x4, 64Byte
-	Matrix view;		 	// flaot 4x4, 64Byte  
-	Matrix projection;     	// flaot 4x4, 64Byte
+	Matrix world;					// world 행렬
+	Matrix view;		 			// view 행렬
+	Matrix projection;				// projection 행렬
+
+	Vector4 lightDirection;         // directional light의 방향 벡터
+	Vector4 lightColor;				// directional light 색상
 };
 
 // Main process
@@ -49,15 +52,15 @@ void App::OnUpdate()
 
 	// world update
 	// cube 1
-	Matrix t1 = XMMatrixTranslationFromVector(cube1_position);
+	Matrix t1 = XMMatrixTranslationFromVector(cube1.position);
 	Matrix r1 = XMMatrixRotationY(-time);
-	cube1_world = r1 * t1;
+	cube1.world = r1 * t1;
 
 	// cube 2
-	Matrix t2 = XMMatrixTranslationFromVector(cube2_position);
+	Matrix t2 = XMMatrixTranslationFromVector(cube2.position);
 	Matrix r2 = XMMatrixRotationY(time * 3);
 	Matrix s2 = XMMatrixScaling(0.5f, 0.5f, 0.5f);
-	cube2_world = s2 * r2 * t2 * cube1_world;
+	cube2.world = s2 * r2 * t2 * cube1.world;
 }
 
 void App::OnRender()
@@ -81,14 +84,14 @@ void App::OnRender()
 	// render
 	// cube 1
 	ConstantBuffer cube_constBuffer;
-	cube_constBuffer.world = XMMatrixTranspose(cube1_world);
+	cube_constBuffer.world = XMMatrixTranspose(cube1.world);
 	cube_constBuffer.view = XMMatrixTranspose(view);
 	cube_constBuffer.projection = XMMatrixTranspose(projection);
 	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube_constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
 	// cube 2
-	cube_constBuffer.world = XMMatrixTranspose(cube2_world);
+	cube_constBuffer.world = XMMatrixTranspose(cube2.world);
 	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cube_constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
@@ -209,11 +212,15 @@ bool App::InitRenderPipeLine()
 	constBuffer_Desc.CPUAccessFlags = 0;
 	HR_T(D3DBase::device->CreateBuffer(&constBuffer_Desc, nullptr, &constantBuffer));
 
-	// wolrd init
-	cube1_world = XMMatrixIdentity();
-	cube2_world = XMMatrixIdentity();
-	cube1_world = XMMatrixIdentity();
+	// Object Init
+	cube1.Init();
+	cube2.Init();
+	cube2.position = { 3, 0, 0 };
 
+	// Camera Init
+	
+
+	// Matrix Init
 	// view init - camera 역행렬 (view행렬)
 	view = XMMatrixLookAtLH(eye, at, up);
 
@@ -267,8 +274,8 @@ void App::RenderGUI()
 
 	ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 	ImGui::Text("Cube Positions");
-	ImGui::InputFloat3("Cube1", &cube1_position.x);
-	ImGui::InputFloat3("Cube2", &cube2_position.x);
+	ImGui::InputFloat3("Cube1", &cube1.position.x);
+	ImGui::InputFloat3("Cube2", &cube2.position.x);
 
 	ImGui::Text("Camera Settings");
 	ImGui::InputFloat3("Eye", &eye.x);
@@ -279,8 +286,8 @@ void App::RenderGUI()
 	ImGui::InputFloat("Far Plane", &Far);
 
 	// matrix udpate
-	cube1_world = XMMatrixTranslationFromVector(cube1_position);
-	cube2_world = XMMatrixTranslationFromVector(cube2_position);
+	cube1.world = XMMatrixTranslationFromVector(cube1.position);
+	cube2.world = XMMatrixTranslationFromVector(cube2.position);
 	view = XMMatrixLookAtLH(eye, at, up);
 	projection = XMMatrixPerspectiveFovLH(FovY, screenWidth / (float)screenHeight, Near, Far);
 
