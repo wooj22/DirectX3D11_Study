@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3_DirectionalLight", "3_Lam
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "4_TextureMapping", "4_TextureMapping\4_TextureMapping.vcxproj", "{F7E5FA37-7B9B-4657-8B6D-5E1AFDB47CF1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "5_Skybox", "5_Skybox\5_Skybox.vcxproj", "{B1C01584-C90E-4B9A-B02F-C2A53461C43C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -81,6 +83,14 @@ Global
 		{F7E5FA37-7B9B-4657-8B6D-5E1AFDB47CF1}.Release|x64.Build.0 = Release|x64
 		{F7E5FA37-7B9B-4657-8B6D-5E1AFDB47CF1}.Release|x86.ActiveCfg = Release|Win32
 		{F7E5FA37-7B9B-4657-8B6D-5E1AFDB47CF1}.Release|x86.Build.0 = Release|Win32
+		{B1C01584-C90E-4B9A-B02F-C2A53461C43C}.Debug|x64.ActiveCfg = Debug|x64
+		{B1C01584-C90E-4B9A-B02F-C2A53461C43C}.Debug|x64.Build.0 = Debug|x64
+		{B1C01584-C90E-4B9A-B02F-C2A53461C43C}.Debug|x86.ActiveCfg = Debug|Win32
+		{B1C01584-C90E-4B9A-B02F-C2A53461C43C}.Debug|x86.Build.0 = Debug|Win32
+		{B1C01584-C90E-4B9A-B02F-C2A53461C43C}.Release|x64.ActiveCfg = Release|x64
+		{B1C01584-C90E-4B9A-B02F-C2A53461C43C}.Release|x64.Build.0 = Release|x64
+		{B1C01584-C90E-4B9A-B02F-C2A53461C43C}.Release|x86.ActiveCfg = Release|Win32
+		{B1C01584-C90E-4B9A-B02F-C2A53461C43C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
