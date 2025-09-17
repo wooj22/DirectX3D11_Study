@@ -10,7 +10,7 @@
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
-#include "Object.h"
+#include "Cube.h"
 #include "DirectionalLight.h"
 
 using Microsoft::WRL::ComPtr;
@@ -27,7 +27,7 @@ private:
 	ID3D11DepthStencilView* depthStencilView = nullptr;
 
 	// Objects
-	Object cube;
+	Cube cube;
 	DirectionalLight light;
 
 	// matrix

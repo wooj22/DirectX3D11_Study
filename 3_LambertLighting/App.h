@@ -16,7 +16,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 
-class Object
+class Cube
 {
 public:
 	Vector3 position;		// 위치
@@ -24,7 +24,7 @@ public:
 	Vector3 scale;		    // 스케일
 	Matrix world;			// 월드 행렬
 
-	Object()
+	Cube()
 	{
 		position = Vector3::Zero;
 		rotation = Vector3::Zero;
@@ -32,7 +32,7 @@ public:
 		world = XMMatrixIdentity();
 	}
 
-	Object(Vector3 p, Vector3 r, Vector3 s)
+	Cube(Vector3 p, Vector3 r, Vector3 s)
 	{
 		position = p;
 		rotation = r;
@@ -105,8 +105,8 @@ private:
 	UINT indexCount = 0;				
 
 	// Objects
-	Object cube;
-	Object cube2;
+	Cube cube;
+	Cube cube2;
 	Camera camera2;
 	DirectionalLight light;
 

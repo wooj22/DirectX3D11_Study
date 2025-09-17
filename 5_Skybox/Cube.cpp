@@ -1,11 +1,11 @@
-#include "Object.h"
+#include "Cube.h"
 #include "../WinBase/Helper.h"
 #include "DirectionalLight.h"
 #include <Directxtk/DDSTextureLoader.h>
 
 using namespace DirectX;
 
-void Object::InitRenderPipeLine()
+void Cube::InitRenderPipeLine()
 {
 	// IA - vertex buffer create
 	// Vertex가 normal벡터 정보를 가져야하므로 정육면체의 각 면마다의 vertex 정보를 넣어주어야 한다.
@@ -126,7 +126,16 @@ void Object::InitRenderPipeLine()
 	rotation = { 0, 45, 0 };
 }
 
-void Object::Render(Matrix& view, Matrix&projection, DirectionalLight& light)
+void Cube::Update()
+{
+	// world update
+	Matrix t1 = XMMatrixTranslationFromVector(position);
+	XMVECTOR q = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
+	Matrix r1 = XMMatrixRotationQuaternion(q);
+	world = r1 * t1;
+}
+
+void Cube::Render(Matrix& view, Matrix&projection, DirectionalLight& light)
 {
 	// render pipeline stage setting
 	D3DBase::deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
@@ -149,7 +158,7 @@ void Object::Render(Matrix& view, Matrix&projection, DirectionalLight& light)
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 }
 
-void Object::UninitRenderPipeLine()
+void Cube::UninitRenderPipeLine()
 {
 	SAFE_RELEASE(vertexBuffer);
 	SAFE_RELEASE(indexBuffer);

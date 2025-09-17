@@ -11,11 +11,12 @@ using namespace DirectX::SimpleMath;
 using Microsoft::WRL::ComPtr;
 
 // Vertex Structure
+// vertexbuffer, input layout, vertex shader 연결
 struct Vertex
 {
-	Vector3 position;		 // vertex 위치
-	Vector3 normal;			 // vertex 법선
-	Vector2 texcoord;		 // uv 좌표
+	Vector3 position;
+	Vector3 normal;	
+	Vector2 texcoord;
 
 	Vertex(Vector3 position, Vector3 normal, Vector2 uv)
 		: position(position), normal(normal), texcoord(uv) {
@@ -23,6 +24,7 @@ struct Vertex
 };
 
 // ConstantBuffer
+// vertex shdaer, pixel shader 연결
 struct alignas(16) ConstantBuffer
 {
 	Matrix world;					// world 행렬
@@ -35,7 +37,7 @@ struct alignas(16) ConstantBuffer
 
 class DirectionalLight;
 
-class Object
+class Cube
 {
 public:
 	// transform
@@ -51,14 +53,14 @@ public:
 	ID3D11InputLayout* inputLayout = nullptr;
 	ID3D11VertexShader* vertexShader = nullptr;
 	ID3D11PixelShader* pixelShader = nullptr;
-	ID3D11ShaderResourceView* textureRV = nullptr;		// 텍스처를 담는 객체
+	ID3D11ShaderResourceView* textureRV = nullptr;
 
 	// vertex info
 	UINT vertexBufferStride = 0;
 	UINT vertexBufferOffset = 0;
 	UINT indexCount = 0;
 
-	Object()
+	Cube()
 	{
 		position = Vector3::Zero;
 		rotation = Vector3::Zero;
@@ -66,7 +68,7 @@ public:
 		world = XMMatrixIdentity();
 	}
 
-	Object(Vector3 p, Vector3 r, Vector3 s)
+	Cube(Vector3 p, Vector3 r, Vector3 s)
 	{
 		position = p;
 		rotation = r;
@@ -100,6 +102,7 @@ public:
 	}
 
 	void InitRenderPipeLine();
+	void Update();
 	void Render(Matrix& view, Matrix& projection, DirectionalLight& light);
 	void UninitRenderPipeLine();
 };
