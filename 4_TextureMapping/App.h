@@ -37,7 +37,7 @@ public:
 		position = p;
 		rotation = r;
 		scale = s;
-		
+
 		Matrix tm = XMMatrixTranslationFromVector(p);
 		XMVECTOR q = XMQuaternionRotationRollPitchYaw(r.x, r.y, r.z);
 		Matrix rm = XMMatrixRotationQuaternion(q);
@@ -81,7 +81,7 @@ struct Camera
 struct DirectionalLight
 {
 	// 원래 direction은 light의 방향이지만, 연산 생략을 위해 표면->light의 방향을 써둠
-	Vector4 direction = { 0.5f, 0.8f, -0.8, 1.0f };		
+	Vector4 direction = { 0.5f, 0.8f, -0.8, 1.0f };
 	Vector4 color{ 1.0, 1.0f, 1.0, 1.0 };
 };
 
@@ -91,22 +91,21 @@ class App : public WinApp
 {
 private:
 	// rendering pipeline 
-	ID3D11Buffer*				vertexBuffer = nullptr;			
-	ID3D11Buffer*				indexBuffer = nullptr;			
-	ID3D11Buffer*				constantBuffer = nullptr;		
-	ID3D11InputLayout*			inputLayout = nullptr;
-	ID3D11VertexShader*			vertexShader = nullptr;
-	ID3D11PixelShader*			pixelShader = nullptr;
-	ID3D11DepthStencilView*		depthStencilView = nullptr;		
+	ID3D11Buffer* vertexBuffer = nullptr;
+	ID3D11Buffer* indexBuffer = nullptr;
+	ID3D11Buffer* constantBuffer = nullptr;
+	ID3D11InputLayout* inputLayout = nullptr;
+	ID3D11VertexShader* vertexShader = nullptr;
+	ID3D11PixelShader* pixelShader = nullptr;
+	ID3D11DepthStencilView* depthStencilView = nullptr;
 
 	// vertex info
-	UINT vertexBufferStride = 0;		
-	UINT vertexBufferOffset = 0;		
-	UINT indexCount = 0;				
+	UINT vertexBufferStride = 0;
+	UINT vertexBufferOffset = 0;
+	UINT indexCount = 0;
 
 	// Objects
 	Object cube;
-	Object cube2;
 	Camera camera;
 	DirectionalLight light;
 

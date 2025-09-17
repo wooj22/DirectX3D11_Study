@@ -50,20 +50,11 @@ void App::OnUpdate()
 	time = Time::GetTotalTime();
 
 	// world update
-	// cube 1
+	// cube
 	Matrix t1 = XMMatrixTranslationFromVector(cube.position);
-	//Matrix r1 = XMMatrixRotationY(-time);
-
 	XMVECTOR q = XMQuaternionRotationRollPitchYaw(cube.rotation.x, cube.rotation.y, cube.rotation.z);
 	Matrix r1 = XMMatrixRotationQuaternion(q);
-
 	cube.world = r1 * t1;
-
-	// cube 2
-	Matrix t2 = XMMatrixTranslationFromVector(cube2.position);
-	Matrix r2 = XMMatrixRotationY(time * 3);
-	Matrix s2 = XMMatrixScalingFromVector(cube2.scale);
-	cube2.world = s2 * r2 * t2 * cube.world;
 }
 
 void App::OnRender()
@@ -86,18 +77,13 @@ void App::OnRender()
 	D3DBase::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
 
 	// render
-	// cube 1
+	// cube
 	ConstantBuffer constBuffer;
 	constBuffer.world = XMMatrixTranspose(cube.world);
 	constBuffer.view = XMMatrixTranspose(view);
 	constBuffer.projection = XMMatrixTranspose(projection);
 	constBuffer.lightDirection = light.direction;
 	constBuffer.lightColor = light.color;
-	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &constBuffer, 0, 0);
-	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
-
-	// cube 2
-	constBuffer.world = XMMatrixTranspose(cube2.world);
 	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
@@ -248,9 +234,7 @@ bool App::InitRenderPipeLine()
 
 	// Object Init
 	cube.Init();
-	cube2.Init();
-	cube2.position = { 3, 0, 0 };
-	cube2.scale = { 0.4,0.4,0.4 };
+	cube.rotation = { 0, 45, 0 };
 
 	// Matrix Init
 	// view init
