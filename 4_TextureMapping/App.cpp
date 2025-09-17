@@ -259,7 +259,7 @@ bool App::InitRenderPipeLine()
 	HR_T(D3DBase::device->CreateBuffer(&constBuffer_Desc, nullptr, &constantBuffer));
 
 	// Object Init
-	cube.Init();
+	cube.InitTransform();
 	cube.rotation = { 0, 45, 0 };
 
 	// Matrix Init

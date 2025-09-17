@@ -10,90 +10,21 @@
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
+#include "Object.h"
+#include "DirectionalLight.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 
-class Object
-{
-public:
-	Vector3 position;		// 위치
-	Vector3 rotation;		// 회전
-	Vector3 scale;		    // 스케일
-	Matrix world;			// 월드 행렬
-
-	Object()
-	{
-		position = Vector3::Zero;
-		rotation = Vector3::Zero;
-		scale = Vector3::One;
-		world = XMMatrixIdentity();
-	}
-
-	Object(Vector3 p, Vector3 r, Vector3 s)
-	{
-		position = p;
-		rotation = r;
-		scale = s;
-
-		Matrix tm = XMMatrixTranslationFromVector(p);
-		XMVECTOR q = XMQuaternionRotationRollPitchYaw(r.x, r.y, r.z);
-		Matrix rm = XMMatrixRotationQuaternion(q);
-		Matrix sm = XMMatrixScalingFromVector(s);
-		world = sm * rm * tm;
-	}
-
-	void Init()
-	{
-		position = Vector3::Zero;
-		rotation = Vector3::Zero;
-		scale = Vector3::One;
-		world = XMMatrixIdentity();
-	}
-
-	void Set(Vector3 p, Vector3 r, Vector3 s)
-	{
-		position = p;
-		rotation = r;
-		scale = s;
-
-		Matrix tm = XMMatrixTranslationFromVector(p);
-		XMVECTOR q = XMQuaternionRotationRollPitchYaw(r.x, r.y, r.z);
-		Matrix rm = XMMatrixRotationQuaternion(q);
-		Matrix sm = XMMatrixScalingFromVector(s);
-		world = sm * rm * tm;
-	}
-};
-
-struct DirectionalLight
-{
-	// 원래 direction은 light의 방향이지만, 연산 생략을 위해 표면->light의 방향을 써둠
-	Vector4 direction = { 0.5f, 0.8f, -0.8, 1.0f };
-	Vector4 color{ 1.0, 1.0f, 1.0, 1.0 };
-};
-
-
-// Texture Mapping Test 프로젝트입니다.
+// Skybox Test 프로젝트입니다.
 class App : public WinApp
 {
 private:
-	// rendering pipeline 
-	ID3D11Buffer* vertexBuffer = nullptr;
-	ID3D11Buffer* indexBuffer = nullptr;
-	ID3D11Buffer* constantBuffer = nullptr;
-	ID3D11InputLayout* inputLayout = nullptr;
-	ID3D11VertexShader* vertexShader = nullptr;
-	ID3D11PixelShader* pixelShader = nullptr;
-	ID3D11ShaderResourceView* textureRV = nullptr;		// 텍스처를 담는 객체
-	ID3D11SamplerState* samplerState = nullptr;			// 샘플러 State를 지정하는 객체
+	// rendering pipeline (공용)
+	ID3D11SamplerState* samplerState = nullptr;
 	ID3D11DepthStencilView* depthStencilView = nullptr;
-
-	// vertex info
-	UINT vertexBufferStride = 0;
-	UINT vertexBufferOffset = 0;
-	UINT indexCount = 0;
 
 	// Objects
 	Object cube;
@@ -104,7 +35,6 @@ private:
 	Matrix projection;
 
 	// else
-	float time = 0.0f;
 	float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
 
 public:

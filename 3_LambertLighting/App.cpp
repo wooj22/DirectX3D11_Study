@@ -247,8 +247,8 @@ bool App::InitRenderPipeLine()
 	HR_T(D3DBase::device->CreateBuffer(&constBuffer_Desc, nullptr, &constantBuffer));
 
 	// Object Init
-	cube.Init();
-	cube2.Init();
+	cube.InitTransform();
+	cube2.InitTransform();
 	cube2.position = { 3, 0, 0 };
 	cube2.scale = { 0.4,0.4,0.4 };
 

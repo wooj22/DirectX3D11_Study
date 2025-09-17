@@ -45,7 +45,7 @@ public:
 		world = sm * rm * tm;
 	}
 
-	void Init()
+	void InitTransform()
 	{
 		position = Vector3::Zero;
 		rotation = Vector3::Zero;
