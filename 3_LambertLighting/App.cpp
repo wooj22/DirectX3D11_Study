@@ -254,10 +254,10 @@ bool App::InitRenderPipeLine()
 
 	// Matrix Init
 	// view init
-	view = XMMatrixLookAtLH(camera.eye, camera.at, camera.up);
+	view = XMMatrixLookAtLH(camera2.eye, camera2.at, camera2.up);
 
 	// projection init 
-	projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
+	projection = XMMatrixPerspectiveFovLH(camera2.FovY, screenWidth / (FLOAT)screenHeight, camera2.Near, camera2.Far);
 
 	return true;
 }
@@ -314,14 +314,14 @@ void App::RenderGUI()
 	ImGui::SliderAngle("Roll", &cube.rotation.z, 0.0f, 360.0f);
 
 	ImGui::Text("Camera");
-	ImGui::InputFloat3("Position", &camera.eye.x);
-	ImGui::SliderAngle("FOV Y", &camera.FovY, 30.0f, 120.0f);
-	ImGui::InputFloat("Near Plane", &camera.Near);
-	ImGui::InputFloat("Far Plane", &camera.Far);
+	ImGui::InputFloat3("Position", &camera2.eye.x);
+	ImGui::SliderAngle("FOV Y", &camera2.FovY, 30.0f, 120.0f);
+	ImGui::InputFloat("Near Plane", &camera2.Near);
+	ImGui::InputFloat("Far Plane", &camera2.Far);
 
 	// matrix udpate
-	view = XMMatrixLookAtLH(camera.eye, camera.at, camera.up);
-	projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (float)screenHeight, camera.Near, camera.Far);
+	view = XMMatrixLookAtLH(camera2.eye, camera2.at, camera2.up);
+	projection = XMMatrixPerspectiveFovLH(camera2.FovY, screenWidth / (float)screenHeight, camera2.Near, camera2.Far);
 
 	ImGui::End();
 	ImGui::Render();

@@ -67,17 +67,6 @@ public:
 	}
 };
 
-struct Camera
-{
-	Vector3 eye = { 0,1,-5 };		// camera position
-	Vector3 at = { 0,1, 0 };		// look at point
-	Vector3 up = { 0,1, 0 };		// y-up vector
-
-	float FovY = 90.0f;
-	float Near = 0.01f;
-	float Far = 100.0f;
-};
-
 struct DirectionalLight
 {
 	// 원래 direction은 light의 방향이지만, 연산 생략을 위해 표면->light의 방향을 써둠
@@ -108,7 +97,6 @@ private:
 
 	// Objects
 	Object cube;
-	Camera camera;
 	DirectionalLight light;
 
 	// matrix

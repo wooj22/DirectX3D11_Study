@@ -224,6 +224,7 @@ void WinApp::Update()
 {
 	time.Update();
 	input.Update();
+	camera.Update();
 	OnUpdate();
 }
 

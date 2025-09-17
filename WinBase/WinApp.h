@@ -3,6 +3,7 @@
 #include "string"
 #include "Input.h"
 #include "Time.h"
+#include "Camera.h"
 
 using namespace std;
 
@@ -28,6 +29,7 @@ protected:
 public:
 	Input input;			// input
 	Time  time;				// time
+	Camera camera;		
 
 public:
 	// main process

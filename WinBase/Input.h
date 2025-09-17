@@ -6,11 +6,17 @@ class Input
 private:
     static HWND hWnd;
     static POINT mouseClient;
+    static POINT prevMouseClient;
     static SHORT prevState[256];
     static SHORT currState[256];
 
     static float horizontalAxis;
     static float verticalAxis;
+
+    // Mouse Mode
+    enum MouseMode { MODE_ABSOLUTE, MODE_RELATIVE };
+    static MouseMode mouseMode;
+    static POINT mouseDelta;
 
 public:
     static void Init(HWND hwnd);
@@ -26,4 +32,7 @@ public:
 
     static float GetAxisHorizontal();
     static float GetAxisVertical();
+
+    static void SetMouseMode(bool relative);      // true → relative, false → absolute
+    static POINT GetMouseDelta();                 // 상대 이동량 반환
 };

@@ -2,6 +2,7 @@
 #include "../WinBase/Helper.h"
 #include <d3dcompiler.h>
 #include <Directxtk/DDSTextureLoader.h>
+#include "../WinBase/Camera.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -61,6 +62,9 @@ void App::OnUpdate()
 	XMVECTOR q = XMQuaternionRotationRollPitchYaw(cube.rotation.x, cube.rotation.y, cube.rotation.z);
 	Matrix r1 = XMMatrixRotationQuaternion(q);
 	cube.world = r1 * t1;
+
+	// view update
+	camera.GetViewMatrix(view);
 }
 
 void App::OnRender()
@@ -260,7 +264,7 @@ bool App::InitRenderPipeLine()
 
 	// Matrix Init
 	// view init
-	view = XMMatrixLookAtLH(camera.eye, camera.at, camera.up);
+	camera.GetViewMatrix(view);
 
 	// projection init 
 	projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
@@ -311,23 +315,17 @@ void App::RenderGUI()
 
 	ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 	ImGui::Text("Directional Light");
-	ImGui::InputFloat3("Direction", &light.direction.x);
+	ImGui::InputFloat3("Direction(r)", &light.direction.x);
+
+	ImGui::SliderAngle("x", &light.direction.x, 0.0f, 360.0f);
+	ImGui::SliderAngle("y", &light.direction.y, 0.0f, 360.0f);
+	ImGui::SliderAngle("z", &light.direction.z, 0.0f, 360.0f);
 	ImGui::InputFloat3("Color", &light.color.x);
 
 	ImGui::Text("Cube");
 	ImGui::SliderAngle("Pitch", &cube.rotation.x, 0.0f, 360.0f);
 	ImGui::SliderAngle("Yaw", &cube.rotation.y, 0.0f, 360.0f);
 	ImGui::SliderAngle("Roll", &cube.rotation.z, 0.0f, 360.0f);
-
-	ImGui::Text("Camera");
-	ImGui::InputFloat3("Position", &camera.eye.x);
-	ImGui::SliderAngle("FOV Y", &camera.FovY, 30.0f, 120.0f);
-	ImGui::InputFloat("Near Plane", &camera.Near);
-	ImGui::InputFloat("Far Plane", &camera.Far);
-
-	// matrix udpate
-	view = XMMatrixLookAtLH(camera.eye, camera.at, camera.up);
-	projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (float)screenHeight, camera.Near, camera.Far);
 
 	ImGui::End();
 	ImGui::Render();

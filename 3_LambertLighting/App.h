@@ -107,7 +107,7 @@ private:
 	// Objects
 	Object cube;
 	Object cube2;
-	Camera camera;
+	Camera camera2;
 	DirectionalLight light;
 
 	// matrix
