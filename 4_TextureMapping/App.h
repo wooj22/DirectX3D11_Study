@@ -86,7 +86,7 @@ struct DirectionalLight
 };
 
 
-// 램버트 법칙에 따른 Directional Light Test 프로젝트입니다.
+// Texture Mapping Test 프로젝트입니다.
 class App : public WinApp
 {
 private:
@@ -97,6 +97,8 @@ private:
 	ID3D11InputLayout* inputLayout = nullptr;
 	ID3D11VertexShader* vertexShader = nullptr;
 	ID3D11PixelShader* pixelShader = nullptr;
+	ID3D11ShaderResourceView* textureRV = nullptr;		// 텍스처를 담는 객체
+	ID3D11SamplerState* samplerState = nullptr;			// 샘플러 State를 지정하는 객체
 	ID3D11DepthStencilView* depthStencilView = nullptr;
 
 	// vertex info

@@ -1,6 +1,10 @@
 #include "App.h"
 #include "../WinBase/Helper.h"
+#include <d3dcompiler.h>
+#include <Directxtk/DDSTextureLoader.h>
+
 #pragma comment (lib, "d3d11.lib")
+#pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib, "dxguid.lib") 
 using namespace DirectX;
@@ -11,10 +15,12 @@ using namespace DirectX::SimpleMath;
 // Vertex Structure
 struct Vertex
 {
-	Vector3 position;    // vertex 위치
-	Vector3 normal;      // vertex 법선
+	Vector3 position;		 // vertex 위치
+	Vector3 normal;			 // vertex 법선
+	Vector2 texcoord;		 // uv 좌표
 
-	Vertex(Vector3 position, Vector3 normal) : position(position), normal(normal) {}
+	Vertex(Vector3 position, Vector3 normal, Vector2 uv)
+		: position(position), normal(normal), texcoord(uv) {}
 };
 
 // ConstantBuffer
@@ -75,6 +81,8 @@ void App::OnRender()
 	D3DBase::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
 	D3DBase::deviceContext->PSSetShader(pixelShader, NULL, 0);
 	D3DBase::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
+	D3DBase::deviceContext->PSSetShaderResources(0, 1, &textureRV);
+	D3DBase::deviceContext->PSSetSamplers(0, 1, &samplerState);
 
 	// render
 	// cube
@@ -100,41 +108,41 @@ bool App::InitRenderPipeLine()
 	// Vertex가 normal벡터 정보를 가져야하므로 정육면체의 각 면마다의 vertex 정보를 넣어주어야 한다.
 	Vertex vertices[] =
 	{
-		// Top (normal : +Y)
-		Vertex({-1.0f,  1.0f, -1.0f}, { 0.0f, 1.0f, 0.0f}),
-		Vertex({ 1.0f,  1.0f, -1.0f}, { 0.0f, 1.0f, 0.0f}),
-		Vertex({ 1.0f,  1.0f,  1.0f}, { 0.0f, 1.0f, 0.0f}),
-		Vertex({-1.0f,  1.0f,  1.0f}, { 0.0f, 1.0f, 0.0f}),
+		// Top (+Y)
+		Vertex({-1.0f,  1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}),
+		Vertex({ 1.0f,  1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}),
+		Vertex({ 1.0f,  1.0f,  1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}),
+		Vertex({-1.0f,  1.0f,  1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}),
 
-		// Bottom (normal : -Y)
-		Vertex({-1.0f, -1.0f, -1.0f}, { 0.0f,-1.0f, 0.0f}),
-		Vertex({ 1.0f, -1.0f, -1.0f}, { 0.0f,-1.0f, 0.0f}),
-		Vertex({ 1.0f, -1.0f,  1.0f}, { 0.0f,-1.0f, 0.0f}),
-		Vertex({-1.0f, -1.0f,  1.0f}, { 0.0f,-1.0f, 0.0f}),
+		// Bottom (-Y)
+		Vertex({-1.0f, -1.0f, -1.0f}, {0.0f,-1.0f, 0.0f}, {0.0f, 0.0f}),
+		Vertex({ 1.0f, -1.0f, -1.0f}, {0.0f,-1.0f, 0.0f}, {1.0f, 0.0f}),
+		Vertex({ 1.0f, -1.0f,  1.0f}, {0.0f,-1.0f, 0.0f}, {1.0f, 1.0f}),
+		Vertex({-1.0f, -1.0f,  1.0f}, {0.0f,-1.0f, 0.0f}, {0.0f, 1.0f}),
 
-		// Left (normal : -X)
-		Vertex({-1.0f, -1.0f,  1.0f}, {-1.0f, 0.0f, 0.0f}),
-		Vertex({-1.0f, -1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f}),
-		Vertex({-1.0f,  1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f}),
-		Vertex({-1.0f,  1.0f,  1.0f}, {-1.0f, 0.0f, 0.0f}),
+		// Left (-X)
+		Vertex({-1.0f, -1.0f,  1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
+		Vertex({-1.0f, -1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}),
+		Vertex({-1.0f,  1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}),
+		Vertex({-1.0f,  1.0f,  1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}),
 
-		// Right (normal : +X)
-		Vertex({ 1.0f, -1.0f,  1.0f}, { 1.0f, 0.0f, 0.0f}),
-		Vertex({ 1.0f, -1.0f, -1.0f}, { 1.0f, 0.0f, 0.0f}),
-		Vertex({ 1.0f,  1.0f, -1.0f}, { 1.0f, 0.0f, 0.0f}),
-		Vertex({ 1.0f,  1.0f,  1.0f}, { 1.0f, 0.0f, 0.0f}),
+		// Right (+X)
+		Vertex({ 1.0f, -1.0f,  1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
+		Vertex({ 1.0f, -1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}),
+		Vertex({ 1.0f,  1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}),
+		Vertex({ 1.0f,  1.0f,  1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}),
 
-		// Back (normal : -Z)
-		Vertex({-1.0f, -1.0f, -1.0f}, { 0.0f, 0.0f,-1.0f}),
-		Vertex({ 1.0f, -1.0f, -1.0f}, { 0.0f, 0.0f,-1.0f}),
-		Vertex({ 1.0f,  1.0f, -1.0f}, { 0.0f, 0.0f,-1.0f}),
-		Vertex({-1.0f,  1.0f, -1.0f}, { 0.0f, 0.0f,-1.0f}),
+		// Back (-Z)
+		Vertex({-1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}),
+		Vertex({ 1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}),
+		Vertex({ 1.0f,  1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}),
+		Vertex({-1.0f,  1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}),
 
-		// Front (normal : +Z)
-		Vertex({-1.0f, -1.0f,  1.0f}, { 0.0f, 0.0f, 1.0f}),
-		Vertex({ 1.0f, -1.0f,  1.0f}, { 0.0f, 0.0f, 1.0f}),
-		Vertex({ 1.0f,  1.0f,  1.0f}, { 0.0f, 0.0f, 1.0f}),
-		Vertex({-1.0f,  1.0f,  1.0f}, { 0.0f, 0.0f, 1.0f})
+		// Front (+Z)
+		Vertex({-1.0f, -1.0f,  1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}),
+		Vertex({ 1.0f, -1.0f,  1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}),
+		Vertex({ 1.0f,  1.0f,  1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}),
+		Vertex({-1.0f,  1.0f,  1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f})
 	};
 
 
@@ -180,13 +188,13 @@ bool App::InitRenderPipeLine()
 	{   // SemanticName , SemanticIndex , Format , InputSlot , AlignedByteOffset , InputSlotClass , InstanceDataStepRate	
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 12,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 24,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
 	HR_T(CompileShaderFromFile(L"VertexShader.hlsl", "main", "vs_4_0", &vertexShaderBuffer));
 	HR_T(D3DBase::device->CreateInputLayout(layout, ARRAYSIZE(layout),
 		vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout));
-
 
 	// VS - vertex shader create
 	HR_T(D3DBase::device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
@@ -199,6 +207,20 @@ bool App::InitRenderPipeLine()
 	HR_T(D3DBase::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
 		pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader));
 	SAFE_RELEASE(pixelShaderBuffer);
+
+	// PS - texture load
+	HR_T(CreateDDSTextureFromFile(D3DBase::device.Get(), L"../Resource/seafloor.dds", nullptr, &textureRV));
+
+	// PS - smapler state create
+	D3D11_SAMPLER_DESC sample_Desc = {};
+	sample_Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;			// 상하좌우 텍셀 보간
+	sample_Desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;				// 0~1 범위를 벗어난 uv는 소수 부분만 사용
+	sample_Desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample_Desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample_Desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sample_Desc.MinLOD = 0;
+	sample_Desc.MaxLOD = D3D11_FLOAT32_MAX;
+	HR_T(D3DBase::device->CreateSamplerState(&sample_Desc, &samplerState));
 
 	// OM - depth stencil view create
 	D3D11_TEXTURE2D_DESC descDepth = {};
