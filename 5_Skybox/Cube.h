@@ -12,15 +12,14 @@ using Microsoft::WRL::ComPtr;
 
 // Vertex Structure
 // vertexbuffer, input layout, vertex shader ¿¬°á
-struct Vertex
+struct Cube_Vertex
 {
 	Vector3 position;
 	Vector3 normal;	
 	Vector2 texcoord;
 
-	Vertex(Vector3 position, Vector3 normal, Vector2 uv)
-		: position(position), normal(normal), texcoord(uv) {
-	}
+	Cube_Vertex(Vector3 position, Vector3 normal, Vector2 uv)
+		: position(position), normal(normal), texcoord(uv) { }
 };
 
 // ConstantBuffer

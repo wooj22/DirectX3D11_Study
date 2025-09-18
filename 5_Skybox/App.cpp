@@ -35,7 +35,6 @@ void App::OnUpdate()
 	float time = Time::GetTotalTime();
 
 	// world update
-	// cube
 	cube.Update();
 
 	// view update
@@ -56,6 +55,7 @@ void App::OnRender()
 	D3DBase::deviceContext->PSSetSamplers(0, 1, &samplerState);
 
 	// render
+	skybox.Render(view, projection);
 	cube.Render(view, projection, light);
 
 	// GUI
@@ -68,6 +68,7 @@ void App::OnRender()
 bool App::InitRenderPipeLine()
 {
 	cube.InitRenderPipeLine();
+	skybox.InitRenderPipeLine();
 	
 	// PS - smapler state create
 	D3D11_SAMPLER_DESC sample_Desc = {};
@@ -116,6 +117,7 @@ bool App::InitRenderPipeLine()
 void App::UninitRenderPipeLine()
 {
 	cube.UninitRenderPipeLine();
+	skybox.UninitRenderPipeLine();
 	SAFE_RELEASE(samplerState);
 	SAFE_RELEASE(depthStencilView);
 }

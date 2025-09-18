@@ -12,6 +12,7 @@
 #include <imgui_impl_dx11.h>
 #include "Cube.h"
 #include "DirectionalLight.h"
+#include "Skybox.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -29,6 +30,7 @@ private:
 	// Objects
 	Cube cube;
 	DirectionalLight light;
+	Skybox skybox;
 
 	// matrix
 	Matrix view;
