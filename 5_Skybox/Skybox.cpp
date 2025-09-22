@@ -77,10 +77,17 @@ void Skybox::InitRenderPipeLine()
     cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     D3DBase::device->CreateBuffer(&cbDesc, nullptr, &constantBuffer);
 
+    // Rasterizer State (CullMode = FRONT or NONE)
+    D3D11_RASTERIZER_DESC rsDesc = {};
+    rsDesc.FillMode = D3D11_FILL_SOLID;
+    rsDesc.CullMode = D3D11_CULL_FRONT;
+    rsDesc.DepthClipEnable = TRUE;
+    D3DBase::device->CreateRasterizerState(&rsDesc, &skyboxRS);
+
     // DepthStencilState (LESS_EQUAL)
     D3D11_DEPTH_STENCIL_DESC dssDesc = {};
     dssDesc.DepthEnable = TRUE;
-    dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
     dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
     D3DBase::device->CreateDepthStencilState(&dssDesc, &skyboxDSS);
 }
@@ -110,13 +117,15 @@ void Skybox::Render(Matrix& view, Matrix& projection)
     D3DBase::deviceContext->VSSetConstantBuffers(1, 1, &constantBuffer);
     D3DBase::deviceContext->PSSetConstantBuffers(1, 1, &constantBuffer);
 
-    // DepthStencilState 적용
-    D3DBase::deviceContext->OMSetDepthStencilState(skyboxDSS, 0);
-
+    // Rasterizer, DepthStencilState 설정
+    //D3DBase::deviceContext->RSSetState(skyboxRS);     // 메쉬 자체가 뒷면 기준이기때문에 생략 가능
+    D3DBase::deviceContext->OMSetDepthStencilState(skyboxDSS, 1);
+   
     // Draw
     D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 
-    // DepthFunc 원래대로 돌려주기 (일반 오브젝트를 위해)
+    // Rasterizer, DepthStencilState 원상복귀
+    //D3DBase::deviceContext->RSSetState(nullptr);
     D3DBase::deviceContext->OMSetDepthStencilState(nullptr, 0);
 }
 

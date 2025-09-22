@@ -39,6 +39,7 @@ void App::OnUpdate()
 
 	// view update
 	camera.GetViewMatrix(view);
+	//projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 }
 
 void App::OnRender()
@@ -156,9 +157,9 @@ void App::RenderGUI()
 	ImGui::Text("Directional Light");
 	ImGui::InputFloat3("Direction(r)", &light.direction.x);
 
-	ImGui::SliderAngle("x", &light.direction.x, 0.0f, 360.0f);
-	ImGui::SliderAngle("y", &light.direction.y, 0.0f, 360.0f);
-	ImGui::SliderAngle("z", &light.direction.z, 0.0f, 360.0f);
+	ImGui::SliderAngle("x", &light.direction.x, -180.0f, 180.0f);
+	ImGui::SliderAngle("y", &light.direction.y, -180.0f, 180.0f);
+	ImGui::SliderAngle("z", &light.direction.z, -180.0f, 180.0f);
 	ImGui::InputFloat3("Color", &light.color.x);
 
 	ImGui::Text("Cube");

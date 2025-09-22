@@ -19,9 +19,9 @@ void Cube::InitRenderPipeLine()
 
 		// Bottom (-Y)
 		Cube_Vertex({-1.0f, -1.0f, -1.0f}, {0.0f,-1.0f, 0.0f}, {0.0f, 0.0f}),
+		Cube_Vertex({ 1.0f, -1.0f, -1.0f}, {0.0f,-1.0f, 0.0f}, {1.0f, 0.0f}),
 		Cube_Vertex({ 1.0f, -1.0f,  1.0f}, {0.0f,-1.0f, 0.0f}, {1.0f, 1.0f}),
 		Cube_Vertex({-1.0f, -1.0f,  1.0f}, {0.0f,-1.0f, 0.0f}, {0.0f, 1.0f}),
-		Cube_Vertex({ 1.0f, -1.0f, -1.0f}, {0.0f,-1.0f, 0.0f}, {1.0f, 0.0f}),
 
 		// Left (-X)
 		Cube_Vertex({-1.0f, -1.0f,  1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
