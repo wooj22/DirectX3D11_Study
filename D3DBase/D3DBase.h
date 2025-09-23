@@ -9,7 +9,7 @@
 
 using Microsoft::WRL::ComPtr;
 
-// DirectX 3D 라이브러리를 사용하기 위한 초기화 매핑 클래스입니다.
+// DirectX 3D 렌더 파이프라인 필수 객체 초기화 클래스입니다.
 class D3DBase
 {
 public:
@@ -17,6 +17,7 @@ public:
 	static ComPtr<ID3D11DeviceContext>     deviceContext;
 	static ComPtr<IDXGISwapChain>		   swapChain;
 	static ComPtr<ID3D11RenderTargetView>  renderTargetView;
+	static ComPtr<ID3D11DepthStencilView>  depthStencilView;
 
 	static bool Init(HWND& hWnd, int screenWidth, int screenHeight);
 	static void UnInit();

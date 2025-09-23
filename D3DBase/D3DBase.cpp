@@ -2,10 +2,11 @@
 #include "../WinBase/Helper.h"
 
 // static member init
-ComPtr<ID3D11Device>		   D3DBase::device = nullptr;
-ComPtr<ID3D11DeviceContext>    D3DBase::deviceContext = nullptr;
-ComPtr<IDXGISwapChain>		   D3DBase::swapChain = nullptr;
-ComPtr<ID3D11RenderTargetView> D3DBase::renderTargetView = nullptr;
+ComPtr<ID3D11Device>		    D3DBase::device = nullptr;
+ComPtr<ID3D11DeviceContext>     D3DBase::deviceContext = nullptr;
+ComPtr<IDXGISwapChain>		    D3DBase::swapChain = nullptr;
+ComPtr<ID3D11RenderTargetView>  D3DBase::renderTargetView = nullptr;
+ComPtr<ID3D11DepthStencilView>  D3DBase::depthStencilView = nullptr;
 
 bool D3DBase::Init(HWND& hWnd, int screenWidth, int screenHeight)
 {
@@ -62,6 +63,29 @@ bool D3DBase::Init(HWND& hWnd, int screenWidth, int screenHeight)
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 	deviceContext->RSSetViewports(1, &viewport);	// viewport binding
+
+	// create depth stencil view 
+	D3D11_TEXTURE2D_DESC descDepth = {};
+	descDepth.Width = screenWidth;
+	descDepth.Height = screenHeight;
+	descDepth.MipLevels = 1;
+	descDepth.ArraySize = 1;
+	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Quality = 0;
+	descDepth.Usage = D3D11_USAGE_DEFAULT;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	descDepth.CPUAccessFlags = 0;
+	descDepth.MiscFlags = 0;
+
+	ComPtr<ID3D11Texture2D> pTextureDepthStencil;
+	HR_T(device->CreateTexture2D(&descDepth, nullptr, pTextureDepthStencil.GetAddressOf()));
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+	descDSV.Format = descDepth.Format;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV.Texture2D.MipSlice = 0;
+	HR_T(device->CreateDepthStencilView(pTextureDepthStencil.Get(), &descDSV, depthStencilView.GetAddressOf()));
 
 	return true;
 }

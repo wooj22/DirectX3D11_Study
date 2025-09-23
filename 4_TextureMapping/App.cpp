@@ -70,11 +70,11 @@ void App::OnUpdate()
 void App::OnRender()
 {
 	// RTV clear
-	D3DBase::deviceContext->OMSetRenderTargets(1, D3DBase::renderTargetView.GetAddressOf(), depthStencilView);
+	D3DBase::deviceContext->OMSetRenderTargets(1, D3DBase::renderTargetView.GetAddressOf(), D3DBase::depthStencilView.Get());
 	D3DBase::deviceContext->ClearRenderTargetView(D3DBase::renderTargetView.Get(), clearColor);
 
 	// death buffer clear
-	D3DBase::deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	D3DBase::deviceContext->ClearDepthStencilView(D3DBase::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	// render pipeline bind (stage setting)
 	D3DBase::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -226,30 +226,7 @@ bool App::InitRenderPipeLine()
 	sample_Desc.MaxLOD = D3D11_FLOAT32_MAX;
 	HR_T(D3DBase::device->CreateSamplerState(&sample_Desc, &samplerState));
 
-	// OM - depth stencil view create
-	D3D11_TEXTURE2D_DESC descDepth = {};
-	descDepth.Width = screenWidth;
-	descDepth.Height = screenHeight;
-	descDepth.MipLevels = 1;
-	descDepth.ArraySize = 1;
-	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.SampleDesc.Count = 1;
-	descDepth.SampleDesc.Quality = 0;
-	descDepth.Usage = D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	descDepth.CPUAccessFlags = 0;
-	descDepth.MiscFlags = 0;
-
-	ComPtr<ID3D11Texture2D> pTextureDepthStencil;
-	HR_T(D3DBase::device->CreateTexture2D(&descDepth, nullptr, pTextureDepthStencil.GetAddressOf()));
-
-	// create
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
-	descDSV.Format = descDepth.Format;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture2D.MipSlice = 0;
-	HR_T(D3DBase::device->CreateDepthStencilView(pTextureDepthStencil.Get(), &descDSV, &depthStencilView));
-
+	
 	// constant buffer create (vs, ps에 전달할 사용할 행렬 data)
 	D3D11_BUFFER_DESC constBuffer_Desc = {};
 	constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
@@ -280,7 +257,6 @@ void App::UninitRenderPipeLine()
 	SAFE_RELEASE(inputLayout);
 	SAFE_RELEASE(vertexShader);
 	SAFE_RELEASE(pixelShader);
-	SAFE_RELEASE(depthStencilView);
 }
 
 bool App::InitGUI()

@@ -25,7 +25,6 @@ class App : public WinApp
 private:
 	// rendering pipeline (°ø¿ë)
 	ID3D11SamplerState* samplerState = nullptr;
-	ID3D11DepthStencilView* depthStencilView = nullptr;
 
 	// Objects
 	Cube cube;

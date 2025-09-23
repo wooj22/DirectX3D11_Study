@@ -28,7 +28,6 @@ private:
 	ID3D11InputLayout*		inputLayout = nullptr;
 	ID3D11VertexShader*		vertexShader = nullptr;
 	ID3D11PixelShader*		pixelShader = nullptr;
-	ID3D11DepthStencilView*	depthStencilView = nullptr;  // 깊이, 스텐실 테스트 (depth 24bit, stencil 8bit)
 
 	// vertex info
 	UINT vertexBufferStride = 0;				// 버텍스 하나의 크기
