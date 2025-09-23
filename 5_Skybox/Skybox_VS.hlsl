@@ -1,6 +1,5 @@
 cbuffer SkyboxCB : register(b1)
 {
-    matrix world;
     matrix view;
     matrix projection;
 };
@@ -20,11 +19,10 @@ PS_INPUT main(VS_INPUT input)
 {
     PS_INPUT output;
 
-    float4 worldPos = mul(float4(input.position, 1.0f), world);
-    output.position = mul(worldPos, view);
+    output.position = mul(float4(input.position, 1.0f), view);
     output.position = mul(output.position, projection);
 
-    // CubeMap용 방향 벡터 (World Space)
+    // CubeMap용 방향 벡터
     output.texCoord = input.position;
 
     return output;

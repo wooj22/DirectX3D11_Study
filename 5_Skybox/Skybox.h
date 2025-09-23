@@ -22,19 +22,20 @@ struct Skybox_Vertex
 // vertex shdaer, pixel shader 연결
 struct alignas(16) Skybox_ConstantBuffer
 {
-	Matrix world;					// world 행렬
 	Matrix view;		 			// view 행렬
 	Matrix projection;				// projection 행렬
 };
 
-/* Skybox 구현 원리 */
-// 1. 큐브를 만든 후 카메라 위치에 맞춰 큐브를 이동시킨다. (크기는 상관 x)
-// 2. view 행렬에서 translation을 제거한다. (이미 카메라 중심으로 이동시켰기 때문에 vs에서 중복 연산하지 않도록)
-// 3. CubeMap 텍스처를 이용해 uv좌표 대신 방향 벡터를 이용해 샘플링한다.
-// 4. 래스터 라이저의 CullMode를 D3D11_CULL_FRONT로 하여 안쪽면이 보이게 그려준다. 만약 메쉬 자체가 뒤집혀있다면 생략 가능하다.
-// 5. Skybox는 항상 가장 뒤에 있어야 하기 때문에 Depth test를 LESS_EQUAL, Depth=1.0f로 고정한다.
-// Skybox는 화면이 클리어되고 가장 먼저 그려져야 한다. 
+/* Skybox 구현 방법 */
+// 1. 큐브 메시와 큐브맵 DDS를 준비한다. 크기는 상관 없다.
+// 2. view 행렬에서 이동 성분을 제거하여 스카이박스를 카메라 원점에 둔다.
+// 3. Skybox는 화면이 클리어되고 가장 먼저 그려져야 한다. 
+// 4. Skybox는 항상 가장 뒤에 있어야 하기 때문에 D3D11_DEPTH_WRITE_MASK_ZERO인 DepthStencilState를 바인딩해준다.
+// 5. 래스터 라이저의 CullMode를 D3D11_CULL_FRONT로 하여 안쪽면이 보이게 그려준다. 만약 메쉬 자체가 뒤집혀있다면 생략 가능하다.
+// 6. skybox vertex local position에 이동 성분을 제거한 view행렬을 곱하고, projection한다.
+// 7. 큐브맵 텍스처를 샘플링하여 렌더 과정을 마친다.
 // Skybox를 그린 뒤, DepthStencilState와 RasterizerState를 다시 원상 복귀 시켜줘야 다른 오브젝트들이 올바르게 렌더링된다.
+
 class Skybox
 {
 public:

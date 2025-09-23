@@ -86,15 +86,17 @@ void Skybox::InitRenderPipeLine()
 
     // DepthStencilState (LESS_EQUAL)
     D3D11_DEPTH_STENCIL_DESC dssDesc = {};
-    dssDesc.DepthEnable = TRUE;
-    dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-    dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+    dssDesc.DepthEnable = TRUE;                                     // 깊이 테스트 ㅇ
+    dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;           // 깊이 버퍼 기록 x
+    dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;                // z가 작거나 같으면 통과 (근데 어차피 깊이 버퍼에 기록을 안하므로 상관 없음)
     D3DBase::device->CreateDepthStencilState(&dssDesc, &skyboxDSS);
 }
 
 void Skybox::Render(Matrix& view, Matrix& projection)
 {
-    // 카메라 위치 제거
+    // 카메라 이동행렬 제거 -> 카메라가 이동해도 큐브는 항상 카메라 원점에 고정
+    // 스카이 박스 정점은 카메라 좌표계에서 항상 +- 1 정도 거리의 정점으로 유지
+    // 큐브는 투영후 카메라의 Far Plane에 수렴하는 값으로 나오고 z(깊이)는 1근처가 됨
     Matrix viewNoTranslation = view;
     viewNoTranslation._41 = 0.0f;
     viewNoTranslation._42 = 0.0f;
@@ -102,7 +104,6 @@ void Skybox::Render(Matrix& view, Matrix& projection)
 
     // Constant buffer Update
     Skybox_ConstantBuffer cb;
-    cb.world = XMMatrixIdentity();
     cb.view = XMMatrixTranspose(viewNoTranslation);
     cb.projection = XMMatrixTranspose(projection);
     D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
