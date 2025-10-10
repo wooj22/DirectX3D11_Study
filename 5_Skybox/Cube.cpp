@@ -123,7 +123,7 @@ void Cube::InitRenderPipeLine()
 
 	// Object Init
 	InitTransform();
-	rotation = { 0, 45, 0 };
+	rotation = { 0, 0, 0 };
 }
 
 void Cube::Update()
@@ -132,7 +132,8 @@ void Cube::Update()
 	Matrix t1 = XMMatrixTranslationFromVector(position);
 	XMVECTOR q = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	Matrix r1 = XMMatrixRotationQuaternion(q);
-	world = r1 * t1;
+	Matrix s1 = XMMatrixScalingFromVector(scale);
+	world = s1 * r1 * t1;
 }
 
 void Cube::Render(Matrix& view, Matrix&projection, DirectionalLight& light)

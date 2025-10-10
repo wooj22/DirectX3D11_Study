@@ -1,6 +1,8 @@
 #include "Cube.h"
 #include "../WinBase/Helper.h"
+#include "../WinBase/Camera.h"
 #include "DirectionalLight.h"
+#include "Material.h"
 #include <Directxtk/DDSTextureLoader.h>
 
 using namespace DirectX;
@@ -123,7 +125,7 @@ void Cube::InitRenderPipeLine()
 
 	// Object Init
 	InitTransform();
-	rotation = { 0, 45, 0 };
+	scale = { 5,5,5 };
 }
 
 void Cube::Update()
@@ -132,10 +134,11 @@ void Cube::Update()
 	Matrix t1 = XMMatrixTranslationFromVector(position);
 	XMVECTOR q = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	Matrix r1 = XMMatrixRotationQuaternion(q);
-	world = r1 * t1;
+	Matrix s1 = XMMatrixScalingFromVector(scale);
+	world = s1 * r1 * t1;
 }
 
-void Cube::Render(Matrix& view, Matrix& projection, DirectionalLight& light)
+void Cube::Render(Matrix& view, Matrix& projection, Camera& camera, DirectionalLight& light, Material& material)
 {
 	// render pipeline stage setting
 	D3DBase::deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
@@ -154,6 +157,14 @@ void Cube::Render(Matrix& view, Matrix& projection, DirectionalLight& light)
 	constBuffer.projection = XMMatrixTranspose(projection);
 	constBuffer.lightDirection = light.direction;
 	constBuffer.lightColor = light.color;
+	constBuffer.indirectLight = light.indirectLight;
+	constBuffer.directLight = light.directLight;
+	constBuffer.ambientReflection = material.ambientReflection;
+	constBuffer.diffuseReflection = material.diffuseReflection;
+	constBuffer.specularReflection = material.specularReflection;
+	constBuffer.shininess = material.shininess;
+	constBuffer.cameraPos = camera.position;
+
 	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 }

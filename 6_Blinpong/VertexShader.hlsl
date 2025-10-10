@@ -15,6 +15,8 @@ cbuffer ConstantBuffer : register(b0)
     float diffuseReflection;
     float specularReflection;
     float shininess;
+    
+    float3 cameraPos;
 }
 
 struct VS_INPUT
@@ -29,6 +31,7 @@ struct PS_INPUT
     float4 pos : SV_POSITION;
     float3 normal : NORMAL;
     float2 texCoord : TEXCOORD;
+    float3 worldPos : WORLD_POSITION;
 };
 
 PS_INPUT main(VS_INPUT input)
@@ -37,6 +40,7 @@ PS_INPUT main(VS_INPUT input)
     
     // clip position
     output.pos = mul(input.pos, world);         // local -> world
+    output.worldPos = output.pos.xyz;               // (world pos ÀúÀå)
     output.pos = mul(output.pos, view);         // world -> view
     output.pos = mul(output.pos, projection);   // view -> clip
     

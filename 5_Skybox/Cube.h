@@ -18,6 +18,7 @@ struct Cube_Vertex
 	Vector3 normal;	
 	Vector2 texcoord;
 
+	Cube_Vertex() {};
 	Cube_Vertex(Vector3 position, Vector3 normal, Vector2 uv)
 		: position(position), normal(normal), texcoord(uv) { }
 };
@@ -87,6 +88,7 @@ public:
 		scale = Vector3::One;
 		world = XMMatrixIdentity();
 	}
+
 	void SetTransform(Vector3 p, Vector3 r, Vector3 s)
 	{
 		position = p;

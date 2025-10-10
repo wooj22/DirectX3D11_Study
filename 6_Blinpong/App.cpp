@@ -39,7 +39,6 @@ void App::OnUpdate()
 
 	// view update
 	camera.GetViewMatrix(view);
-	//projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 }
 
 void App::OnRender()
@@ -56,7 +55,7 @@ void App::OnRender()
 	D3DBase::deviceContext->PSSetSamplers(0, 1, &samplerState);
 
 	// render
-	cube.Render(view, projection, light);
+	cube.Render(view, projection, camera, light, material);
 
 	// GUI
 	RenderGUI();
@@ -82,6 +81,7 @@ bool App::InitRenderPipeLine()
 
 	// Matrix Init
 	// view init
+	camera.position.z = -30;
 	camera.GetViewMatrix(view);
 
 	// projection init 
@@ -142,13 +142,16 @@ void App::RenderGUI()
 	ImGui::SliderFloat("ambientReflection", &material.ambientReflection, 0.0f, 1.0f, "%.2f");
 	ImGui::SliderFloat("diffuseReflection", &material.diffuseReflection, 0.0f, 1.0f, "%.2f");
 	ImGui::SliderFloat("specularReflection", &material.specularReflection, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("shininess", &material.shininess, 0.0f, 50.0f, "%.2f");
 
 	ImGui::Text("Cube");
+	ImGui::SliderFloat("Scale", &cube.scale.x, 1.0f, 10.0f, "%.2f");
+	cube.scale.y = cube.scale.x;
+	cube.scale.z = cube.scale.x;
+
 	ImGui::SliderAngle("Pitch", &cube.rotation.x, 0.0f, 360.0f);
 	ImGui::SliderAngle("Yaw", &cube.rotation.y, 0.0f, 360.0f);
 	ImGui::SliderAngle("Roll", &cube.rotation.z, 0.0f, 360.0f);
-
-	
 
 	ImGui::End();
 	ImGui::Render();

@@ -41,10 +41,13 @@ struct alignas(16) ConstantBuffer
 	float specularReflection;		// 정반사 계수
 	float shininess;				// 광택 계수
 
-	Vector2 padding;
+	Vector3 cameraPos;				// 카메라 위치
+	float padding;
 };
 
+class Camera;
 class DirectionalLight;
+class Material;
 
 class Cube
 {
@@ -113,6 +116,6 @@ public:
 
 	void InitRenderPipeLine();
 	void Update();
-	void Render(Matrix& view, Matrix& projection, DirectionalLight& light);
+	void Render(Matrix& view, Matrix& projection, Camera& camera, DirectionalLight& light, Material& material);
 	void UninitRenderPipeLine();
 };
