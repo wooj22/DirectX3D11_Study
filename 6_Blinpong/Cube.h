@@ -40,9 +40,10 @@ struct alignas(16) ConstantBuffer
 	float diffuseReflection;		// 난반사 계수(텍스처에서 사용)
 	float specularReflection;		// 정반사 계수
 	float shininess;				// 광택 계수
+	Vector2 padding1;				
 
 	Vector3 cameraPos;				// 카메라 위치
-	float padding;
+	float padding2;
 };
 
 class Camera;

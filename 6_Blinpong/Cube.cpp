@@ -5,6 +5,10 @@
 #include "Material.h"
 #include <Directxtk/DDSTextureLoader.h>
 
+#include <string>
+#include <sstream>
+#include <Windows.h>
+
 using namespace DirectX;
 
 void Cube::InitRenderPipeLine()
@@ -125,7 +129,7 @@ void Cube::InitRenderPipeLine()
 
 	// Object Init
 	InitTransform();
-	scale = { 5,5,5 };
+	scale = { 100,100, };
 }
 
 void Cube::Update()
@@ -165,6 +169,16 @@ void Cube::Render(Matrix& view, Matrix& projection, Camera& camera, DirectionalL
 	constBuffer.shininess = material.shininess;
 	constBuffer.cameraPos = camera.position;
 
+	/*
+		std::ostringstream oss;
+		oss << "Camera Position: "
+		<< camera.position.x << ", "
+		<< camera.position.y << ", "
+		<< camera.position.z << "\n";
+
+		OutputDebugStringA(oss.str().c_str());
+	*/
+	
 	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 }

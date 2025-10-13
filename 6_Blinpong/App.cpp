@@ -81,7 +81,9 @@ bool App::InitRenderPipeLine()
 
 	// Matrix Init
 	// view init
-	camera.position.z = -30;
+	camera.position.z = -500;
+	camera.Far = 1000.0f;
+	camera.moveSpeed = 200.f;
 	camera.GetViewMatrix(view);
 
 	// projection init 
@@ -135,17 +137,17 @@ void App::RenderGUI()
 	ImGui::SliderFloat("z", &light.direction.z, -1.0f, 1.0f, "%.2f");
 	ImGui::InputFloat3("Color", &light.color.x);
 
-	ImGui::SliderFloat("indirectLight", &light.indirectLight, 0.0f, 1.0f, "%.2f");
-	ImGui::SliderFloat("directLight", &light.directLight, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("indirectLight", &light.indirectLight, 0.0f, 30.0f, "%.2f");
+	ImGui::SliderFloat("directLight", &light.directLight, 0.0f, 30.0f, "%.2f");
 
 	ImGui::Text("Material");
 	ImGui::SliderFloat("ambientReflection", &material.ambientReflection, 0.0f, 1.0f, "%.2f");
 	ImGui::SliderFloat("diffuseReflection", &material.diffuseReflection, 0.0f, 1.0f, "%.2f");
 	ImGui::SliderFloat("specularReflection", &material.specularReflection, 0.0f, 1.0f, "%.2f");
-	ImGui::SliderFloat("shininess", &material.shininess, 0.0f, 50.0f, "%.2f");
+	ImGui::SliderFloat("shininess", &material.shininess, 0.0f, 3000.0f, "%.2f");
 
 	ImGui::Text("Cube");
-	ImGui::SliderFloat("Scale", &cube.scale.x, 1.0f, 10.0f, "%.2f");
+	ImGui::SliderFloat("Scale", &cube.scale.x, 1.0f, 200.0f, "%.2f");
 	cube.scale.y = cube.scale.x;
 	cube.scale.z = cube.scale.x;
 

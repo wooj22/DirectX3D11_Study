@@ -15,8 +15,10 @@ cbuffer ConstantBuffer : register(b0)
     float diffuseReflection;
     float specularReflection;
     float shininess;
+    float2 padding1;
     
     float3 cameraPos;
+    float padding2;
 }
 
 struct VS_INPUT
@@ -40,7 +42,7 @@ PS_INPUT main(VS_INPUT input)
     
     // clip position
     output.pos = mul(input.pos, world);         // local -> world
-    output.worldPos = output.pos.xyz;               // (world pos 저장)
+    output.worldPos = output.pos.xyz;           // (world pos 저장)
     output.pos = mul(output.pos, view);         // world -> view
     output.pos = mul(output.pos, projection);   // view -> clip
     

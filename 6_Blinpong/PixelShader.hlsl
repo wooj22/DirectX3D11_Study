@@ -13,13 +13,15 @@ cbuffer ConstantBuffer : register(b0)
     
     float indirectLight;
     float directLight;
+    
     float ambientReflection;
     float diffuseReflection;
-    
     float specularReflection;
     float shininess;
+    float2 padding1;
     
     float3 cameraPos;
+    float padding2;
 }
 
 struct PS_INPUT
@@ -34,22 +36,25 @@ struct PS_INPUT
 float4 main(PS_INPUT input) : SV_TARGET
 {
     float3 N = normalize(input.normal);
-    float3 L = -lightDirection.xyz;
+    float3 L = normalize(-lightDirection.xyz);
     float3 V = normalize(cameraPos - input.worldPos);
     float3 H = normalize(L + V);
 
-    //float3 ambient = indirectLight * ambientReflection * lightColor.rgb;
-    
-    //float diff = max(dot(N, L), 0.0f);
-    //float3 diffuse = directLight * diffuseReflection * diff * lightColor.rgb;
-    
+    // È®»ê±¤
+    float3 ambient = indirectLight * ambientReflection * lightColor.rgb;
+
+    // ³­¹Ý»ç±¤
+    float diff = max(dot(N, L), 0.0f);
+    float3 diffuse = directLight * diffuseReflection * diff * lightColor.rgb;
+   
+    // Á¤¹Ý»ç±¤
     float spec = pow(max(dot(N, H), 0.0f), shininess);
     float3 specular = directLight * specularReflection * spec * lightColor.rgb;
 
-    float3 finalLight = specular; //(ambient + diffuse + specular);
-    float3 materialColor = txColorMap.Sample(samLinear, input.texCoord);
+    // ÃÖÁ¾ »ö»ó
+    float3 finalLight = ambient + diffuse + specular;
+    float3 textureColor = txColorMap.Sample(samLinear, input.texCoord);
     
-    float3 finalColor = finalLight * materialColor;
+    float3 finalColor = finalLight * textureColor;
     return float4(finalColor, 1.0f);
-    
 }
