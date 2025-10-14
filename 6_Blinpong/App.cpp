@@ -141,8 +141,8 @@ void App::RenderGUI()
 	ImGui::SliderFloat("directLight", &light.directLight, 0.0f, 30.0f, "%.2f");
 
 	ImGui::Text("Material");
-	ImGui::SliderFloat("ambientReflection", &material.ambientReflection, 0.0f, 1.0f, "%.2f");
-	ImGui::SliderFloat("diffuseReflection", &material.diffuseReflection, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("ambientReflection", &material.ambientHighlight, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("diffuseReflection", &material.diffuseHighlight, 0.0f, 1.0f, "%.2f");
 	ImGui::SliderFloat("specularReflection", &material.specularReflection, 0.0f, 1.0f, "%.2f");
 	ImGui::SliderFloat("shininess", &material.shininess, 0.0f, 3000.0f, "%.2f");
 

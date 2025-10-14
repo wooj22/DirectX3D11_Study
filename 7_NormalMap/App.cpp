@@ -130,20 +130,15 @@ void App::RenderGUI()
 
 	ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 	ImGui::Text("Directional Light");
-	ImGui::InputFloat3("Direction(r)", &light.direction.x);
-
-	ImGui::SliderFloat("x", &light.direction.x, -1.0f, 1.0f, "%.2f");
-	ImGui::SliderFloat("y", &light.direction.y, -1.0f, 1.0f, "%.2f");
-	ImGui::SliderFloat("z", &light.direction.z, -1.0f, 1.0f, "%.2f");
-	ImGui::InputFloat3("Color", &light.color.x);
-
-	ImGui::SliderFloat("indirectLight", &light.indirectLight, 0.0f, 30.0f, "%.2f");
-	ImGui::SliderFloat("directLight", &light.directLight, 0.0f, 30.0f, "%.2f");
-
+	ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("indirectLight", &light.indirectLight, 0.0f, 50.0f, "%.2f");
+	ImGui::SliderFloat("directLight", &light.directLight, 0.0f, 50.0f, "%.2f");
+	ImGui::ColorEdit3("Color", &light.color.x);
+	
 	ImGui::Text("Material");
-	ImGui::SliderFloat("ambientReflection", &material.ambientReflection, 0.0f, 1.0f, "%.2f");
-	ImGui::SliderFloat("diffuseReflection", &material.diffuseReflection, 0.0f, 1.0f, "%.2f");
-	ImGui::SliderFloat("specularReflection", &material.specularReflection, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("ambientHighlight", &material.ambientHighlight, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("diffuseHighlight", &material.diffuseHighlight, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("specularHighlight", &material.specularHighlight, 0.0f, 1.0f, "%.2f");
 	ImGui::SliderFloat("shininess", &material.shininess, 0.0f, 3000.0f, "%.2f");
 
 	ImGui::Text("Cube");

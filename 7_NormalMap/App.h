@@ -19,7 +19,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 
-// Nomal Map 적용 프로젝트입니다.
+// Nomal Map 적용 프로젝트입니다
 
 // 1. normalamp의 rgb값을 tangent space 기준 normal로 변환 (0~1 -> -1~1)
 // 2. tbn행렬곱을 통해 world space 기준 normal로 변환

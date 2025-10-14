@@ -11,9 +11,9 @@ cbuffer ConstantBuffer : register(b0)
     float indirectLight;
     float directLight;
     
-    float ambientReflection;
-    float diffuseReflection;
-    float specularReflection;
+    float ambientHighlight;
+    float diffuseHighlight;
+    float specularHighlight;
     float shininess;
     float2 padding1;
     

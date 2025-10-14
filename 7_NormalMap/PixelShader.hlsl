@@ -5,7 +5,7 @@ Texture2D normalMap : register(t1);
 Texture2D specualrMap : register(t2);
 SamplerState samLinear : register(s0);
 
-// ºí¸°Æþ ½¦ÀÌµù
+
 float4 main(PS_INPUT input) : SV_TARGET
 {
     // tbn matrix
@@ -20,21 +20,20 @@ float4 main(PS_INPUT input) : SV_TARGET
     float3 V = normalize(cameraPos - input.worldPos);
     float3 H = normalize(L + V);
 
-    // ambient light
-    float3 ambient = indirectLight * ambientReflection * lightColor.rgb;
+    // ambient
+    float3 ambient = indirectLight * ambientHighlight * lightColor.rgb;
 
-    // diffuse light
+    // diffuse
+    float3 diffuse_color = diffuseMap.Sample(samLinear, input.texCoord);
     float diff = max(dot(N, L), 0.0f);
-    float3 diffuse = directLight * diffuseReflection * diff * lightColor.rgb;
+    float3 diffuse = directLight * diffuseHighlight * diffuse_color * diff * lightColor.rgb;
    
-    // specular light
+    // specular
+    float3 specular_color = specualrMap.Sample(samLinear, input.texCoord);
     float spec = pow(max(dot(N, H), 0.0f), shininess);
-    float3 specular = directLight * specularReflection * spec * lightColor.rgb;
+    float3 specular = directLight * specularHighlight * specular_color * spec * lightColor.rgb;
 
-    // final color
-    float3 finalLight = ambient + diffuse + specular;
-    float3 textureColor = diffuseMap.Sample(samLinear, input.texCoord);
-    
-    float3 finalColor = finalLight * textureColor;
+    // final color (ºí¸°Æþ)
+    float3 finalColor = ambient + diffuse + specular;
     return float4(finalColor, 1.0f);
 }
