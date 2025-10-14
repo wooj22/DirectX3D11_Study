@@ -14,11 +14,18 @@ using Microsoft::WRL::ComPtr;
 struct Cube_Vertex
 {
 	Vector3 position;
+
+	// tangent space 기저벡터
+	Vector3 tangent;		
+	Vector3 bitangent;
 	Vector3 normal;
+
+	// texture coordinate
 	Vector2 texcoord;
 
-	Cube_Vertex(Vector3 position, Vector3 normal, Vector2 uv)
-		: position(position), normal(normal), texcoord(uv) { }
+	Cube_Vertex(Vector3 position, Vector3 tangent, Vector3 bitangent, Vector3 normal, Vector2 uv)
+		: position(position), tangent(tangent), bitangent(bitangent), normal(normal), texcoord(uv) {
+	}
 };
 
 // ConstantBuffer
@@ -38,7 +45,7 @@ struct alignas(16) ConstantBuffer
 	float diffuseReflection;		// 난반사 계수(텍스처에서 사용)
 	float specularReflection;		// 정반사 계수
 	float shininess;				// 광택 계수
-	Vector2 padding1;				
+	Vector2 padding1;
 
 	Vector3 cameraPos;				// 카메라 위치
 	float padding2;
@@ -64,7 +71,11 @@ public:
 	ID3D11InputLayout* inputLayout = nullptr;
 	ID3D11VertexShader* vertexShader = nullptr;
 	ID3D11PixelShader* pixelShader = nullptr;
-	ID3D11ShaderResourceView* diffuseTRV = nullptr;
+
+	// texture
+	ID3D11ShaderResourceView* diffuseTRV = nullptr;			// diffuse texture
+	ID3D11ShaderResourceView* normalTRV = nullptr;			// normal texture : tangent space 기준 normal
+	ID3D11ShaderResourceView* specualrTRV = nullptr;		// specular texture : 정반사 계수
 
 	// vertex info
 	UINT vertexBufferStride = 0;

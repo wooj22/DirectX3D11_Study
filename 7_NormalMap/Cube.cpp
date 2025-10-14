@@ -1,7 +1,13 @@
 #include "Cube.h"
 #include "../WinBase/Helper.h"
-#include "DirectionalLight.h"
+#include "../WinBase/Camera.h"
+#include "DirectionalLight.hpp"
+#include "Material.hpp"
 #include <Directxtk/DDSTextureLoader.h>
+
+#include <string>
+#include <sstream>
+#include <Windows.h>
 
 using namespace DirectX;
 
@@ -11,49 +17,50 @@ void Cube::InitRenderPipeLine()
 	// Vertex가 normal벡터 정보를 가져야하므로 정육면체의 각 면마다의 vertex 정보를 넣어주어야 한다.
 	Cube_Vertex vertices[] =
 	{
+		// position, tangent, bitangent, normal, uv
 		// Top (+Y)
-		Cube_Vertex({-1.0f,  1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}),
-		Cube_Vertex({ 1.0f,  1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}),
-		Cube_Vertex({ 1.0f,  1.0f,  1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}),
-		Cube_Vertex({-1.0f,  1.0f,  1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}),
+		Cube_Vertex({-1,  1, -1}, {1,0,0}, {0,0,-1}, {0,1,0}, {0,0}),
+		Cube_Vertex({ 1,  1, -1}, {1,0,0}, {0,0,-1}, {0,1,0}, {1,0}),
+		Cube_Vertex({ 1,  1,  1}, {1,0,0}, {0,0,-1}, {0,1,0}, {1,1}),
+		Cube_Vertex({-1,  1,  1}, {1,0,0}, {0,0,-1}, {0,1,0}, {0,1}),
 
 		// Bottom (-Y)
-		Cube_Vertex({-1.0f, -1.0f, -1.0f}, {0.0f,-1.0f, 0.0f}, {0.0f, 0.0f}),
-		Cube_Vertex({ 1.0f, -1.0f, -1.0f}, {0.0f,-1.0f, 0.0f}, {1.0f, 0.0f}),
-		Cube_Vertex({ 1.0f, -1.0f,  1.0f}, {0.0f,-1.0f, 0.0f}, {1.0f, 1.0f}),
-		Cube_Vertex({-1.0f, -1.0f,  1.0f}, {0.0f,-1.0f, 0.0f}, {0.0f, 1.0f}),
+		Cube_Vertex({-1,-1,-1}, {1,0,0}, {0,0,1}, {0,-1,0}, {0,0}),
+		Cube_Vertex({ 1,-1,-1}, {1,0,0}, {0,0,1}, {0,-1,0}, {1,0}),
+		Cube_Vertex({ 1,-1, 1}, {1,0,0}, {0,0,1}, {0,-1,0}, {1,1}),
+		Cube_Vertex({-1,-1, 1}, {1,0,0}, {0,0,1}, {0,-1,0}, {0,1}),
 
 		// Left (-X)
-		Cube_Vertex({-1.0f, -1.0f,  1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
-		Cube_Vertex({-1.0f, -1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}),
-		Cube_Vertex({-1.0f,  1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}),
-		Cube_Vertex({-1.0f,  1.0f,  1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}),
+		Cube_Vertex({-1,-1, 1}, {0,0,-1}, {0,1,0}, {-1,0,0}, {0,0}),
+		Cube_Vertex({-1,-1,-1}, {0,0,-1}, {0,1,0}, {-1,0,0}, {1,0}),
+		Cube_Vertex({-1, 1,-1}, {0,0,-1}, {0,1,0}, {-1,0,0}, {1,1}),
+		Cube_Vertex({-1, 1, 1}, {0,0,-1}, {0,1,0}, {-1,0,0}, {0,1}),
 
 		// Right (+X)
-		Cube_Vertex({ 1.0f, -1.0f,  1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
-		Cube_Vertex({ 1.0f, -1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}),
-		Cube_Vertex({ 1.0f,  1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}),
-		Cube_Vertex({ 1.0f,  1.0f,  1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}),
+		Cube_Vertex({ 1,-1, 1}, {0,0,1}, {0,1,0}, {1,0,0}, {0,0}),
+		Cube_Vertex({ 1,-1,-1}, {0,0,1}, {0,1,0}, {1,0,0}, {1,0}),
+		Cube_Vertex({ 1, 1,-1}, {0,0,1}, {0,1,0}, {1,0,0}, {1,1}),
+		Cube_Vertex({ 1, 1, 1}, {0,0,1}, {0,1,0}, {1,0,0}, {0,1}),
 
-		// Back (-Z)
-		Cube_Vertex({-1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}),
-		Cube_Vertex({ 1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}),
-		Cube_Vertex({ 1.0f,  1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}),
-		Cube_Vertex({-1.0f,  1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}),
+		// Front (-Z)
+		Cube_Vertex({-1,-1,-1}, {1,0,0}, {0,1,0}, {0,0,-1}, {0,0}),
+		Cube_Vertex({ 1,-1,-1}, {1,0,0}, {0,1,0}, {0,0,-1}, {1,0}),
+		Cube_Vertex({ 1, 1,-1}, {1,0,0}, {0,1,0}, {0,0,-1}, {1,1}),
+		Cube_Vertex({-1, 1,-1}, {1,0,0}, {0,1,0}, {0,0,-1}, {0,1}),
 
-		// Front (+Z)
-		Cube_Vertex({-1.0f, -1.0f,  1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}),
-		Cube_Vertex({ 1.0f, -1.0f,  1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}),
-		Cube_Vertex({ 1.0f,  1.0f,  1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}),
-		Cube_Vertex({-1.0f,  1.0f,  1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f})
+		// Back (+Z)
+		Cube_Vertex({-1,-1, 1}, {-1,0,0}, {0,1,0}, {0,0,1}, {0,0}),
+		Cube_Vertex({ 1,-1, 1}, {-1,0,0}, {0,1,0}, {0,0,1}, {1,0}),
+		Cube_Vertex({ 1, 1, 1}, {-1,0,0}, {0,1,0}, {0,0,1}, {1,1}),
+		Cube_Vertex({-1, 1, 1}, {-1,0,0}, {0,1,0}, {0,0,1}, {0,1}),
 	};
 
 	D3D11_BUFFER_DESC vertexBuffer_Desc = {};
-	vertexBuffer_Desc.ByteWidth = sizeof(Cube_Vertex) * ARRAYSIZE(vertices);		// buffer size
-	vertexBuffer_Desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;					// bind 용도
-	vertexBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;							// buffer 사용 용도	
+	vertexBuffer_Desc.ByteWidth = sizeof(Cube_Vertex) * ARRAYSIZE(vertices);
+	vertexBuffer_Desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
 
-	D3D11_SUBRESOURCE_DATA vertexBuffer_Data = {};						    // vertex data
+	D3D11_SUBRESOURCE_DATA vertexBuffer_Data = {};
 	vertexBuffer_Data.pSysMem = vertices;
 	vertexBufferStride = sizeof(Cube_Vertex);
 	vertexBufferOffset = 0;
@@ -69,16 +76,16 @@ void Cube::InitRenderPipeLine()
 		6,4,5,	  7,4,6,		// bottom
 		11,9,8,	  10,9,11,		// left
 		14,12,13, 15,12,14,		// right
-		19,17,16, 18,17,19,     // back
-		22,20,21, 23,20,22		// front
+		19,17,16, 18,17,19,     // front
+		22,20,21, 23,20,22		// back
 	};
 
 	D3D11_BUFFER_DESC indexBuffer_Desc = {};
-	indexBuffer_Desc.ByteWidth = sizeof(WORD) * ARRAYSIZE(indices);		// buffer size
-	indexBuffer_Desc.BindFlags = D3D11_BIND_INDEX_BUFFER;			    // bind 용도		
-	indexBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;						// buffer 사용 용도
+	indexBuffer_Desc.ByteWidth = sizeof(WORD) * ARRAYSIZE(indices);
+	indexBuffer_Desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
 
-	D3D11_SUBRESOURCE_DATA indexBuffer_Data = {};						// index data
+	D3D11_SUBRESOURCE_DATA indexBuffer_Data = {};
 	indexBuffer_Data.pSysMem = indices;
 	indexCount = ARRAYSIZE(indices);
 
@@ -89,8 +96,10 @@ void Cube::InitRenderPipeLine()
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{   // SemanticName , SemanticIndex , Format , InputSlot , AlignedByteOffset , InputSlotClass , InstanceDataStepRate	
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 12,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 24,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 12,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 24,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 36,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 48,  D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
 	ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
@@ -110,10 +119,12 @@ void Cube::InitRenderPipeLine()
 		pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader));
 	SAFE_RELEASE(pixelShaderBuffer);
 
-	// PS - texture load
-	HR_T(CreateDDSTextureFromFile(D3DBase::device.Get(), L"../Resource/seafloor.dds", nullptr, &diffuseTRV));
+	// Texture load
+	HR_T(CreateTextureFromFile(D3DBase::device.Get(), L"../Resource/Bricks059_1K-JPG_Color.jpg", &diffuseTRV));
+	HR_T(CreateTextureFromFile(D3DBase::device.Get(), L"../Resource/Bricks059_1K-JPG_NormalDX.jpg", &normalTRV));
+	HR_T(CreateTextureFromFile(D3DBase::device.Get(), L"../Resource/Bricks059_Specular.png", &specualrTRV));
 
-	// constant buffer create (vs, ps에 전달할 사용할 행렬 data)
+	// Constant Buffer create
 	D3D11_BUFFER_DESC constBuffer_Desc = {};
 	constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
 	constBuffer_Desc.ByteWidth = sizeof(ConstantBuffer);
@@ -123,7 +134,7 @@ void Cube::InitRenderPipeLine()
 
 	// Object Init
 	InitTransform();
-	rotation = { 0, 0, 0 };
+	scale = { 100,100, };
 }
 
 void Cube::Update()
@@ -136,7 +147,7 @@ void Cube::Update()
 	world = s1 * r1 * t1;
 }
 
-void Cube::Render(Matrix& view, Matrix&projection, DirectionalLight& light)
+void Cube::Render(Matrix& view, Matrix& projection, Camera& camera, DirectionalLight& light, Material& material)
 {
 	// render pipeline stage setting
 	D3DBase::deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
@@ -147,6 +158,8 @@ void Cube::Render(Matrix& view, Matrix&projection, DirectionalLight& light)
 	D3DBase::deviceContext->PSSetShader(pixelShader, NULL, 0);
 	D3DBase::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
 	D3DBase::deviceContext->PSSetShaderResources(0, 1, &diffuseTRV);
+	D3DBase::deviceContext->PSSetShaderResources(1, 1, &normalTRV);
+	D3DBase::deviceContext->PSSetShaderResources(2, 1, &specualrTRV);
 
 	// render
 	ConstantBuffer constBuffer;
@@ -155,6 +168,24 @@ void Cube::Render(Matrix& view, Matrix&projection, DirectionalLight& light)
 	constBuffer.projection = XMMatrixTranspose(projection);
 	constBuffer.lightDirection = light.direction;
 	constBuffer.lightColor = light.color;
+	constBuffer.indirectLight = light.indirectLight;
+	constBuffer.directLight = light.directLight;
+	constBuffer.ambientReflection = material.ambientReflection;
+	constBuffer.diffuseReflection = material.diffuseReflection;
+	constBuffer.specularReflection = material.specularReflection;
+	constBuffer.shininess = material.shininess;
+	constBuffer.cameraPos = camera.position;
+
+	/*
+		std::ostringstream oss;
+		oss << "Camera Position: "
+		<< camera.position.x << ", "
+		<< camera.position.y << ", "
+		<< camera.position.z << "\n";
+
+		OutputDebugStringA(oss.str().c_str());
+	*/
+
 	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &constBuffer, 0, 0);
 	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
 }

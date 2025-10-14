@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "5_Skybox", "5_Skybox\5_Skyb
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "6_Blinpong", "6_Blinpong\6_Blinpong.vcxproj", "{B2779905-9180-4DE8-A34A-574798CADC88}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "7_NormalMap", "7_NormalMap\NormalMap.vcxproj", "{9E7CC468-7172-496C-81E5-3E0DE33C3A4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -101,6 +103,14 @@ Global
 		{B2779905-9180-4DE8-A34A-574798CADC88}.Release|x64.Build.0 = Release|x64
 		{B2779905-9180-4DE8-A34A-574798CADC88}.Release|x86.ActiveCfg = Release|Win32
 		{B2779905-9180-4DE8-A34A-574798CADC88}.Release|x86.Build.0 = Release|Win32
+		{9E7CC468-7172-496C-81E5-3E0DE33C3A4C}.Debug|x64.ActiveCfg = Debug|x64
+		{9E7CC468-7172-496C-81E5-3E0DE33C3A4C}.Debug|x64.Build.0 = Debug|x64
+		{9E7CC468-7172-496C-81E5-3E0DE33C3A4C}.Debug|x86.ActiveCfg = Debug|Win32
+		{9E7CC468-7172-496C-81E5-3E0DE33C3A4C}.Debug|x86.Build.0 = Debug|Win32
+		{9E7CC468-7172-496C-81E5-3E0DE33C3A4C}.Release|x64.ActiveCfg = Release|x64
+		{9E7CC468-7172-496C-81E5-3E0DE33C3A4C}.Release|x64.Build.0 = Release|x64
+		{9E7CC468-7172-496C-81E5-3E0DE33C3A4C}.Release|x86.ActiveCfg = Release|Win32
+		{9E7CC468-7172-496C-81E5-3E0DE33C3A4C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

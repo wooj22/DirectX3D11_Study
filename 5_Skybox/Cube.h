@@ -53,7 +53,7 @@ public:
 	ID3D11InputLayout* inputLayout = nullptr;
 	ID3D11VertexShader* vertexShader = nullptr;
 	ID3D11PixelShader* pixelShader = nullptr;
-	ID3D11ShaderResourceView* textureRV = nullptr;
+	ID3D11ShaderResourceView* diffuseTRV = nullptr;
 
 	// vertex info
 	UINT vertexBufferStride = 0;

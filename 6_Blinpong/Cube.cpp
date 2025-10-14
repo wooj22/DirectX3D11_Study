@@ -55,11 +55,11 @@ void Cube::InitRenderPipeLine()
 	};
 
 	D3D11_BUFFER_DESC vertexBuffer_Desc = {};
-	vertexBuffer_Desc.ByteWidth = sizeof(Cube_Vertex) * ARRAYSIZE(vertices);		// buffer size
-	vertexBuffer_Desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;					// bind 용도
-	vertexBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;							// buffer 사용 용도	
+	vertexBuffer_Desc.ByteWidth = sizeof(Cube_Vertex) * ARRAYSIZE(vertices);
+	vertexBuffer_Desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;					
+	vertexBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;							
 
-	D3D11_SUBRESOURCE_DATA vertexBuffer_Data = {};						    // vertex data
+	D3D11_SUBRESOURCE_DATA vertexBuffer_Data = {};						    
 	vertexBuffer_Data.pSysMem = vertices;
 	vertexBufferStride = sizeof(Cube_Vertex);
 	vertexBufferOffset = 0;
@@ -80,11 +80,11 @@ void Cube::InitRenderPipeLine()
 	};
 
 	D3D11_BUFFER_DESC indexBuffer_Desc = {};
-	indexBuffer_Desc.ByteWidth = sizeof(WORD) * ARRAYSIZE(indices);		// buffer size
-	indexBuffer_Desc.BindFlags = D3D11_BIND_INDEX_BUFFER;			    // bind 용도		
-	indexBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;						// buffer 사용 용도
+	indexBuffer_Desc.ByteWidth = sizeof(WORD) * ARRAYSIZE(indices);		
+	indexBuffer_Desc.BindFlags = D3D11_BIND_INDEX_BUFFER;			    
+	indexBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;						
 
-	D3D11_SUBRESOURCE_DATA indexBuffer_Data = {};						// index data
+	D3D11_SUBRESOURCE_DATA indexBuffer_Data = {};						
 	indexBuffer_Data.pSysMem = indices;
 	indexCount = ARRAYSIZE(indices);
 
@@ -117,9 +117,9 @@ void Cube::InitRenderPipeLine()
 	SAFE_RELEASE(pixelShaderBuffer);
 
 	// PS - texture load
-	HR_T(CreateDDSTextureFromFile(D3DBase::device.Get(), L"../Resource/seafloor.dds", nullptr, &textureRV));
+	HR_T(CreateDDSTextureFromFile(D3DBase::device.Get(), L"../Resource/seafloor.dds", nullptr, &diffuseTRV));
 
-	// constant buffer create (vs, ps에 전달할 사용할 행렬 data)
+	// Constant Buffer create
 	D3D11_BUFFER_DESC constBuffer_Desc = {};
 	constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
 	constBuffer_Desc.ByteWidth = sizeof(ConstantBuffer);
@@ -152,7 +152,7 @@ void Cube::Render(Matrix& view, Matrix& projection, Camera& camera, DirectionalL
 	D3DBase::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
 	D3DBase::deviceContext->PSSetShader(pixelShader, NULL, 0);
 	D3DBase::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
-	D3DBase::deviceContext->PSSetShaderResources(0, 1, &textureRV);
+	D3DBase::deviceContext->PSSetShaderResources(0, 1, &diffuseTRV);
 
 	// render
 	ConstantBuffer constBuffer;
