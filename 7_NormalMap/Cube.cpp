@@ -65,7 +65,7 @@ void Cube::InitRenderPipeLine()
 	vertexBufferStride = sizeof(Cube_Vertex);
 	vertexBufferOffset = 0;
 
-	HR_T(D3DBase::device->CreateBuffer(&vertexBuffer_Desc, &vertexBuffer_Data, &vertexBuffer));
+	HR_T(D3D::device->CreateBuffer(&vertexBuffer_Desc, &vertexBuffer_Data, &vertexBuffer));
 
 
 	// IA - index buffer create
@@ -89,7 +89,7 @@ void Cube::InitRenderPipeLine()
 	indexBuffer_Data.pSysMem = indices;
 	indexCount = ARRAYSIZE(indices);
 
-	HR_T(D3DBase::device->CreateBuffer(&indexBuffer_Desc, &indexBuffer_Data, &indexBuffer));
+	HR_T(D3D::device->CreateBuffer(&indexBuffer_Desc, &indexBuffer_Data, &indexBuffer));
 
 
 	// IA - input layout create
@@ -104,25 +104,25 @@ void Cube::InitRenderPipeLine()
 
 	ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
 	HR_T(CompileShaderFromFile(L"VertexShader.hlsl", "main", "vs_4_0", &vertexShaderBuffer));
-	HR_T(D3DBase::device->CreateInputLayout(layout, ARRAYSIZE(layout),
+	HR_T(D3D::device->CreateInputLayout(layout, ARRAYSIZE(layout),
 		vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout));
 
 	// VS - vertex shader create
-	HR_T(D3DBase::device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
+	HR_T(D3D::device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
 		vertexShaderBuffer->GetBufferSize(), NULL, &vertexShader));
 	SAFE_RELEASE(vertexShaderBuffer);
 
 	// PS - pixel shader create
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	HR_T(CompileShaderFromFile(L"PixelShader.hlsl", "main", "ps_4_0", &pixelShaderBuffer));
-	HR_T(D3DBase::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+	HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
 		pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader));
 	SAFE_RELEASE(pixelShaderBuffer);
 
 	// Texture load
-	HR_T(CreateTextureFromFile(D3DBase::device.Get(), L"../Resource/Bricks059_1K-JPG_Color.jpg", &diffuseTRV));
-	HR_T(CreateTextureFromFile(D3DBase::device.Get(), L"../Resource/Bricks059_1K-JPG_NormalDX.jpg", &normalTRV));
-	HR_T(CreateTextureFromFile(D3DBase::device.Get(), L"../Resource/Bricks059_Specular.png", &specualrTRV));
+	HR_T(CreateTextureFromFile(D3D::device.Get(), L"../Resource/Bricks059_1K-JPG_Color.jpg", &diffuseTRV));
+	HR_T(CreateTextureFromFile(D3D::device.Get(), L"../Resource/Bricks059_1K-JPG_NormalDX.jpg", &normalTRV));
+	HR_T(CreateTextureFromFile(D3D::device.Get(), L"../Resource/Bricks059_Specular.png", &specualrTRV));
 
 	// Constant Buffer create
 	D3D11_BUFFER_DESC constBuffer_Desc = {};
@@ -130,7 +130,7 @@ void Cube::InitRenderPipeLine()
 	constBuffer_Desc.ByteWidth = sizeof(ConstantBuffer);
 	constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	constBuffer_Desc.CPUAccessFlags = 0;
-	HR_T(D3DBase::device->CreateBuffer(&constBuffer_Desc, nullptr, &constantBuffer));
+	HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &constantBuffer));
 
 	// Object Init
 	InitTransform();
@@ -150,16 +150,16 @@ void Cube::Update()
 void Cube::Render(Matrix& view, Matrix& projection, Camera& camera, DirectionalLight& light, Material& material)
 {
 	// render pipeline stage setting
-	D3DBase::deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
-	D3DBase::deviceContext->IASetInputLayout(inputLayout);
-	D3DBase::deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-	D3DBase::deviceContext->VSSetShader(vertexShader, NULL, 0);
-	D3DBase::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
-	D3DBase::deviceContext->PSSetShader(pixelShader, NULL, 0);
-	D3DBase::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
-	D3DBase::deviceContext->PSSetShaderResources(0, 1, &diffuseTRV);
-	D3DBase::deviceContext->PSSetShaderResources(1, 1, &normalTRV);
-	D3DBase::deviceContext->PSSetShaderResources(2, 1, &specualrTRV);
+	D3D::deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
+	D3D::deviceContext->IASetInputLayout(inputLayout);
+	D3D::deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+	D3D::deviceContext->VSSetShader(vertexShader, NULL, 0);
+	D3D::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
+	D3D::deviceContext->PSSetShader(pixelShader, NULL, 0);
+	D3D::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
+	D3D::deviceContext->PSSetShaderResources(0, 1, &diffuseTRV);
+	D3D::deviceContext->PSSetShaderResources(1, 1, &normalTRV);
+	D3D::deviceContext->PSSetShaderResources(2, 1, &specualrTRV);
 
 	// render
 	ConstantBuffer constBuffer;
@@ -186,8 +186,8 @@ void Cube::Render(Matrix& view, Matrix& projection, Camera& camera, DirectionalL
 		OutputDebugStringA(oss.str().c_str());
 	*/
 
-	D3DBase::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &constBuffer, 0, 0);
-	D3DBase::deviceContext->DrawIndexed(indexCount, 0, 0);
+	D3D::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &constBuffer, 0, 0);
+	D3D::deviceContext->DrawIndexed(indexCount, 0, 0);
 }
 
 void Cube::UninitRenderPipeLine()

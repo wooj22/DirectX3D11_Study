@@ -16,7 +16,7 @@ using namespace DirectX::SimpleMath;
 // Main process
 bool App::OnInit()
 {
-	if (!D3DBase::Init(hWnd, screenWidth, screenHeight)) return false;
+	if (!D3D::Init(hWnd, screenWidth, screenHeight)) return false;
 	if (!InitRenderPipeLine()) return false;
 	if (!InitGUI()) return false;
 	return true;
@@ -26,7 +26,7 @@ void App::OnUninit()
 {
 	UninitGUI();
 	UninitRenderPipeLine();
-	D3DBase::UnInit();
+	D3D::UnInit();
 	CheckDXGIDebug();
 }
 
@@ -44,15 +44,15 @@ void App::OnUpdate()
 void App::OnRender()
 {
 	// RTV clear
-	D3DBase::deviceContext->OMSetRenderTargets(1, D3DBase::renderTargetView.GetAddressOf(), D3DBase::depthStencilView.Get());
-	D3DBase::deviceContext->ClearRenderTargetView(D3DBase::renderTargetView.Get(), clearColor);
+	D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
+	D3D::deviceContext->ClearRenderTargetView(D3D::renderTargetView.Get(), clearColor);
 
 	// death buffer clear
-	D3DBase::deviceContext->ClearDepthStencilView(D3DBase::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	// render pipeline stage setting
-	D3DBase::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	D3DBase::deviceContext->PSSetSamplers(0, 1, &samplerState);
+	D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D::deviceContext->PSSetSamplers(0, 1, &samplerState);
 
 	// render
 	cube.Render(view, projection, camera, light, material);
@@ -61,7 +61,7 @@ void App::OnRender()
 	RenderGUI();
 
 	// present
-	D3DBase::swapChain->Present(1, 0);
+	D3D::swapChain->Present(1, 0);
 }
 
 bool App::InitRenderPipeLine()
@@ -77,7 +77,7 @@ bool App::InitRenderPipeLine()
 	sample_Desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	sample_Desc.MinLOD = 0;
 	sample_Desc.MaxLOD = D3D11_FLOAT32_MAX;
-	HR_T(D3DBase::device->CreateSamplerState(&sample_Desc, &samplerState));
+	HR_T(D3D::device->CreateSamplerState(&sample_Desc, &samplerState));
 
 	// Matrix Init
 	// view init
@@ -104,7 +104,7 @@ bool App::InitGUI()
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(hWnd);
-	ImGui_ImplDX11_Init(D3DBase::device.Get(), D3DBase::deviceContext.Get());
+	ImGui_ImplDX11_Init(D3D::device.Get(), D3D::deviceContext.Get());
 
 	return true;
 }

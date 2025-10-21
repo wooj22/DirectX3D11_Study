@@ -3,7 +3,7 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include <directxtk/simplemath.h>
-#include "../D3DBase/D3DBase.h"
+#include "../WinBase/D3D.h"
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
 using namespace DirectX;
