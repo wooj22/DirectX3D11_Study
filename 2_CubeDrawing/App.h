@@ -26,8 +26,8 @@ private:
 	ID3D11Buffer*			indexBuffer = nullptr;       // 정점 index data
 	ID3D11Buffer*	        constantBuffer = nullptr;    // world, view, projection matrix data
 	ID3D11InputLayout*		inputLayout = nullptr;
-	ID3D11VertexShader*		vertexShader = nullptr;
-	ID3D11PixelShader*		pixelShader = nullptr;
+	ID3D11VertexShader*		vs_basic = nullptr;
+	ID3D11PixelShader*		ps_basic = nullptr;
 
 	// vertex info
 	UINT vertexBufferStride = 0;				// 버텍스 하나의 크기

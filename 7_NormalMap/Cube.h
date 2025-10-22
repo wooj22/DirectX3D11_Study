@@ -41,9 +41,9 @@ struct alignas(16) ConstantBuffer
 	float indirectLight;			// 간접광
 	float directLight;				// 직접광
 
-	float ambientReflection;		// 환경광 반사 계수
-	float diffuseReflection;		// 난반사 계수(텍스처에서 사용)
-	float specularReflection;		// 정반사 계수
+	float ambientHighlight;		// 환경광 반사 계수
+	float diffuseHighlight;		// 난반사 계수(텍스처에서 사용)
+	float specularHighlight;		// 정반사 계수
 	float shininess;				// 광택 계수
 	Vector2 padding1;
 

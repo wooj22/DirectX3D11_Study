@@ -18,7 +18,11 @@ cbuffer ConstantBuffer : register(b0)
     float2 padding1;
     
     float3 cameraPos;
-    float padding2;
+    
+    bool useDiffuse;
+    bool useNormal;
+    bool useSpecular;
+    bool useEmissive;
 }
 
 struct VS_INPUT
@@ -35,7 +39,6 @@ struct PS_INPUT
     float4 pos : SV_POSITION;
     float3 worldPos : WORLD_POSITION;
     float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-    float3 bitangent : BITANGENT;
+    float3x3 TBN : TBN;
     float2 texCoord : TEXCOORD;
 };

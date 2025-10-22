@@ -98,29 +98,29 @@ void ModelLoder::ProcessMaterial(aiMaterial* material, const aiScene* scene, Sta
     // diffuse
     if (material->GetTexture(aiTextureType_DIFFUSE, 0, &filepath) == AI_SUCCESS)
     {
-        wstring filename = fs::path(filepath.C_Str()).filename().wstring();
-        mat.diffuse_filename = filename;
+        mat.diffuse_filename = fs::path(filepath.C_Str()).filename().wstring();
+        mat.textureFlags |= TEX_DIFFUSE;
     }
 
     // normal
     if (material->GetTexture(aiTextureType_NORMALS, 0, &filepath) == AI_SUCCESS)
     {
-        wstring filename = fs::path(filepath.C_Str()).filename().wstring();
-        mat.normal_filename = filename;
+        mat.normal_filename = fs::path(filepath.C_Str()).filename().wstring();
+        mat.textureFlags |= TEX_NORMAL;
     }
 
-    // specualar
+    // specular
     if (material->GetTexture(aiTextureType_SPECULAR, 0, &filepath) == AI_SUCCESS)
     {
-        wstring filename = fs::path(filepath.C_Str()).filename().wstring();
-        mat.specular_filename = filename;
+        mat.specular_filename = fs::path(filepath.C_Str()).filename().wstring();
+        mat.textureFlags |= TEX_SPECULAR;
     }
 
-    // emissve
+    // emissive
     if (material->GetTexture(aiTextureType_EMISSIVE, 0, &filepath) == AI_SUCCESS)
     {
-        wstring filename = fs::path(filepath.C_Str()).filename().wstring();
-        mat.emissive_filename = filename;
+        mat.emissive_filename = fs::path(filepath.C_Str()).filename().wstring();
+        mat.textureFlags |= TEX_EMISSIVE;
     }
 
     // texture create

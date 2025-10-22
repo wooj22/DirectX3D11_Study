@@ -29,19 +29,27 @@ private:
 	// rendering pipeline
 	ID3D11Buffer* constantBuffer = nullptr;
 	ID3D11InputLayout* inputLayout = nullptr;
-	ID3D11VertexShader* vertexShader = nullptr;
-	ID3D11PixelShader* pixelShader = nullptr;
+	ID3D11VertexShader* vs_basic = nullptr;
+	ID3D11PixelShader* ps_basic = nullptr;
 	ID3D11SamplerState* samplerState = nullptr;
 
 	// matrix
 	Matrix view;
 	Matrix projection;
 
-	// objects
-	StaticMesh* character = nullptr;
+	// models
+	StaticMesh* character = nullptr;		// Diffuse, Normal, Emisive, Specular
+	StaticMesh* zelda = nullptr;			// Diffuse, Opacity
+	StaticMesh* tree = nullptr;	
+
+	// light
 	DirectionalLight light;
 
 	// else
+	float ambientHighlight = 0.3;
+	float diffuseHighlight = 0.5;
+	float specularHighlight = 1;
+	float shininess = 300;
 	float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
 
 public:

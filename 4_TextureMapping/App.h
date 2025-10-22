@@ -83,8 +83,8 @@ private:
 	ID3D11Buffer* indexBuffer = nullptr;
 	ID3D11Buffer* constantBuffer = nullptr;
 	ID3D11InputLayout* inputLayout = nullptr;
-	ID3D11VertexShader* vertexShader = nullptr;
-	ID3D11PixelShader* pixelShader = nullptr;
+	ID3D11VertexShader* vs_basic = nullptr;
+	ID3D11PixelShader* ps_basic = nullptr;
 	ID3D11ShaderResourceView* textureRV = nullptr;		// 텍스처를 담는 객체
 	ID3D11SamplerState* samplerState = nullptr;			// 샘플러 State를 지정하는 객체
 

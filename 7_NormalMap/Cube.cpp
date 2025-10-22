@@ -170,9 +170,9 @@ void Cube::Render(Matrix& view, Matrix& projection, Camera& camera, DirectionalL
 	constBuffer.lightColor = light.color;
 	constBuffer.indirectLight = light.indirectLight;
 	constBuffer.directLight = light.directLight;
-	constBuffer.ambientReflection = material.ambientHighlight;
-	constBuffer.diffuseReflection = material.diffuseHighlight;
-	constBuffer.specularReflection = material.specularHighlight;
+	constBuffer.ambientHighlight = material.ambientHighlight;
+	constBuffer.diffuseHighlight = material.diffuseHighlight;
+	constBuffer.specularHighlight = material.specularHighlight;
 	constBuffer.shininess = material.shininess;
 	constBuffer.cameraPos = camera.position;
 

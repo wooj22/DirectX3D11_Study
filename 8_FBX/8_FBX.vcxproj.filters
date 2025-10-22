@@ -78,13 +78,7 @@
     <FxCompile Include="PS_Basic.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Simple.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
     <FxCompile Include="VS_Basic.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Simple.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

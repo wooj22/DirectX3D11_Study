@@ -24,11 +24,6 @@ StaticMesh::StaticMesh(Vector3 p, Vector3 r, Vector3 s)
 	world = sm * rm * tm;
 }
 
-StaticMesh::~StaticMesh()
-{
-	
-}
-
 void StaticMesh::InitTransform()
 {
 	position = Vector3::Zero;
@@ -42,40 +37,70 @@ void StaticMesh::SetTransform(Vector3 p, Vector3 r, Vector3 s)
 	position = p;
 	rotation = r;
 	scale = s;
+	MakeWorld();
+}
 
-	Matrix tm = XMMatrixTranslationFromVector(p);
-	XMVECTOR q = XMQuaternionRotationRollPitchYaw(r.x, r.y, r.z);
+void StaticMesh::SetPosition(Vector3 p)
+{
+	position = p;
+	MakeWorld();
+}
+
+void StaticMesh::SetRotation(Vector3 r) 
+{
+	rotation = r;
+	MakeWorld();
+}
+
+void StaticMesh::SetScale(Vector3 s)
+{
+	scale = s;
+	MakeWorld();
+}
+
+void StaticMesh::MakeWorld() 
+{
+	Matrix tm = XMMatrixTranslationFromVector(position);
+	XMVECTOR q = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	Matrix rm = XMMatrixRotationQuaternion(q);
-	Matrix sm = XMMatrixScalingFromVector(s);
+	Matrix sm = XMMatrixScalingFromVector(scale);
 	world = sm * rm * tm;
 }
 
 void StaticMesh::Update()
 {
-	// world update
-	Matrix t1 = XMMatrixTranslationFromVector(position);
-	XMVECTOR q = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
-	Matrix r1 = XMMatrixRotationQuaternion(q);
-	Matrix s1 = XMMatrixScalingFromVector(scale);
-	world = s1 * r1 * t1;
+	MakeWorld();
 }
 
 void StaticMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
 {
-	// vertex, index
-	D3D::deviceContext->IASetVertexBuffers(0, 1, &subMeshes[0].vertexBuffer, 
-		&subMeshes[0].vertexBufferStride, &subMeshes[0].vertexBufferOffset);
-	D3D::deviceContext->IASetIndexBuffer(subMeshes[0].indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-
-	// constant buffer
+	// world matrix
 	cb.world = world;
-	D3D::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
 
-	// srv
-	D3D::deviceContext->PSSetShaderResources(0, 1, &materials[0].diffuseSRV);
-	D3D::deviceContext->PSSetShaderResources(1, 1, &materials[0].normalSRV);
-	D3D::deviceContext->PSSetShaderResources(2, 1, &materials[0].specualrSRV);
+	// sub mesh render
+	for (int i = 0; i < subMeshes.size(); ++i)
+	{
+		StaticSubMesh& sub = subMeshes[i];
+		Material& mat = materials[i];
 
-	// draw
-	D3D::deviceContext->DrawIndexed(subMeshes[0].indexCount, 0, 0);
+		// vertex buffer, indexbuffer
+		D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);	
+		D3D::deviceContext->IASetIndexBuffer(sub.indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+
+		// texture
+		D3D::deviceContext->PSSetShaderResources(0, 1, &mat.diffuseSRV);
+		D3D::deviceContext->PSSetShaderResources(1, 1, &mat.normalSRV);
+		D3D::deviceContext->PSSetShaderResources(2, 1, &mat.specualrSRV);
+		D3D::deviceContext->PSSetShaderResources(3, 1, &mat.emissiveSRV);
+		cb.useDiffuse = (materials[i].textureFlags & TEX_DIFFUSE) != 0;
+		cb.useNormal = (materials[i].textureFlags & TEX_NORMAL) != 0;
+		cb.useSpecular = (materials[i].textureFlags & TEX_SPECULAR) != 0;
+		cb.useEmissive = (materials[i].textureFlags & TEX_EMISSIVE) != 0;
+
+		// constant buffer
+		D3D::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
+
+		// draw call
+		D3D::deviceContext->DrawIndexed(sub.indexCount, 0, 0);
+	}
 }

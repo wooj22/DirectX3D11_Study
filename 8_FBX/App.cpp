@@ -32,7 +32,10 @@ void App::OnUninit()
 
 void App::OnUpdate()
 {
-
+	// world udpate
+	character->Update();
+	zelda->Update();
+	tree->Update();
 
 	// view update
 	camera.GetViewMatrix(view);
@@ -50,8 +53,8 @@ void App::OnRender()
 	// render pipeline stage setting
 	D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	D3D::deviceContext->IASetInputLayout(inputLayout);
-	D3D::deviceContext->VSSetShader(vertexShader, NULL, 0);
-	D3D::deviceContext->PSSetShader(pixelShader, NULL, 0);
+	D3D::deviceContext->VSSetShader(vs_basic, NULL, 0);
+	D3D::deviceContext->PSSetShader(ps_basic, NULL, 0);
 	D3D::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
 	D3D::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
 	D3D::deviceContext->PSSetSamplers(0, 1, &samplerState);
@@ -59,20 +62,20 @@ void App::OnRender()
 	ConstantBuffer cb;
 	cb.view = XMMatrixTranspose(view);
 	cb.projection = XMMatrixTranspose(projection);
-
 	cb.lightDirection = light.direction;
 	cb.lightColor = light.color;
 	cb.indirectLight = light.indirectLight;
 	cb.directLight = light.directLight;
-
-	cb.ambientReflection = 0.3;
-	cb.diffuseReflection = 0.5;
-	cb.specularReflection = 1;
-	cb.shininess = 200;
+	cb.ambientHighlight = ambientHighlight;
+	cb.diffuseHighlight = diffuseHighlight;
+	cb.specularHighlight = specularHighlight;
+	cb.shininess = shininess;
 	cb.cameraPos = camera.position;
 
-	// render (vertex, index, srv set)
-	character->Render(constantBuffer, cb);
+	// render
+	//character->Render(constantBuffer, cb);
+	zelda->Render(constantBuffer, cb);
+	//tree->Render(constantBuffer, cb);
 
 	// GUI
 	RenderGUI();
@@ -85,6 +88,11 @@ bool App::InitRenderPipeLine()
 {
 	// model init
 	character = ModelLoder::LoadStaticMesh("../Resource/Character.fbx");
+	zelda = ModelLoder::LoadStaticMesh("../Resource/zeldaPosed001.fbx");
+	tree = ModelLoder::LoadStaticMesh("../Resource/Tree.fbx");
+
+	//zelda->SetPosition({5,0,0});
+	//tree->SetPosition({ -5,0,0 });
 
 	// IA - input layout create
 	D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -103,14 +111,14 @@ bool App::InitRenderPipeLine()
 
 	// VS - vertex shader create
 	HR_T(D3D::device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-		vertexShaderBuffer->GetBufferSize(), NULL, &vertexShader));
+		vertexShaderBuffer->GetBufferSize(), NULL, &vs_basic));
 	SAFE_RELEASE(vertexShaderBuffer);
 
 	// PS - pixel shader create
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	HR_T(CompileShaderFromFile(L"PS_Basic.hlsl", "main", "ps_4_0", &pixelShaderBuffer));
 	HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-		pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader));
+		pixelShaderBuffer->GetBufferSize(), NULL, &ps_basic));
 	SAFE_RELEASE(pixelShaderBuffer);
 
 	// PS - smapler state create
@@ -181,22 +189,21 @@ void App::RenderGUI()
 	ImGui::NewFrame();
 
 	ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
-	ImGui::Text("Directional Light");
+	ImGui::Text("Light");
 	ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
 	ImGui::SliderFloat("indirectLight", &light.indirectLight, 0.0f, 50.0f, "%.2f");
 	ImGui::SliderFloat("directLight", &light.directLight, 0.0f, 50.0f, "%.2f");
 	ImGui::ColorEdit3("Color", &light.color.x);
 
-	/*ImGui::Text("Material");
-	ImGui::SliderFloat("ambientHighlight", &material.ambientHighlight, 0.0f, 1.0f, "%.2f");
-	ImGui::SliderFloat("diffuseHighlight", &material.diffuseHighlight, 0.0f, 1.0f, "%.2f");
-	ImGui::SliderFloat("specularHighlight", &material.specularHighlight, 0.0f, 1.0f, "%.2f");
-	ImGui::SliderFloat("shininess", &material.shininess, 0.0f, 3000.0f, "%.2f");
+	ImGui::SliderFloat("ambientHighlight", &ambientHighlight, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("diffuseHighlight", &diffuseHighlight, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("specularHighlight", &specularHighlight, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("shininess", &shininess, 0.0f, 3000.0f, "%.2f");
 
-	ImGui::Text("Cube");
-	ImGui::SliderFloat("Scale", &cube.scale.x, 1.0f, 200.0f, "%.2f");
-	cube.scale.y = cube.scale.x;
-	cube.scale.z = cube.scale.x;*/
+	ImGui::Text("Models");
+	ImGui::SliderFloat("Scale", &zelda->scale.x, 1.0f, 200.0f, "%.2f");
+	zelda->scale.y = zelda->scale.x;
+	zelda->scale.z = zelda->scale.x;
 
 	/*ImGui::SliderAngle("Pitch", &cube.rotation.x, 0.0f, 360.0f);
 	ImGui::SliderAngle("Yaw", &cube.rotation.y, 0.0f, 360.0f);

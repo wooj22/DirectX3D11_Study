@@ -23,14 +23,18 @@ struct alignas(16) ConstantBuffer
 	float indirectLight;
 	float directLight;
 
-	float ambientReflection;
-	float diffuseReflection;
-	float specularReflection;
+	float ambientHighlight;
+	float diffuseHighlight;
+	float specularHighlight;
 	float shininess;
 	Vector2 padding1;
 
 	Vector3 cameraPos;
-	float padding2;
+	
+	UINT useDiffuse;
+	UINT useNormal;
+	UINT useSpecular;
+	UINT useEmissive;
 };
 
 /*
@@ -42,7 +46,6 @@ class StaticMesh
 {
 public:
 	// sub mesh, material
-	int subMeshNum;
 	vector<StaticSubMesh> subMeshes;
 	vector<Material> materials;
 
@@ -55,9 +58,12 @@ public:
 public:
 	StaticMesh();
 	StaticMesh(Vector3 p, Vector3 r, Vector3 s);
-	~StaticMesh();
 	void InitTransform();
 	void SetTransform(Vector3 p, Vector3 r, Vector3 s);
+	void SetPosition(Vector3 p);
+	void SetRotation(Vector3 r);
+	void SetScale(Vector3 s);
+	void MakeWorld();
 
 	void Update();
 	void Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb);
