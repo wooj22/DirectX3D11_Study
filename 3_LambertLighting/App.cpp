@@ -80,9 +80,9 @@ void App::OnRender()
 	D3DBase::deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
 	D3DBase::deviceContext->IASetInputLayout(inputLayout);
 	D3DBase::deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-	D3DBase::deviceContext->VSSetShader(vs_basic, NULL, 0);
+	D3DBase::deviceContext->VSSetShader(vertexShader, NULL, 0);
 	D3DBase::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
-	D3DBase::deviceContext->PSSetShader(ps_basic, NULL, 0);
+	D3DBase::deviceContext->PSSetShader(pixelShader, NULL, 0);
 	D3DBase::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
 
 	// render
@@ -204,14 +204,14 @@ bool App::InitRenderPipeLine()
 
 	// VS - vertex shader create
 	HR_T(D3DBase::device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-		vertexShaderBuffer->GetBufferSize(), NULL, &vs_basic));
+		vertexShaderBuffer->GetBufferSize(), NULL, &vertexShader));
 	SAFE_RELEASE(vertexShaderBuffer);
 
 	// PS - pixel shader create
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	HR_T(CompileShaderFromFile(L"PixelShader.hlsl", "main", "ps_4_0", &pixelShaderBuffer));
 	HR_T(D3DBase::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-		pixelShaderBuffer->GetBufferSize(), NULL, &ps_basic));
+		pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader));
 	SAFE_RELEASE(pixelShaderBuffer);
 
 	// constant buffer create (vs, ps에 전달할 사용할 행렬 data)
@@ -244,8 +244,8 @@ void App::UninitRenderPipeLine()
 	SAFE_RELEASE(indexBuffer);
 	SAFE_RELEASE(constantBuffer);
 	SAFE_RELEASE(inputLayout);
-	SAFE_RELEASE(vs_basic);
-	SAFE_RELEASE(ps_basic);
+	SAFE_RELEASE(vertexShader);
+	SAFE_RELEASE(pixelShader);
 }
 
 bool App::InitGUI()

@@ -60,8 +60,8 @@ void App::OnRender()
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
 	deviceContext->IASetInputLayout(inputLayout);
 	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-	deviceContext->VSSetShader(vs_basic, NULL, 0);
-	deviceContext->PSSetShader(ps_basic, NULL, 0);
+	deviceContext->VSSetShader(vertexShader, NULL, 0);
+	deviceContext->PSSetShader(pixelShader, NULL, 0);
 
 	// render
 	deviceContext->DrawIndexed(indexCount, 0, 0);
@@ -196,7 +196,7 @@ bool App::InitRenderPipeLine()
 
 	// VS - vertex shader create
 	HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-		vertexShaderBuffer->GetBufferSize(), NULL, &vs_basic));
+		vertexShaderBuffer->GetBufferSize(), NULL, &vertexShader));
 	SAFE_RELEASE(vertexShaderBuffer);
 
 
@@ -204,7 +204,7 @@ bool App::InitRenderPipeLine()
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	HR_T(CompileShaderFromFile(L"PixelShader.hlsl", "main", "ps_4_0", &pixelShaderBuffer));
 	HR_T(device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-		pixelShaderBuffer->GetBufferSize(), NULL, &ps_basic));
+		pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader));
 	SAFE_RELEASE(pixelShaderBuffer);
 
 	return true;
@@ -215,7 +215,7 @@ void App::UninitRenderPipeLine()
 	SAFE_RELEASE(vertexBuffer);
 	SAFE_RELEASE(indexBuffer);
 	SAFE_RELEASE(inputLayout);
-	SAFE_RELEASE(vs_basic);
-	SAFE_RELEASE(ps_basic);
+	SAFE_RELEASE(vertexShader);
+	SAFE_RELEASE(pixelShader);
 }
 

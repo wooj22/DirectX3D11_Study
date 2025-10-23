@@ -94,8 +94,8 @@ private:
 	ID3D11Buffer*				indexBuffer = nullptr;			
 	ID3D11Buffer*				constantBuffer = nullptr;		
 	ID3D11InputLayout*			inputLayout = nullptr;
-	ID3D11VertexShader*			vs_basic = nullptr;
-	ID3D11PixelShader*			ps_basic = nullptr;
+	ID3D11VertexShader*			vertexShader = nullptr;
+	ID3D11PixelShader*			pixelShader = nullptr;
 
 	// vertex info
 	UINT vertexBufferStride = 0;		

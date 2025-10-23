@@ -7,6 +7,7 @@ ComPtr<ID3D11DeviceContext>     D3D::deviceContext = nullptr;
 ComPtr<IDXGISwapChain>		    D3D::swapChain = nullptr;
 ComPtr<ID3D11RenderTargetView>  D3D::renderTargetView = nullptr;
 ComPtr<ID3D11DepthStencilView>  D3D::depthStencilView = nullptr;
+ComPtr<ID3D11SamplerState>      D3D::samplerState = nullptr;
 
 bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 {
@@ -86,6 +87,18 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSV.Texture2D.MipSlice = 0;
 	HR_T(device->CreateDepthStencilView(pTextureDepthStencil.Get(), &descDSV, depthStencilView.GetAddressOf()));
+
+
+	// PS - smapler state create
+	D3D11_SAMPLER_DESC sample_Desc = {};
+	sample_Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;			// 상하좌우 텍셀 보간
+	sample_Desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;				// 0~1 범위를 벗어난 uv는 소수 부분만 사용
+	sample_Desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample_Desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample_Desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sample_Desc.MinLOD = 0;
+	sample_Desc.MaxLOD = D3D11_FLOAT32_MAX;
+	HR_T(device->CreateSamplerState(&sample_Desc, samplerState.GetAddressOf()));
 
 	return true;
 }

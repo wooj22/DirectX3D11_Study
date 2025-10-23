@@ -19,6 +19,7 @@ public:
 	static ComPtr<IDXGISwapChain>		   swapChain;
 	static ComPtr<ID3D11RenderTargetView>  renderTargetView;
 	static ComPtr<ID3D11DepthStencilView>  depthStencilView;
+	static ComPtr<ID3D11SamplerState>	   samplerState;
 
 	static bool Init(HWND& hWnd, int screenWidth, int screenHeight);
 	static void UnInit();

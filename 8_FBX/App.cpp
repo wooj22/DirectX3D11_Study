@@ -53,11 +53,11 @@ void App::OnRender()
 	// render pipeline stage setting
 	D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	D3D::deviceContext->IASetInputLayout(inputLayout);
-	D3D::deviceContext->VSSetShader(vs_basic, NULL, 0);
-	D3D::deviceContext->PSSetShader(ps_basic, NULL, 0);
+	D3D::deviceContext->VSSetShader(vertexShader, NULL, 0);
+	D3D::deviceContext->PSSetShader(pixelShader, NULL, 0);
 	D3D::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
 	D3D::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
-	D3D::deviceContext->PSSetSamplers(0, 1, &samplerState);
+	D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
 
 	ConstantBuffer cb;
 	cb.view = XMMatrixTranspose(view);
@@ -111,26 +111,15 @@ bool App::InitRenderPipeLine()
 
 	// VS - vertex shader create
 	HR_T(D3D::device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-		vertexShaderBuffer->GetBufferSize(), NULL, &vs_basic));
+		vertexShaderBuffer->GetBufferSize(), NULL, &vertexShader));
 	SAFE_RELEASE(vertexShaderBuffer);
 
 	// PS - pixel shader create
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	HR_T(CompileShaderFromFile(L"PS_Basic.hlsl", "main", "ps_4_0", &pixelShaderBuffer));
 	HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-		pixelShaderBuffer->GetBufferSize(), NULL, &ps_basic));
+		pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader));
 	SAFE_RELEASE(pixelShaderBuffer);
-
-	// PS - smapler state create
-	D3D11_SAMPLER_DESC sample_Desc = {};
-	sample_Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;			// 상하좌우 텍셀 보간
-	sample_Desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;				// 0~1 범위를 벗어난 uv는 소수 부분만 사용
-	sample_Desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sample_Desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sample_Desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	sample_Desc.MinLOD = 0;
-	sample_Desc.MaxLOD = D3D11_FLOAT32_MAX;
-	HR_T(D3D::device->CreateSamplerState(&sample_Desc, &samplerState));
 
 	// Constant Buffer create
 	D3D11_BUFFER_DESC constBuffer_Desc = {};
@@ -155,7 +144,7 @@ bool App::InitRenderPipeLine()
 
 void App::UninitRenderPipeLine()
 {
-	SAFE_RELEASE(samplerState);
+	
 }
 
 bool App::InitGUI()
