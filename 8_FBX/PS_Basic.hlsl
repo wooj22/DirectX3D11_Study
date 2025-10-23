@@ -13,7 +13,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     float3 diffuse_color = float3(1.0f, 1.0f, 1.0f);
     float3 specular_color = float3(1.0f, 1.0f, 1.0f);
     float3 emissive_color = float3(0.0f, 0.0f, 0.0f);
-
+    float alpha = 1.0f;
+    
     // normal
     float3 N;
     if (useNormal)
@@ -54,8 +55,11 @@ float4 main(PS_INPUT input) : SV_TARGET
     if (useEmissive)
         emissive_color = emissiveMap.Sample(samLinear, input.texCoord).rgb;
 
+    // alpha
+    if (useDiffuse)
+        alpha = diffuseMap.Sample(samLinear, input.texCoord).a;
     
     // final color
     float3 finalColor = ambient + diffuse + specular + emissive_color;
-    return float4(finalColor, 1.0f);
+    return float4(finalColor, alpha);
 }

@@ -19,6 +19,26 @@ bool App::OnInit()
 	if (!D3D::Init(hWnd, screenWidth, screenHeight)) return false;
 	if (!InitRenderPipeLine()) return false;
 	if (!InitGUI()) return false;
+
+	// model init
+	character = ModelLoder::LoadStaticMesh("../Resource/Character.fbx");
+	zelda = ModelLoder::LoadStaticMesh("../Resource/zeldaPosed001.fbx");
+	tree = ModelLoder::LoadStaticMesh("../Resource/Tree.fbx");
+
+	character->SetPosition({ -100, 0, 0 });
+	zelda->SetPosition({ 0, 0, 0 });
+	tree->SetPosition({ 100, 0, 0 });
+	tree->SetScale({ 100,100,100 });
+
+	// view init
+	camera.position.z = -50;
+	camera.Far = 1000.0f;
+	camera.moveSpeed = 200.f;
+	camera.GetViewMatrix(view);
+
+	// projection init 
+	projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
+
 	return true;
 }
 
@@ -58,7 +78,9 @@ void App::OnRender()
 	D3D::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
 	D3D::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
 	D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
+	D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
 
+	// constant buffer
 	ConstantBuffer cb;
 	cb.view = XMMatrixTranspose(view);
 	cb.projection = XMMatrixTranspose(projection);
@@ -73,8 +95,15 @@ void App::OnRender()
 	cb.cameraPos = camera.position;
 
 	// render
+	// 불투명 모델
+	D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
 	character->Render(constantBuffer, cb);
 	zelda->Render(constantBuffer, cb);
+
+	// 투명 모델
+	// 만약 모델이 여러개 있다면 Back to Front 순서 렌더
+	// 카메라에서 먼 것부터 렌더링되도록 정렬하여 렌더링 해야한다.
+	D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
 	tree->Render(constantBuffer, cb);
 
 	// GUI
@@ -86,14 +115,6 @@ void App::OnRender()
 
 bool App::InitRenderPipeLine()
 {
-	// model init
-	character = ModelLoder::LoadStaticMesh("../Resource/Character.fbx");
-	zelda = ModelLoder::LoadStaticMesh("../Resource/zeldaPosed001.fbx");
-	tree = ModelLoder::LoadStaticMesh("../Resource/Tree.fbx");
-
-	//zelda->SetPosition({5,0,0});
-	//tree->SetPosition({ -5,0,0 });
-
 	// IA - input layout create
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{   // SemanticName , SemanticIndex , Format , InputSlot , AlignedByteOffset , InputSlotClass , InstanceDataStepRate	
@@ -129,16 +150,7 @@ bool App::InitRenderPipeLine()
 	constBuffer_Desc.CPUAccessFlags = 0;
 	HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &constantBuffer));
 
-	// Matrix Init
-	// view init
-	camera.position.z = -50;
-	camera.Far = 1000.0f;
-	camera.moveSpeed = 200.f;
-	camera.GetViewMatrix(view);
-
-	// projection init 
-	projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
-
+	
 	return true;
 }
 
@@ -190,12 +202,12 @@ void App::RenderGUI()
 	ImGui::SliderFloat("shininess", &shininess, 0.0f, 3000.0f, "%.2f");
 
 	ImGui::Text("Models");
-	ImGui::Text("Character");
-	ImGui::InputFloat3("position", &character->position.x);
-	ImGui::SliderAngle("Pitch", &character->rotation.x, 0.0f, 360.0f);
-	ImGui::SliderAngle("Yaw", &character->rotation.y, 0.0f, 360.0f);
-	ImGui::SliderAngle("Roll", &character->rotation.z, 0.0f, 360.0f);
-	ImGui::InputFloat3("scale", &character->scale.x);	
+	ImGui::Text("Zelda");
+	ImGui::InputFloat3("position", &zelda->position.x);
+	ImGui::SliderAngle("Pitch", &zelda->rotation.x, 0.0f, 360.0f);
+	ImGui::SliderAngle("Yaw", &zelda->rotation.y, 0.0f, 360.0f);
+	ImGui::SliderAngle("Roll", &zelda->rotation.z, 0.0f, 360.0f);
+	ImGui::InputFloat3("scale", &zelda->scale.x);
 
 	ImGui::End();
 	ImGui::Render();

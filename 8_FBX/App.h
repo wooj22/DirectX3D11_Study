@@ -49,6 +49,7 @@ private:
 	float diffuseHighlight = 0.5;
 	float specularHighlight = 1;
 	float shininess = 300;
+	float blendFactor[4] = { 0,0,0,0 }; UINT sampleMask = 0xffffffff;
 	float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
 
 public:

@@ -7,7 +7,9 @@ ComPtr<ID3D11DeviceContext>     D3D::deviceContext = nullptr;
 ComPtr<IDXGISwapChain>		    D3D::swapChain = nullptr;
 ComPtr<ID3D11RenderTargetView>  D3D::renderTargetView = nullptr;
 ComPtr<ID3D11DepthStencilView>  D3D::depthStencilView = nullptr;
+ComPtr<ID3D11DepthStencilState> D3D::depthStencilState = nullptr;
 ComPtr<ID3D11SamplerState>      D3D::samplerState = nullptr;
+ComPtr<ID3D11BlendState>        D3D::blendState = nullptr;
 
 bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 {
@@ -88,8 +90,16 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 	descDSV.Texture2D.MipSlice = 0;
 	HR_T(device->CreateDepthStencilView(pTextureDepthStencil.Get(), &descDSV, depthStencilView.GetAddressOf()));
 
+	// create depth stencil state
+	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+	dsDesc.DepthEnable = TRUE;                             
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;    
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;              
+	dsDesc.StencilEnable = FALSE;
 
-	// PS - smapler state create
+	HR_T(device->CreateDepthStencilState(&dsDesc, depthStencilState.GetAddressOf()));
+
+	// create smapler state 
 	D3D11_SAMPLER_DESC sample_Desc = {};
 	sample_Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;			// 상하좌우 텍셀 보간
 	sample_Desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;				// 0~1 범위를 벗어난 uv는 소수 부분만 사용
@@ -99,6 +109,19 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 	sample_Desc.MinLOD = 0;
 	sample_Desc.MaxLOD = D3D11_FLOAT32_MAX;
 	HR_T(device->CreateSamplerState(&sample_Desc, samplerState.GetAddressOf()));
+
+	// create blend state
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	D3D::device->CreateBlendState(&blendDesc, blendState.GetAddressOf());
 
 	return true;
 }

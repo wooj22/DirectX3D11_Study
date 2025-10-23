@@ -14,12 +14,14 @@ using Microsoft::WRL::ComPtr;
 class D3D
 {
 public:
-	static ComPtr<ID3D11Device>		       device;
-	static ComPtr<ID3D11DeviceContext>     deviceContext;
-	static ComPtr<IDXGISwapChain>		   swapChain;
-	static ComPtr<ID3D11RenderTargetView>  renderTargetView;
-	static ComPtr<ID3D11DepthStencilView>  depthStencilView;
-	static ComPtr<ID3D11SamplerState>	   samplerState;
+	static ComPtr<ID3D11Device>		         device;
+	static ComPtr<ID3D11DeviceContext>       deviceContext;
+	static ComPtr<IDXGISwapChain>		     swapChain;
+	static ComPtr<ID3D11RenderTargetView>    renderTargetView;
+	static ComPtr<ID3D11DepthStencilView>    depthStencilView;
+	static ComPtr<ID3D11DepthStencilState>   depthStencilState;		// write off
+	static ComPtr<ID3D11SamplerState>	     samplerState;
+	static ComPtr<ID3D11BlendState>          blendState;			// alpha
 
 	static bool Init(HWND& hWnd, int screenWidth, int screenHeight);
 	static void UnInit();

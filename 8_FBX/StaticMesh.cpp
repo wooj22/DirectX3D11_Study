@@ -64,7 +64,7 @@ void StaticMesh::Update()
 void StaticMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
 {
 	// world matrix
-	cb.world = world;
+	cb.world = XMMatrixTranspose(world);
 
 	// sub mesh render
 	for (int i = 0; i < subMeshes.size(); ++i)
