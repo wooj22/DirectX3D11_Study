@@ -28,5 +28,6 @@ private:
 	static void ProcessNode(aiNode* node, const aiScene* scene, StaticMesh* staticMesh);
 	static void ProcessMesh(aiMesh* mesh, const aiScene* scene, StaticMesh* staticMesh);
 	static void ProcessMaterial(aiMaterial* material, const aiScene* scene, StaticMesh* staticMesh);
+	static void SaveEmbeddedTextureIfExists(const aiScene* scene, const string& directory, const string& filename);
 };
 

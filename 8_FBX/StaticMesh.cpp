@@ -5,23 +5,12 @@
 
 StaticMesh::StaticMesh()
 {
-	position = Vector3::Zero;
-	rotation = Vector3::Zero;
-	scale = Vector3::One;
-	world = XMMatrixIdentity();
+	SetTransform(Vector3::Zero, Vector3::Zero, Vector3::One);
 }
 
 StaticMesh::StaticMesh(Vector3 p, Vector3 r, Vector3 s)
 {
-	position = p;
-	rotation = r;
-	scale = s;
-
-	Matrix tm = XMMatrixTranslationFromVector(p);
-	XMVECTOR q = XMQuaternionRotationRollPitchYaw(r.x, r.y, r.z);
-	Matrix rm = XMMatrixRotationQuaternion(q);
-	Matrix sm = XMMatrixScalingFromVector(s);
-	world = sm * rm * tm;
+	SetTransform(p, r, s);
 }
 
 void StaticMesh::InitTransform()

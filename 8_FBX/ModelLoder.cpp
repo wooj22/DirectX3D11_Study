@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <filesystem>
+#include <fstream>
 namespace fs = std::filesystem;
 using namespace DirectX;
 
@@ -93,11 +94,15 @@ void ModelLoder::ProcessMaterial(aiMaterial* material, const aiScene* scene, Sta
 {
     Material mat;
     aiString filepath;
+    string directory = "../Resource/";
 
     // file name save
     // diffuse
     if (material->GetTexture(aiTextureType_DIFFUSE, 0, &filepath) == AI_SUCCESS)
     {
+        std::string filename = fs::path(filepath.C_Str()).filename().string();
+        SaveEmbeddedTextureIfExists(scene, directory, filename);
+
         mat.diffuse_filename = fs::path(filepath.C_Str()).filename().wstring();
         mat.textureFlags |= TEX_DIFFUSE;
     }
@@ -105,6 +110,9 @@ void ModelLoder::ProcessMaterial(aiMaterial* material, const aiScene* scene, Sta
     // normal
     if (material->GetTexture(aiTextureType_NORMALS, 0, &filepath) == AI_SUCCESS)
     {
+        std::string filename = fs::path(filepath.C_Str()).filename().string();
+        SaveEmbeddedTextureIfExists(scene, directory, filename);
+
         mat.normal_filename = fs::path(filepath.C_Str()).filename().wstring();
         mat.textureFlags |= TEX_NORMAL;
     }
@@ -112,6 +120,9 @@ void ModelLoder::ProcessMaterial(aiMaterial* material, const aiScene* scene, Sta
     // specular
     if (material->GetTexture(aiTextureType_SPECULAR, 0, &filepath) == AI_SUCCESS)
     {
+        std::string filename = fs::path(filepath.C_Str()).filename().string();
+        SaveEmbeddedTextureIfExists(scene, directory, filename);
+
         mat.specular_filename = fs::path(filepath.C_Str()).filename().wstring();
         mat.textureFlags |= TEX_SPECULAR;
     }
@@ -119,6 +130,9 @@ void ModelLoder::ProcessMaterial(aiMaterial* material, const aiScene* scene, Sta
     // emissive
     if (material->GetTexture(aiTextureType_EMISSIVE, 0, &filepath) == AI_SUCCESS)
     {
+        std::string filename = fs::path(filepath.C_Str()).filename().string();
+        SaveEmbeddedTextureIfExists(scene, directory, filename);
+
         mat.emissive_filename = fs::path(filepath.C_Str()).filename().wstring();
         mat.textureFlags |= TEX_EMISSIVE;
     }
@@ -128,4 +142,22 @@ void ModelLoder::ProcessMaterial(aiMaterial* material, const aiScene* scene, Sta
 
     // push
     staticMesh->materials.push_back(move(mat));
+}
+
+// 내장된 텍스처 저장
+void ModelLoder::SaveEmbeddedTextureIfExists(const aiScene* scene, const string& directory, const string& filename)
+{
+    const aiTexture* embedded = scene->GetEmbeddedTexture(filename.c_str());
+
+    if (embedded && embedded->mHeight == 0)
+    {
+        std::string tmpPath = directory + filename;
+        std::ofstream file(tmpPath, std::ios::binary);
+
+        if (file.is_open())
+        {
+            file.write(reinterpret_cast<const char*>(embedded->pcData), embedded->mWidth);
+            file.close();
+        }
+    }
 }

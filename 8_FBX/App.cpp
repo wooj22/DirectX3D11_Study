@@ -73,9 +73,9 @@ void App::OnRender()
 	cb.cameraPos = camera.position;
 
 	// render
-	//character->Render(constantBuffer, cb);
+	character->Render(constantBuffer, cb);
 	zelda->Render(constantBuffer, cb);
-	//tree->Render(constantBuffer, cb);
+	tree->Render(constantBuffer, cb);
 
 	// GUI
 	RenderGUI();
@@ -131,7 +131,7 @@ bool App::InitRenderPipeLine()
 
 	// Matrix Init
 	// view init
-	camera.position.z = -500;
+	camera.position.z = -50;
 	camera.Far = 1000.0f;
 	camera.moveSpeed = 200.f;
 	camera.GetViewMatrix(view);
@@ -190,13 +190,12 @@ void App::RenderGUI()
 	ImGui::SliderFloat("shininess", &shininess, 0.0f, 3000.0f, "%.2f");
 
 	ImGui::Text("Models");
-	ImGui::SliderFloat("Scale", &zelda->scale.x, 1.0f, 200.0f, "%.2f");
-	zelda->scale.y = zelda->scale.x;
-	zelda->scale.z = zelda->scale.x;
-
-	/*ImGui::SliderAngle("Pitch", &cube.rotation.x, 0.0f, 360.0f);
-	ImGui::SliderAngle("Yaw", &cube.rotation.y, 0.0f, 360.0f);
-	ImGui::SliderAngle("Roll", &cube.rotation.z, 0.0f, 360.0f);*/
+	ImGui::Text("Character");
+	ImGui::InputFloat3("position", &character->position.x);
+	ImGui::SliderAngle("Pitch", &character->rotation.x, 0.0f, 360.0f);
+	ImGui::SliderAngle("Yaw", &character->rotation.y, 0.0f, 360.0f);
+	ImGui::SliderAngle("Roll", &character->rotation.z, 0.0f, 360.0f);
+	ImGui::InputFloat3("scale", &character->scale.x);	
 
 	ImGui::End();
 	ImGui::Render();
