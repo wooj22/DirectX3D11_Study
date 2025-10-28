@@ -122,14 +122,12 @@ void ModelLoder::ProcessStaticMaterial(aiMaterial* material, const aiScene* scen
 // Node 순회 (초기 parent index = -1)
 void ModelLoder::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh* rigidMesh, int parentIndex)
 {
-    string currentNodeName = node->mName.C_Str();
-
 	// SubMesh 처리
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         unsigned int meshIndex = node->mMeshes[i];
         aiMesh* mesh = scene->mMeshes[meshIndex];
-        ProcessRigidMesh(mesh, scene, rigidMesh, currentNodeName, parentIndex);
+        ProcessRigidMesh(mesh, scene, rigidMesh, node, parentIndex);
     }
 
     // 자식 노드 재귀 탐색
@@ -141,14 +139,15 @@ void ModelLoder::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh*
 }
 
 // Mesh
-void ModelLoder::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh* rigidMesh, const string& nodeName, int parentIndex)
+void ModelLoder::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh* rigidMesh, aiNode* node, int parentIndex)
 {
     // node name
     RigidSubMesh submesh;
-	submesh.nodeName = nodeName;
+	submesh.nodeName = node->mName.C_Str();
+	submesh.bindMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&node->mTransformation));
 	submesh.parentIndex = parentIndex -1;
     
-	OutputDebugStringA((nodeName + "\n").c_str());
+	OutputDebugStringA((submesh.nodeName + "\n").c_str());
 	OutputDebugStringA(("Parent Index : " + std::to_string(parentIndex-1) + "\n").c_str());
 
     // vertex
@@ -213,6 +212,7 @@ void ModelLoder::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMes
 			aiNodeAnim* aiNodeAnim = aiAnim->mChannels[j];
 			NodeAnimation nodeAnim;
 			nodeAnim.nodeName = aiNodeAnim->mNodeName.C_Str();
+			OutputDebugStringA((nodeAnim.nodeName + "\n").c_str());
 
 			// keyframe
 			// position

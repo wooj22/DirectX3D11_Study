@@ -79,9 +79,11 @@ void RigidMesh::Update()
 				Vector3 pos;  Quaternion rot;	Vector3 scl;
 				nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
 
-				sub.localMatrix = Matrix::CreateScale(scl) *
+				/*sub.localMatrix = Matrix::CreateScale(scl) *
 								    Matrix::CreateFromQuaternion(rot) *
-								    Matrix::CreateTranslation(pos);
+								    Matrix::CreateTranslation(pos);*/
+
+				sub.localMatrix = sub.bindMatrix;
 				break;
 			}
 		}

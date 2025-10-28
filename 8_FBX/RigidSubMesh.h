@@ -39,6 +39,7 @@ public:
     ID3D11Buffer* indexBuffer = nullptr;
 
     // transform
+    Matrix bindMatrix;
     Matrix localMatrix;   
     Matrix modelMatrix;   
 
