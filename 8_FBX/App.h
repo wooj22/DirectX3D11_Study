@@ -23,6 +23,7 @@ using namespace DirectX::SimpleMath;
 
 
 // FBX 파일 로드 프로젝트입니다.
+// StaticMesh, RigidMesh(Transform Animation), 투명 텍스처 처리에 대한 내용이 포함되어 있습니다.
 class App : public WinApp
 {
 private:
@@ -39,8 +40,8 @@ private:
 	// models
 	StaticMesh* character = nullptr;		// Diffuse, Normal, Emisive, Specular
 	StaticMesh* zelda = nullptr;			// Diffuse, Opacity
-	StaticMesh* tree = nullptr;	
-	RigidMesh* boxHuman = nullptr;
+	StaticMesh* tree = nullptr;				// Diffuse, Opacity
+	RigidMesh* boxHuman = nullptr;			// transform animation
 
 	// light
 	DirectionalLight light;

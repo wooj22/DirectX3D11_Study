@@ -60,18 +60,19 @@ void RigidMesh::MakeWorld()
 
 void RigidMesh::Update()
 {
-	MakeWorld();
+	//MakeWorld();
 
 	// animation time update
-	currentAnimTime += Time::GetDeltaTime();
+	currentAnimTime += Time::GetDeltaTime() *0.5;
 	if (currentAnimTime > animationClips[0].duration)
 		currentAnimTime = fmod(currentAnimTime, animationClips[0].duration);
 
 	// local matrix update
 	// animaton key frame값을 보간해서 local matrix 업데이트
+	// TODO :: 해시테이블로 바꾸기
 	for (auto& sub : subMeshes)
 	{
-		AnimationClip& clip = animationClips[0];		// 일단 고정
+		AnimationClip& clip = animationClips[0];
 		for (auto& nodeAnim : clip.nodeAnimations)
 		{
 			if (nodeAnim.nodeName == sub.nodeName)
@@ -79,12 +80,14 @@ void RigidMesh::Update()
 				Vector3 pos;  Quaternion rot;	Vector3 scl;
 				nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
 
-				/*sub.localMatrix = Matrix::CreateScale(scl) *
+				sub.localMatrix = Matrix::CreateScale(scl) *
 									Matrix::CreateFromQuaternion(rot) *
-									Matrix::CreateTranslation(pos);*/
-
-				sub.localMatrix = sub.bindMatrix;
+									Matrix::CreateTranslation(pos);
 				break;
+			}
+			else
+			{
+				sub.localMatrix = sub.bindMatrix;
 			}
 		}
 	}
@@ -92,15 +95,8 @@ void RigidMesh::Update()
 	// model matrix update
 	for (auto& sub : subMeshes)
 	{
-		OutputDebugStringA((sub.nodeName + "\n").c_str());
-		OutputDebugStringA(("Parent Index: " + std::to_string(sub.parentIndex) + "\n").c_str());
 		if (sub.parentIndex != -1)
-			OutputDebugStringA(("Parent Name: " + subMeshes[sub.parentIndex].nodeName + "\n").c_str());
-		else
-			OutputDebugStringA("No Parent\n");
-
-		if (sub.parentIndex != -1)
-			sub.modelMatrix = subMeshes[sub.parentIndex].modelMatrix * sub.localMatrix;
+			sub.modelMatrix = sub.localMatrix * subMeshes[sub.parentIndex].modelMatrix;
 		else
 			sub.modelMatrix = sub.localMatrix;
 	}

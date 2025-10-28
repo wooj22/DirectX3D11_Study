@@ -147,8 +147,8 @@ void ModelLoder::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh*
 	submesh.bindMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&node->mTransformation));
 	submesh.parentIndex = parentIndex -1;
     
-	OutputDebugStringA((submesh.nodeName + "\n").c_str());
-	OutputDebugStringA(("Parent Index : " + std::to_string(parentIndex-1) + "\n").c_str());
+	//OutputDebugStringA((submesh.nodeName + "\n").c_str());
+	//OutputDebugStringA(("Parent Index : " + std::to_string(parentIndex-1) + "\n").c_str());
 
     // vertex
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
