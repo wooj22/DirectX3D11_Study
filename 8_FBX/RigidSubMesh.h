@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 #include <wrl/client.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
@@ -14,30 +15,44 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 using Microsoft::WRL::ComPtr;
 
-
 /*
-* [ Static Sub Mesh ]
-* StaticMesh의 부분 메시로, material과 1:1 대응되는 메시
+* [ Rigid Sub Mesh ]
+* 
 */
 
-class StaticSubMesh
+class RigidSubMesh
 {
 public:
     // data
-	vector<Vertex> vertices;
-	vector<WORD> indices;
-	unsigned int materialIndex;
+    string nodeName;
+    vector<Vertex> vertices;
+    vector<WORD> indices;
+    unsigned int materialIndex;
 
     UINT vertexBufferStride;
     UINT vertexBufferOffset;
     UINT indexCount = 0;
 
     // renderpipeline
-	ID3D11Buffer* vertexBuffer = nullptr;
-	ID3D11Buffer* indexBuffer = nullptr;
+    ID3D11Buffer* vertexBuffer = nullptr;
+    ID3D11Buffer* indexBuffer = nullptr;
+
+    // transform
+    Matrix localMatrix;   
+    Matrix worldMatrix;   
 
 public:
     // create buffer
     void Create();
+
+    void UpdateLocalMatrix(const Matrix& animMatrix)
+    {
+		localMatrix = animMatrix;
+    }
+
+	void UpdateWorldMatrix(const Matrix& parentMatrix)
+	{
+		worldMatrix = localMatrix * parentMatrix;
+	}
 };
 

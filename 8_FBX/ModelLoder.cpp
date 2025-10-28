@@ -1,7 +1,8 @@
 #include "ModelLoder.h"
 #include "StaticMesh.h"
-#include "StaticSubMesh.h"
+#include "RigidMesh.h"
 #include "Material.h"
+#include "AnimationClip.h"
 #include <string>
 #include <iostream>
 #include <filesystem>
@@ -11,7 +12,7 @@ using namespace DirectX;
 
 // static member init
 Importer ModelLoder::importer;
-unsigned int ModelLoder::importFlags =
+unsigned int ModelLoder::staticImportFlags =
     aiProcess_Triangulate |  // vertex 삼각형 으로 출력
     aiProcess_GenNormals |                              // normal 
     aiProcess_GenUVCoords |                             // uv
@@ -19,39 +20,59 @@ unsigned int ModelLoder::importFlags =
     aiProcess_ConvertToLeftHanded |                     // DX용 왼손좌표계 변환
     aiProcess_PreTransformVertices;                     // 노드의 변환행렬을 적용한 버텍스 생성한다.  *StaticMesh로 처리할때만
 
+unsigned int ModelLoder::skeletalImportFlags =
+aiProcess_Triangulate |  // vertex 삼각형 으로 출력
+aiProcess_GenNormals |                              // normal 
+aiProcess_GenUVCoords |                             // uv
+aiProcess_CalcTangentSpace |                        // tangent vector
+aiProcess_ConvertToLeftHanded;                     // DX용 왼손좌표계 변환
 
-// Model Load
+
+
+// Static Mash Load
 StaticMesh* ModelLoder::LoadStaticMesh(const string& modelPath)
 {
-	const aiScene* scene = importer.ReadFile(modelPath, importFlags);
+	const aiScene* scene = importer.ReadFile(modelPath, staticImportFlags);
 
     StaticMesh* staticMesh = new StaticMesh();
-	ProcessNode(scene->mRootNode, scene, staticMesh);
+	ProcessStaticNode(scene->mRootNode, scene, staticMesh);
 
     return staticMesh;
 }
 
+// Rigid Mesh Load
+RigidMesh* ModelLoder::LoadRigidMesh(const string& modelPath)
+{
+	const aiScene* scene = importer.ReadFile(modelPath, skeletalImportFlags);
 
+	RigidMesh* rigidMesh = new RigidMesh();
+	ProcessRigidNode(scene->mRootNode, scene, rigidMesh);
+	ProcessRigidAnimation(scene, rigidMesh);
+
+	return rigidMesh;
+}
+
+/*-------------------  Static Mesh ---------------------------*/
 // Node 순회
-void ModelLoder::ProcessNode(aiNode* node, const aiScene* scene, StaticMesh* staticMesh)
+void ModelLoder::ProcessStaticNode(aiNode* node, const aiScene* scene, StaticMesh* staticMesh)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         unsigned int meshIndex = node->mMeshes[i];
         aiMesh* mesh = scene->mMeshes[meshIndex];
-        ProcessMesh(mesh, scene, staticMesh);
+        ProcessStaticMesh(mesh, scene, staticMesh);
     }
 
     // 자식 노드 재귀 탐색
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
-        ProcessNode(node->mChildren[i], scene, staticMesh);
+        ProcessStaticNode(node->mChildren[i], scene, staticMesh);
     }
 }
 
 
-// Mesh 처리
-void ModelLoder::ProcessMesh(aiMesh* mesh, const aiScene* scene, StaticMesh* staticMesh)
+// Mesh
+void ModelLoder::ProcessStaticMesh(aiMesh* mesh, const aiScene* scene, StaticMesh* staticMesh)
 {
     StaticSubMesh submesh;
 
@@ -79,7 +100,7 @@ void ModelLoder::ProcessMesh(aiMesh* mesh, const aiScene* scene, StaticMesh* sta
     // material
     submesh.materialIndex = mesh->mMaterialIndex;
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    ProcessMaterial(material, scene, staticMesh);
+    ProcessStaticMaterial(material, scene, staticMesh);
 
     // buffer create
     submesh.Create();
@@ -89,8 +110,155 @@ void ModelLoder::ProcessMesh(aiMesh* mesh, const aiScene* scene, StaticMesh* sta
 }
 
 
+// Material
+void ModelLoder::ProcessStaticMaterial(aiMaterial* material, const aiScene* scene, StaticMesh* staticMesh)
+{
+	Material mat = ProcessMaterial(material, scene);
+    staticMesh->materials.push_back(move(mat));
+}
+
+
+/*-------------------  Rigid Mesh ---------------------------*/
+// Node 순회
+void ModelLoder::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh* rigidMesh)
+{
+    // Node 이름 (애니메이션 데이터와 매핑)
+    string currentNodeName = node->mName.C_Str();
+
+	// SubMesh 처리
+    for (unsigned int i = 0; i < node->mNumMeshes; i++)
+    {
+        unsigned int meshIndex = node->mMeshes[i];
+        aiMesh* mesh = scene->mMeshes[meshIndex];
+        ProcessRigidMesh(mesh, scene, rigidMesh, currentNodeName);
+    }
+
+    // 자식 노드 재귀 탐색
+    for (unsigned int i = 0; i < node->mNumChildren; i++)
+    {
+        ProcessRigidNode(node->mChildren[i], scene, rigidMesh);
+    }
+}
+
+// Mesh
+void ModelLoder::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh* rigidMesh, const string& nodeName)
+{
+    // node name
+    RigidSubMesh submesh;
+	submesh.nodeName = nodeName;
+
+    // vertex
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+    {
+        Vertex v;
+        v.position = XMFLOAT3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+        v.normal = XMFLOAT3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+        v.tangent = XMFLOAT3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+        v.bitangent = XMFLOAT3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
+        v.texcoord = XMFLOAT2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+
+        submesh.vertices.push_back(move(v));
+    }
+
+    // index
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+    {
+        aiFace face = mesh->mFaces[i];
+        for (unsigned int j = 0; j < face.mNumIndices; j++)
+            submesh.indices.push_back(move(face.mIndices[j]));
+    }
+
+    // material
+    submesh.materialIndex = mesh->mMaterialIndex;
+    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+    ProcessRigidMaterial(material, scene, rigidMesh);
+
+    // buffer create
+    submesh.Create();
+
+    // push sub mesh
+    rigidMesh->subMeshes.push_back(move(submesh));
+}
+
+// Material
+void ModelLoder::ProcessRigidMaterial(aiMaterial* material, const aiScene* scene, RigidMesh* rigidMesh)
+{
+    Material mat = ProcessMaterial(material, scene);
+    rigidMesh->materials.push_back(move(mat));
+}
+
+// Animation
+void ModelLoder::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMesh)
+{
+    // 애니메이션이 없다면 return
+    if (scene->mNumAnimations == 0) return;
+
+    for (unsigned int i = 0; i < scene->mNumAnimations; ++i)
+    {
+        aiAnimation* aiAnim = scene->mAnimations[i];
+        AnimationClip clip;
+
+        // animation clip info
+		clip.name = aiAnim->mName.C_Str();
+		clip.duration = static_cast<float>(aiAnim->mDuration / aiAnim->mTicksPerSecond);
+		clip.ticksPerSecond = static_cast<float>(aiAnim->mTicksPerSecond);
+
+		// node animation
+		for (unsigned int j = 0; j < aiAnim->mNumChannels; ++j)
+		{
+			aiNodeAnim* aiNodeAnim = aiAnim->mChannels[j];
+			NodeAnimation nodeAnim;
+			nodeAnim.nodeName = aiNodeAnim->mNodeName.C_Str();
+
+			// keyframe
+			// position
+			for (unsigned int k = 0; k < aiNodeAnim->mNumPositionKeys; ++k)
+			{
+                VectorKey posKey;
+				posKey.time = static_cast<float>(aiNodeAnim->mPositionKeys[k].mTime / aiAnim->mTicksPerSecond);
+				posKey.value = Vector3(
+					aiNodeAnim->mPositionKeys[k].mValue.x,
+					aiNodeAnim->mPositionKeys[k].mValue.y,
+					aiNodeAnim->mPositionKeys[k].mValue.z);
+				nodeAnim.positionKeys.push_back(move(posKey));
+			}
+
+            // rotation
+            for (unsigned int k = 0; k < aiNodeAnim->mNumRotationKeys; ++k)
+            {
+                QuatKey rotKey;
+                rotKey.time = static_cast<float>(aiNodeAnim->mRotationKeys[k].mTime / aiAnim->mTicksPerSecond);
+                rotKey.value = Quaternion(
+                    aiNodeAnim->mRotationKeys[k].mValue.x,
+                    aiNodeAnim->mRotationKeys[k].mValue.y,
+                    aiNodeAnim->mRotationKeys[k].mValue.z,
+                    aiNodeAnim->mRotationKeys[k].mValue.w);
+                nodeAnim.rotationKeys.push_back(move(rotKey));
+            }
+
+            // scale
+            for (unsigned int k = 0; k < aiNodeAnim->mNumScalingKeys; ++k)
+            {
+                VectorKey scaleKey;
+                scaleKey.time = static_cast<float>(aiNodeAnim->mScalingKeys[k].mTime / aiAnim->mTicksPerSecond);
+                scaleKey.value = Vector3(
+                    aiNodeAnim->mScalingKeys[k].mValue.x,
+                    aiNodeAnim->mScalingKeys[k].mValue.y,
+                    aiNodeAnim->mScalingKeys[k].mValue.z);
+                nodeAnim.scaleKeys.push_back(move(scaleKey));
+            }
+
+			// node animation push
+			clip.nodeAnimations.push_back(move(nodeAnim));
+		}
+
+		// animation clip push
+		rigidMesh->animationClips.push_back(move(clip));
+    }
+}
+
 // Material 처리
-void ModelLoder::ProcessMaterial(aiMaterial* material, const aiScene* scene, StaticMesh* staticMesh)
+Material ModelLoder::ProcessMaterial(aiMaterial* material, const aiScene* scene)
 {
     Material mat;
     aiString filepath;
@@ -139,9 +307,7 @@ void ModelLoder::ProcessMaterial(aiMaterial* material, const aiScene* scene, Sta
 
     // texture create
     mat.Create();
-
-    // push
-    staticMesh->materials.push_back(move(mat));
+    return move(mat);
 }
 
 // 내장된 텍스처 저장
@@ -149,7 +315,7 @@ void ModelLoder::SaveEmbeddedTextureIfExists(const aiScene* scene, const string&
 {
     const aiTexture* embedded = scene->GetEmbeddedTexture(filename.c_str());
 
-    if (embedded && embedded->mHeight == 0)
+    if (embedded&& embedded->mHeight >= 0)
     {
         std::string tmpPath = directory + filename;
         std::ofstream file(tmpPath, std::ios::binary);

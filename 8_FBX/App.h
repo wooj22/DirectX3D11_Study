@@ -13,7 +13,7 @@
 
 #include "ModelLoder.h"
 #include "StaticMesh.h"
-#include "StaticSubMesh.h"
+#include "RigidMesh.h"
 #include "Material.h"
 #include "DirectionalLight.hpp"
 
@@ -40,6 +40,7 @@ private:
 	StaticMesh* character = nullptr;		// Diffuse, Normal, Emisive, Specular
 	StaticMesh* zelda = nullptr;			// Diffuse, Opacity
 	StaticMesh* tree = nullptr;	
+	RigidMesh* boxHuman = nullptr;
 
 	// light
 	DirectionalLight light;

@@ -28,6 +28,21 @@
     <Filter Include="ModelLoder">
       <UniqueIdentifier>{95bd3258-82e4-4441-b8b4-5b9cdfff77f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Mesh\StaticMesh">
+      <UniqueIdentifier>{5b2c43e6-2bfd-4d3b-99ad-1f7351c2d2fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mesh\SkeletalMesh">
+      <UniqueIdentifier>{c6b445dc-b27b-4940-95b5-5bde1faef329}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bone">
+      <UniqueIdentifier>{7d4b47a1-a85b-4b4a-bf93-70928e31d5fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{ff59660f-2f39-4f9b-94c6-d8303357cffe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mesh\RigidMesh">
+      <UniqueIdentifier>{cc634216-92ed-4184-926f-3294c1b83fca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -36,28 +51,40 @@
     <ClCompile Include="App.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="StaticMesh.cpp">
-      <Filter>Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticSubMesh.cpp">
-      <Filter>Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Material</Filter>
     </ClCompile>
     <ClCompile Include="ModelLoder.cpp">
       <Filter>ModelLoder</Filter>
     </ClCompile>
+    <ClCompile Include="StaticMesh.cpp">
+      <Filter>Mesh\StaticMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticSubMesh.cpp">
+      <Filter>Mesh\StaticMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalSubMesh.cpp">
+      <Filter>Mesh\SkeletalMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalMesh.cpp">
+      <Filter>Mesh\SkeletalMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonInfo.cpp">
+      <Filter>Bone</Filter>
+    </ClCompile>
+    <ClCompile Include="BoneInfo.cpp">
+      <Filter>Bone</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidMesh.cpp">
+      <Filter>Mesh\RigidMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidSubMesh.cpp">
+      <Filter>Mesh\RigidMesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
       <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticMesh.h">
-      <Filter>Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticSubMesh.h">
-      <Filter>Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Material</Filter>
@@ -67,6 +94,36 @@
     </ClInclude>
     <ClInclude Include="ModelLoder.h">
       <Filter>ModelLoder</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMesh.h">
+      <Filter>Mesh\StaticMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticSubMesh.h">
+      <Filter>Mesh\StaticMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalMesh.h">
+      <Filter>Mesh\SkeletalMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalSubMesh.h">
+      <Filter>Mesh\SkeletalMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonInfo.h">
+      <Filter>Bone</Filter>
+    </ClInclude>
+    <ClInclude Include="BoneInfo.h">
+      <Filter>Bone</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationClip.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidMesh.h">
+      <Filter>Mesh\RigidMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidSubMesh.h">
+      <Filter>Mesh\RigidMesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -7,7 +7,7 @@ using std::string;
 using std::wstring;
 
 class StaticMesh;
-class StaticSubMesh;
+class RigidMesh;
 class Material;
 
 /*
@@ -18,16 +18,27 @@ class ModelLoder
 {
 public:
 	static Importer importer;
-	static unsigned int importFlags;
+	static unsigned int staticImportFlags;
+	static unsigned int skeletalImportFlags;
 
-	// Model Load
+	// model loading
 	static StaticMesh* LoadStaticMesh(const string& modelPath);
-    static void SetImportFlags(unsigned int flags) { importFlags = flags; }
+	static RigidMesh* LoadRigidMesh(const string& modelPath);
+
+	// flag setting
+    static void SetImportFlags(unsigned int flags) { staticImportFlags = flags; }
 
 private:
-	static void ProcessNode(aiNode* node, const aiScene* scene, StaticMesh* staticMesh);
-	static void ProcessMesh(aiMesh* mesh, const aiScene* scene, StaticMesh* staticMesh);
-	static void ProcessMaterial(aiMaterial* material, const aiScene* scene, StaticMesh* staticMesh);
+	static void ProcessStaticNode(aiNode* node, const aiScene* scene, StaticMesh* staticMesh);
+	static void ProcessStaticMesh(aiMesh* mesh, const aiScene* scene, StaticMesh* staticMesh);
+	static void ProcessStaticMaterial(aiMaterial* material, const aiScene* scene, StaticMesh* staticMesh);
+	
+	static void ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh* rigidMesh);
+	static void ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh* rigidMesh, const string& nodeName);
+	static void ProcessRigidMaterial(aiMaterial* material, const aiScene* scene, RigidMesh* rigidMesh);
+	static void ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMesh);
+	
+	static Material ProcessMaterial(aiMaterial* material, const aiScene* scene);
 	static void SaveEmbeddedTextureIfExists(const aiScene* scene, const string& directory, const string& filename);
 };
 

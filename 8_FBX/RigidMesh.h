@@ -1,6 +1,7 @@
 #pragma once
-#include "StaticSubMesh.h"
+#include "RigidSubMesh.h"
 #include "Material.h"
+#include "AnimationClip.h"
 #include "Structures.h"
 #include <string>
 #include <DirectXMath.h>
@@ -11,21 +12,19 @@ using namespace std;
 class Camera;
 class DirectionalLight;
 
-
 /*
-* [ Static Mesh ]
-* StaticSubMesh와 Material을 가지는 애니메이션 없는 정적 모델
-* 각 StaticSubMesh는 Model Space기준으로 저장되어있음
+* [ Rigid Mesh ]
 * 
-* vertex_world = world_matrix * vertex_model(기본저장값)
+* vertex_world = world_matrix * modelMatrix * animMatrix * vertex_local(기본저장값)
 */
 
-class StaticMesh
+class RigidMesh
 {
 public:
-	// sub mesh, material
-	vector<StaticSubMesh> subMeshes;
+	// sub mesh, material, animation
+	vector<RigidSubMesh> subMeshes;
 	vector<Material> materials;
+	vector<AnimationClip> animationClips;
 
 	// transform
 	Vector3 position;
@@ -33,9 +32,12 @@ public:
 	Vector3 scale;
 	Matrix world;
 
+	// animation
+	
+
 public:
-	StaticMesh();
-	StaticMesh(Vector3 p, Vector3 r, Vector3 s);
+	RigidMesh();
+	RigidMesh(Vector3 p, Vector3 r, Vector3 s);
 	void InitTransform();
 	void SetTransform(Vector3 p, Vector3 r, Vector3 s);
 	void SetPosition(Vector3 p);

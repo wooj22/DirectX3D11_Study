@@ -24,13 +24,17 @@ bool App::OnInit()
 	character = ModelLoder::LoadStaticMesh("../Resource/Character.fbx");
 	zelda = ModelLoder::LoadStaticMesh("../Resource/zeldaPosed001.fbx");
 	tree = ModelLoder::LoadStaticMesh("../Resource/Tree.fbx");
+	boxHuman = ModelLoder::LoadRigidMesh("../Resource/BoxHuman.fbx");
 
 	character->SetPosition({ -100, 0, 0 });
 	zelda->SetPosition({ 0, 0, 0 });
 	tree->SetPosition({ 100, 0, 0 });
 	tree->SetScale({ 100,100,100 });
+	boxHuman->SetPosition({ 300,0,0 });
+	boxHuman->SetScale({ 10,10,10 });
 
 	// view init
+	camera.position.x = 300;
 	camera.position.z = -50;
 	camera.Far = 1000.0f;
 	camera.moveSpeed = 200.f;
@@ -56,6 +60,7 @@ void App::OnUpdate()
 	character->Update();
 	zelda->Update();
 	tree->Update();
+	boxHuman->Update();
 
 	// view update
 	camera.GetViewMatrix(view);
@@ -99,6 +104,7 @@ void App::OnRender()
 	D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
 	character->Render(constantBuffer, cb);
 	zelda->Render(constantBuffer, cb);
+	boxHuman->Render(constantBuffer, cb);
 
 	// 투명 모델
 	// 만약 모델이 여러개 있다면 Back to Front 순서 렌더
