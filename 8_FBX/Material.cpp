@@ -1,7 +1,7 @@
 #include "Material.h"
 #include "../WinBase/Helper.h"
 
-void Material::Create()
+void Material::CreateSRV()
 {
 	// Texture load
 	// Shader Resource View create

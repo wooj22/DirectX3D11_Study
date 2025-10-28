@@ -33,8 +33,8 @@ private:
 	static void ProcessStaticMesh(aiMesh* mesh, const aiScene* scene, StaticMesh* staticMesh);
 	static void ProcessStaticMaterial(aiMaterial* material, const aiScene* scene, StaticMesh* staticMesh);
 	
-	static void ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh* rigidMesh);
-	static void ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh* rigidMesh, const string& nodeName);
+	static void ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh* rigidMesh, int parentIndex);
+	static void ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh* rigidMesh, const string& nodeName, int parentIndex);
 	static void ProcessRigidMaterial(aiMaterial* material, const aiScene* scene, RigidMesh* rigidMesh);
 	static void ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMesh);
 	

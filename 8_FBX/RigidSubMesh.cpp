@@ -1,6 +1,12 @@
 #include "RigidSubMesh.h"
 
-void RigidSubMesh::Create()
+RigidSubMesh::RigidSubMesh()
+{
+	localMatrix = XMMatrixIdentity();
+	modelMatrix = XMMatrixIdentity();
+}
+
+void RigidSubMesh::CreateBuffer()
 {
     // vertex buffer
     D3D11_BUFFER_DESC vertexBufferDesc = {};

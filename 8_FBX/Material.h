@@ -43,7 +43,7 @@ public:
 	ID3D11ShaderResourceView* emissiveSRV = nullptr;
 
 public:
-	void Create();	// create srv
+	void CreateSRV();
 	void SetDirectoryPath(wstring& path);
 };
 

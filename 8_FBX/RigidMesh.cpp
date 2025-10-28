@@ -60,16 +60,40 @@ void RigidMesh::MakeWorld()
 
 void RigidMesh::Update()
 {
-	float deltaTime = Time::GetDeltaTime();
-
 	MakeWorld();
 
-	// animation update
-	for (int i = 0; i < subMeshes.size(); ++i)
-	{
-		// animaton key frame값을 보간해서 local matrix 업데이트
+	// animation time update
+	currentAnimTime += Time::GetDeltaTime();
+	if (currentAnimTime > animationClips[0].duration)
+		currentAnimTime = fmod(currentAnimTime, animationClips[0].duration);
 
-		// 부모 행렬과 곱해서 world matrix 업데이트
+	// local matrix update
+	// animaton key frame값을 보간해서 local matrix 업데이트
+	for (auto& sub : subMeshes)
+	{
+		AnimationClip& clip = animationClips[0];		// 일단 고정
+		for (auto& nodeAnim : clip.nodeAnimations)
+		{
+			if (nodeAnim.nodeName == sub.nodeName)
+			{
+				Vector3 pos;  Quaternion rot;	Vector3 scl;
+				nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
+
+				sub.localMatrix = Matrix::CreateScale(scl) *
+								    Matrix::CreateFromQuaternion(rot) *
+								    Matrix::CreateTranslation(pos);
+				break;
+			}
+		}
+	}
+
+	// model matrix update
+	for (auto& sub : subMeshes)
+	{
+		if (sub.parentIndex != -1)
+			sub.modelMatrix = subMeshes[sub.parentIndex].modelMatrix * sub.localMatrix;
+		else
+			sub.modelMatrix = sub.localMatrix;
 	}
 }
 
@@ -81,7 +105,7 @@ void RigidMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
 		Material& mat = materials[i];
 
 		// world
-		cb.world = XMMatrixTranspose(world * sub.worldMatrix);
+		cb.world = (sub.modelMatrix * world).Transpose();
 
 		// vertex buffer, indexbuffer
 		D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);
@@ -103,5 +127,4 @@ void RigidMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
 		// draw call
 		D3D::deviceContext->DrawIndexed(sub.indexCount, 0, 0);
 	}
-	
 }

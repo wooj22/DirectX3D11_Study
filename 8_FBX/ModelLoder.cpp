@@ -46,7 +46,7 @@ RigidMesh* ModelLoder::LoadRigidMesh(const string& modelPath)
 	const aiScene* scene = importer.ReadFile(modelPath, skeletalImportFlags);
 
 	RigidMesh* rigidMesh = new RigidMesh();
-	ProcessRigidNode(scene->mRootNode, scene, rigidMesh);
+	ProcessRigidNode(scene->mRootNode, scene, rigidMesh, -1);
 	ProcessRigidAnimation(scene, rigidMesh);
 
 	return rigidMesh;
@@ -119,10 +119,9 @@ void ModelLoder::ProcessStaticMaterial(aiMaterial* material, const aiScene* scen
 
 
 /*-------------------  Rigid Mesh ---------------------------*/
-// Node 순회
-void ModelLoder::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh* rigidMesh)
+// Node 순회 (초기 parent index = -1)
+void ModelLoder::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh* rigidMesh, int parentIndex)
 {
-    // Node 이름 (애니메이션 데이터와 매핑)
     string currentNodeName = node->mName.C_Str();
 
 	// SubMesh 처리
@@ -130,22 +129,27 @@ void ModelLoder::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh*
     {
         unsigned int meshIndex = node->mMeshes[i];
         aiMesh* mesh = scene->mMeshes[meshIndex];
-        ProcessRigidMesh(mesh, scene, rigidMesh, currentNodeName);
+        ProcessRigidMesh(mesh, scene, rigidMesh, currentNodeName, parentIndex);
     }
 
     // 자식 노드 재귀 탐색
+    int myIndex = rigidMesh->subMeshes.size();
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
-        ProcessRigidNode(node->mChildren[i], scene, rigidMesh);
+        ProcessRigidNode(node->mChildren[i], scene, rigidMesh, myIndex);
     }
 }
 
 // Mesh
-void ModelLoder::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh* rigidMesh, const string& nodeName)
+void ModelLoder::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh* rigidMesh, const string& nodeName, int parentIndex)
 {
     // node name
     RigidSubMesh submesh;
 	submesh.nodeName = nodeName;
+	submesh.parentIndex = parentIndex -1;
+    
+	OutputDebugStringA((nodeName + "\n").c_str());
+	OutputDebugStringA(("Parent Index : " + std::to_string(parentIndex-1) + "\n").c_str());
 
     // vertex
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -174,7 +178,7 @@ void ModelLoder::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh*
     ProcessRigidMaterial(material, scene, rigidMesh);
 
     // buffer create
-    submesh.Create();
+    submesh.CreateBuffer();
 
     // push sub mesh
     rigidMesh->subMeshes.push_back(move(submesh));
@@ -306,7 +310,7 @@ Material ModelLoder::ProcessMaterial(aiMaterial* material, const aiScene* scene)
     }
 
     // texture create
-    mat.Create();
+    mat.CreateSRV();
     return move(mat);
 }
 

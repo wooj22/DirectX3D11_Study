@@ -28,6 +28,7 @@ public:
     vector<Vertex> vertices;
     vector<WORD> indices;
     unsigned int materialIndex;
+	int parentIndex;
 
     UINT vertexBufferStride;
     UINT vertexBufferOffset;
@@ -39,20 +40,12 @@ public:
 
     // transform
     Matrix localMatrix;   
-    Matrix worldMatrix;   
+    Matrix modelMatrix;   
 
 public:
+    RigidSubMesh();
+
     // create buffer
-    void Create();
-
-    void UpdateLocalMatrix(const Matrix& animMatrix)
-    {
-		localMatrix = animMatrix;
-    }
-
-	void UpdateWorldMatrix(const Matrix& parentMatrix)
-	{
-		worldMatrix = localMatrix * parentMatrix;
-	}
+    void CreateBuffer();
 };
 

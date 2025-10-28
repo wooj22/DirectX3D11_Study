@@ -33,7 +33,7 @@ public:
 	Matrix world;
 
 	// animation
-	
+	float currentAnimTime = 0.f;
 
 public:
 	RigidMesh();

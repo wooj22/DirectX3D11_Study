@@ -30,14 +30,13 @@ bool App::OnInit()
 	zelda->SetPosition({ 0, 0, 0 });
 	tree->SetPosition({ 100, 0, 0 });
 	tree->SetScale({ 100,100,100 });
-	boxHuman->SetPosition({ 300,0,0 });
-	boxHuman->SetScale({ 10,10,10 });
+	boxHuman->SetPosition({ 200,0,0 });
+	boxHuman->SetScale({ 0.2,0.2,0.2 });
 
 	// view init
-	camera.position.x = 300;
-	camera.position.z = -50;
+	camera.position = { 70, 50, -200 };
 	camera.Far = 1000.0f;
-	camera.moveSpeed = 200.f;
+	camera.moveSpeed = 300.f;
 	camera.GetViewMatrix(view);
 
 	// projection init 
@@ -107,8 +106,7 @@ void App::OnRender()
 	boxHuman->Render(constantBuffer, cb);
 
 	// 투명 모델
-	// 만약 모델이 여러개 있다면 Back to Front 순서 렌더
-	// 카메라에서 먼 것부터 렌더링되도록 정렬하여 렌더링 해야한다.
+	// 만약 모델이 여러개 있다면 Back to Front 순서 렌더 (카메라에서 먼 것부터 렌더링되도록 정렬하여 렌더링)
 	D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
 	tree->Render(constantBuffer, cb);
 
