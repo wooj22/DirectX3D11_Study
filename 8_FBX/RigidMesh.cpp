@@ -80,8 +80,8 @@ void RigidMesh::Update()
 				nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
 
 				/*sub.localMatrix = Matrix::CreateScale(scl) *
-								    Matrix::CreateFromQuaternion(rot) *
-								    Matrix::CreateTranslation(pos);*/
+									Matrix::CreateFromQuaternion(rot) *
+									Matrix::CreateTranslation(pos);*/
 
 				sub.localMatrix = sub.bindMatrix;
 				break;
@@ -92,6 +92,13 @@ void RigidMesh::Update()
 	// model matrix update
 	for (auto& sub : subMeshes)
 	{
+		OutputDebugStringA((sub.nodeName + "\n").c_str());
+		OutputDebugStringA(("Parent Index: " + std::to_string(sub.parentIndex) + "\n").c_str());
+		if (sub.parentIndex != -1)
+			OutputDebugStringA(("Parent Name: " + subMeshes[sub.parentIndex].nodeName + "\n").c_str());
+		else
+			OutputDebugStringA("No Parent\n");
+
 		if (sub.parentIndex != -1)
 			sub.modelMatrix = subMeshes[sub.parentIndex].modelMatrix * sub.localMatrix;
 		else
