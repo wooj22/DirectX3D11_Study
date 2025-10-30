@@ -319,7 +319,7 @@ void ModelLoder::SaveEmbeddedTextureIfExists(const aiScene* scene, const string&
 {
     const aiTexture* embedded = scene->GetEmbeddedTexture(filename.c_str());
 
-    if (embedded&& embedded->mHeight >= 0)
+    if (embedded&& embedded->mHeight == 0)
     {
         std::string tmpPath = directory + filename;
         std::ofstream file(tmpPath, std::ios::binary);
