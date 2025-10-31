@@ -38,6 +38,6 @@ public:
 
 public:
     // create buffer
-    void Create();
+    void CreateBuffer();
 };
 

@@ -1,6 +1,6 @@
 #include "StaticSubMesh.h"
 
-void StaticSubMesh::Create()
+void StaticSubMesh::CreateBuffer()
 {
     // vertex buffer
     D3D11_BUFFER_DESC vertexBufferDesc = {};

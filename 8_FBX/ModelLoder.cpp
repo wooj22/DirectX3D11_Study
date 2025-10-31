@@ -11,85 +11,6 @@
 namespace fs = std::filesystem;
 using namespace DirectX;
 
-
-// 전역 함수
-// 내장된 텍스처 저장
-static void SaveEmbeddedTextureIfExists(const aiScene* scene, const string& directory, const string& filename)
-{
-    const aiTexture* embedded = scene->GetEmbeddedTexture(filename.c_str());
-
-    if (embedded && embedded->mHeight == 0)
-    {
-        std::string tmpPath = directory + filename;
-        std::ofstream file(tmpPath, std::ios::binary);
-
-        if (file.is_open())
-        {
-            file.write(reinterpret_cast<const char*>(embedded->pcData), embedded->mWidth);
-            file.close();
-        }
-    }
-}
-
-// 전역 함수 (template)
-// Material 처리
-template <class T>
-static void ProcessMaterial(aiMaterial* material, const aiScene* scene, T* mesh)
-{
-    Material mat;
-    aiString filepath;
-    string directory = "../Resource/";
-
-    // file name save
-    // diffuse
-    if (material->GetTexture(aiTextureType_DIFFUSE, 0, &filepath) == AI_SUCCESS)
-    {
-        std::string filename = fs::path(filepath.C_Str()).filename().string();
-        SaveEmbeddedTextureIfExists(scene, directory, filename);
-
-        mat.diffuse_filename = fs::path(filepath.C_Str()).filename().wstring();
-        mat.textureFlags |= TEX_DIFFUSE;
-    }
-
-    // normal
-    if (material->GetTexture(aiTextureType_NORMALS, 0, &filepath) == AI_SUCCESS)
-    {
-        std::string filename = fs::path(filepath.C_Str()).filename().string();
-        SaveEmbeddedTextureIfExists(scene, directory, filename);
-
-        mat.normal_filename = fs::path(filepath.C_Str()).filename().wstring();
-        mat.textureFlags |= TEX_NORMAL;
-    }
-
-    // specular
-    if (material->GetTexture(aiTextureType_SPECULAR, 0, &filepath) == AI_SUCCESS)
-    {
-        std::string filename = fs::path(filepath.C_Str()).filename().string();
-        SaveEmbeddedTextureIfExists(scene, directory, filename);
-
-        mat.specular_filename = fs::path(filepath.C_Str()).filename().wstring();
-        mat.textureFlags |= TEX_SPECULAR;
-    }
-
-    // emissive
-    if (material->GetTexture(aiTextureType_EMISSIVE, 0, &filepath) == AI_SUCCESS)
-    {
-        std::string filename = fs::path(filepath.C_Str()).filename().string();
-        SaveEmbeddedTextureIfExists(scene, directory, filename);
-
-        mat.emissive_filename = fs::path(filepath.C_Str()).filename().wstring();
-        mat.textureFlags |= TEX_EMISSIVE;
-    }
-
-    // texture create
-    mat.CreateSRV();
-
-    // push
-    mesh->materials.push_back(move(mat));
-}
-
-
-
 // static member init
 Importer ModelLoder::importer;
 unsigned int ModelLoder::staticImportFlags =
@@ -105,7 +26,7 @@ aiProcess_Triangulate |  // vertex 삼각형 으로 출력
 aiProcess_GenNormals |                              // normal 
 aiProcess_GenUVCoords |                             // uv
 aiProcess_CalcTangentSpace |                        // tangent vector
-aiProcess_ConvertToLeftHanded;                     // DX용 왼손좌표계 변환
+aiProcess_ConvertToLeftHanded;                      // DX용 왼손좌표계 변환
 
 
 // Static Mash Load
@@ -122,7 +43,6 @@ StaticMesh* ModelLoder::LoadStaticMesh(const string& modelPath)
 // Rigid Mesh Load
 RigidMesh* ModelLoder::LoadRigidMesh(const string& modelPath)
 {
-    importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);
 	const aiScene* scene = importer.ReadFile(modelPath, skeletalImportFlags);
 
 	RigidMesh* rigidMesh = new RigidMesh();
@@ -145,31 +65,42 @@ SkeletalMesh* ModelLoder::LoadSkeletalMesh(const string& modelPath)
     return skeletalMesh;
 }
 
+
 /*-------------------  Static Mesh ---------------------------*/
 // Node 순회
 void ModelLoder::ProcessStaticNode(aiNode* node, const aiScene* scene, StaticMesh* staticMesh)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
-        unsigned int meshIndex = node->mMeshes[i];
-        aiMesh* mesh = scene->mMeshes[meshIndex];
+        StaticSubMesh subMesh;
+        Material material;
 
-        ProcessStaticMesh(mesh, scene, staticMesh);
+        // submesh
+        unsigned int meshIndex = node->mMeshes[i];
+        aiMesh* aiMesh = scene->mMeshes[meshIndex];
+        ProcessStaticMesh(aiMesh, scene, &subMesh);      // aiMesh -> subMesh data save
+        subMesh.CreateBuffer();                          // vertex, index buffer create
+        staticMesh->subMeshes.push_back(move(subMesh));
+
+        // material
+        subMesh.materialIndex = aiMesh->mMaterialIndex;
+        aiMaterial* aiMaterial = scene->mMaterials[aiMesh->mMaterialIndex];
+        ProcessMaterial(aiMaterial, scene, &material);    // aiMaterial -> material data save
+        material.CreateSRV();                             // shader resource view create
+        staticMesh->materials.push_back(move(material));
+        
     }
 
-    // 자식 노드 재귀 탐색
+    // child node
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
         ProcessStaticNode(node->mChildren[i], scene, staticMesh);
     }
 }
 
-
 // Mesh
-void ModelLoder::ProcessStaticMesh(aiMesh* mesh, const aiScene* scene, StaticMesh* staticMesh)
+void ModelLoder::ProcessStaticMesh(aiMesh* mesh, const aiScene* scene, StaticSubMesh* submesh)
 {
-    StaticSubMesh submesh;
-
     // vertex
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
@@ -180,7 +111,7 @@ void ModelLoder::ProcessStaticMesh(aiMesh* mesh, const aiScene* scene, StaticMes
         v.bitangent = XMFLOAT3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
         v.texcoord = XMFLOAT2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
-        submesh.vertices.push_back(move(v));
+        submesh->vertices.push_back(move(v));
     }
 
     // index
@@ -188,34 +119,39 @@ void ModelLoder::ProcessStaticMesh(aiMesh* mesh, const aiScene* scene, StaticMes
     {
         aiFace face = mesh->mFaces[i];
         for (unsigned int j = 0; j < face.mNumIndices; j++)
-            submesh.indices.push_back(move(face.mIndices[j]));
+            submesh->indices.push_back(move(face.mIndices[j]));
     }
-
-    // material
-    submesh.materialIndex = mesh->mMaterialIndex;
-    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    ProcessMaterial<StaticMesh>(material, scene, staticMesh);
-
-    // buffer create
-    submesh.Create();
-
-    // push sub mesh
-    staticMesh->subMeshes.push_back(move(submesh));
 }
 
-/*-------------------  Rigid Mesh ---------------------------*/
+
+/*-------------------  Rigid Skeleta Mesh ---------------------------*/
 // Node 순회 (초기 parent index = -1)
 void ModelLoder::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh* rigidMesh, int parentIndex)
 {
-	// SubMesh 처리
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
+        RigidSubMesh subMesh;
+        Material material;
+
+        // submesh
         unsigned int meshIndex = node->mMeshes[i];
-        aiMesh* mesh = scene->mMeshes[meshIndex];
-        ProcessRigidMesh(mesh, scene, rigidMesh, node, parentIndex);
+        aiMesh* aiMesh = scene->mMeshes[meshIndex];
+        subMesh.nodeName = node->mName.C_Str();
+        subMesh.bindMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&node->mTransformation));
+        subMesh.parentIndex = parentIndex - 1;
+        ProcessRigidMesh(aiMesh, scene, &subMesh);       // aiMesh -> subMesh data save
+        subMesh.CreateBuffer();                          // vertex, index buffer create
+        rigidMesh->subMeshes.push_back(move(subMesh));
+
+        // material
+        subMesh.materialIndex = aiMesh->mMaterialIndex;
+        aiMaterial* aiMaterial = scene->mMaterials[aiMesh->mMaterialIndex];
+        ProcessMaterial(aiMaterial, scene, &material);    // aiMaterial -> material data save
+        material.CreateSRV();                             // shader resource view create
+        rigidMesh->materials.push_back(move(material));
     }
 
-    // 자식 노드 재귀 탐색
+    // child node
     int myIndex = rigidMesh->subMeshes.size();
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
@@ -224,17 +160,8 @@ void ModelLoder::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh*
 }
 
 // Mesh
-void ModelLoder::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh* rigidMesh, aiNode* node, int parentIndex)
+void ModelLoder::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidSubMesh* subMesh)
 {
-    // node name
-    RigidSubMesh submesh;
-	submesh.nodeName = node->mName.C_Str();
-	submesh.bindMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&node->mTransformation));
-	submesh.parentIndex = parentIndex -1;
-    
-	//OutputDebugStringA((submesh.nodeName + "\n").c_str());
-	//OutputDebugStringA(("Parent Index : " + std::to_string(parentIndex-1) + "\n").c_str());
-
     // vertex
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
@@ -245,7 +172,7 @@ void ModelLoder::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh*
         v.bitangent = XMFLOAT3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
         v.texcoord = XMFLOAT2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
-        submesh.vertices.push_back(move(v));
+        subMesh->vertices.push_back(move(v));
     }
 
     // index
@@ -253,27 +180,9 @@ void ModelLoder::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidMesh*
     {
         aiFace face = mesh->mFaces[i];
         for (unsigned int j = 0; j < face.mNumIndices; j++)
-            submesh.indices.push_back(move(face.mIndices[j]));
+            subMesh->indices.push_back(move(face.mIndices[j]));
     }
-
-    // material
-    submesh.materialIndex = mesh->mMaterialIndex;
-    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    ProcessMaterial<RigidMesh>(material, scene, rigidMesh);
-
-    // buffer create
-    submesh.CreateBuffer();
-
-    // push sub mesh
-    rigidMesh->subMeshes.push_back(move(submesh));
 }
-
-// Material
-//void ModelLoder::ProcessRigidMaterial(aiMaterial* material, const aiScene* scene, RigidMesh* rigidMesh)
-//{
-//    Material mat = ProcessMaterial(material, scene);
-//    rigidMesh->materials.push_back(move(mat));
-//}
 
 // Animation
 void ModelLoder::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMesh)
@@ -346,3 +255,70 @@ void ModelLoder::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMes
     }
 }
 
+
+/*-------------------  Material & Embedded Texture ---------------------------*/
+// 내장된 텍스처 저장
+void ModelLoder::SaveEmbeddedTextureIfExists(const aiScene* scene, const string& directory, const string& filename)
+{
+    const aiTexture* embedded = scene->GetEmbeddedTexture(filename.c_str());
+
+    if (embedded && embedded->mHeight == 0)
+    {
+        std::string tmpPath = directory + filename;
+        std::ofstream file(tmpPath, std::ios::binary);
+
+        if (file.is_open())
+        {
+            file.write(reinterpret_cast<const char*>(embedded->pcData), embedded->mWidth);
+            file.close();
+        }
+    }
+}
+
+// Material
+void ModelLoder::ProcessMaterial(aiMaterial* aiMaterial, const aiScene* scene, Material* material)
+{
+    aiString filepath;
+    string directory = "../Resource/";
+
+    // file name save
+    // diffuse
+    if (aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &filepath) == AI_SUCCESS)
+    {
+        std::string filename = fs::path(filepath.C_Str()).filename().string();
+        SaveEmbeddedTextureIfExists(scene, directory, filename);
+
+        material->diffuse_filename = fs::path(filepath.C_Str()).filename().wstring();
+        material->textureFlags |= TEX_DIFFUSE;
+    }
+
+    // normal
+    if (aiMaterial->GetTexture(aiTextureType_NORMALS, 0, &filepath) == AI_SUCCESS)
+    {
+        std::string filename = fs::path(filepath.C_Str()).filename().string();
+        SaveEmbeddedTextureIfExists(scene, directory, filename);
+
+        material->normal_filename = fs::path(filepath.C_Str()).filename().wstring();
+        material->textureFlags |= TEX_NORMAL;
+    }
+
+    // specular
+    if (aiMaterial->GetTexture(aiTextureType_SPECULAR, 0, &filepath) == AI_SUCCESS)
+    {
+        std::string filename = fs::path(filepath.C_Str()).filename().string();
+        SaveEmbeddedTextureIfExists(scene, directory, filename);
+
+        material->specular_filename = fs::path(filepath.C_Str()).filename().wstring();
+        material->textureFlags |= TEX_SPECULAR;
+    }
+
+    // emissive
+    if (aiMaterial->GetTexture(aiTextureType_EMISSIVE, 0, &filepath) == AI_SUCCESS)
+    {
+        std::string filename = fs::path(filepath.C_Str()).filename().string();
+        SaveEmbeddedTextureIfExists(scene, directory, filename);
+
+        material->emissive_filename = fs::path(filepath.C_Str()).filename().wstring();
+        material->textureFlags |= TEX_EMISSIVE;
+    }
+}
