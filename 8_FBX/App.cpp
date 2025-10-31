@@ -78,7 +78,6 @@ void App::OnRender()
 	D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	D3D::deviceContext->IASetInputLayout(inputLayout);
 	D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
-	D3D::deviceContext->PSSetShader(PS_Basic, NULL, 0);
 	D3D::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
 	D3D::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
 	D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
@@ -101,10 +100,11 @@ void App::OnRender()
 	// render
 	// 불투명 모델
 	D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
-	character->Render(constantBuffer, cb);
     D3D::deviceContext->PSSetShader(PS_Toon, NULL, 0);
-	zelda->Render(constantBuffer, cb);
+    zelda->Render(constantBuffer, cb);
+
     D3D::deviceContext->PSSetShader(PS_Basic, NULL, 0);
+	character->Render(constantBuffer, cb);
 	boxHuman->Render(constantBuffer, cb);
 
 	// 투명 모델

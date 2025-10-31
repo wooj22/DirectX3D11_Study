@@ -101,7 +101,7 @@ void Skybox::Render(Matrix& view, Matrix& projection)
     viewNoTranslation._41 = 0.0f;
     viewNoTranslation._42 = 0.0f;
     viewNoTranslation._43 = 0.0f;
-
+     
     // Constant buffer Update
     Skybox_ConstantBuffer cb;
     cb.view = XMMatrixTranspose(viewNoTranslation);

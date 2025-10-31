@@ -20,6 +20,7 @@ public:
 	static ComPtr<ID3D11RenderTargetView>    renderTargetView;
 	static ComPtr<ID3D11DepthStencilView>    depthStencilView;
 	static ComPtr<ID3D11DepthStencilState>   depthStencilState;		// write off
+    static ComPtr <ID3D11RasterizerState>    rasterizerState;       // cullmode = front
 	static ComPtr<ID3D11SamplerState>	     samplerState;
 	static ComPtr<ID3D11BlendState>          blendState;			// alpha
 

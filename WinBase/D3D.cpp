@@ -8,6 +8,7 @@ ComPtr<IDXGISwapChain>		    D3D::swapChain = nullptr;
 ComPtr<ID3D11RenderTargetView>  D3D::renderTargetView = nullptr;
 ComPtr<ID3D11DepthStencilView>  D3D::depthStencilView = nullptr;
 ComPtr<ID3D11DepthStencilState> D3D::depthStencilState = nullptr;
+ComPtr <ID3D11RasterizerState>  D3D::rasterizerState = nullptr;
 ComPtr<ID3D11SamplerState>      D3D::samplerState = nullptr;
 ComPtr<ID3D11BlendState>        D3D::blendState = nullptr;
 
@@ -90,14 +91,21 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 	descDSV.Texture2D.MipSlice = 0;
 	HR_T(device->CreateDepthStencilView(pTextureDepthStencil.Get(), &descDSV, depthStencilView.GetAddressOf()));
 
-	// create depth stencil state
+	// create depth stencil state (alpha, skybox)
 	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-	dsDesc.DepthEnable = TRUE;                             
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;    
+	dsDesc.DepthEnable = TRUE;                              // 깊이 테스트 o  
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;    // 버퍼 기록 x
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;              
 	dsDesc.StencilEnable = FALSE;
 
 	HR_T(device->CreateDepthStencilState(&dsDesc, depthStencilState.GetAddressOf()));
+
+    // create rasterizer state (skybox 큐브의 안쪽이 그려지도록 cull mode front)
+    D3D11_RASTERIZER_DESC rsDesc = {};
+    rsDesc.FillMode = D3D11_FILL_SOLID;
+    rsDesc.CullMode = D3D11_CULL_FRONT;
+    rsDesc.DepthClipEnable = TRUE;
+    HR_T(device->CreateRasterizerState(&rsDesc, rasterizerState.GetAddressOf()));
 
 	// create smapler state 
 	D3D11_SAMPLER_DESC sample_Desc = {};
