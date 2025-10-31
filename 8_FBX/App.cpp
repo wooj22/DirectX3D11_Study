@@ -77,8 +77,8 @@ void App::OnRender()
 	// render pipeline stage setting
 	D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	D3D::deviceContext->IASetInputLayout(inputLayout);
-	D3D::deviceContext->VSSetShader(vertexShader, NULL, 0);
-	D3D::deviceContext->PSSetShader(pixelShader, NULL, 0);
+	D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
+	D3D::deviceContext->PSSetShader(PS_Basic, NULL, 0);
 	D3D::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
 	D3D::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
 	D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
@@ -102,7 +102,9 @@ void App::OnRender()
 	// ºÒÅõ¸í ¸ðµ¨
 	D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
 	character->Render(constantBuffer, cb);
+    D3D::deviceContext->PSSetShader(PS_Toon, NULL, 0);
 	zelda->Render(constantBuffer, cb);
+    D3D::deviceContext->PSSetShader(PS_Basic, NULL, 0);
 	boxHuman->Render(constantBuffer, cb);
 
 	// Åõ¸í ¸ðµ¨
@@ -136,15 +138,19 @@ bool App::InitRenderPipeLine()
 
 	// VS - vertex shader create
 	HR_T(D3D::device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-		vertexShaderBuffer->GetBufferSize(), NULL, &vertexShader));
+		vertexShaderBuffer->GetBufferSize(), NULL, &VS_Basic));
 	SAFE_RELEASE(vertexShaderBuffer);
 
 	// PS - pixel shader create
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	HR_T(CompileShaderFromFile(L"PS_Basic.hlsl", "main", "ps_4_0", &pixelShaderBuffer));
 	HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-		pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader));
-	SAFE_RELEASE(pixelShaderBuffer);
+		pixelShaderBuffer->GetBufferSize(), NULL, &PS_Basic));
+
+    HR_T(CompileShaderFromFile(L"PS_Toon.hlsl", "main", "ps_4_0", &pixelShaderBuffer));
+    HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+        pixelShaderBuffer->GetBufferSize(), NULL, &PS_Toon));
+    SAFE_RELEASE(pixelShaderBuffer);
 
 	// Constant Buffer create
 	D3D11_BUFFER_DESC constBuffer_Desc = {};

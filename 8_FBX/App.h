@@ -30,8 +30,9 @@ private:
 	// rendering pipeline
 	ID3D11Buffer* constantBuffer = nullptr;
 	ID3D11InputLayout* inputLayout = nullptr;
-	ID3D11VertexShader* vertexShader = nullptr;
-	ID3D11PixelShader* pixelShader = nullptr;
+	ID3D11VertexShader* VS_Basic = nullptr;
+	ID3D11PixelShader* PS_Basic = nullptr;
+    ID3D11PixelShader* PS_Toon = nullptr;
 
 	// matrix
 	Matrix view;
@@ -49,8 +50,8 @@ private:
 	// else
 	float ambientHighlight = 0.3;
 	float diffuseHighlight = 0.5;
-	float specularHighlight = 1;
-	float shininess = 300;
+	float specularHighlight = 0.7;
+	float shininess = 500;
 	float blendFactor[4] = { 0,0,0,0 }; UINT sampleMask = 0xffffffff;
 	float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
 

@@ -138,5 +138,8 @@
     <FxCompile Include="VS_Basic.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="PS_Toon.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
