@@ -103,7 +103,7 @@ void App::OnRender()
 	D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
 	character->Render(constantBuffer, cb);
 	zelda->Render(constantBuffer, cb);
-	//boxHuman->Render(constantBuffer, cb);
+	boxHuman->Render(constantBuffer, cb);
 
 	// 투명 모델
 	// 만약 모델이 여러개 있다면 Back to Front 순서 렌더 (카메라에서 먼 것부터 렌더링되도록 정렬하여 렌더링)
