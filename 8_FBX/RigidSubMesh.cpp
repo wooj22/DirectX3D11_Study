@@ -1,11 +1,5 @@
 #include "RigidSubMesh.h"
 
-RigidSubMesh::RigidSubMesh()
-{
-	localMatrix = XMMatrixIdentity();
-	modelMatrix = XMMatrixIdentity();
-}
-
 void RigidSubMesh::CreateBuffer()
 {
     // vertex buffer

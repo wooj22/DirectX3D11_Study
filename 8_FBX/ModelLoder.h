@@ -11,6 +11,7 @@ class StaticSubMesh;
 class RigidMesh;
 class RigidSubMesh;
 class SkeletalMesh;
+class SkeletalMesh;
 class Material;
 
 /*

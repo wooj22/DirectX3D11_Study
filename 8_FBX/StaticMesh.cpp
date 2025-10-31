@@ -58,7 +58,7 @@ void StaticMesh::MakeWorld()
 
 void StaticMesh::Update()
 {
-	MakeWorld();
+	//MakeWorld();
 }
 
 void StaticMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)

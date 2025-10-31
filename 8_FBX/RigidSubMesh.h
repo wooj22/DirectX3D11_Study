@@ -41,14 +41,11 @@ public:
     ID3D11Buffer* indexBuffer = nullptr;
 
     // transform
-    Matrix bindMatrix;
-    Matrix localMatrix;   
-    Matrix modelMatrix;   
+    Matrix bindMatrix = Matrix::Identity;
+    Matrix localMatrix = Matrix::Identity;
+    Matrix modelMatrix = Matrix::Identity;
 
 public:
-    RigidSubMesh();
-
-    // create buffer
     void CreateBuffer();
 };
 
