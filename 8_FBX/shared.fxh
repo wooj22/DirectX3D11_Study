@@ -1,6 +1,7 @@
 // constant buffer
 cbuffer ConstantBuffer : register(b0)
 {
+    matrix model;
     matrix world;
     matrix view;
     matrix projection;
@@ -26,7 +27,6 @@ cbuffer ConstantBuffer : register(b0)
     bool useEmissive;
     
     // skinned
-    matrix pose[4];
     matrix boneOffset[4];
 
     int boneCount;

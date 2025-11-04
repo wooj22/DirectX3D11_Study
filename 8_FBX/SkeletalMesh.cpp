@@ -105,6 +105,13 @@ void SkeletalMesh::Update()
 
 void SkeletalMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
 {
+
+    /* skinned
+         Matrix pose[4];
+         Matrix boneOffset[4];
+         int boneCount;
+    */
+
 	for (int i = 0; i < subMeshes.size(); ++i)
 	{
 		SkeletalSubMesh& sub = subMeshes[i];

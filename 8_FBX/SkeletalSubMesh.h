@@ -31,6 +31,7 @@ public:
     vector<BoneWeightVertex> vertices;
     vector<WORD>             indices;
     vector<Bone>             bones;
+    unsigned int             boneCount;
     unsigned int             materialIndex;
     
     // parent

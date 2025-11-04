@@ -50,22 +50,10 @@ struct BoneWeightVertex
     }
 };
 
-// Matrix Palette 일단 사용 x
-//// ConstantBuffer - 애니메이션 적용 후의 각 Node의 누적된 Model Transform 배열
-//struct AnimatedModelMatrix
-//{
-//    Matrix pose[128];
-//};
-//
-//// ConstantBuffer - 모든 Bone의 OffsetMatrix 배열
-//struct BoneOffsetMatrix
-//{
-//    Matrix boneOffset[128];
-//};
-
 // ConstantBuffer
 struct alignas(16) ConstantBuffer
 {
+    Matrix model;
 	Matrix world;
 	Matrix view;
 	Matrix projection;
@@ -91,9 +79,21 @@ struct alignas(16) ConstantBuffer
 	UINT useEmissive;
 
     // skinned
-    Matrix pose[4];
     Matrix boneOffset[4];
 
     int boneCount;
     Vector3 padding3;
 };
+
+// Matrix Palette 일단 사용 x
+//// ConstantBuffer - 애니메이션 적용 후의 각 Node의 누적된 Model Transform 배열
+//struct AnimatedModelMatrix
+//{
+//    Matrix pose[128];
+//};
+//
+//// ConstantBuffer - 모든 Bone의 OffsetMatrix 배열
+//struct BoneOffsetMatrix
+//{
+//    Matrix boneOffset[128];
+//};

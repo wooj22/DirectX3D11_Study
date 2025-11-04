@@ -4,6 +4,7 @@
 #include "SkeletalMesh.h"
 #include "Material.h"
 #include "AnimationClip.h"
+#include "Bone.h"
 #include <string>
 #include <iostream>
 #include <filesystem>
@@ -273,8 +274,21 @@ void ModelLoder::ProcessSkeletalNode(aiNode* node, const aiScene* scene, Skeleta
         subMesh.nodeName = node->mName.C_Str();
         subMesh.bindMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&node->mTransformation));
         subMesh.parentIndex = parentIndex - 1;
-        ProcessSkeletalMesh(aiMesh, scene, &subMesh);       // aiMesh -> subMesh data save
+
+        // vertex, index
+        ProcessSkeletalMesh(aiMesh, scene, &subMesh);    // aiMesh -> subMesh data save
         subMesh.CreateBuffer();                          // vertex, index buffer create
+
+        // bone
+        subMesh.boneCount = aiMesh->mNumBones;
+        for (int j = 0; j < subMesh.boneCount; j++)
+        {
+            aiBone* aiBone = aiMesh->mBones[j];
+            Bone bone;
+            bone.name = aiBone->mName.C_Str();
+            bone.offsetMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&aiBone->mOffsetMatrix));
+            subMesh.bones.push_back(move(bone));
+        }
         rigidMesh->subMeshes.push_back(move(subMesh));
 
         // material
@@ -304,6 +318,20 @@ void ModelLoder::ProcessSkeletalMesh(aiMesh* mesh, const aiScene* scene, Skeleta
         v.tangent = XMFLOAT3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
         v.bitangent = XMFLOAT3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
         v.texcoord = XMFLOAT2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+        
+        // bone, weight
+        for (int j = 0; j < mesh->mNumBones; j++)
+        {
+            aiBone* aiBone = mesh->mBones[j];
+            for (unsigned int k = 0; k < aiBone->mNumWeights; ++k)
+            {
+                if (aiBone->mWeights[k].mVertexId == i)
+                {
+                    v.AddBoneData(j, aiBone->mWeights[k].mWeight);
+                    break;
+                }
+            }
+        }
 
         subMesh->vertices.push_back(move(v));
     }
