@@ -58,6 +58,10 @@ struct alignas(16) ConstantBuffer
 	Matrix view;
 	Matrix projection;
 
+    // 일단 얘만 따로 처리
+    Matrix skeletal_model;
+    Matrix skeletal_world;
+
 	Vector4 lightDirection;
 	Vector4 lightColor;
 

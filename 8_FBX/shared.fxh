@@ -6,6 +6,10 @@ cbuffer ConstantBuffer : register(b0)
     matrix view;
     matrix projection;
     
+    // 일단 얘만 따로 처리
+    Matrix skeletal_model;
+    Matrix skeletal_world;
+    
     float4 lightDirection;
     float4 lightColor;
     

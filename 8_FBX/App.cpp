@@ -79,8 +79,8 @@ void App::OnRender()
 
 	// render pipeline stage setting
 	D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
 	D3D::deviceContext->IASetInputLayout(inputLayout);
-	D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
 	D3D::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
 	D3D::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
 	D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
@@ -110,15 +110,16 @@ void App::OnRender()
 	character->Render(constantBuffer, cb);
 	boxHuman->Render(constantBuffer, cb);
 
-    D3D::deviceContext->IASetInputLayout(inputLayout_weight);
     D3D::deviceContext->VSSetShader(VS_Skinning, NULL, 0);
+    D3D::deviceContext->IASetInputLayout(inputLayout_weight);
     skinningTest->Render(constantBuffer, cb);
 
 	// 투명 모델
 	// 만약 모델이 여러개 있다면 Back to Front 순서 렌더 (카메라에서 먼 것부터 렌더링되도록 정렬하여 렌더링)
-	D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
+    D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
     D3D::deviceContext->IASetInputLayout(inputLayout);
     D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
+
 	tree->Render(constantBuffer, cb);
 
 	// GUI

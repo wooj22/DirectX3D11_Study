@@ -4,13 +4,13 @@ void SkeletalSubMesh::CreateBuffer()
 {
     // vertex buffer
     D3D11_BUFFER_DESC vertexBufferDesc = {};
-    vertexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(Vertex) * vertices.size());
+    vertexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(BoneWeightVertex) * vertices.size());
     vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 
     D3D11_SUBRESOURCE_DATA vertexData = {};
     vertexData.pSysMem = vertices.data();
-    vertexBufferStride = sizeof(Vertex);
+    vertexBufferStride = sizeof(BoneWeightVertex);
     vertexBufferOffset = 0;
 
     HRESULT hr = D3D::device.Get()->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);

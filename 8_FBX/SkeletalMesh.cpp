@@ -105,20 +105,26 @@ void SkeletalMesh::Update()
 
 void SkeletalMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
 {
-
-    /* skinned
-         Matrix pose[4];
-         Matrix boneOffset[4];
-         int boneCount;
-    */
+    // world matrix
+    cb.skeletal_world = world.Transpose();
 
 	for (int i = 0; i < subMeshes.size(); ++i)
 	{
 		SkeletalSubMesh& sub = subMeshes[i];
 		Material& mat = materials[i];
 
-		// world
-		cb.world = (sub.modelMatrix * world).Transpose();
+        cb.world = (sub.modelMatrix * world).Transpose();
+
+		// model matrix
+		cb.skeletal_model = sub.modelMatrix.Transpose();
+
+        // offset matrix
+        // TODO :: 오류. 이걸 하면 이상하게 input layout 교체가 안됨
+        /*cb.boneCount = sub.boneCount;
+        for (int j = 0; j < sub.boneCount; j++)
+        {
+            cb.boneOffset[j] = sub.bones[i].offsetMatrix.Transpose();
+        }*/
 
 		// vertex buffer, indexbuffer
 		D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);
