@@ -69,12 +69,6 @@
     <ClCompile Include="SkeletalMesh.cpp">
       <Filter>Mesh\SkeletalMesh</Filter>
     </ClCompile>
-    <ClCompile Include="SkeletonInfo.cpp">
-      <Filter>Bone</Filter>
-    </ClCompile>
-    <ClCompile Include="BoneInfo.cpp">
-      <Filter>Bone</Filter>
-    </ClCompile>
     <ClCompile Include="RigidMesh.cpp">
       <Filter>Mesh\RigidMesh</Filter>
     </ClCompile>
@@ -110,10 +104,7 @@
     <ClInclude Include="Structures.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SkeletonInfo.h">
-      <Filter>Bone</Filter>
-    </ClInclude>
-    <ClInclude Include="BoneInfo.h">
+    <ClInclude Include="Bone.h">
       <Filter>Bone</Filter>
     </ClInclude>
     <ClInclude Include="AnimationClip.h">
@@ -139,6 +130,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="PS_Toon.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Skinning.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

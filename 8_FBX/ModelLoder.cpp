@@ -14,7 +14,7 @@ using namespace DirectX;
 // static member init
 Importer ModelLoder::importer;
 unsigned int ModelLoder::staticImportFlags =
-aiProcess_Triangulate |  // vertex 삼각형 으로 출력
+aiProcess_Triangulate |                             // vertex 삼각형 으로 출력
 aiProcess_GenNormals |                              // normal 
 aiProcess_GenUVCoords |                             // uv
 aiProcess_CalcTangentSpace |                        // tangent vector
@@ -22,10 +22,11 @@ aiProcess_ConvertToLeftHanded |                     // DX용 왼손좌표계 변환
 aiProcess_PreTransformVertices;                     // 노드의 변환행렬을 적용한 버텍스 생성한다.  *StaticMesh로 처리할때만
 
 unsigned int ModelLoder::skeletalImportFlags =
-aiProcess_Triangulate |  // vertex 삼각형 으로 출력
+aiProcess_Triangulate |                             // vertex 삼각형 으로 출력
 aiProcess_GenNormals |                              // normal 
 aiProcess_GenUVCoords |                             // uv
 aiProcess_CalcTangentSpace |                        // tangent vector
+aiProcess_LimitBoneWeights |                        // Bone의 영향을 받는 정점의 최대 개수를 4개로 제한
 aiProcess_ConvertToLeftHanded;                      // DX용 왼손좌표계 변환
 
 
@@ -59,8 +60,8 @@ SkeletalMesh* ModelLoder::LoadSkeletalMesh(const string& modelPath)
     const aiScene* scene = importer.ReadFile(modelPath, skeletalImportFlags);
 
     SkeletalMesh* skeletalMesh = new SkeletalMesh();
-
-    // TODO
+    ProcessSkeletalNode(scene->mRootNode, scene, skeletalMesh, -1);
+    ProcessSkeletalAnimation(scene, skeletalMesh);
 
     return skeletalMesh;
 }
@@ -124,7 +125,7 @@ void ModelLoder::ProcessStaticMesh(aiMesh* mesh, const aiScene* scene, StaticSub
 }
 
 
-/*-------------------  Rigid Skeleta Mesh ---------------------------*/
+/*-------------------  Rigid Skeletal Mesh ---------------------------*/
 // Node 순회 (초기 parent index = -1)
 void ModelLoder::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh* rigidMesh, int parentIndex)
 {
@@ -252,6 +253,137 @@ void ModelLoder::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMes
 
 		// animation clip push
 		rigidMesh->animationClips.push_back(move(clip));
+    }
+}
+
+
+
+/*------------------- Skinned Skeletal Mesh ---------------------------*/
+
+void ModelLoder::ProcessSkeletalNode(aiNode* node, const aiScene* scene, SkeletalMesh* rigidMesh, int parentIndex)
+{
+    for (unsigned int i = 0; i < node->mNumMeshes; i++)
+    {
+        SkeletalSubMesh subMesh;
+        Material material;
+
+        // submesh
+        unsigned int meshIndex = node->mMeshes[i];
+        aiMesh* aiMesh = scene->mMeshes[meshIndex];
+        subMesh.nodeName = node->mName.C_Str();
+        subMesh.bindMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&node->mTransformation));
+        subMesh.parentIndex = parentIndex - 1;
+        ProcessSkeletalMesh(aiMesh, scene, &subMesh);       // aiMesh -> subMesh data save
+        subMesh.CreateBuffer();                          // vertex, index buffer create
+        rigidMesh->subMeshes.push_back(move(subMesh));
+
+        // material
+        subMesh.materialIndex = aiMesh->mMaterialIndex;
+        aiMaterial* aiMaterial = scene->mMaterials[aiMesh->mMaterialIndex];
+        ProcessMaterial(aiMaterial, scene, &material);    // aiMaterial -> material data save
+        material.CreateSRV();                             // shader resource view create
+        rigidMesh->materials.push_back(move(material));
+    }
+
+    // child node
+    int myIndex = rigidMesh->subMeshes.size();
+    for (unsigned int i = 0; i < node->mNumChildren; i++)
+    {
+        ProcessSkeletalNode(node->mChildren[i], scene, rigidMesh, myIndex);
+    }
+}
+
+void ModelLoder::ProcessSkeletalMesh(aiMesh* mesh, const aiScene* scene, SkeletalSubMesh* subMesh)
+{
+    // vertex
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+    {
+        BoneWeightVertex v;
+        v.position = XMFLOAT3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+        v.normal = XMFLOAT3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+        v.tangent = XMFLOAT3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+        v.bitangent = XMFLOAT3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
+        v.texcoord = XMFLOAT2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+
+        subMesh->vertices.push_back(move(v));
+    }
+
+    // index
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+    {
+        aiFace face = mesh->mFaces[i];
+        for (unsigned int j = 0; j < face.mNumIndices; j++)
+            subMesh->indices.push_back(move(face.mIndices[j]));
+    }
+}
+
+void ModelLoder::ProcessSkeletalAnimation(const aiScene* scene, SkeletalMesh* rigidMesh)
+{
+    // 애니메이션이 없다면 return
+    if (scene->mNumAnimations == 0) return;
+
+    for (unsigned int i = 0; i < scene->mNumAnimations; ++i)
+    {
+        aiAnimation* aiAnim = scene->mAnimations[i];
+        AnimationClip clip;
+
+        // animation clip info
+        clip.name = aiAnim->mName.C_Str();
+        clip.duration = static_cast<float>(aiAnim->mDuration / aiAnim->mTicksPerSecond);
+        clip.ticksPerSecond = static_cast<float>(aiAnim->mTicksPerSecond);
+
+        // node animation
+        for (unsigned int j = 0; j < aiAnim->mNumChannels; ++j)
+        {
+            aiNodeAnim* aiNodeAnim = aiAnim->mChannels[j];
+            NodeAnimation nodeAnim;
+            nodeAnim.nodeName = aiNodeAnim->mNodeName.C_Str();
+            OutputDebugStringA((nodeAnim.nodeName + "\n").c_str());
+
+            // keyframe
+            // position
+            for (unsigned int k = 0; k < aiNodeAnim->mNumPositionKeys; ++k)
+            {
+                VectorKey posKey;
+                posKey.time = static_cast<float>(aiNodeAnim->mPositionKeys[k].mTime / aiAnim->mTicksPerSecond);
+                posKey.value = Vector3(
+                    aiNodeAnim->mPositionKeys[k].mValue.x,
+                    aiNodeAnim->mPositionKeys[k].mValue.y,
+                    aiNodeAnim->mPositionKeys[k].mValue.z);
+                nodeAnim.positionKeys.push_back(move(posKey));
+            }
+
+            // rotation
+            for (unsigned int k = 0; k < aiNodeAnim->mNumRotationKeys; ++k)
+            {
+                QuatKey rotKey;
+                rotKey.time = static_cast<float>(aiNodeAnim->mRotationKeys[k].mTime / aiAnim->mTicksPerSecond);
+                rotKey.value = Quaternion(
+                    aiNodeAnim->mRotationKeys[k].mValue.x,
+                    aiNodeAnim->mRotationKeys[k].mValue.y,
+                    aiNodeAnim->mRotationKeys[k].mValue.z,
+                    aiNodeAnim->mRotationKeys[k].mValue.w);
+                nodeAnim.rotationKeys.push_back(move(rotKey));
+            }
+
+            // scale
+            for (unsigned int k = 0; k < aiNodeAnim->mNumScalingKeys; ++k)
+            {
+                VectorKey scaleKey;
+                scaleKey.time = static_cast<float>(aiNodeAnim->mScalingKeys[k].mTime / aiAnim->mTicksPerSecond);
+                scaleKey.value = Vector3(
+                    aiNodeAnim->mScalingKeys[k].mValue.x,
+                    aiNodeAnim->mScalingKeys[k].mValue.y,
+                    aiNodeAnim->mScalingKeys[k].mValue.z);
+                nodeAnim.scaleKeys.push_back(move(scaleKey));
+            }
+
+            // node animation push
+            clip.nodeAnimations.push_back(move(nodeAnim));
+        }
+
+        // animation clip push
+        rigidMesh->animationClips.push_back(move(clip));
     }
 }
 

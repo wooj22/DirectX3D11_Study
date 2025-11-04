@@ -130,7 +130,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
-    <ClCompile Include="BoneInfo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="ModelLoder.cpp" />
@@ -138,17 +137,15 @@
     <ClCompile Include="RigidSubMesh.cpp" />
     <ClCompile Include="SkeletalMesh.cpp" />
     <ClCompile Include="SkeletalSubMesh.cpp" />
-    <ClCompile Include="SkeletonInfo.cpp" />
     <ClCompile Include="StaticMesh.cpp" />
     <ClCompile Include="StaticSubMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimationClip.h" />
     <ClInclude Include="App.h" />
-    <ClInclude Include="BoneInfo.h" />
+    <ClInclude Include="Bone.h" />
     <ClInclude Include="RigidMesh.h" />
     <ClInclude Include="RigidSubMesh.h" />
-    <ClInclude Include="SkeletonInfo.h" />
     <ClInclude Include="Structures.h" />
     <ClInclude Include="DirectionalLight.hpp" />
     <ClInclude Include="Material.h" />
@@ -171,6 +168,10 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="VS_Basic.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="VS_Skinning.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>

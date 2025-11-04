@@ -11,12 +11,12 @@ class StaticSubMesh;
 class RigidMesh;
 class RigidSubMesh;
 class SkeletalMesh;
-class SkeletalMesh;
+class SkeletalSubMesh;
 class Material;
 
 /*
 * [ Model Loder ]
-* - Static Mesh를 생성하여 포인터를 반환해주는 3D 모델 임포터
+* - Static Mesh, Skeletal Mesh를 생성하여 포인터를 반환해주는 3D 모델 임포터
 */
 class ModelLoder
 {
@@ -42,6 +42,11 @@ private:
 	static void ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh* rigidMesh, int parentIndex);
 	static void ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidSubMesh* subMesh);
 	static void ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMesh);
+
+    // skinned skeletal mesh
+    static void ProcessSkeletalNode(aiNode* node, const aiScene* scene, SkeletalMesh* rigidMesh, int parentIndex);
+    static void ProcessSkeletalMesh(aiMesh* mesh, const aiScene* scene, SkeletalSubMesh* subMesh);
+    static void ProcessSkeletalAnimation(const aiScene* scene, SkeletalMesh* rigidMesh);
 
 	static void SaveEmbeddedTextureIfExists(const aiScene* scene, const string& directory, const string& filename);
 	static void ProcessMaterial(aiMaterial* aiMaterial, const aiScene* scene, Material* material);

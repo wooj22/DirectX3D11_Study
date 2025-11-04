@@ -7,6 +7,7 @@
 #include <directxtk/simplemath.h>
 #include "../WinBase/D3D.h"
 #include "Structures.h"
+#include "Bone.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -25,11 +26,14 @@ using Microsoft::WRL::ComPtr;
 class SkeletalSubMesh
 {
 public:
-    // data
-    string nodeName;
-    vector<Vertex> vertices;
-    vector<WORD> indices;
-    unsigned int materialIndex;
+    // mesh data
+    string                   nodeName;
+    vector<BoneWeightVertex> vertices;
+    vector<WORD>             indices;
+    vector<Bone>             bones;
+    unsigned int             materialIndex;
+    
+    // parent
     int parentIndex;
 
     UINT vertexBufferStride;

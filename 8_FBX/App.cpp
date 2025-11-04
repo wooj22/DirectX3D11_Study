@@ -25,6 +25,7 @@ bool App::OnInit()
 	zelda = ModelLoder::LoadStaticMesh("../Resource/zeldaPosed001.fbx");
 	tree = ModelLoder::LoadStaticMesh("../Resource/Tree.fbx");
 	boxHuman = ModelLoder::LoadRigidMesh("../Resource/BoxHuman.fbx");
+    skinningTest = ModelLoder::LoadSkeletalMesh("../Resource/SkinningTest.fbx");
 
 	character->SetPosition({ -100, 0, 0 });
 	zelda->SetPosition({ 0, 0, 0 });
@@ -32,6 +33,7 @@ bool App::OnInit()
 	tree->SetScale({ 100,100,100 });
 	boxHuman->SetPosition({ 200,0,0 });
 	boxHuman->SetScale({ 0.2,0.2,0.2 });
+    skinningTest->SetPosition({ 300, 0,0 });
 
 	// view init
 	camera.position = { 70, 50, -200 };
@@ -60,6 +62,7 @@ void App::OnUpdate()
 	zelda->Update();
 	tree->Update();
 	boxHuman->Update();
+    skinningTest->Update();
 
 	// view update
 	camera.GetViewMatrix(view);
@@ -107,9 +110,15 @@ void App::OnRender()
 	character->Render(constantBuffer, cb);
 	boxHuman->Render(constantBuffer, cb);
 
+    D3D::deviceContext->IASetInputLayout(inputLayout_weight);
+    D3D::deviceContext->VSSetShader(VS_Skinning, NULL, 0);
+    skinningTest->Render(constantBuffer, cb);
+
 	// 투명 모델
 	// 만약 모델이 여러개 있다면 Back to Front 순서 렌더 (카메라에서 먼 것부터 렌더링되도록 정렬하여 렌더링)
 	D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
+    D3D::deviceContext->IASetInputLayout(inputLayout);
+    D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
 	tree->Render(constantBuffer, cb);
 
 	// GUI
@@ -122,13 +131,14 @@ void App::OnRender()
 bool App::InitRenderPipeLine()
 {
 	// IA - input layout create
+    // basic
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{   // SemanticName , SemanticIndex , Format , InputSlot , AlignedByteOffset , InputSlotClass , InstanceDataStepRate	
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 12,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 24,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 36,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 48,  D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 12,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 24,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 36,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 48,  D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
 	ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
@@ -136,10 +146,35 @@ bool App::InitRenderPipeLine()
 	HR_T(D3D::device->CreateInputLayout(layout, ARRAYSIZE(layout),
 		vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout));
 
+    // skinned
+    D3D11_INPUT_ELEMENT_DESC layout2[] =
+    {   // SemanticName , SemanticIndex , Format , InputSlot , AlignedByteOffset , InputSlotClass , InstanceDataStepRate	
+        { "POSITION"    , 0, DXGI_FORMAT_R32G32B32_FLOAT  , 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL"      , 0, DXGI_FORMAT_R32G32B32_FLOAT  , 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TANGENT"     , 0, DXGI_FORMAT_R32G32B32_FLOAT  , 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "BITANGENT"   , 0, DXGI_FORMAT_R32G32B32_FLOAT  , 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD"    , 0, DXGI_FORMAT_R32G32_FLOAT     , 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "BONE_INDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, 56, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "BONE_WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT , 0, 72, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+    };
+
+    ID3D10Blob* vertexShaderBuffer2 = nullptr;		// vs mapping
+    HR_T(CompileShaderFromFile(L"VS_Skinning.hlsl", "main", "vs_4_0", &vertexShaderBuffer2));
+    HR_T(D3D::device->CreateInputLayout(layout2, ARRAYSIZE(layout2),
+        vertexShaderBuffer2->GetBufferPointer(), vertexShaderBuffer2->GetBufferSize(), &inputLayout_weight));
+
+
 	// VS - vertex shader create
+    // basic
 	HR_T(D3D::device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
 		vertexShaderBuffer->GetBufferSize(), NULL, &VS_Basic));
 	SAFE_RELEASE(vertexShaderBuffer);
+
+    // skinned
+    HR_T(D3D::device->CreateVertexShader(vertexShaderBuffer2->GetBufferPointer(),
+        vertexShaderBuffer2->GetBufferSize(), NULL, &VS_Skinning));
+    SAFE_RELEASE(vertexShaderBuffer2);
+
 
 	// PS - pixel shader create
 	ID3D10Blob* pixelShaderBuffer = nullptr;
@@ -153,6 +188,7 @@ bool App::InitRenderPipeLine()
     SAFE_RELEASE(pixelShaderBuffer);
 
 	// Constant Buffer create
+    // basic
 	D3D11_BUFFER_DESC constBuffer_Desc = {};
 	constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
 	constBuffer_Desc.ByteWidth = sizeof(ConstantBuffer);
@@ -160,7 +196,6 @@ bool App::InitRenderPipeLine()
 	constBuffer_Desc.CPUAccessFlags = 0;
 	HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &constantBuffer));
 
-	
 	return true;
 }
 

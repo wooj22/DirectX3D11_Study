@@ -14,6 +14,7 @@
 #include "ModelLoder.h"
 #include "StaticMesh.h"
 #include "RigidMesh.h"
+#include "SkeletalMesh.h"
 #include "Material.h"
 #include "DirectionalLight.hpp"
 
@@ -30,7 +31,9 @@ private:
 	// rendering pipeline
 	ID3D11Buffer* constantBuffer = nullptr;
 	ID3D11InputLayout* inputLayout = nullptr;
+    ID3D11InputLayout* inputLayout_weight = nullptr;
 	ID3D11VertexShader* VS_Basic = nullptr;
+    ID3D11VertexShader* VS_Skinning= nullptr;
 	ID3D11PixelShader* PS_Basic = nullptr;
     ID3D11PixelShader* PS_Toon = nullptr;
 
@@ -43,6 +46,7 @@ private:
 	StaticMesh* zelda = nullptr;			// Diffuse, Opacity
 	StaticMesh* tree = nullptr;				// Diffuse, Opacity
 	RigidMesh* boxHuman = nullptr;			// transform animation
+    SkeletalMesh* skinningTest = nullptr;	// transform animation
 
 	// light
 	DirectionalLight light;

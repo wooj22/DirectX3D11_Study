@@ -18,11 +18,19 @@ cbuffer ConstantBuffer : register(b0)
     float2 padding1;
     
     float3 cameraPos;
+    float padidng2;
     
     bool useDiffuse;
     bool useNormal;
     bool useSpecular;
     bool useEmissive;
+    
+    // skinned
+    matrix pose[4];
+    matrix boneOffset[4];
+
+    int boneCount;
+    float3 padding3;
 }
 
 struct VS_INPUT
@@ -32,6 +40,17 @@ struct VS_INPUT
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
     float2 texCoord : TEXCOORD;
+};
+
+struct VS_Weight_INPUT
+{
+    float3 pos : POSITION;
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float3 bitangent : BITANGENT;
+    float2 texCoord : TEXCOORD;
+    uint4 boneIndices : BONE_INDICES;
+    float4 boneWeights : BONE_WEIGHTS;
 };
 
 struct PS_INPUT
