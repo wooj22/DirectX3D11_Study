@@ -52,7 +52,7 @@ struct Skeleton
             if (bones[i].parentIndex == -1)
                 bones[i].worldMatrix = bones[i].localMatrix;
             else
-                bones[i].worldMatrix = bones[bones[i].parentIndex].worldMatrix * bones[i].localMatrix;
+                bones[i].worldMatrix = bones[i].localMatrix * bones[bones[i].parentIndex].worldMatrix;
         }
     }
 };

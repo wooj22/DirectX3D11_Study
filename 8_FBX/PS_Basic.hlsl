@@ -25,7 +25,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     }
     else
     {
-        N = normalize(mul(input.normal, (float3x3) world));
+        N = normalize(mul(input.normal, (float3x3) input.finalWorld));
     }
 
     float3 L = normalize(-lightDirection.xyz);

@@ -19,7 +19,8 @@ PS_INPUT main(VS_Weight_INPUT input)
     
     // world
     Matrix finalWorld = mul(weightedOffsetPose, world);
-
+    output.finalWorld = finalWorld;
+    
     // clip space
     output.pos = mul(float4(input.pos, 1.0f), finalWorld); // local -> world
     output.worldPos = output.pos.xyz;                 // (world pos ÀúÀå)

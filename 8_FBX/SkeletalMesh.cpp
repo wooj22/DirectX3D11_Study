@@ -64,7 +64,7 @@ void SkeletalMesh::Update()
 	//MakeWorld();
 
 	// animation time update
-	currentAnimTime += Time::GetDeltaTime() * 0.5;
+	currentAnimTime += Time::GetDeltaTime();
 	if (currentAnimTime > animationClips[0].duration)
 		currentAnimTime = fmod(currentAnimTime, animationClips[0].duration);
 

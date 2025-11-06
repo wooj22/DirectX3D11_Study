@@ -79,8 +79,6 @@ void App::OnRender()
 
 	// render pipeline stage setting
 	D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
-	D3D::deviceContext->IASetInputLayout(inputLayout);
 	D3D::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
     D3D::deviceContext->VSSetConstantBuffers(1, 1, &offsetMatrixCB);
     D3D::deviceContext->VSSetConstantBuffers(2, 1, &poseMatrixCB);
@@ -108,6 +106,8 @@ void App::OnRender()
 	// render
 	// ºÒÅõ¸í ¸ðµ¨
 	D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
+    D3D::deviceContext->IASetInputLayout(inputLayout);
+    D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
     D3D::deviceContext->PSSetShader(PS_Toon, NULL, 0);
     zelda->Render(constantBuffer, cb);
 
@@ -210,6 +210,7 @@ bool App::InitRenderPipeLine()
     constBuffer_Desc2.CPUAccessFlags = 0;
     HR_T(D3D::device->CreateBuffer(&constBuffer_Desc2, nullptr, &offsetMatrixCB));
 
+    // poseMatrixCB
     D3D11_BUFFER_DESC constBuffer_Desc3 = {};
     constBuffer_Desc3.Usage = D3D11_USAGE_DEFAULT;
     constBuffer_Desc3.ByteWidth = sizeof(PoseMatrixCB);

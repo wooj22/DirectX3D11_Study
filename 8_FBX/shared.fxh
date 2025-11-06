@@ -65,4 +65,5 @@ struct PS_INPUT
     float3 normal : NORMAL;
     float3x3 TBN : TBN;
     float2 texCoord : TEXCOORD;
+    matrix finalWorld : FINAL_WORLD;
 };

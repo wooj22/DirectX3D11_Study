@@ -6,6 +6,7 @@ PS_INPUT main(VS_INPUT input)
     
     // wolrd
     Matrix finalWorld = mul(model, world);
+    output.finalWorld = finalWorld;
     
     // clip space
     output.pos = mul(float4(input.pos, 1.0f), finalWorld); // local -> world
