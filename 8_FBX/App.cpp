@@ -269,12 +269,11 @@ void App::RenderGUI()
 	ImGui::SliderFloat("shininess", &shininess, 0.0f, 3000.0f, "%.2f");
 
 	ImGui::Text("Models");
-	ImGui::Text("Zelda");
-	ImGui::InputFloat3("position", &zelda->position.x);
-	ImGui::SliderAngle("Pitch", &zelda->rotation.x, 0.0f, 360.0f);
-	ImGui::SliderAngle("Yaw", &zelda->rotation.y, 0.0f, 360.0f);
-	ImGui::SliderAngle("Roll", &zelda->rotation.z, 0.0f, 360.0f);
-	ImGui::InputFloat3("scale", &zelda->scale.x);
+	ImGui::InputFloat3("position", &skinningTest->position.x);
+	ImGui::SliderAngle("Pitch", &skinningTest->rotation.x, 0.0f, 360.0f);
+	ImGui::SliderAngle("Yaw", &skinningTest->rotation.y, 0.0f, 360.0f);
+	ImGui::SliderAngle("Roll", &skinningTest->rotation.z, 0.0f, 360.0f);
+	ImGui::InputFloat3("scale", &skinningTest->scale.x);
 
 	ImGui::End();
 	ImGui::Render();

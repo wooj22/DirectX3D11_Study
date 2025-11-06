@@ -61,7 +61,7 @@ void SkeletalMesh::MakeWorld()
 
 void SkeletalMesh::Update()
 {
-	//MakeWorld();
+	MakeWorld();
 
 	// animation time update
 	currentAnimTime += Time::GetDeltaTime();
