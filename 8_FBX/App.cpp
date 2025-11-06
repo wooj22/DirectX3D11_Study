@@ -83,8 +83,8 @@ void App::OnRender()
 	D3D::deviceContext->IASetInputLayout(inputLayout);
 	D3D::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
     D3D::deviceContext->VSSetConstantBuffers(1, 1, &offsetMatrixCB);
+    D3D::deviceContext->VSSetConstantBuffers(2, 1, &poseMatrixCB);
 	D3D::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
-    D3D::deviceContext->VSSetConstantBuffers(1, 1, &offsetMatrixCB);
 	D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
 	D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
 
@@ -102,29 +102,30 @@ void App::OnRender()
 	cb.shininess = shininess;
 	cb.cameraPos = camera.position;
 
-    OffsetMatrixCB skinnedCB;
+    OffsetMatrixCB boneOffsetCB;
+    PoseMatrixCB bonePoseCB;
 
 	// render
 	// 불투명 모델
 	D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->PSSetShader(PS_Toon, NULL, 0);
-    //zelda->Render(constantBuffer, cb);
+    zelda->Render(constantBuffer, cb);
 
     D3D::deviceContext->PSSetShader(PS_Basic, NULL, 0);
-	//character->Render(constantBuffer, cb);
-	//boxHuman->Render(constantBuffer, cb);
+	character->Render(constantBuffer, cb);
+	boxHuman->Render(constantBuffer, cb);
 
     D3D::deviceContext->VSSetShader(VS_Skinning, NULL, 0);
     D3D::deviceContext->IASetInputLayout(inputLayout_weight);
-    skinningTest->Render(constantBuffer, offsetMatrixCB, cb, skinnedCB);
+    skinningTest->Render(constantBuffer, offsetMatrixCB, poseMatrixCB, cb, boneOffsetCB, bonePoseCB);
 
 	// 투명 모델
 	// 만약 모델이 여러개 있다면 Back to Front 순서 렌더 (카메라에서 먼 것부터 렌더링되도록 정렬하여 렌더링)
     D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
-    D3D::deviceContext->IASetInputLayout(inputLayout);      // 여시거 this가 0xfffffffffe37 어쩌고 래
+    D3D::deviceContext->IASetInputLayout(inputLayout);
     D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
 
-	//tree->Render(constantBuffer, cb);
+	tree->Render(constantBuffer, cb);
 
 	// GUI
 	RenderGUI();
@@ -208,6 +209,13 @@ bool App::InitRenderPipeLine()
     constBuffer_Desc2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     constBuffer_Desc2.CPUAccessFlags = 0;
     HR_T(D3D::device->CreateBuffer(&constBuffer_Desc2, nullptr, &offsetMatrixCB));
+
+    D3D11_BUFFER_DESC constBuffer_Desc3 = {};
+    constBuffer_Desc3.Usage = D3D11_USAGE_DEFAULT;
+    constBuffer_Desc3.ByteWidth = sizeof(PoseMatrixCB);
+    constBuffer_Desc3.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    constBuffer_Desc3.CPUAccessFlags = 0;
+    HR_T(D3D::device->CreateBuffer(&constBuffer_Desc3, nullptr, &poseMatrixCB));
 
 	return true;
 }

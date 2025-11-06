@@ -31,6 +31,7 @@ private:
 	// rendering pipeline
 	ID3D11Buffer* constantBuffer = nullptr;
     ID3D11Buffer* offsetMatrixCB = nullptr;
+    ID3D11Buffer* poseMatrixCB = nullptr;
 	ID3D11InputLayout* inputLayout = nullptr;
     ID3D11InputLayout* inputLayout_weight = nullptr;
 	ID3D11VertexShader* VS_Basic = nullptr;

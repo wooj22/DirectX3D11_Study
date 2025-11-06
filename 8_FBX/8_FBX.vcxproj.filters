@@ -34,14 +34,14 @@
     <Filter Include="Mesh\SkeletalMesh">
       <UniqueIdentifier>{c6b445dc-b27b-4940-95b5-5bde1faef329}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Bone">
-      <UniqueIdentifier>{7d4b47a1-a85b-4b4a-bf93-70928e31d5fd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Animation">
       <UniqueIdentifier>{ff59660f-2f39-4f9b-94c6-d8303357cffe}</UniqueIdentifier>
     </Filter>
     <Filter Include="Mesh\RigidMesh">
       <UniqueIdentifier>{cc634216-92ed-4184-926f-3294c1b83fca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Skeleton">
+      <UniqueIdentifier>{7d4b47a1-a85b-4b4a-bf93-70928e31d5fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -104,8 +104,8 @@
     <ClInclude Include="Structures.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Bone.h">
-      <Filter>Bone</Filter>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="AnimationClip.h">
       <Filter>Animation</Filter>

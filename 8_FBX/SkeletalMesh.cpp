@@ -68,66 +68,56 @@ void SkeletalMesh::Update()
 	if (currentAnimTime > animationClips[0].duration)
 		currentAnimTime = fmod(currentAnimTime, animationClips[0].duration);
 
-	// local matrix update
-	// animaton key frame값을 보간해서 local matrix 업데이트
-	// TODO :: 해시테이블로 바꾸기
-	for (auto& sub : subMeshes)
+	// bone local update
+	for (auto& bone : skeleton.bones)
 	{
 		AnimationClip& clip = animationClips[0];
 		for (auto& nodeAnim : clip.nodeAnimations)
 		{
-			if (nodeAnim.nodeName == sub.nodeName)
-			{
-                OutputDebugStringA("애니메이션 변경\n");
+			if (nodeAnim.nodeName == bone.name)
+            {
 				Vector3 pos;  Quaternion rot;	Vector3 scl;
 				nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
 
-				sub.localMatrix = Matrix::CreateScale(scl) *
+				bone.localMatrix = Matrix::CreateScale(scl) *
 					Matrix::CreateFromQuaternion(rot) *
 					Matrix::CreateTranslation(pos);
 				break;
 			}
 			else
 			{
-                /*OutputDebugStringA("Animation Node name : ");
-                OutputDebugStringA(nodeAnim.nodeName.c_str());
-                OutputDebugStringA(", ");
-                OutputDebugStringA("Sub Node name : ");
-                OutputDebugStringA(sub.nodeName.c_str() + '\n');
-                OutputDebugStringA("\n");*/
-				sub.localMatrix = sub.bindMatrix;
+				bone.localMatrix = bone.bindMatrix;
 			}
 		}
 	}
 
-	// model matrix update
-	for (auto& sub : subMeshes)
-	{
-		if (sub.parentIndex != -1)
-			sub.modelMatrix = sub.localMatrix * subMeshes[sub.parentIndex].modelMatrix;
-		else
-			sub.modelMatrix = sub.localMatrix;
-	}
+    // bone world update
+    skeleton.UpdateBoneWorld();
 }
 
-void SkeletalMesh::Render(ID3D11Buffer* constantBuffer, ID3D11Buffer* offsetMatrixCB, ConstantBuffer& cb, OffsetMatrixCB& cb2)
+void SkeletalMesh::Render(ID3D11Buffer* constantBuffer, ID3D11Buffer* offsetMatrixCB, ID3D11Buffer* poseMatrixCB,
+    ConstantBuffer& cb, OffsetMatrixCB& offsetCB, PoseMatrixCB& poseCB)
 {
-    // world
+    // model world
     cb.world = world.Transpose();
 
+    // bone world (animation)
+    for (int j = 0; j < skeleton.boneCount; j++)
+    {
+        poseCB.bonePose[j] = skeleton.bones[j].worldMatrix.Transpose();
+    }
+
+    // bone offset
+    for (int j = 0; j < skeleton.boneCount; j++)
+    {
+        offsetCB.boneOffset[j] = skeleton.bones[j].offsetMatrix.Transpose();
+    }
+
+    // mesg rebder
 	for (int i = 0; i < subMeshes.size(); ++i)
 	{
 		SkeletalSubMesh& sub = subMeshes[i];
 		Material& mat = materials[i];
-
-		// model
-		cb.model = sub.modelMatrix.Transpose();
-
-        // offset matrix
-        for (int j = 0; j < sub.boneCount; j++)
-        {
-            cb2.boneOffset[j] = sub.bones[j].offsetMatrix.Transpose();
-        }
 
 		// vertex buffer, indexbuffer
 		D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);
@@ -145,7 +135,8 @@ void SkeletalMesh::Render(ID3D11Buffer* constantBuffer, ID3D11Buffer* offsetMatr
 
 		// constant buffer
 		D3D::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
-        D3D::deviceContext->UpdateSubresource(offsetMatrixCB, 0, nullptr, &cb2, 0, 0);
+        D3D::deviceContext->UpdateSubresource(offsetMatrixCB, 0, nullptr, &offsetCB, 0, 0);
+        D3D::deviceContext->UpdateSubresource(poseMatrixCB, 0, nullptr, &poseCB, 0, 0);
 
 		// draw call
 		D3D::deviceContext->DrawIndexed(sub.indexCount, 0, 0);

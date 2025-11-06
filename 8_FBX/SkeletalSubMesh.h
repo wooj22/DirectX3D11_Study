@@ -7,7 +7,7 @@
 #include <directxtk/simplemath.h>
 #include "../WinBase/D3D.h"
 #include "Structures.h"
-#include "Bone.h"
+#include "Skeleton.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -30,12 +30,7 @@ public:
     string                   nodeName;
     vector<BoneWeightVertex> vertices;
     vector<WORD>             indices;
-    vector<Bone>             bones;
-    unsigned int             boneCount;
     unsigned int             materialIndex;
-    
-    // parent
-    int parentIndex;
 
     UINT vertexBufferStride;
     UINT vertexBufferOffset;
@@ -44,11 +39,6 @@ public:
     // renderpipeline
     ID3D11Buffer* vertexBuffer = nullptr;
     ID3D11Buffer* indexBuffer = nullptr;
-
-    // transform
-    Matrix bindMatrix = Matrix::Identity;
-    Matrix localMatrix = Matrix::Identity;
-    Matrix modelMatrix = Matrix::Identity;
 
 public:
     // create buffer

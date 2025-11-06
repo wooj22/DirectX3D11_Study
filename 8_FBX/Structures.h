@@ -84,7 +84,14 @@ struct alignas(16) ConstantBuffer
 struct alignas(16) OffsetMatrixCB
 {
     // bone offset matrix
-    // submesh render시에 해당 mesh에 영향을 주고있는 모든 bone의 offset matrix 전달
     // vertex데이터에 참조할 index 4개가 들어있음
     Matrix boneOffset[128];
+};
+
+struct alignas(16) PoseMatrixCB
+{
+    // bone world matrix
+    // bone의 local matrix(animation)을 계층 구조에 따라 누적한 bone transform 배열
+    // vertex데이터에 참조할 index 4개가 들어있음
+    Matrix bonePose[128];
 };

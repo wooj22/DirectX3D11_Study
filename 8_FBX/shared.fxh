@@ -32,6 +32,12 @@ cbuffer OffsetMatrixCB : register(b1)
     matrix boneOffset[128];
 }
 
+cbuffer PoseMatrixCB : register(b2)
+{
+    matrix bonePose[128];
+}
+
+
 struct VS_INPUT
 {
     float3 pos : POSITION;

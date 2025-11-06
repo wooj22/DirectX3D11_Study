@@ -13,6 +13,7 @@ class RigidSubMesh;
 class SkeletalMesh;
 class SkeletalSubMesh;
 class Material;
+class Skeleton;
 
 /*
 * [ Model Loder ]
@@ -44,9 +45,10 @@ private:
 	static void ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMesh);
 
     // skinned skeletal mesh
-    static void ProcessSkeletalNode(aiNode* node, const aiScene* scene, SkeletalMesh* rigidMesh, int parentIndex);
-    static void ProcessSkeletalMesh(aiMesh* mesh, const aiScene* scene, SkeletalSubMesh* subMesh);
-    static void ProcessSkeletalAnimation(const aiScene* scene, SkeletalMesh* rigidMesh);
+    static void ProcessSkeleton(const aiScene* scene, SkeletalMesh* skeletalMesh);
+    static void ProcessSkeletalNode(aiNode* node, const aiScene* scene, SkeletalMesh* skeletalMesh, int parentIndex);
+    static void ProcessSkeletalMesh(aiMesh* mesh, const aiScene* scene, SkeletalSubMesh* subMesh, Skeleton& skeleton);
+    static void ProcessSkeletalAnimation(const aiScene* scene, SkeletalMesh* skeletalMesh);
 
 	static void SaveEmbeddedTextureIfExists(const aiScene* scene, const string& directory, const string& filename);
 	static void ProcessMaterial(aiMaterial* aiMaterial, const aiScene* scene, Material* material);

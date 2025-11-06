@@ -3,6 +3,7 @@
 #include "Material.h"
 #include "AnimationClip.h"
 #include "Structures.h"
+#include "Skeleton.h"
 #include <string>
 #include <DirectXMath.h>
 #include <directxtk/simplemath.h>
@@ -24,6 +25,7 @@ public:
 	// sub mesh, material, animation
 	vector<SkeletalSubMesh> subMeshes;
 	vector<Material> materials;
+    Skeleton skeleton;
 	vector<AnimationClip> animationClips;
 
 	// transform
@@ -46,6 +48,7 @@ public:
 	void MakeWorld();
 
 	void Update();
-	void Render(ID3D11Buffer* constantBuffer, ID3D11Buffer* offsetMatrixCB, ConstantBuffer& cb, OffsetMatrixCB& cb2);
+	void Render(ID3D11Buffer* constantBuffer, ID3D11Buffer* offsetMatrixCB, ID3D11Buffer* poseMatrixCB, 
+        ConstantBuffer& cb, OffsetMatrixCB& offsetCB, PoseMatrixCB& poseCB);
 };
 
