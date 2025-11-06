@@ -27,7 +27,7 @@ aiProcess_Triangulate |                             // vertex 삼각형 으로 출력
 aiProcess_GenNormals |                              // normal 
 aiProcess_GenUVCoords |                             // uv
 aiProcess_CalcTangentSpace |                        // tangent vector
-aiProcess_LimitBoneWeights |                        // Bone의 영향을 받는 정점의 최대 개수를 4개로 제한
+aiProcess_LimitBoneWeights |                        // 하나의 정점이 영향을 받는 Bone의 개수를 최대 4개로 제한
 aiProcess_ConvertToLeftHanded;                      // DX용 왼손좌표계 변환
 
 
@@ -208,7 +208,7 @@ void ModelLoder::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMes
 			aiNodeAnim* aiNodeAnim = aiAnim->mChannels[j];
 			NodeAnimation nodeAnim;
 			nodeAnim.nodeName = aiNodeAnim->mNodeName.C_Str();
-			OutputDebugStringA((nodeAnim.nodeName + "\n").c_str());
+			//OutputDebugStringA((nodeAnim.nodeName + "\n").c_str());
 
 			// keyframe
 			// position
@@ -263,6 +263,12 @@ void ModelLoder::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMes
 
 void ModelLoder::ProcessSkeletalNode(aiNode* node, const aiScene* scene, SkeletalMesh* rigidMesh, int parentIndex)
 {
+    OutputDebugStringA("Node Name : ");
+    OutputDebugStringA(node->mName.C_Str());
+    OutputDebugStringA("\n");
+    OutputDebugStringA(to_string(node->mNumMeshes).c_str());
+    OutputDebugStringA("\n");
+
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         SkeletalSubMesh subMesh;
@@ -275,6 +281,14 @@ void ModelLoder::ProcessSkeletalNode(aiNode* node, const aiScene* scene, Skeleta
         subMesh.bindMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&node->mTransformation));
         subMesh.parentIndex = parentIndex - 1;
 
+        // Node Name debug
+        /*OutputDebugStringA("Node Name : ");
+        OutputDebugStringA(node->mName.C_Str());
+        OutputDebugStringA("\n");
+        OutputDebugStringA("Sub Mesh Node Name : ");
+        OutputDebugStringA(subMesh.nodeName.c_str());
+        OutputDebugStringA("\n");*/
+
         // vertex, index
         ProcessSkeletalMesh(aiMesh, scene, &subMesh);    // aiMesh -> subMesh data save
         subMesh.CreateBuffer();                          // vertex, index buffer create
@@ -286,8 +300,13 @@ void ModelLoder::ProcessSkeletalNode(aiNode* node, const aiScene* scene, Skeleta
             aiBone* aiBone = aiMesh->mBones[j];
             Bone bone;
             bone.name = aiBone->mName.C_Str();
+            //OutputDebugStringA(bone.name.c_str());
             bone.offsetMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&aiBone->mOffsetMatrix));
             subMesh.bones.push_back(move(bone));
+
+            OutputDebugStringA("Bone Name : ");
+            OutputDebugStringA(aiBone->mName.C_Str());
+            OutputDebugStringA("\n");
         }
         rigidMesh->subMeshes.push_back(move(subMesh));
 
@@ -366,7 +385,7 @@ void ModelLoder::ProcessSkeletalAnimation(const aiScene* scene, SkeletalMesh* ri
             aiNodeAnim* aiNodeAnim = aiAnim->mChannels[j];
             NodeAnimation nodeAnim;
             nodeAnim.nodeName = aiNodeAnim->mNodeName.C_Str();
-            OutputDebugStringA((nodeAnim.nodeName + "\n").c_str());
+            //OutputDebugStringA((nodeAnim.nodeName + "\n").c_str());
 
             // keyframe
             // position

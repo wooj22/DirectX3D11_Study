@@ -64,6 +64,7 @@ void StaticMesh::Update()
 void StaticMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
 {
 	// world matrix
+    cb.model = Matrix::Identity.Transpose();
 	cb.world = XMMatrixTranspose(world);
 
 	// sub mesh render

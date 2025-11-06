@@ -78,6 +78,7 @@ void SkeletalMesh::Update()
 		{
 			if (nodeAnim.nodeName == sub.nodeName)
 			{
+                OutputDebugStringA("애니메이션 변경\n");
 				Vector3 pos;  Quaternion rot;	Vector3 scl;
 				nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
 
@@ -88,6 +89,12 @@ void SkeletalMesh::Update()
 			}
 			else
 			{
+                /*OutputDebugStringA("Animation Node name : ");
+                OutputDebugStringA(nodeAnim.nodeName.c_str());
+                OutputDebugStringA(", ");
+                OutputDebugStringA("Sub Node name : ");
+                OutputDebugStringA(sub.nodeName.c_str() + '\n');
+                OutputDebugStringA("\n");*/
 				sub.localMatrix = sub.bindMatrix;
 			}
 		}
@@ -103,28 +110,24 @@ void SkeletalMesh::Update()
 	}
 }
 
-void SkeletalMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
+void SkeletalMesh::Render(ID3D11Buffer* constantBuffer, ID3D11Buffer* offsetMatrixCB, ConstantBuffer& cb, OffsetMatrixCB& cb2)
 {
-    // world matrix
-    cb.skeletal_world = world.Transpose();
+    // world
+    cb.world = world.Transpose();
 
 	for (int i = 0; i < subMeshes.size(); ++i)
 	{
 		SkeletalSubMesh& sub = subMeshes[i];
 		Material& mat = materials[i];
 
-        cb.world = (sub.modelMatrix * world).Transpose();
-
-		// model matrix
-		cb.skeletal_model = sub.modelMatrix.Transpose();
+		// model
+		cb.model = sub.modelMatrix.Transpose();
 
         // offset matrix
-        // TODO :: 오류. 이걸 하면 이상하게 input layout 교체가 안됨
-        /*cb.boneCount = sub.boneCount;
         for (int j = 0; j < sub.boneCount; j++)
         {
-            cb.boneOffset[j] = sub.bones[i].offsetMatrix.Transpose();
-        }*/
+            cb2.boneOffset[j] = sub.bones[j].offsetMatrix.Transpose();
+        }
 
 		// vertex buffer, indexbuffer
 		D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);
@@ -142,6 +145,7 @@ void SkeletalMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
 
 		// constant buffer
 		D3D::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
+        D3D::deviceContext->UpdateSubresource(offsetMatrixCB, 0, nullptr, &cb2, 0, 0);
 
 		// draw call
 		D3D::deviceContext->DrawIndexed(sub.indexCount, 0, 0);

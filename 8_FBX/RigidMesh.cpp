@@ -104,13 +104,16 @@ void RigidMesh::Update()
 
 void RigidMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
 {
+    // world
+    cb.world = world.Transpose();
+
 	for (int i = 0; i < subMeshes.size(); ++i)
 	{
 		RigidSubMesh& sub = subMeshes[i];
 		Material& mat = materials[i];
 
-		// world
-		cb.world = (sub.modelMatrix * world).Transpose();
+		// model
+        cb.model = sub.modelMatrix.Transpose();
 
 		// vertex buffer, indexbuffer
 		D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);

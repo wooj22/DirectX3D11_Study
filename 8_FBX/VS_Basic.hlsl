@@ -4,16 +4,19 @@ PS_INPUT main(VS_INPUT input)
 {
     PS_INPUT output = (PS_INPUT) 0;
     
-     // clip space
-    output.pos = mul(float4(input.pos, 1.0f), world); // local -> world
-    output.worldPos = output.pos.xyz;                 // (world pos 저장)
-    output.pos = mul(output.pos, view);               // world -> view
-    output.pos = mul(output.pos, projection);         // view -> clip
+    // wolrd
+    Matrix finalWorld = mul(model, world);
+    
+    // clip space
+    output.pos = mul(float4(input.pos, 1.0f), finalWorld); // local -> world
+    output.worldPos = output.pos.xyz;                      // (world pos 저장)
+    output.pos = mul(output.pos, view);                    // world -> view
+    output.pos = mul(output.pos, projection);              // view -> clip
     
     // world TBN
-    float3 tangent = normalize(mul(input.tangent, (float3x3) world));
-    float3 bitangent = normalize(mul(input.bitangent, (float3x3) world));
-    output.normal = normalize(mul(input.normal, (float3x3) world));
+    float3 tangent = normalize(mul(input.tangent, (float3x3) finalWorld));
+    float3 bitangent = normalize(mul(input.bitangent, (float3x3) finalWorld));
+    output.normal = normalize(mul(input.normal, (float3x3) finalWorld));
     output.TBN = float3x3(tangent, bitangent, output.normal);
     
     // uv

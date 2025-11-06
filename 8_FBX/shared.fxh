@@ -5,11 +5,7 @@ cbuffer ConstantBuffer : register(b0)
     matrix world;
     matrix view;
     matrix projection;
-    
-    // 일단 얘만 따로 처리
-    Matrix skeletal_model;
-    Matrix skeletal_world;
-    
+
     float4 lightDirection;
     float4 lightColor;
     
@@ -29,12 +25,11 @@ cbuffer ConstantBuffer : register(b0)
     bool useNormal;
     bool useSpecular;
     bool useEmissive;
-    
-    // skinned
-    matrix boneOffset[4];
+}
 
-    int boneCount;
-    float3 padding3;
+cbuffer OffsetMatrixCB : register(b1)
+{
+    matrix boneOffset[128];
 }
 
 struct VS_INPUT

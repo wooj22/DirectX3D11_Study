@@ -46,6 +46,6 @@ public:
 	void MakeWorld();
 
 	void Update();
-	void Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb);
+	void Render(ID3D11Buffer* constantBuffer, ID3D11Buffer* offsetMatrixCB, ConstantBuffer& cb, OffsetMatrixCB& cb2);
 };
 

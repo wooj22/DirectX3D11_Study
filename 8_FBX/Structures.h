@@ -53,15 +53,13 @@ struct BoneWeightVertex
 // ConstantBuffer
 struct alignas(16) ConstantBuffer
 {
+    // transform
     Matrix model;
 	Matrix world;
 	Matrix view;
 	Matrix projection;
 
-    // 일단 얘만 따로 처리
-    Matrix skeletal_model;
-    Matrix skeletal_world;
-
+    // lighting
 	Vector4 lightDirection;
 	Vector4 lightColor;
 
@@ -81,23 +79,12 @@ struct alignas(16) ConstantBuffer
 	UINT useNormal;
 	UINT useSpecular;
 	UINT useEmissive;
-
-    // skinned
-    Matrix boneOffset[4];
-
-    int boneCount;
-    Vector3 padding3;
 };
 
-// Matrix Palette 일단 사용 x
-//// ConstantBuffer - 애니메이션 적용 후의 각 Node의 누적된 Model Transform 배열
-//struct AnimatedModelMatrix
-//{
-//    Matrix pose[128];
-//};
-//
-//// ConstantBuffer - 모든 Bone의 OffsetMatrix 배열
-//struct BoneOffsetMatrix
-//{
-//    Matrix boneOffset[128];
-//};
+struct alignas(16) OffsetMatrixCB
+{
+    // bone offset matrix
+    // submesh render시에 해당 mesh에 영향을 주고있는 모든 bone의 offset matrix 전달
+    // vertex데이터에 참조할 index 4개가 들어있음
+    Matrix boneOffset[128];
+};

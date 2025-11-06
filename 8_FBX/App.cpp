@@ -82,7 +82,9 @@ void App::OnRender()
     D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
 	D3D::deviceContext->IASetInputLayout(inputLayout);
 	D3D::deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
+    D3D::deviceContext->VSSetConstantBuffers(1, 1, &offsetMatrixCB);
 	D3D::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
+    D3D::deviceContext->VSSetConstantBuffers(1, 1, &offsetMatrixCB);
 	D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
 	D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
 
@@ -100,27 +102,29 @@ void App::OnRender()
 	cb.shininess = shininess;
 	cb.cameraPos = camera.position;
 
+    OffsetMatrixCB skinnedCB;
+
 	// render
 	// 불투명 모델
 	D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->PSSetShader(PS_Toon, NULL, 0);
-    zelda->Render(constantBuffer, cb);
+    //zelda->Render(constantBuffer, cb);
 
     D3D::deviceContext->PSSetShader(PS_Basic, NULL, 0);
-	character->Render(constantBuffer, cb);
-	boxHuman->Render(constantBuffer, cb);
+	//character->Render(constantBuffer, cb);
+	//boxHuman->Render(constantBuffer, cb);
 
     D3D::deviceContext->VSSetShader(VS_Skinning, NULL, 0);
     D3D::deviceContext->IASetInputLayout(inputLayout_weight);
-    skinningTest->Render(constantBuffer, cb);
+    skinningTest->Render(constantBuffer, offsetMatrixCB, cb, skinnedCB);
 
 	// 투명 모델
 	// 만약 모델이 여러개 있다면 Back to Front 순서 렌더 (카메라에서 먼 것부터 렌더링되도록 정렬하여 렌더링)
     D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
-    D3D::deviceContext->IASetInputLayout(inputLayout);
+    D3D::deviceContext->IASetInputLayout(inputLayout);      // 여시거 this가 0xfffffffffe37 어쩌고 래
     D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
 
-	tree->Render(constantBuffer, cb);
+	//tree->Render(constantBuffer, cb);
 
 	// GUI
 	RenderGUI();
@@ -143,7 +147,7 @@ bool App::InitRenderPipeLine()
 	};
 
 	ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
-	HR_T(CompileShaderFromFile(L"VS_Basic.hlsl", "main", "vs_4_0", &vertexShaderBuffer));
+	HR_T(CompileShaderFromFile(L"VS_Basic.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
 	HR_T(D3D::device->CreateInputLayout(layout, ARRAYSIZE(layout),
 		vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout));
 
@@ -160,7 +164,7 @@ bool App::InitRenderPipeLine()
     };
 
     ID3D10Blob* vertexShaderBuffer2 = nullptr;		// vs mapping
-    HR_T(CompileShaderFromFile(L"VS_Skinning.hlsl", "main", "vs_4_0", &vertexShaderBuffer2));
+    HR_T(CompileShaderFromFile(L"VS_Skinning.hlsl", "main", "vs_5_0", &vertexShaderBuffer2));
     HR_T(D3D::device->CreateInputLayout(layout2, ARRAYSIZE(layout2),
         vertexShaderBuffer2->GetBufferPointer(), vertexShaderBuffer2->GetBufferSize(), &inputLayout_weight));
 
@@ -179,11 +183,11 @@ bool App::InitRenderPipeLine()
 
 	// PS - pixel shader create
 	ID3D10Blob* pixelShaderBuffer = nullptr;
-	HR_T(CompileShaderFromFile(L"PS_Basic.hlsl", "main", "ps_4_0", &pixelShaderBuffer));
+	HR_T(CompileShaderFromFile(L"PS_Basic.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
 	HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
 		pixelShaderBuffer->GetBufferSize(), NULL, &PS_Basic));
 
-    HR_T(CompileShaderFromFile(L"PS_Toon.hlsl", "main", "ps_4_0", &pixelShaderBuffer));
+    HR_T(CompileShaderFromFile(L"PS_Toon.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
     HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
         pixelShaderBuffer->GetBufferSize(), NULL, &PS_Toon));
     SAFE_RELEASE(pixelShaderBuffer);
@@ -196,6 +200,14 @@ bool App::InitRenderPipeLine()
 	constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	constBuffer_Desc.CPUAccessFlags = 0;
 	HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &constantBuffer));
+
+    // offsetMatrixCB
+    D3D11_BUFFER_DESC constBuffer_Desc2 = {};
+    constBuffer_Desc2.Usage = D3D11_USAGE_DEFAULT;
+    constBuffer_Desc2.ByteWidth = sizeof(OffsetMatrixCB);
+    constBuffer_Desc2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    constBuffer_Desc2.CPUAccessFlags = 0;
+    HR_T(D3D::device->CreateBuffer(&constBuffer_Desc2, nullptr, &offsetMatrixCB));
 
 	return true;
 }
