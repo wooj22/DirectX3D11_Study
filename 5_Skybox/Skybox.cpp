@@ -68,7 +68,7 @@ void Skybox::InitRenderPipeLine()
     psBlob->Release();
 
     // CubeMap Texture Load
-    CreateDDSTextureFromFile(D3DBase::device.Get(), L"../Resource/Skybox.dds", nullptr, &skyboxTRV);
+    CreateDDSTextureFromFile(D3DBase::device.Get(), L"../Resource/skybox_cubmap.dds", nullptr, &skyboxTRV);
 
     // Constant Buffer
     D3D11_BUFFER_DESC cbDesc = {};

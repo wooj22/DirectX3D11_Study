@@ -11,7 +11,7 @@ public:
 	Vector3 rotation;
 	Vector3 position;
 
-	float FovY = 90.0f;
+	float FovY = 45.0f;
 	float Near = 0.01f;
 	float Far = 200.0f;
 
