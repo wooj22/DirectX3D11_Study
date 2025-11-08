@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="99_Module">
-      <UniqueIdentifier>{f88a6b82-7cb9-46b5-9b30-31bca36e08ed}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. D3D">
       <UniqueIdentifier>{7d2e5fa0-36e9-4bca-8f16-df6c0d89acee}</UniqueIdentifier>
     </Filter>
@@ -61,6 +58,15 @@
     <Filter Include="05. Camera">
       <UniqueIdentifier>{11c18ae4-18bd-4566-a39a-41a45d6172d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="99. Module">
+      <UniqueIdentifier>{f88a6b82-7cb9-46b5-9b30-31bca36e08ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Shaders\VertexShader">
+      <UniqueIdentifier>{837d2599-fb93-4e3b-b6e1-1c5e363dea21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Shaders\PixelShader">
+      <UniqueIdentifier>{fcced5c6-e224-4bfc-8bce-318e9af81af6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinApp.h">
@@ -76,13 +82,13 @@
       <Filter>01. D3D</Filter>
     </ClInclude>
     <ClInclude Include="Helper.h">
-      <Filter>99_Module</Filter>
+      <Filter>99. Module</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
-      <Filter>99_Module</Filter>
+      <Filter>99. Module</Filter>
     </ClInclude>
     <ClInclude Include="Time.h">
-      <Filter>99_Module</Filter>
+      <Filter>99. Module</Filter>
     </ClInclude>
     <ClInclude Include="ModelLoader.h">
       <Filter>02. ModelImporter</Filter>
@@ -135,13 +141,13 @@
       <Filter>01. D3D</Filter>
     </ClCompile>
     <ClCompile Include="Helper.cpp">
-      <Filter>99_Module</Filter>
+      <Filter>99. Module</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
-      <Filter>99_Module</Filter>
+      <Filter>99. Module</Filter>
     </ClCompile>
     <ClCompile Include="Time.cpp">
-      <Filter>99_Module</Filter>
+      <Filter>99. Module</Filter>
     </ClCompile>
     <ClCompile Include="ModelLoader.cpp">
       <Filter>02. ModelImporter</Filter>
@@ -170,5 +176,30 @@
     <ClCompile Include="SkeletalSubMesh.cpp">
       <Filter>03. Graphics\Model\Mesh\SkeletalMesh</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Skybox_PS.hlsl">
+      <Filter>04. Shaders\PixelShader</Filter>
+    </FxCompile>
+    <FxCompile Include="Skybox_VS.hlsl">
+      <Filter>04. Shaders\VertexShader</Filter>
+    </FxCompile>
+    <FxCompile Include="BlinnPhongToon_PS.hlsl">
+      <Filter>04. Shaders\PixelShader</Filter>
+    </FxCompile>
+    <FxCompile Include="BlinnPhong_PS.hlsl">
+      <Filter>04. Shaders\PixelShader</Filter>
+    </FxCompile>
+    <FxCompile Include="BaseLit_Skinned_VS.hlsl">
+      <Filter>04. Shaders\VertexShader</Filter>
+    </FxCompile>
+    <FxCompile Include="BaseLit_Static_VS.hlsl">
+      <Filter>04. Shaders\VertexShader</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shared.fxh">
+      <Filter>04. Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

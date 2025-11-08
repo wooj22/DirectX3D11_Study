@@ -1,6 +1,6 @@
 #include <shared.fxh>
 
-PS_INPUT main(VS_Skybox_INPUT input)
+PS_Skybox_INPUT main(VS_Skybox_INPUT input)
 {
     PS_Skybox_INPUT output;
 

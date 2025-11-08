@@ -1,5 +1,11 @@
 #include "D3D.h"
-#include "../WinBase/Helper.h"
+#include "Structures.hpp"
+#include "Helper.h"
+#include <d3dcompiler.h>
+#pragma comment (lib, "d3d11.lib")
+#pragma comment(lib,"d3dcompiler.lib")
+#pragma comment(lib,"dxgi.lib")
+#pragma comment(lib, "dxguid.lib") 
 
 // static member init
 ComPtr<ID3D11Device>		    D3D::device = nullptr;
@@ -7,10 +13,23 @@ ComPtr<ID3D11DeviceContext>     D3D::deviceContext = nullptr;
 ComPtr<IDXGISwapChain>		    D3D::swapChain = nullptr;
 ComPtr<ID3D11RenderTargetView>  D3D::renderTargetView = nullptr;
 ComPtr<ID3D11DepthStencilView>  D3D::depthStencilView = nullptr;
+
 ComPtr<ID3D11DepthStencilState> D3D::depthStencilState = nullptr;
 ComPtr <ID3D11RasterizerState>  D3D::rasterizerState = nullptr;
 ComPtr<ID3D11SamplerState>      D3D::samplerState = nullptr;
 ComPtr<ID3D11BlendState>        D3D::blendState = nullptr;
+
+ComPtr<ID3D11VertexShader>      D3D::BaseLit_Static_VS = nullptr;
+ComPtr<ID3D11VertexShader>      D3D::BaseLit_Skinned_VS = nullptr;
+ComPtr<ID3D11VertexShader>      D3D::Skybox_VS = nullptr;
+ComPtr<ID3D11PixelShader>       D3D::BlinnPhong_PS = nullptr;
+ComPtr<ID3D11PixelShader>       D3D::BlinnPhongToon_PS = nullptr;
+ComPtr<ID3D11PixelShader>       D3D::Skybox_PS = nullptr;
+
+ComPtr<ID3D11InputLayout> D3D::inputLayout_Vertex = nullptr;
+ComPtr<ID3D11InputLayout> D3D::inputLayout_BoneWeightVertex = nullptr;
+ComPtr<ID3D11InputLayout> D3D::inputLayout_Skybox = nullptr;
+
 
 bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 {
@@ -131,7 +150,109 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 
 	D3D::device->CreateBlendState(&blendDesc, blendState.GetAddressOf());
 
+    if (!CreateShader()) return false;
+
 	return true;
+}
+
+bool D3D::CreateShader()
+{
+    //---------------------------
+    // 1. Skybox
+    {
+        // InputLayout
+        D3D11_INPUT_ELEMENT_DESC layout[] =
+        {
+            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+        };
+
+        ID3D10Blob* vertexShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/Skybox_VS.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
+            vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_Skybox));
+
+        // VS
+        device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &Skybox_VS);
+        vertexShaderBuffer->Release();
+
+        // PS
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/Skybox_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &Skybox_PS));
+    }
+
+    //---------------------------
+    // 2. Static Mesh
+    {
+        // Input Layout
+        D3D11_INPUT_ELEMENT_DESC layout[] =
+        {   // SemanticName , SemanticIndex , Format , InputSlot , AlignedByteOffset , InputSlotClass , InstanceDataStepRate	
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 12,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 24,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 36,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 48,  D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        };
+
+        ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
+        HR_T(CompileShaderFromFile(L"../WinBase/BaseLit_Static_VS.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
+            vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_Vertex));
+
+        // VS
+        HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
+            vertexShaderBuffer->GetBufferSize(), NULL, &BaseLit_Static_VS));
+        SAFE_RELEASE(vertexShaderBuffer);
+    }
+
+    //---------------------------
+    // 3. Skeletal Mesh
+    {
+        // Input Layout
+        D3D11_INPUT_ELEMENT_DESC layout[] =
+        {   // SemanticName , SemanticIndex , Format , InputSlot , AlignedByteOffset , InputSlotClass , InstanceDataStepRate	
+            { "POSITION"    , 0, DXGI_FORMAT_R32G32B32_FLOAT  , 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "NORMAL"      , 0, DXGI_FORMAT_R32G32B32_FLOAT  , 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TANGENT"     , 0, DXGI_FORMAT_R32G32B32_FLOAT  , 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "BITANGENT"   , 0, DXGI_FORMAT_R32G32B32_FLOAT  , 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD"    , 0, DXGI_FORMAT_R32G32_FLOAT     , 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "BONE_INDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, 56, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "BONE_WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT , 0, 72, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        };
+
+        ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
+        HR_T(CompileShaderFromFile(L"../WinBase/BaseLit_Skinned_VS.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
+            vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_BoneWeightVertex));
+
+        // VS
+        HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
+            vertexShaderBuffer->GetBufferSize(), NULL, &BaseLit_Skinned_VS));
+        SAFE_RELEASE(vertexShaderBuffer);
+    }
+
+
+    //---------------------------
+    // BlinnPhong PS
+    {
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/BlinnPhong_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &BlinnPhong_PS));
+    }
+
+    //---------------------------
+    // BlinnPhong Toon PS
+    {
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/BlinnPhongToon_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &BlinnPhongToon_PS));
+        SAFE_RELEASE(pixelShaderBuffer);
+    }
+
+    return true;
 }
 
 void D3D::UnInit()
