@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Time.h"
 #include "DirectionalLight.hpp"
+#include "Structures.hpp"
 using namespace DirectX;
 
 RigidMesh::RigidMesh()
@@ -102,11 +103,10 @@ void RigidMesh::Update()
     }
 }
 
-void RigidMesh::Render(ID3D11Buffer* transformBuffer, ID3D11Buffer* materialBuffer,
-    TransformCB& transformCBData, MaterialCB& materialCBData)
+void RigidMesh::Render()
 {
     // world
-    transformCBData.world = world.Transpose();
+    D3D::transformCBData.world = world.Transpose();
 
     for (int i = 0; i < subMeshes.size(); ++i)
     {
@@ -114,7 +114,7 @@ void RigidMesh::Render(ID3D11Buffer* transformBuffer, ID3D11Buffer* materialBuff
         Material& mat = materials[i];
 
         // model
-        transformCBData.model = sub.modelMatrix.Transpose();
+        D3D::transformCBData.model = sub.modelMatrix.Transpose();
 
         // vertex buffer, indexbuffer
         D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);
@@ -125,14 +125,14 @@ void RigidMesh::Render(ID3D11Buffer* transformBuffer, ID3D11Buffer* materialBuff
         D3D::deviceContext->PSSetShaderResources(1, 1, &mat.normalSRV);
         D3D::deviceContext->PSSetShaderResources(2, 1, &mat.specualrSRV);
         D3D::deviceContext->PSSetShaderResources(3, 1, &mat.emissiveSRV);
-        materialCBData.useDiffuse = (materials[i].textureFlags & TEX_DIFFUSE) != 0;
-        materialCBData.useNormal = (materials[i].textureFlags & TEX_NORMAL) != 0;
-        materialCBData.useSpecular = (materials[i].textureFlags & TEX_SPECULAR) != 0;
-        materialCBData.useEmissive = (materials[i].textureFlags & TEX_EMISSIVE) != 0;
+        D3D::materialCBData.useDiffuse = (materials[i].textureFlags & TEX_DIFFUSE) != 0;
+        D3D::materialCBData.useNormal = (materials[i].textureFlags & TEX_NORMAL) != 0;
+        D3D::materialCBData.useSpecular = (materials[i].textureFlags & TEX_SPECULAR) != 0;
+        D3D::materialCBData.useEmissive = (materials[i].textureFlags & TEX_EMISSIVE) != 0;
 
         // constant buffer
-        D3D::deviceContext->UpdateSubresource(transformBuffer, 0, nullptr, &transformCBData, 0, 0);
-        D3D::deviceContext->UpdateSubresource(materialBuffer, 0, nullptr, &materialCBData, 0, 0);
+        D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
+        D3D::deviceContext->UpdateSubresource(D3D::materialBuffer.Get(), 0, nullptr, &D3D::materialCBData, 0, 0);
 
         // draw call
         D3D::deviceContext->DrawIndexed(sub.indexCount, 0, 0);

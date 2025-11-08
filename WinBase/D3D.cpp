@@ -1,6 +1,6 @@
 #include "D3D.h"
-#include "Structures.hpp"
 #include "Helper.h"
+#include "Structures.hpp"
 #include <d3dcompiler.h>
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -29,6 +29,18 @@ ComPtr<ID3D11PixelShader>       D3D::Skybox_PS = nullptr;
 ComPtr<ID3D11InputLayout> D3D::inputLayout_Vertex = nullptr;
 ComPtr<ID3D11InputLayout> D3D::inputLayout_BoneWeightVertex = nullptr;
 ComPtr<ID3D11InputLayout> D3D::inputLayout_Skybox = nullptr;
+
+ComPtr<ID3D11Buffer> D3D::transformBuffer = nullptr;
+ComPtr<ID3D11Buffer> D3D::lightingBuffer = nullptr;
+ComPtr<ID3D11Buffer> D3D::materialBuffer = nullptr;
+ComPtr<ID3D11Buffer> D3D::offsetMatrixBuffer = nullptr;
+ComPtr<ID3D11Buffer> D3D::poseMatrixBuffer = nullptr;
+
+TransformCB D3D::transformCBData;
+LightingCB D3D::lightingCBData;
+MaterialCB D3D::materialCBData;
+OffsetMatrixCB D3D::offsetCBData;
+PoseMatrixCB D3D::poseCBData;
 
 
 bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
@@ -151,6 +163,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 	D3D::device->CreateBlendState(&blendDesc, blendState.GetAddressOf());
 
     if (!CreateShader()) return false;
+    if (!CreateConstantBuffer()) return false;
 
 	return true;
 }
@@ -250,6 +263,61 @@ bool D3D::CreateShader()
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
             pixelShaderBuffer->GetBufferSize(), NULL, &BlinnPhongToon_PS));
         SAFE_RELEASE(pixelShaderBuffer);
+    }
+
+    return true;
+}
+
+bool D3D::CreateConstantBuffer()
+{
+    // 1. TransformCB
+    {
+        D3D11_BUFFER_DESC constBuffer_Desc = {};
+        constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
+        constBuffer_Desc.ByteWidth = sizeof(TransformCB);
+        constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        constBuffer_Desc.CPUAccessFlags = 0;
+        HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &transformBuffer));
+    }
+
+    // 2. LightingCB
+    {
+        D3D11_BUFFER_DESC constBuffer_Desc = {};
+        constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
+        constBuffer_Desc.ByteWidth = sizeof(LightingCB);
+        constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        constBuffer_Desc.CPUAccessFlags = 0;
+        HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &lightingBuffer));
+    }
+
+    // 3. MaterialCB
+    {
+        D3D11_BUFFER_DESC constBuffer_Desc = {};
+        constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
+        constBuffer_Desc.ByteWidth = sizeof(MaterialCB);
+        constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        constBuffer_Desc.CPUAccessFlags = 0;
+        HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &materialBuffer));
+    }
+
+    // 4. OffsetMatrixCB
+    {
+        D3D11_BUFFER_DESC constBuffer_Desc = {};
+        constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
+        constBuffer_Desc.ByteWidth = sizeof(OffsetMatrixCB);
+        constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        constBuffer_Desc.CPUAccessFlags = 0;
+        HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &offsetMatrixBuffer));
+    }
+
+    // 5. PoseMatrixCB
+    {
+        D3D11_BUFFER_DESC constBuffer_Desc = {};
+        constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
+        constBuffer_Desc.ByteWidth = sizeof(PoseMatrixCB);
+        constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        constBuffer_Desc.CPUAccessFlags = 0;
+        HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &poseMatrixBuffer));
     }
 
     return true;

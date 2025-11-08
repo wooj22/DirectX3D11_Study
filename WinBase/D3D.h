@@ -9,6 +9,12 @@
 
 using Microsoft::WRL::ComPtr;
 
+struct TransformCB;
+struct LightingCB;
+struct MaterialCB;
+struct OffsetMatrixCB;
+struct PoseMatrixCB;
+
 /*
 *   Direct3D 리소스 초기화용 정적 헬퍼 클래스
     여러 프로젝트에서 공통적으로 사용될 D3D 객체들을 초기화합니다.
@@ -43,10 +49,24 @@ public:
     static ComPtr<ID3D11InputLayout> inputLayout_BoneWeightVertex;
     static ComPtr<ID3D11InputLayout> inputLayout_Skybox;
 
+    // ConstantBuffer
+    static ComPtr<ID3D11Buffer> transformBuffer;
+    static ComPtr<ID3D11Buffer> lightingBuffer;
+    static ComPtr<ID3D11Buffer> materialBuffer;
+    static ComPtr<ID3D11Buffer> offsetMatrixBuffer;
+    static ComPtr<ID3D11Buffer> poseMatrixBuffer;
+
+    static TransformCB     transformCBData;
+    static LightingCB      lightingCBData;
+    static MaterialCB      materialCBData;
+    static OffsetMatrixCB  offsetCBData;
+    static PoseMatrixCB    poseCBData;
+
 
     //--------------------------------
 	static bool Init(HWND& hWnd, int screenWidth, int screenHeight);
     static bool CreateShader();
+    static bool CreateConstantBuffer();
 	static void UnInit();
 };
 

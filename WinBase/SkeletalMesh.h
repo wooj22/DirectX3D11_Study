@@ -2,7 +2,6 @@
 #include "SkeletalSubMesh.h"
 #include "Material.h"
 #include "AnimationClip.h"
-#include "Structures.hpp"
 #include "Skeleton.hpp"
 #include <string>
 #include <DirectXMath.h>
@@ -48,7 +47,6 @@ public:
     void MakeWorld();
 
     void Update();
-    void Render(ID3D11Buffer* transformBuffer, ID3D11Buffer* materialBuffer, ID3D11Buffer* offsetMatrixBuffer, ID3D11Buffer* poseMatrixBuffer,
-        TransformCB& transformCBData, MaterialCB& materialCBData, OffsetMatrixCB& offsetCB, PoseMatrixCB& poseCB);
+    void Render();
 };
 

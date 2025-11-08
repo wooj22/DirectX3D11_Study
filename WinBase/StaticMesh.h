@@ -1,7 +1,6 @@
 #pragma once
 #include "StaticSubMesh.h"
 #include "Material.h"
-#include "Structures.hpp"
 #include <string>
 #include <DirectXMath.h>
 #include <directxtk/simplemath.h>
@@ -44,7 +43,6 @@ public:
     void MakeWorld();
 
     void Update();
-    void Render(ID3D11Buffer* transformBuffer, ID3D11Buffer* materialBuffer,
-        TransformCB& transformCBData, MaterialCB& materialCBData);
+    void Render();
 };
 
