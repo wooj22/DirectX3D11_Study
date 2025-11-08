@@ -1,10 +1,10 @@
-ï»¿#include "ModelLoder.h"
+#include "ModelLoader.h"
 #include "StaticMesh.h"
 #include "RigidMesh.h"
 #include "SkeletalMesh.h"
 #include "Material.h"
 #include "AnimationClip.h"
-#include "Skeleton.h"
+#include "Skeleton.hpp"
 #include <string>
 #include <iostream>
 #include <filesystem>
@@ -15,28 +15,28 @@ using namespace DirectX;
 // static member init
 Importer ModelLoader::importer;
 unsigned int ModelLoader::staticImportFlags =
-aiProcess_Triangulate |                             // vertex ì‚¼ê°í˜• ìœ¼ë¡œ ì¶œë ¥
+aiProcess_Triangulate |                             // vertex »ï°¢Çü À¸·Î Ãâ·Â
 aiProcess_GenNormals |                              // normal 
 aiProcess_GenUVCoords |                             // uv
 aiProcess_CalcTangentSpace |                        // tangent vector
-aiProcess_ConvertToLeftHanded |                     // DXìš© ì™¼ì†ì¢Œí‘œê³„ ë³€í™˜
-aiProcess_PreTransformVertices;                     // ë…¸ë“œì˜ ë³€í™˜í–‰ë ¬ì„ ì ìš©í•œ ë²„í…ìŠ¤ ìƒì„±í•œë‹¤.  *StaticMeshë¡œ ì²˜ë¦¬í• ë•Œë§Œ
+aiProcess_ConvertToLeftHanded |                     // DX¿ë ¿Ş¼ÕÁÂÇ¥°è º¯È¯
+aiProcess_PreTransformVertices;                     // ³ëµåÀÇ º¯È¯Çà·ÄÀ» Àû¿ëÇÑ ¹öÅØ½º »ı¼ºÇÑ´Ù.  *StaticMesh·Î Ã³¸®ÇÒ¶§¸¸
 
 unsigned int ModelLoader::skeletalImportFlags =
-aiProcess_Triangulate |                             // vertex ì‚¼ê°í˜• ìœ¼ë¡œ ì¶œë ¥
+aiProcess_Triangulate |                             // vertex »ï°¢Çü À¸·Î Ãâ·Â
 aiProcess_GenNormals |                              // normal 
 aiProcess_GenUVCoords |                             // uv
 aiProcess_CalcTangentSpace |                        // tangent vector
-aiProcess_LimitBoneWeights |                        // í•˜ë‚˜ì˜ ì •ì ì´ ì˜í–¥ì„ ë°›ëŠ” Boneì˜ ê°œìˆ˜ë¥¼ ìµœëŒ€ 4ê°œë¡œ ì œí•œ
-aiProcess_ConvertToLeftHanded;                      // DXìš© ì™¼ì†ì¢Œí‘œê³„ ë³€í™˜
+aiProcess_LimitBoneWeights |                        // ÇÏ³ªÀÇ Á¤Á¡ÀÌ ¿µÇâÀ» ¹Ş´Â BoneÀÇ °³¼ö¸¦ ÃÖ´ë 4°³·Î Á¦ÇÑ
+aiProcess_ConvertToLeftHanded;                      // DX¿ë ¿Ş¼ÕÁÂÇ¥°è º¯È¯
 
 // Static Mash Load
 StaticMesh* ModelLoader::LoadStaticMesh(const string& modelPath)
 {
-	const aiScene* scene = importer.ReadFile(modelPath, staticImportFlags);
+    const aiScene* scene = importer.ReadFile(modelPath, staticImportFlags);
 
     StaticMesh* staticMesh = new StaticMesh();
-	ProcessStaticNode(scene->mRootNode, scene, staticMesh);
+    ProcessStaticNode(scene->mRootNode, scene, staticMesh);
 
     return staticMesh;
 }
@@ -44,13 +44,13 @@ StaticMesh* ModelLoader::LoadStaticMesh(const string& modelPath)
 // Rigid Mesh Load
 RigidMesh* ModelLoader::LoadRigidMesh(const string& modelPath)
 {
-	const aiScene* scene = importer.ReadFile(modelPath, skeletalImportFlags);
+    const aiScene* scene = importer.ReadFile(modelPath, skeletalImportFlags);
 
-	RigidMesh* rigidMesh = new RigidMesh();
-	ProcessRigidNode(scene->mRootNode, scene, rigidMesh, -1);
-	ProcessRigidAnimation(scene, rigidMesh);
+    RigidMesh* rigidMesh = new RigidMesh();
+    ProcessRigidNode(scene->mRootNode, scene, rigidMesh, -1);
+    ProcessRigidAnimation(scene, rigidMesh);
 
-	return rigidMesh;
+    return rigidMesh;
 }
 
 // Skeletal Mesh Load
@@ -69,7 +69,7 @@ SkeletalMesh* ModelLoader::LoadSkeletalMesh(const string& modelPath)
 
 
 /*-------------------  Static Mesh ---------------------------*/
-// Node ìˆœíšŒ
+// Node ¼øÈ¸
 void ModelLoader::ProcessStaticNode(aiNode* node, const aiScene* scene, StaticMesh* staticMesh)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
@@ -90,7 +90,7 @@ void ModelLoader::ProcessStaticNode(aiNode* node, const aiScene* scene, StaticMe
         ProcessMaterial(aiMaterial, scene, &material);    // aiMaterial -> material data save
         material.CreateSRV();                             // shader resource view create
         staticMesh->materials.push_back(move(material));
-        
+
     }
 
     // child node
@@ -127,7 +127,7 @@ void ModelLoader::ProcessStaticMesh(aiMesh* mesh, const aiScene* scene, StaticSu
 
 
 /*-------------------  Rigid Skeletal Mesh ---------------------------*/
-// Node ìˆœíšŒ (ì´ˆê¸° parent index = -1)
+// Node ¼øÈ¸ (ÃÊ±â parent index = -1)
 void ModelLoader::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh* rigidMesh, int parentIndex)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
@@ -189,7 +189,7 @@ void ModelLoader::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidSubM
 // Animation
 void ModelLoader::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMesh)
 {
-    // ì• ë‹ˆë©”ì´ì…˜ì´ ì—†ë‹¤ë©´ return
+    // ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ¾ø´Ù¸é return
     if (scene->mNumAnimations == 0) return;
 
     for (unsigned int i = 0; i < scene->mNumAnimations; ++i)
@@ -198,30 +198,30 @@ void ModelLoader::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMe
         AnimationClip clip;
 
         // animation clip info
-		clip.name = aiAnim->mName.C_Str();
-		clip.duration = static_cast<float>(aiAnim->mDuration / aiAnim->mTicksPerSecond);
-		clip.ticksPerSecond = static_cast<float>(aiAnim->mTicksPerSecond);
+        clip.name = aiAnim->mName.C_Str();
+        clip.duration = static_cast<float>(aiAnim->mDuration / aiAnim->mTicksPerSecond);
+        clip.ticksPerSecond = static_cast<float>(aiAnim->mTicksPerSecond);
 
-		// node animation
-		for (unsigned int j = 0; j < aiAnim->mNumChannels; ++j)
-		{
-			aiNodeAnim* aiNodeAnim = aiAnim->mChannels[j];
-			NodeAnimation nodeAnim;
-			nodeAnim.nodeName = aiNodeAnim->mNodeName.C_Str();
-			//OutputDebugStringA((nodeAnim.nodeName + "\n").c_str());
+        // node animation
+        for (unsigned int j = 0; j < aiAnim->mNumChannels; ++j)
+        {
+            aiNodeAnim* aiNodeAnim = aiAnim->mChannels[j];
+            NodeAnimation nodeAnim;
+            nodeAnim.nodeName = aiNodeAnim->mNodeName.C_Str();
+            //OutputDebugStringA((nodeAnim.nodeName + "\n").c_str());
 
-			// keyframe
-			// position
-			for (unsigned int k = 0; k < aiNodeAnim->mNumPositionKeys; ++k)
-			{
+            // keyframe
+            // position
+            for (unsigned int k = 0; k < aiNodeAnim->mNumPositionKeys; ++k)
+            {
                 VectorKey posKey;
-				posKey.time = static_cast<float>(aiNodeAnim->mPositionKeys[k].mTime / aiAnim->mTicksPerSecond);
-				posKey.value = Vector3(
-					aiNodeAnim->mPositionKeys[k].mValue.x,
-					aiNodeAnim->mPositionKeys[k].mValue.y,
-					aiNodeAnim->mPositionKeys[k].mValue.z);
-				nodeAnim.positionKeys.push_back(move(posKey));
-			}
+                posKey.time = static_cast<float>(aiNodeAnim->mPositionKeys[k].mTime / aiAnim->mTicksPerSecond);
+                posKey.value = Vector3(
+                    aiNodeAnim->mPositionKeys[k].mValue.x,
+                    aiNodeAnim->mPositionKeys[k].mValue.y,
+                    aiNodeAnim->mPositionKeys[k].mValue.z);
+                nodeAnim.positionKeys.push_back(move(posKey));
+            }
 
             // rotation
             for (unsigned int k = 0; k < aiNodeAnim->mNumRotationKeys; ++k)
@@ -248,12 +248,12 @@ void ModelLoader::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMe
                 nodeAnim.scaleKeys.push_back(move(scaleKey));
             }
 
-			// node animation push
-			clip.nodeAnimations.push_back(move(nodeAnim));
-		}
+            // node animation push
+            clip.nodeAnimations.push_back(move(nodeAnim));
+        }
 
-		// animation clip push
-		rigidMesh->animationClips.push_back(move(clip));
+        // animation clip push
+        rigidMesh->animationClips.push_back(move(clip));
     }
 }
 
@@ -265,19 +265,19 @@ void ModelLoader::ProcessSkeleton(const aiScene* scene, SkeletalMesh* skeletalMe
 {
     skeletalMesh->skeleton.bones.clear();
 
-    // sceneì˜ mesh ì „ì²´ë¥¼ ìˆœíšŒí•˜ë©° aiBone ì €ì¥
+    // sceneÀÇ mesh ÀüÃ¼¸¦ ¼øÈ¸ÇÏ¸ç aiBone ÀúÀå
     for (unsigned int m = 0; m < scene->mNumMeshes; ++m)
     {
         aiMesh* mesh = scene->mMeshes[m];
         for (unsigned int b = 0; b < mesh->mNumBones; ++b)
         {
-            // bone ì¤‘ë³µ skip
+            // bone Áßº¹ skip
             std::string name = mesh->mBones[b]->mName.C_Str();
             if (skeletalMesh->skeleton.nameToIndex.find(name) != skeletalMesh->skeleton.nameToIndex.end())
                 continue;
 
-            // skeletonì— bone ì¶”ê°€
-            // parent indexëŠ” node ìˆœíšŒë•Œ ì €ì¥
+            // skeleton¿¡ bone Ãß°¡
+            // parent index´Â node ¼øÈ¸¶§ ÀúÀå
             Bone bone;
             bone.name = name;
             bone.offsetMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&mesh->mBones[b]->mOffsetMatrix));
@@ -310,7 +310,7 @@ void ModelLoader::ProcessSkeletalNode(aiNode* node, const aiScene* scene, Skelet
         bone.bindMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&node->mTransformation));
         bone.parentIndex = parentIndex;
 
-        // debug - bone parent index (node ìˆœíšŒí•˜ë©´ì„œ ë§¤í•‘ ê²€ì‚¬ë¡œ ì €ì¥)
+        // debug - bone parent index (node ¼øÈ¸ÇÏ¸é¼­ ¸ÅÇÎ °Ë»ç·Î ÀúÀå)
         /*OutputDebugStringA(node->mName.C_Str());
         OutputDebugStringA(" Parent Index : ");
         OutputDebugStringA(std::to_string(bone.parentIndex).c_str());
@@ -363,7 +363,7 @@ void ModelLoader::ProcessSkeletalMesh(aiMesh* mesh, const aiScene* scene, Skelet
     }
 
     // bone index lookup table
-    // mesh->mNumBonesì— ë§ê²Œ skeletonì˜ bones ë°°ì—´ index ì €ì¥
+    // mesh->mNumBones¿¡ ¸Â°Ô skeletonÀÇ bones ¹è¿­ index ÀúÀå
     std::vector<int> boneToSkeletonIndex(mesh->mNumBones);
     for (int j = 0; j < mesh->mNumBones; ++j)
     {
@@ -399,7 +399,7 @@ void ModelLoader::ProcessSkeletalMesh(aiMesh* mesh, const aiScene* scene, Skelet
 
 void ModelLoader::ProcessSkeletalAnimation(const aiScene* scene, SkeletalMesh* skeletalMesh)
 {
-    // ì• ë‹ˆë©”ì´ì…˜ì´ ì—†ë‹¤ë©´ return
+    // ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ¾ø´Ù¸é return
     if (scene->mNumAnimations == 0) return;
 
     for (unsigned int i = 0; i < scene->mNumAnimations; ++i)
@@ -469,7 +469,7 @@ void ModelLoader::ProcessSkeletalAnimation(const aiScene* scene, SkeletalMesh* s
 
 
 /*-------------------  Material & Embedded Texture ---------------------------*/
-// ë‚´ì¥ëœ í…ìŠ¤ì²˜ ì €ì¥
+// ³»ÀåµÈ ÅØ½ºÃ³ ÀúÀå
 void ModelLoader::SaveEmbeddedTextureIfExists(const aiScene* scene, const string& directory, const string& filename)
 {
     const aiTexture* embedded = scene->GetEmbeddedTexture(filename.c_str());

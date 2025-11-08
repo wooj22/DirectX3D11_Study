@@ -19,7 +19,7 @@ class Skeleton;
 * [ Model Loder ]
 * - Static Mesh, Skeletal Mesh를 생성하여 포인터를 반환해주는 3D 모델 임포터
 */
-class ModelLoder
+class ModelLoader
 {
 public:
 	static Importer importer;

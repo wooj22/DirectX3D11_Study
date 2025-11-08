@@ -21,11 +21,11 @@ bool App::OnInit()
 	if (!InitGUI()) return false;
 
 	// model init
-	character = ModelLoder::LoadStaticMesh("../Resource/Character.fbx");
-	zelda = ModelLoder::LoadStaticMesh("../Resource/zeldaPosed001.fbx");
-	tree = ModelLoder::LoadStaticMesh("../Resource/Tree.fbx");
-	boxHuman = ModelLoder::LoadRigidMesh("../Resource/BoxHuman.fbx");
-    skinningTest = ModelLoder::LoadSkeletalMesh("../Resource/SkinningTest.fbx");
+	character = ModelLoader::LoadStaticMesh("../Resource/Character.fbx");
+	zelda = ModelLoader::LoadStaticMesh("../Resource/zeldaPosed001.fbx");
+	tree = ModelLoader::LoadStaticMesh("../Resource/Tree.fbx");
+	boxHuman = ModelLoader::LoadRigidMesh("../Resource/BoxHuman.fbx");
+    skinningTest = ModelLoader::LoadSkeletalMesh("../Resource/SkinningTest.fbx");
 
 	character->SetPosition({ -100, 0, 0 });
 	zelda->SetPosition({ 0, 0, 0 });
