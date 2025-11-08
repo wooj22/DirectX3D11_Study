@@ -95,11 +95,11 @@ void SkeletalMesh::Update()
     skeleton.UpdateBoneWorld();
 }
 
-void SkeletalMesh::Render(ID3D11Buffer* constantBuffer, ID3D11Buffer* offsetMatrixCB, ID3D11Buffer* poseMatrixCB,
-    ConstantBuffer& cb, OffsetMatrixCB& offsetCB, PoseMatrixCB& poseCB)
+void SkeletalMesh::Render(ID3D11Buffer* transformBuffer, ID3D11Buffer* materialBuffer, ID3D11Buffer* offsetMatrixBuffer, ID3D11Buffer* poseMatrixBuffer,
+    TransformCB& transformCBData, MaterialCB& materialCBData, OffsetMatrixCB& offsetCB, PoseMatrixCB& poseCB)
 {
     // model world
-    cb.world = world.Transpose();
+    transformCBData.world = world.Transpose();
 
     // bone world (animation)
     for (int j = 0; j < skeleton.boneCount; j++)
@@ -113,7 +113,7 @@ void SkeletalMesh::Render(ID3D11Buffer* constantBuffer, ID3D11Buffer* offsetMatr
         offsetCB.boneOffset[j] = skeleton.bones[j].offsetMatrix.Transpose();
     }
 
-    // mesg rebder
+    // mesh render
     for (int i = 0; i < subMeshes.size(); ++i)
     {
         SkeletalSubMesh& sub = subMeshes[i];
@@ -128,15 +128,16 @@ void SkeletalMesh::Render(ID3D11Buffer* constantBuffer, ID3D11Buffer* offsetMatr
         D3D::deviceContext->PSSetShaderResources(1, 1, &mat.normalSRV);
         D3D::deviceContext->PSSetShaderResources(2, 1, &mat.specualrSRV);
         D3D::deviceContext->PSSetShaderResources(3, 1, &mat.emissiveSRV);
-        cb.useDiffuse = (materials[i].textureFlags & TEX_DIFFUSE) != 0;
-        cb.useNormal = (materials[i].textureFlags & TEX_NORMAL) != 0;
-        cb.useSpecular = (materials[i].textureFlags & TEX_SPECULAR) != 0;
-        cb.useEmissive = (materials[i].textureFlags & TEX_EMISSIVE) != 0;
+        materialCBData.useDiffuse = (materials[i].textureFlags & TEX_DIFFUSE) != 0;
+        materialCBData.useNormal = (materials[i].textureFlags & TEX_NORMAL) != 0;
+        materialCBData.useSpecular = (materials[i].textureFlags & TEX_SPECULAR) != 0;
+        materialCBData.useEmissive = (materials[i].textureFlags & TEX_EMISSIVE) != 0;
 
         // constant buffer
-        D3D::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
-        D3D::deviceContext->UpdateSubresource(offsetMatrixCB, 0, nullptr, &offsetCB, 0, 0);
-        D3D::deviceContext->UpdateSubresource(poseMatrixCB, 0, nullptr, &poseCB, 0, 0);
+        D3D::deviceContext->UpdateSubresource(transformBuffer, 0, nullptr, &transformCBData, 0, 0);
+        D3D::deviceContext->UpdateSubresource(materialBuffer, 0, nullptr, &materialCBData, 0, 0);
+        D3D::deviceContext->UpdateSubresource(offsetMatrixBuffer, 0, nullptr, &offsetCB, 0, 0);
+        D3D::deviceContext->UpdateSubresource(poseMatrixBuffer, 0, nullptr, &poseCB, 0, 0);
 
         // draw call
         D3D::deviceContext->DrawIndexed(sub.indexCount, 0, 0);

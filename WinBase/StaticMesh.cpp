@@ -61,11 +61,12 @@ void StaticMesh::Update()
     //MakeWorld();
 }
 
-void StaticMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
+void StaticMesh::Render(ID3D11Buffer* transformBuffer, ID3D11Buffer* materialBuffer,
+    TransformCB& transformCBData, MaterialCB& materialCBData)
 {
     // world matrix
-    cb.model = Matrix::Identity.Transpose();
-    cb.world = XMMatrixTranspose(world);
+    transformCBData.model = Matrix::Identity.Transpose();
+    transformCBData.world = XMMatrixTranspose(world);
 
     // sub mesh render
     for (int i = 0; i < subMeshes.size(); ++i)
@@ -82,13 +83,14 @@ void StaticMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
         D3D::deviceContext->PSSetShaderResources(1, 1, &mat.normalSRV);
         D3D::deviceContext->PSSetShaderResources(2, 1, &mat.specualrSRV);
         D3D::deviceContext->PSSetShaderResources(3, 1, &mat.emissiveSRV);
-        cb.useDiffuse = (materials[i].textureFlags & TEX_DIFFUSE) != 0;
-        cb.useNormal = (materials[i].textureFlags & TEX_NORMAL) != 0;
-        cb.useSpecular = (materials[i].textureFlags & TEX_SPECULAR) != 0;
-        cb.useEmissive = (materials[i].textureFlags & TEX_EMISSIVE) != 0;
+        materialCBData.useDiffuse = (materials[i].textureFlags & TEX_DIFFUSE) != 0;
+        materialCBData.useNormal = (materials[i].textureFlags & TEX_NORMAL) != 0;
+        materialCBData.useSpecular = (materials[i].textureFlags & TEX_SPECULAR) != 0;
+        materialCBData.useEmissive = (materials[i].textureFlags & TEX_EMISSIVE) != 0;
 
         // constant buffer
-        D3D::deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
+        D3D::deviceContext->UpdateSubresource(transformBuffer, 0, nullptr, &transformCBData, 0, 0);
+        D3D::deviceContext->UpdateSubresource(materialBuffer, 0, nullptr, &materialCBData, 0, 0);
 
         // draw call
         D3D::deviceContext->DrawIndexed(sub.indexCount, 0, 0);

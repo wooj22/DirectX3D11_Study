@@ -44,6 +44,7 @@ public:
     void MakeWorld();
 
     void Update();
-    void Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb);
+    void Render(ID3D11Buffer* transformBuffer, ID3D11Buffer* materialBuffer,
+        TransformCB& transformCBData, MaterialCB& materialCBData);
 };
 

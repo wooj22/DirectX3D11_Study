@@ -3,7 +3,11 @@
 #include <directxtk/simplemath.h>
 using namespace DirectX::SimpleMath;
 
-// Vertex (Static, Rigid Skeletal)
+////////////////////////////////////////////
+////////////    [ Vertex ]     /////////////
+////////////////////////////////////////////
+
+// Default Model
 struct Vertex
 {
     Vector3 position;
@@ -21,7 +25,13 @@ struct Vertex
     }
 };
 
-// Vertex (Skinned Skeletal)
+// SkyBox
+struct Skybox_Vertex
+{
+    Vector3 position;
+};
+
+// Skeletal Mesh
 struct BoneWeightVertex
 {
     Vector3 position;
@@ -50,16 +60,24 @@ struct BoneWeightVertex
     }
 };
 
-// ConstantBuffer
-struct alignas(16) ConstantBuffer
+
+
+////////////////////////////////////////////
+////////    [ ConstantBuffer ]     /////////
+////////////////////////////////////////////
+
+// Transform -> b0
+struct alignas(16) TransformCB
 {
-    // transform
     Matrix model;
     Matrix world;
     Matrix view;
     Matrix projection;
+};
 
-    // lighting
+// LightingCB -> b1
+struct alignas(16) LightingCB
+{
     Vector4 lightDirection;
     Vector4 lightColor;
 
@@ -70,17 +88,22 @@ struct alignas(16) ConstantBuffer
 
     float specularHighlight;
     float shininess;
-    Vector2 padding1;
+    Vector2 padding;
 
     Vector3 cameraPos;
     float padding2;
+};
 
+// MaterialCB -> b2
+struct alignas(16) MaterialCB
+{
     UINT useDiffuse;
     UINT useNormal;
     UINT useSpecular;
     UINT useEmissive;
 };
 
+// OffsetMatrix -> b3
 struct alignas(16) OffsetMatrixCB
 {
     // bone offset matrix
@@ -88,6 +111,7 @@ struct alignas(16) OffsetMatrixCB
     Matrix boneOffset[128];
 };
 
+// PoseMatrix -> b4
 struct alignas(16) PoseMatrixCB
 {
     // bone world matrix
