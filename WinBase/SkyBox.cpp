@@ -3,20 +3,21 @@
 #include "Helper.h"
 #include "Structures.hpp"
 #include <Directxtk/DDSTextureLoader.h>
+using namespace DirectX;
 
 void SkyBox::InitRenderPipeLine()
 {
     // Vertex Buffer, Index Buffer
     Skybox_Vertex vertices[] =
     {
-        Vector3(-1.0f,  1.0f, -1.0f),
-        Vector3(1.0f,  1.0f, -1.0f),
-        Vector3(1.0f, -1.0f, -1.0f),
-        Vector3(-1.0f, -1.0f, -1.0f),
-        Vector3(-1.0f,  1.0f,  1.0f),
-        Vector3(1.0f,  1.0f,  1.0f),
-        Vector3(1.0f, -1.0f,  1.0f),
-        Vector3(-1.0f, -1.0f,  1.0f),
+        { Vector3(-1.0f,  1.0f, -1.0f) }, // 0
+        { Vector3(1.0f,  1.0f, -1.0f) }, // 1
+        { Vector3(1.0f, -1.0f, -1.0f) }, // 2
+        { Vector3(-1.0f, -1.0f, -1.0f) }, // 3
+        { Vector3(-1.0f,  1.0f,  1.0f) }, // 4
+        { Vector3(1.0f,  1.0f,  1.0f) }, // 5
+        { Vector3(1.0f, -1.0f,  1.0f) }, // 6
+        { Vector3(-1.0f, -1.0f,  1.0f) }  // 7
     };
 
     UINT indices[] =
@@ -28,6 +29,7 @@ void SkyBox::InitRenderPipeLine()
         1,5,6, 1,6,2, // right
         4,0,3, 4,3,7  // left
     };
+
     indexCount = ARRAYSIZE(indices);
 
     D3D11_BUFFER_DESC vbDesc = {};
@@ -70,25 +72,25 @@ void SkyBox::Render(Matrix& view, Matrix& projection)
     
 
     // 렌더 파이프라인 바인딩
-    D3D::deviceContext->IASetVertexBuffers(1, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
+    D3D::deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
     D3D::deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Skybox.Get());
     D3D::deviceContext->VSSetShader(D3D::Skybox_VS.Get(), nullptr, 0);
     D3D::deviceContext->PSSetShader(D3D::Skybox_PS.Get(), nullptr, 0);
     D3D::deviceContext->PSSetShaderResources(4, 1, &skyboxTRV);
-    D3D::deviceContext->VSSetConstantBuffers(0, 1, &D3D::transformBuffer);
-    D3D::deviceContext->PSSetConstantBuffers(0, 1, &D3D::transformBuffer);
+    D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
+    D3D::deviceContext->PSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
     // Rasterizer, DepthStencilState 설정
-    //D3DBase::deviceContext->RSSetState(skyboxRS);     // 메쉬 자체가 뒷면 기준이기때문에 생략 가능
+    D3D::deviceContext->RSSetState(D3D::rasterizerState.Get());     
     D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 1);
 
     // Draw
     D3D::deviceContext->DrawIndexed(indexCount, 0, 0);
 
     // Rasterizer, DepthStencilState 원상복귀
-    //D3DBase::deviceContext->RSSetState(nullptr);
+    D3D::deviceContext->RSSetState(nullptr);
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
 }
 

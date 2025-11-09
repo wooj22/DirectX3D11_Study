@@ -191,8 +191,7 @@ bool D3D::CreateShader()
         // PS
         ID3D10Blob* pixelShaderBuffer = nullptr;
         HR_T(CompileShaderFromFile(L"../WinBase/Skybox_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
-        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-            pixelShaderBuffer->GetBufferSize(), NULL, &Skybox_PS));
+        HR_T(device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &Skybox_PS));
     }
 
     //---------------------------

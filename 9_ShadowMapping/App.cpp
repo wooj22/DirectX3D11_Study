@@ -20,6 +20,7 @@ bool App::OnInit()
     if (!D3D::Init(hWnd, screenWidth, screenHeight)) return false;
     if (!InitRenderPipeLine()) return false;
     if (!InitGUI()) return false;
+    skybox.InitRenderPipeLine();
 
     // model init
     character = ModelLoader::LoadStaticMesh("../Resource/Character.fbx");
@@ -35,11 +36,11 @@ bool App::OnInit()
     tree->SetScale({ 100,100,100 });
     boxHuman->SetPosition({ 200,0,0 });
     boxHuman->SetScale({ 0.2,0.2,0.2 });
-    warrior->SetPosition({ 300, 0,0 });
-    enemy->SetPosition({ 500, 0,0 });
+    warrior->SetPosition({ 350, 0,0 });
+    enemy->SetPosition({ 600, 0,0 });
 
     // view init
-    camera.position = { 70, 50, -200 };
+    camera.position = { 200, 50, -500 };
     camera.Far = 1000.0f;
     camera.moveSpeed = 300.f;
     camera.GetViewMatrix(view);
@@ -86,6 +87,8 @@ void App::OnRender()
     D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
     D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
 
+    
+
     // constant buffer
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
@@ -98,6 +101,9 @@ void App::OnRender()
     D3D::deviceContext->VSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
     
+    // skybox render 
+    skybox.Render(view, projection);
+
     D3D::transformCBData.view = XMMatrixTranspose(view);
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::lightingCBData.lightDirection = light.direction;
@@ -111,6 +117,8 @@ void App::OnRender()
     D3D::lightingCBData.cameraPos = camera.position;
 
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
+
+    
 
     // render
     // 불투명 모델
@@ -151,7 +159,7 @@ bool App::InitRenderPipeLine()
 
 void App::UninitRenderPipeLine()
 {
-
+    skybox.UninitRenderPipeLine();
 }
 
 bool App::InitGUI()

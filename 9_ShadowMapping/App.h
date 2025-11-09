@@ -7,6 +7,7 @@
 #include "../WinBase/SkeletalMesh.h"
 #include "../WinBase/Material.h"
 #include "../WinBase/DirectionalLight.hpp"
+#include "../WinBase/SkyBox.h"
 
 #include <d3d11.h>
 #include <dxgidebug.h>
@@ -43,6 +44,9 @@ private:
 
     // light
     DirectionalLight light;
+
+    // skybox
+    SkyBox skybox;
 
     // else
     float ambientHighlight = 0.3;
