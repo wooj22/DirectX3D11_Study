@@ -25,7 +25,7 @@ bool App::OnInit()
 	zelda = ModelLoader::LoadStaticMesh("../Resource/zeldaPosed001.fbx");
 	tree = ModelLoader::LoadStaticMesh("../Resource/Tree.fbx");
 	boxHuman = ModelLoader::LoadRigidMesh("../Resource/BoxHuman.fbx");
-    skinningTest = ModelLoader::LoadSkeletalMesh("../Resource/SkinningTest.fbx");
+    warrior = ModelLoader::LoadSkeletalMesh("../Resource/SkinningTest.fbx");
 
 	character->SetPosition({ -100, 0, 0 });
 	zelda->SetPosition({ 0, 0, 0 });
@@ -33,7 +33,7 @@ bool App::OnInit()
 	tree->SetScale({ 100,100,100 });
 	boxHuman->SetPosition({ 200,0,0 });
 	boxHuman->SetScale({ 0.2,0.2,0.2 });
-    skinningTest->SetPosition({ 300, 0,0 });
+    warrior->SetPosition({ 300, 0,0 });
 
 	// view init
 	camera.position = { 70, 50, -200 };
@@ -62,7 +62,7 @@ void App::OnUpdate()
 	zelda->Update();
 	tree->Update();
 	boxHuman->Update();
-    skinningTest->Update();
+    warrior->Update();
 
 	// view update
 	camera.GetViewMatrix(view);
@@ -117,7 +117,7 @@ void App::OnRender()
 
     D3D::deviceContext->VSSetShader(VS_Skinning, NULL, 0);
     D3D::deviceContext->IASetInputLayout(inputLayout_weight);
-    skinningTest->Render(constantBuffer, offsetMatrixCB, poseMatrixCB, cb, boneOffsetCB, bonePoseCB);
+    warrior->Render(constantBuffer, offsetMatrixCB, poseMatrixCB, cb, boneOffsetCB, bonePoseCB);
 
 	// 투명 모델
 	// 만약 모델이 여러개 있다면 Back to Front 순서 렌더 (카메라에서 먼 것부터 렌더링되도록 정렬하여 렌더링)
@@ -269,11 +269,11 @@ void App::RenderGUI()
 	ImGui::SliderFloat("shininess", &shininess, 0.0f, 3000.0f, "%.2f");
 
 	ImGui::Text("Models");
-	ImGui::InputFloat3("position", &skinningTest->position.x);
-	ImGui::SliderAngle("Pitch", &skinningTest->rotation.x, 0.0f, 360.0f);
-	ImGui::SliderAngle("Yaw", &skinningTest->rotation.y, 0.0f, 360.0f);
-	ImGui::SliderAngle("Roll", &skinningTest->rotation.z, 0.0f, 360.0f);
-	ImGui::InputFloat3("scale", &skinningTest->scale.x);
+	ImGui::InputFloat3("position", &warrior->position.x);
+	ImGui::SliderAngle("Pitch", &warrior->rotation.x, 0.0f, 360.0f);
+	ImGui::SliderAngle("Yaw", &warrior->rotation.y, 0.0f, 360.0f);
+	ImGui::SliderAngle("Roll", &warrior->rotation.z, 0.0f, 360.0f);
+	ImGui::InputFloat3("scale", &warrior->scale.x);
 
 	ImGui::End();
 	ImGui::Render();

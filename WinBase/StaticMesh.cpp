@@ -89,7 +89,7 @@ void StaticMesh::Render()
         D3D::materialCBData.useEmissive = (materials[i].textureFlags & TEX_EMISSIVE) != 0;
 
         // constant buffer
-        D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
+        D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0); // constant buffe°¡ ¿¹¿Ü
         D3D::deviceContext->UpdateSubresource(D3D::materialBuffer.Get(), 0, nullptr, &D3D::materialCBData, 0, 0);
 
         // draw call

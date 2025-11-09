@@ -1,4 +1,4 @@
-#include "D3D.h"
+ï»¿#include "D3D.h"
 #include "Helper.h"
 #include "Structures.hpp"
 #include <d3dcompiler.h>
@@ -84,7 +84,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 	ID3D11Texture2D* pBackBufferTexture = nullptr;
 	HR_T(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture));					// backbuffer get
 	HR_T(device->CreateRenderTargetView(pBackBufferTexture, NULL, renderTargetView.GetAddressOf()));	    // RTV create
-	SAFE_RELEASE(pBackBufferTexture);															            // RTV¿¡¼­ backbuffer texture ÂüÁ¶Áß (¸Ş¸ğ¸® °ü¸®)
+	SAFE_RELEASE(pBackBufferTexture);															            // RTVì—ì„œ backbuffer texture ì°¸ì¡°ì¤‘ (ë©”ëª¨ë¦¬ ê´€ë¦¬)
 
 	ID3D11RenderTargetView* rtv = renderTargetView.Get();
 	deviceContext->OMSetRenderTargets(1, &rtv, nullptr);	// render targetview  binding
@@ -124,14 +124,14 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 
 	// create depth stencil state (alpha, skybox)
 	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-	dsDesc.DepthEnable = TRUE;                              // ±íÀÌ Å×½ºÆ® o  
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;    // ¹öÆÛ ±â·Ï x
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;              
+	dsDesc.DepthEnable = TRUE;                              // ê¹Šì´ í…ŒìŠ¤íŠ¸ o  
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;    // ë²„í¼ ê¸°ë¡ x
+    dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	dsDesc.StencilEnable = FALSE;
 
 	HR_T(device->CreateDepthStencilState(&dsDesc, depthStencilState.GetAddressOf()));
 
-    // create rasterizer state (skybox Å¥ºêÀÇ ¾ÈÂÊÀÌ ±×·ÁÁöµµ·Ï cull mode front)
+    // create rasterizer state (skybox íë¸Œì˜ ì•ˆìª½ì´ ê·¸ë ¤ì§€ë„ë¡ cull mode front)
     D3D11_RASTERIZER_DESC rsDesc = {};
     rsDesc.FillMode = D3D11_FILL_SOLID;
     rsDesc.CullMode = D3D11_CULL_FRONT;
@@ -140,8 +140,8 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 
 	// create smapler state 
 	D3D11_SAMPLER_DESC sample_Desc = {};
-	sample_Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;			// »óÇÏÁÂ¿ì ÅØ¼¿ º¸°£
-	sample_Desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;				// 0~1 ¹üÀ§¸¦ ¹ş¾î³­ uv´Â ¼Ò¼ö ºÎºĞ¸¸ »ç¿ë
+	sample_Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;			// ìƒí•˜ì¢Œìš° í…ì…€ ë³´ê°„
+	sample_Desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;				// 0~1 ë²”ìœ„ë¥¼ ë²—ì–´ë‚œ uvëŠ” ì†Œìˆ˜ ë¶€ë¶„ë§Œ ì‚¬ìš©
 	sample_Desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sample_Desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	sample_Desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
@@ -277,7 +277,7 @@ bool D3D::CreateConstantBuffer()
         constBuffer_Desc.ByteWidth = sizeof(TransformCB);
         constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         constBuffer_Desc.CPUAccessFlags = 0;
-        HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &transformBuffer));
+        HR_T(device->CreateBuffer(&constBuffer_Desc, nullptr, &transformBuffer));
     }
 
     // 2. LightingCB
@@ -287,7 +287,7 @@ bool D3D::CreateConstantBuffer()
         constBuffer_Desc.ByteWidth = sizeof(LightingCB);
         constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         constBuffer_Desc.CPUAccessFlags = 0;
-        HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &lightingBuffer));
+        HR_T(device->CreateBuffer(&constBuffer_Desc, nullptr, &lightingBuffer));
     }
 
     // 3. MaterialCB
@@ -297,7 +297,7 @@ bool D3D::CreateConstantBuffer()
         constBuffer_Desc.ByteWidth = sizeof(MaterialCB);
         constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         constBuffer_Desc.CPUAccessFlags = 0;
-        HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &materialBuffer));
+        HR_T(device->CreateBuffer(&constBuffer_Desc, nullptr, &materialBuffer));
     }
 
     // 4. OffsetMatrixCB
@@ -307,7 +307,7 @@ bool D3D::CreateConstantBuffer()
         constBuffer_Desc.ByteWidth = sizeof(OffsetMatrixCB);
         constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         constBuffer_Desc.CPUAccessFlags = 0;
-        HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &offsetMatrixBuffer));
+        HR_T(device->CreateBuffer(&constBuffer_Desc, nullptr, &offsetMatrixBuffer));
     }
 
     // 5. PoseMatrixCB
@@ -317,7 +317,7 @@ bool D3D::CreateConstantBuffer()
         constBuffer_Desc.ByteWidth = sizeof(PoseMatrixCB);
         constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         constBuffer_Desc.CPUAccessFlags = 0;
-        HR_T(D3D::device->CreateBuffer(&constBuffer_Desc, nullptr, &poseMatrixBuffer));
+        HR_T(device->CreateBuffer(&constBuffer_Desc, nullptr, &poseMatrixBuffer));
     }
 
     return true;
@@ -325,7 +325,7 @@ bool D3D::CreateConstantBuffer()
 
 void D3D::UnInit()
 {
-	// ½º¸¶Æ® Æ÷ÀÎÅÍÀÌ¹Ç·Î ¾Ë¾Æ¼­ ÇØÁ¦µÊ
+	// ìŠ¤ë§ˆíŠ¸ í¬ì¸í„°ì´ë¯€ë¡œ ì•Œì•„ì„œ í•´ì œë¨
 	renderTargetView.Reset();
 	deviceContext.Reset();
 	swapChain.Reset();

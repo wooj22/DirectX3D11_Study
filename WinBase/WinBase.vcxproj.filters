@@ -126,6 +126,9 @@
     <ClInclude Include="SkeletalSubMesh.h">
       <Filter>03. Graphics\Model\Mesh\SkeletalMesh</Filter>
     </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>03. Graphics\SkyBox</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApp.cpp">
@@ -175,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="SkeletalSubMesh.cpp">
       <Filter>03. Graphics\Model\Mesh\SkeletalMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>03. Graphics\SkyBox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -143,6 +143,7 @@
     <ClInclude Include="SkeletalMesh.h" />
     <ClInclude Include="SkeletalSubMesh.h" />
     <ClInclude Include="Skeleton.hpp" />
+    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="StaticMesh.h" />
     <ClInclude Include="StaticSubMesh.h" />
     <ClInclude Include="Structures.hpp" />
@@ -162,6 +163,7 @@
     <ClCompile Include="RigidSubMesh.cpp" />
     <ClCompile Include="SkeletalMesh.cpp" />
     <ClCompile Include="SkeletalSubMesh.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="StaticMesh.cpp" />
     <ClCompile Include="StaticSubMesh.cpp" />
     <ClCompile Include="Time.cpp" />

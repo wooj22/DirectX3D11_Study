@@ -48,7 +48,7 @@ private:
 	StaticMesh* zelda = nullptr;			// Diffuse, Opacity
 	StaticMesh* tree = nullptr;				// Diffuse, Opacity
 	RigidMesh* boxHuman = nullptr;			// transform animation
-    SkeletalMesh* skinningTest = nullptr;	// transform animation
+    SkeletalMesh* warrior = nullptr;	// transform animation
 
 	// light
 	DirectionalLight light;
