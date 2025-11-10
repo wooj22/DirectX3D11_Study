@@ -23,27 +23,18 @@ bool App::OnInit()
     skybox.InitRenderPipeLine();
 
     // model init
-    character = ModelLoader::LoadStaticMesh("../Resource/Character.fbx");
-    zelda = ModelLoader::LoadStaticMesh("../Resource/zeldaPosed001.fbx");
-    tree = ModelLoader::LoadStaticMesh("../Resource/Tree.fbx");
-    boxHuman = ModelLoader::LoadRigidMesh("../Resource/BoxHuman.fbx");
     warrior = ModelLoader::LoadSkeletalMesh("../Resource/Girl.fbx");
     enemy = ModelLoader::LoadSkeletalMesh("../Resource/Enemy.fbx");
-
-    character->SetPosition({ -100, 0, 0 });
-    zelda->SetPosition({ 0, 0, 0 });
-    tree->SetPosition({ 100, 0, 0 });
-    tree->SetScale({ 100,100,100 });
-    boxHuman->SetPosition({ 200,0,0 });
-    boxHuman->SetScale({ 0.2,0.2,0.2 });
-    warrior->SetPosition({ 350, 0,0 });
-    enemy->SetPosition({ 600, 0,0 });
+    enemy->SetPosition({ 200, 0,0 });
 
     // view init
-    camera.position = { 200, 50, -500 };
+    camera.position = { 100, 100, -500 };
     camera.Far = 1000.0f;
     camera.moveSpeed = 300.f;
     camera.GetViewMatrix(view);
+
+    // light init
+    light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
 
     // projection init 
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
@@ -61,15 +52,8 @@ void App::OnUninit()
 
 void App::OnUpdate()
 {
-    // world udpate
-    character->Update();
-    zelda->Update();
-    tree->Update();
-    boxHuman->Update();
     warrior->Update();
     enemy->Update();
-
-    // view update
     camera.GetViewMatrix(view);
 }
 
@@ -82,12 +66,10 @@ void App::OnRender()
     // death buffer clear
     D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-    // render pipeline stage setting
+    // --------------------- stage setting -----------------------
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
     D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
-
-    
 
     // constant buffer
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
@@ -97,13 +79,12 @@ void App::OnRender()
     D3D::deviceContext->VSSetConstantBuffers(2, 1, D3D::materialBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(2, 1, D3D::materialBuffer.GetAddressOf());
     D3D::deviceContext->VSSetConstantBuffers(3, 1, D3D::offsetMatrixBuffer.GetAddressOf());
-    D3D::deviceContext->PSSetConstantBuffers(3, 1, D3D::offsetMatrixBuffer.GetAddressOf());
     D3D::deviceContext->VSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
-    D3D::deviceContext->PSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
-    
+
     // skybox render 
     skybox.Render(view, projection);
 
+    // buffer data
     D3D::transformCBData.view = XMMatrixTranspose(view);
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::lightingCBData.lightDirection = light.direction;
@@ -115,34 +96,16 @@ void App::OnRender()
     D3D::lightingCBData.specularHighlight = specularHighlight;
     D3D::lightingCBData.shininess = shininess;
     D3D::lightingCBData.cameraPos = camera.position;
-
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
 
-    
-
-    // render
-    // 불투명 모델
-    D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::BlinnPhongToon_PS.Get(), NULL, 0);
-    zelda->Render();
-
-    D3D::deviceContext->PSSetShader(D3D::BlinnPhong_PS.Get(), NULL, 0);
-    character->Render();
-    boxHuman->Render();
-
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
+    // shader
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
+    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::BlinnPhong_PS.Get(), NULL, 0);
+
+    // model render
     warrior->Render();
     enemy->Render();
-
-    // 투명 모델
-    // 만약 모델이 여러개 있다면 Back to Front 순서 렌더 (카메라에서 먼 것부터 렌더링되도록 정렬하여 렌더링)
-    D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
-    tree->Render();
 
     // GUI
     RenderGUI();

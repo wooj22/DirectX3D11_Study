@@ -35,23 +35,19 @@ private:
     Matrix projection;
 
     // models
-    StaticMesh* character = nullptr;		// Diffuse, Normal, Emisive, Specular
-    StaticMesh* zelda = nullptr;			// Diffuse, Opacity
-    StaticMesh* tree = nullptr;				// Diffuse, Opacity
-    RigidMesh* boxHuman = nullptr;			// rigid skeletal animation
-    SkeletalMesh* warrior = nullptr;    	// skinned skeletal animation
-    SkeletalMesh* enemy = nullptr;    	// skinned skeletal animation
-
-    // light
-    DirectionalLight light;
+    SkeletalMesh* warrior = nullptr;    
+    SkeletalMesh* enemy = nullptr;    
 
     // skybox
     SkyBox skybox;
 
+    // light
+    DirectionalLight light;
+
     // else
     float ambientHighlight = 0.3;
-    float diffuseHighlight = 0.5;
-    float specularHighlight = 0.7;
+    float diffuseHighlight = 0.7;
+    float specularHighlight = 0.9;
     float shininess = 500;
     float blendFactor[4] = { 0,0,0,0 }; UINT sampleMask = 0xffffffff;
     float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
