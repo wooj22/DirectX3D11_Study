@@ -25,7 +25,7 @@ using namespace DirectX::SimpleMath;
 
 
 // 카툰렌더링 프로젝트입니다.
-// 툰쉐이딩 + 아웃라인 쉐이더를 사용합니다.
+// 램프텍스처를 활용한 Diffuse, Specular 툰쉐이딩 + 아웃라인 쉐이더를 사용합니다.
 
 class App : public WinApp
 {

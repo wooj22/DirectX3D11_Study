@@ -202,6 +202,12 @@
     <FxCompile Include="BaseLit_Static_VS.hlsl">
       <Filter>04. Shaders\VertexShader</Filter>
     </FxCompile>
+    <FxCompile Include="OutLine_PS.hlsl">
+      <Filter>04. Shaders\PixelShader</Filter>
+    </FxCompile>
+    <FxCompile Include="Skinned_OutLine_VS.hlsl">
+      <Filter>04. Shaders\VertexShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shared.fxh">

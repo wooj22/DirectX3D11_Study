@@ -111,6 +111,11 @@ struct PS_INPUT
     matrix finalWorld : FINAL_WORLD;
 };
 
+struct PS_OutLine_INPUT
+{
+    float4 pos : SV_POSITION;
+};
+
 struct PS_Skybox_INPUT
 {
     float4 position : SV_POSITION;

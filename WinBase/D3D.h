@@ -40,9 +40,11 @@ public:
     static ComPtr<ID3D11VertexShader> BaseLit_Static_VS;
     static ComPtr<ID3D11VertexShader> BaseLit_Skinned_VS;
     static ComPtr<ID3D11VertexShader> Skybox_VS;
+    static ComPtr<ID3D11VertexShader> Skinned_OutLine_VS;
     static ComPtr<ID3D11PixelShader> BlinnPhong_PS;
     static ComPtr<ID3D11PixelShader> BlinnPhongToon_PS;
     static ComPtr<ID3D11PixelShader> Skybox_PS;
+    static ComPtr<ID3D11PixelShader> OutLine_PS;
 
     // InputLayout
     static ComPtr<ID3D11InputLayout> inputLayout_Vertex;

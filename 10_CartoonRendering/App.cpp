@@ -34,6 +34,8 @@ bool App::OnInit()
     camera.GetViewMatrix(view);
 
     // light init
+    light.indirectLight = 0.1;
+    light.directLight = 1.3;
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
 
     // projection init 
@@ -66,7 +68,7 @@ void App::OnRender()
     // death buffer clear
     D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-    // --------------------- stage setting -----------------------
+    // --------------------- Stage Setting -----------------------
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
     D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
@@ -98,17 +100,35 @@ void App::OnRender()
     D3D::lightingCBData.cameraPos = camera.position;
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
 
-    // shader
+    // Skeletal Mesh Render-------------------------------------
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::BlinnPhongToon_PS.Get(), NULL, 0);
-
-    // SRV ramptexture
     D3D::deviceContext->PSSetShaderResources(4, 1, &diffuseRampTexture);
     D3D::deviceContext->PSSetShaderResources(5, 1, &specualrRampTexture);
 
-    // model render
+    // [Model 1]
+    // outline render
+    D3D::deviceContext->VSSetShader(D3D::Skinned_OutLine_VS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::OutLine_PS.Get(), NULL, 0);
+    D3D::deviceContext->RSSetState(D3D::rasterizerState.Get());
     warrior->Render();
+    D3D::deviceContext->RSSetState(nullptr);
+
+    // model render
+    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::BlinnPhongToon_PS.Get(), NULL, 0);
+    warrior->Render();
+
+    // [Model 2]
+    // outline render
+    D3D::deviceContext->VSSetShader(D3D::Skinned_OutLine_VS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::OutLine_PS.Get(), NULL, 0);
+    D3D::deviceContext->RSSetState(D3D::rasterizerState.Get());
+    enemy->Render();
+    D3D::deviceContext->RSSetState(nullptr);
+
+    // model render
+    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::BlinnPhongToon_PS.Get(), NULL, 0);
     enemy->Render();
 
     // GUI

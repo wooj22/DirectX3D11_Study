@@ -22,25 +22,27 @@ ComPtr<ID3D11BlendState>        D3D::blendState = nullptr;
 ComPtr<ID3D11VertexShader>      D3D::BaseLit_Static_VS = nullptr;
 ComPtr<ID3D11VertexShader>      D3D::BaseLit_Skinned_VS = nullptr;
 ComPtr<ID3D11VertexShader>      D3D::Skybox_VS = nullptr;
+ComPtr<ID3D11VertexShader>      D3D::Skinned_OutLine_VS = nullptr;
 ComPtr<ID3D11PixelShader>       D3D::BlinnPhong_PS = nullptr;
 ComPtr<ID3D11PixelShader>       D3D::BlinnPhongToon_PS = nullptr;
 ComPtr<ID3D11PixelShader>       D3D::Skybox_PS = nullptr;
+ComPtr<ID3D11PixelShader>       D3D::OutLine_PS = nullptr;
 
-ComPtr<ID3D11InputLayout> D3D::inputLayout_Vertex = nullptr;
-ComPtr<ID3D11InputLayout> D3D::inputLayout_BoneWeightVertex = nullptr;
-ComPtr<ID3D11InputLayout> D3D::inputLayout_Skybox = nullptr;
+ComPtr<ID3D11InputLayout>       D3D::inputLayout_Vertex = nullptr;
+ComPtr<ID3D11InputLayout>       D3D::inputLayout_BoneWeightVertex = nullptr;
+ComPtr<ID3D11InputLayout>       D3D::inputLayout_Skybox = nullptr;
 
-ComPtr<ID3D11Buffer> D3D::transformBuffer = nullptr;
-ComPtr<ID3D11Buffer> D3D::lightingBuffer = nullptr;
-ComPtr<ID3D11Buffer> D3D::materialBuffer = nullptr;
-ComPtr<ID3D11Buffer> D3D::offsetMatrixBuffer = nullptr;
-ComPtr<ID3D11Buffer> D3D::poseMatrixBuffer = nullptr;
+ComPtr<ID3D11Buffer>            D3D::transformBuffer = nullptr;
+ComPtr<ID3D11Buffer>            D3D::lightingBuffer = nullptr;
+ComPtr<ID3D11Buffer>            D3D::materialBuffer = nullptr;
+ComPtr<ID3D11Buffer>            D3D::offsetMatrixBuffer = nullptr;
+ComPtr<ID3D11Buffer>            D3D::poseMatrixBuffer = nullptr;
 
-TransformCB D3D::transformCBData;
-LightingCB D3D::lightingCBData;
-MaterialCB D3D::materialCBData;
-OffsetMatrixCB D3D::offsetCBData;
-PoseMatrixCB D3D::poseCBData;
+TransformCB        D3D::transformCBData;
+LightingCB         D3D::lightingCBData;
+MaterialCB         D3D::materialCBData;
+OffsetMatrixCB     D3D::offsetCBData;
+PoseMatrixCB       D3D::poseCBData;
 
 
 bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
@@ -242,6 +244,13 @@ bool D3D::CreateShader()
         HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
             vertexShaderBuffer->GetBufferSize(), NULL, &BaseLit_Skinned_VS));
         SAFE_RELEASE(vertexShaderBuffer);
+
+        // Skinned OutLine VS
+        ID3D10Blob* vertexShaderBuffer2 = nullptr;		// vs mapping
+        HR_T(CompileShaderFromFile(L"../WinBase/Skinned_OutLine_VS.hlsl", "main", "vs_5_0", &vertexShaderBuffer2));
+        HR_T(device->CreateVertexShader(vertexShaderBuffer2->GetBufferPointer(),
+            vertexShaderBuffer2->GetBufferSize(), NULL, &Skinned_OutLine_VS));
+        SAFE_RELEASE(vertexShaderBuffer2);
     }
 
 
@@ -254,6 +263,7 @@ bool D3D::CreateShader()
             pixelShaderBuffer->GetBufferSize(), NULL, &BlinnPhong_PS));
     }
 
+
     //---------------------------
     // BlinnPhong Toon PS
     {
@@ -261,6 +271,17 @@ bool D3D::CreateShader()
         HR_T(CompileShaderFromFile(L"../WinBase/BlinnPhongToon_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
             pixelShaderBuffer->GetBufferSize(), NULL, &BlinnPhongToon_PS));
+        SAFE_RELEASE(pixelShaderBuffer);
+    }
+
+
+    //---------------------------
+    // OutLine PS
+    {
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/OutLine_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &OutLine_PS));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 
