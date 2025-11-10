@@ -1,5 +1,4 @@
 #include "SkyBox.h"
-#include "D3D.h"
 #include "Helper.h"
 #include "Structures.hpp"
 #include <Directxtk/DDSTextureLoader.h>

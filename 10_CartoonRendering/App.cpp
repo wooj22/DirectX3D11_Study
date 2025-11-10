@@ -28,7 +28,7 @@ bool App::OnInit()
     enemy->SetPosition({ 200, 0,0 });
 
     // view init
-    camera.position = { 100, 100, -500 };
+    camera.position = { 20, 70, -400 };
     camera.Far = 1000.0f;
     camera.moveSpeed = 300.f;
     camera.GetViewMatrix(view);

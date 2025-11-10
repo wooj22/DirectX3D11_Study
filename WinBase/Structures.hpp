@@ -124,5 +124,5 @@ struct alignas(16) PoseMatrixCB
 struct alignas(16) OutLineCB
 {
     float outlineThickness = 0.3f;
-    Vector3 outlineColor = Vector3(1.0f, 1.0f, 1.0f);
+    Vector3 outlineColor = Vector3(0,0,0);
 };
