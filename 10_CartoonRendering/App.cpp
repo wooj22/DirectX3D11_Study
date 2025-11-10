@@ -82,6 +82,8 @@ void App::OnRender()
     D3D::deviceContext->PSSetConstantBuffers(2, 1, D3D::materialBuffer.GetAddressOf());
     D3D::deviceContext->VSSetConstantBuffers(3, 1, D3D::offsetMatrixBuffer.GetAddressOf());
     D3D::deviceContext->VSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
+    D3D::deviceContext->VSSetConstantBuffers(5, 1, D3D::outlineBuffer.GetAddressOf());
+    D3D::deviceContext->PSSetConstantBuffers(5, 1, D3D::outlineBuffer.GetAddressOf());
 
     // skybox render 
     skybox.Render(view, projection);
@@ -99,6 +101,7 @@ void App::OnRender()
     D3D::lightingCBData.shininess = shininess;
     D3D::lightingCBData.cameraPos = camera.position;
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
+    D3D::deviceContext->UpdateSubresource(D3D::outlineBuffer.Get(), 0, nullptr, &D3D::outlineCBData, 0, 0);
 
     // Skeletal Mesh Render-------------------------------------
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
@@ -193,6 +196,10 @@ void App::RenderGUI()
     ImGui::SliderFloat("diffuseHighlight", &diffuseHighlight, 0.0f, 1.0f, "%.2f");
     ImGui::SliderFloat("specularHighlight", &specularHighlight, 0.0f, 1.0f, "%.2f");
     ImGui::SliderFloat("shininess", &shininess, 0.0f, 3000.0f, "%.2f");
+
+    ImGui::Text("OutLine");
+    ImGui::SliderFloat("outlineThickness", &D3D::outlineCBData.outlineThickness, 0.0f, 2.0f, "%.2f");
+    ImGui::ColorEdit3("outlineColoe", &D3D::outlineCBData.outlineColor.x);
 
     ImGui::Text("Models");
     ImGui::InputFloat3("position", &warrior->position.x);

@@ -8,6 +8,7 @@
 // MaterialCB -> b2
 // OffsetMatrixCB -> b3
 // PoseMatrixCB -> b4
+// OutLineCB -> b5
 
 // [ Texture ]
 // Texture2D diffuseMap : register(t0)
@@ -68,6 +69,12 @@ cbuffer OffsetMatrixCB : register(b3)
 cbuffer PoseMatrixCB : register(b4)
 {
     matrix bonePose[128];
+}
+
+cbuffer OutLineCB : register(b5)
+{
+    float outlineThickness;
+    float3 outlineColor;
 }
 
 // ----------------------

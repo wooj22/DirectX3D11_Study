@@ -119,3 +119,10 @@ struct alignas(16) PoseMatrixCB
     // vertex데이터에 참조할 index 4개가 들어있음
     Matrix bonePose[128];
 };
+
+// OutLine -> b5
+struct alignas(16) OutLineCB
+{
+    float outlineThickness = 0.3f;
+    Vector3 outlineColor = Vector3(1.0f, 1.0f, 1.0f);
+};

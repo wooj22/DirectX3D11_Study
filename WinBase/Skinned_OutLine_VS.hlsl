@@ -24,7 +24,7 @@ PS_OutLine_INPUT main(VS_Weight_INPUT input)
     output.pos = mul(float4(input.pos, 1.0f), finalWorld);
     
     // normal 방향으로 팽창
-    float outlineThickness = 0.3f;
+    //float outlineThickness = 0.3f;
     float3 normal = normalize(mul(input.normal, (float3x3) finalWorld));
     output.pos.xyz += normal * outlineThickness;
 
