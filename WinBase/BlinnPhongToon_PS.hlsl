@@ -59,12 +59,12 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     // specular (toon shading)
     // 1) level로 단계적 음영을 주는 방법
-    //int specLevels = 3;
-    //float scaleFactor = 1.0 / (float) specLevels;
-    //float spec = floor(pow(saturate(dot(N, H)), shininess) * specLevels) * scaleFactor;
+    int specLevels = 3;
+    float scaleFactor = 1.0 / (float) specLevels;
+    float spec = floor(pow(saturate(dot(N, H)), shininess) * specLevels) * scaleFactor;
     
      // 2) 램프 텍스처로 색상 매핑
-    float spec = specualrRamp.Sample(samLinear, float2(pow(saturate(dot(N, H)), shininess), 0)).rbg;
+    //float spec = specualrRamp.Sample(samLinear, float2(pow(saturate(dot(N, H)), shininess), 0)).rbg;
     
     if (useSpecular)
         specular_color = specularMap.Sample(samLinear, input.texCoord).rgb;
