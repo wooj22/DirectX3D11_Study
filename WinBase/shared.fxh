@@ -15,6 +15,9 @@
 // Texture2D specularMap : register(t2)
 // Texture2D emissiveMap : register(t3)
 // TextureCube skyboxTexture : register(t4)
+// Texture2D diffuseRamp : register(t4);
+// Texture2D specualrRamp : register(t5);
+
 
 // [ SamplerState ]
 // SamplerState samLinear : register(s0)

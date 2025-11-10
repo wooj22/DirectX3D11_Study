@@ -1,11 +1,15 @@
 #include <shared.fxh>
 
 // BlinnPhong, Toon Shading Pixel Shader
+// Diffuse와 Specualr를 툰쉐이딩 합니다 (Level, RampTexuture)
 
 Texture2D diffuseMap : register(t0);
 Texture2D normalMap : register(t1);
 Texture2D specularMap : register(t2);
 Texture2D emissiveMap : register(t3);
+
+Texture2D diffuseRamp : register(t4);
+Texture2D specualrRamp : register(t5);
 
 SamplerState samLinear : register(s0);
 
@@ -40,18 +44,30 @@ float4 main(PS_INPUT input) : SV_TARGET
 
     
     // diffuse (toon shading)
-    int levels = 3;
-    float scaleFactor = 0.6;
-    float diff = floor(saturate(dot(N, L)) * levels) * scaleFactor;
+    // 1) level로 단계적 음영을 주는 방법
+    //int levels = 3;
+    //float scaleFactor = 1.0 / (float) levels;
+    //float diff = floor(saturate(dot(N, L)) * levels) * scaleFactor;
+
+    // 2) 램프 텍스처로 색상 매핑
+    float3 diff = diffuseRamp.Sample(samLinear, float2(saturate(dot(N, L)), 0)).rgb;
+    
     if (useDiffuse)
         diffuse_color = diffuseMap.Sample(samLinear, input.texCoord).rgb;
     float3 diffuse = directLight * diffuseHighlight * diffuse_color * diff * lightColor.rgb;
 
     
-    // specular
+    // specular (toon shading)
+    // 1) level로 단계적 음영을 주는 방법
+    //int specLevels = 3;
+    //float scaleFactor = 1.0 / (float) specLevels;
+    //float spec = floor(pow(saturate(dot(N, H)), shininess) * specLevels) * scaleFactor;
+    
+     // 2) 램프 텍스처로 색상 매핑
+    float spec = specualrRamp.Sample(samLinear, float2(pow(saturate(dot(N, H)), shininess), 0)).rbg;
+    
     if (useSpecular)
         specular_color = specularMap.Sample(samLinear, input.texCoord).rgb;
-    float spec = pow(max(dot(N, H), 0.0f), shininess);
     float3 specular = directLight * specularHighlight * 0.5 * specular_color * spec * lightColor.rgb;
 
     

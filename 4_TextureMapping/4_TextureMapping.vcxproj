@@ -24,6 +24,7 @@
     <ProjectGuid>{f7e5fa37-7b9b-4657-8b6d-5e1afdb47cf1}</ProjectGuid>
     <RootNamespace>My4TextureMapping</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>04_TextureMapping</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

@@ -101,7 +101,11 @@ void App::OnRender()
     // shader
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::BlinnPhong_PS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::BlinnPhongToon_PS.Get(), NULL, 0);
+
+    // SRV ramptexture
+    D3D::deviceContext->PSSetShaderResources(4, 1, &diffuseRampTexture);
+    D3D::deviceContext->PSSetShaderResources(5, 1, &specualrRampTexture);
 
     // model render
     warrior->Render();
@@ -116,6 +120,10 @@ void App::OnRender()
 
 bool App::InitRenderPipeLine()
 {
+    // RampTexture Create
+    CreateTextureFromFile(D3D::device.Get(), L"../Resource/RampTexture.png", &diffuseRampTexture);
+    CreateTextureFromFile(D3D::device.Get(), L"../Resource/SpecularRampTexture.png", &specualrRampTexture);
+
     return true;
 }
 

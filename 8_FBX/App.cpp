@@ -108,7 +108,7 @@ void App::OnRender()
 	D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->IASetInputLayout(inputLayout);
     D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
-    D3D::deviceContext->PSSetShader(PS_Toon, NULL, 0);
+    //D3D::deviceContext->PSSetShader(PS_Toon, NULL, 0);
     zelda->Render(constantBuffer, cb);
 
     D3D::deviceContext->PSSetShader(PS_Basic, NULL, 0);

@@ -24,6 +24,7 @@
     <ProjectGuid>{2e48427e-4535-481f-b7e7-03d4a0b2ec57}</ProjectGuid>
     <RootNamespace>My8FBX</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>08_FBX</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

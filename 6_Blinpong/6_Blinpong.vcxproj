@@ -24,6 +24,7 @@
     <ProjectGuid>{b2779905-9180-4de8-a34a-574798cadc88}</ProjectGuid>
     <RootNamespace>My6Blinpong</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>06_Blinpong</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

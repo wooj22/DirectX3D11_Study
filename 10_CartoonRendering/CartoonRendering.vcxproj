@@ -21,10 +21,10 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{a86913c0-7c83-4159-b939-6ecd094d3588}</ProjectGuid>
-    <RootNamespace>My2CubeDrawing</RootNamespace>
+    <ProjectGuid>{8dc3c32c-56e9-46c3-9d52-efc86fea49b5}</ProjectGuid>
+    <RootNamespace>CartoonRendering</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>02_CubeDrawing</ProjectName>
+    <ProjectName>10_CartoonRendering</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -135,25 +135,9 @@
     <ClInclude Include="App.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="VertexShader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\D3DBase\D3DBase.vcxproj">
-      <Project>{0b4dec3a-2373-4c07-b7a4-ceaf37a0750e}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\WinBase\WinBase.vcxproj">
       <Project>{3a8b95d7-7011-4c23-82cf-2e9bc80a207a}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Shared.fxh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
