@@ -193,9 +193,6 @@
     <FxCompile Include="BlinnPhongToon_PS.hlsl">
       <Filter>04. Shaders\PixelShader</Filter>
     </FxCompile>
-    <FxCompile Include="BlinnPhong_PS.hlsl">
-      <Filter>04. Shaders\PixelShader</Filter>
-    </FxCompile>
     <FxCompile Include="BaseLit_Skinned_VS.hlsl">
       <Filter>04. Shaders\VertexShader</Filter>
     </FxCompile>
@@ -206,6 +203,15 @@
       <Filter>04. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="Skinned_OutLine_VS.hlsl">
+      <Filter>04. Shaders\VertexShader</Filter>
+    </FxCompile>
+    <FxCompile Include="ShadowDepth_Skinned_VS.hlsl">
+      <Filter>04. Shaders\VertexShader</Filter>
+    </FxCompile>
+    <FxCompile Include="BlinnPhong_PS.hlsl">
+      <Filter>04. Shaders\PixelShader</Filter>
+    </FxCompile>
+    <FxCompile Include="ShadowDepth_Static_VS.hlsl">
       <Filter>04. Shaders\VertexShader</Filter>
     </FxCompile>
   </ItemGroup>

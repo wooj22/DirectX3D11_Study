@@ -22,6 +22,7 @@
 
 // [ SamplerState ]
 // SamplerState samLinear : register(s0)
+// SamplerComparisonState samShadow : register(s1);
 
 
 // ------------------
@@ -33,6 +34,8 @@ cbuffer TransformCB : register(b0)
     matrix world;
     matrix view;
     matrix projection;
+    matrix shadowView;       // ±¤¿ø view
+    matrix shadowProjection; // ±¤¿ø projection
 }
 
 cbuffer LightingCB : register(b1)
@@ -89,11 +92,6 @@ struct VS_INPUT
     float2 texCoord : TEXCOORD;
 };
 
-struct VS_Skybox_INPUT
-{
-    float3 position : POSITION;
-};
-
 struct VS_Weight_INPUT
 {
     float3 pos : POSITION;
@@ -101,8 +99,13 @@ struct VS_Weight_INPUT
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
     float2 texCoord : TEXCOORD;
-    uint4 boneIndices : BONE_INDICES;
+    uint4  boneIndices : BONE_INDICES;
     float4 boneWeights : BONE_WEIGHTS;
+};
+
+struct VS_Skybox_INPUT
+{
+    float3 position : POSITION;
 };
 
 // ----------------------
@@ -116,6 +119,7 @@ struct PS_INPUT
     float3x3 TBN : TBN;
     float2 texCoord : TEXCOORD;
     matrix finalWorld : FINAL_WORLD;
+    float4 posShadow : TEXCOORD1;
 };
 
 struct PS_OutLine_INPUT

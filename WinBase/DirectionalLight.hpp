@@ -5,7 +5,7 @@ using namespace DirectX::SimpleMath;
 // Directional Light
 struct DirectionalLight
 {
-    Vector4 direction = { 0, 0, 1, 0 };
+    Vector4 direction = { 0, -1, 0, 0 };
     Vector4 color{ 1.0, 1.0f, 1.0, 1.0 };
 
     // ±¤¿ø ¼¼±â

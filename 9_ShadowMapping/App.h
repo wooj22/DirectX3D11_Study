@@ -33,10 +33,13 @@ private:
     // matrix
     Matrix view;
     Matrix projection;
+    Matrix lightView;
+    Matrix lightProjection;
 
     // models
     SkeletalMesh* warrior = nullptr;    
     SkeletalMesh* enemy = nullptr;    
+    StaticMesh* plane = nullptr;
 
     // skybox
     SkyBox skybox;

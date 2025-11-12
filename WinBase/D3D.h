@@ -31,6 +31,15 @@ public:
 	static ComPtr<ID3D11RenderTargetView>    renderTargetView;
 	static ComPtr<ID3D11DepthStencilView>    depthStencilView;
 
+    // viewport
+    static D3D11_VIEWPORT viewport_screen;
+    static D3D11_VIEWPORT viewport_shadowMap;
+
+    // Shadow
+    static ComPtr<ID3D11DepthStencilView>    shadowDSV;
+    static ComPtr<ID3D11ShaderResourceView>  shadowSRV;
+    static ComPtr<ID3D11SamplerState>        shadowSamplerState;
+
     // ¿É¼Ç
 	static ComPtr<ID3D11DepthStencilState>   depthStencilState;		// write off
     static ComPtr <ID3D11RasterizerState>    rasterizerState;       // cullmode = front
@@ -42,6 +51,8 @@ public:
     static ComPtr<ID3D11VertexShader> BaseLit_Skinned_VS;
     static ComPtr<ID3D11VertexShader> Skybox_VS;
     static ComPtr<ID3D11VertexShader> Skinned_OutLine_VS;
+    static ComPtr<ID3D11VertexShader> ShadowDepth_Skinned_VS;
+    static ComPtr<ID3D11VertexShader> ShadowDepth_Static_VS;
     static ComPtr<ID3D11PixelShader> BlinnPhong_PS;
     static ComPtr<ID3D11PixelShader> BlinnPhongToon_PS;
     static ComPtr<ID3D11PixelShader> Skybox_PS;

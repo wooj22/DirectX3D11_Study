@@ -73,6 +73,8 @@ struct alignas(16) TransformCB
     Matrix world;
     Matrix view;
     Matrix projection;
+    Matrix shadowView;       // ±¤¿ø view
+    Matrix shadowProjection; // ±¤¿ø projection
 };
 
 // LightingCB -> b1

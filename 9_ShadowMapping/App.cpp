@@ -26,6 +26,9 @@ bool App::OnInit()
     warrior = ModelLoader::LoadSkeletalMesh("../Resource/Girl.fbx");
     enemy = ModelLoader::LoadSkeletalMesh("../Resource/Enemy.fbx");
     enemy->SetPosition({ 200, 0,0 });
+    plane = ModelLoader::LoadStaticMesh("../Resource/Plane.fbx");
+    plane->SetPosition({ 0,-5,0 });
+    plane->SetScale({ 0.4,1,0.2 });
 
     // view init
     camera.position = { 100, 100, -500 };
@@ -37,7 +40,7 @@ bool App::OnInit()
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
 
     // projection init 
-    projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
+    projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, 0.1f, 2000.0f);
 
     return true;
 }
@@ -54,29 +57,35 @@ void App::OnUpdate()
 {
     warrior->Update();
     enemy->Update();
+    plane->Update();
     camera.GetViewMatrix(view);
+
+    //// Light view, projection
+    Vector3 sceneCenter = camera.position + camera.GetForward() * 300;
+    Vector3 lightPos = sceneCenter - light.direction * 200;
+    lightView = XMMatrixLookAtLH(lightPos, sceneCenter, { 0.0f, 0.0f, -1.0f });
+    lightProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
+    lightProjection = XMMatrixOrthographicLH(screenWidth, screenHeight, camera.Near, camera.Far);
 }
 
 void App::OnRender()
 {
-    // RTV clear
+    // clear
+    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->ClearRenderTargetView(D3D::renderTargetView.Get(), clearColor);
-
-    // death buffer clear
     D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+    
 
     // --------------------- stage setting -----------------------
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
+    D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
     D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
 
     // constant buffer
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
-    D3D::deviceContext->PSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
-    D3D::deviceContext->VSSetConstantBuffers(1, 1, D3D::lightingBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(1, 1, D3D::lightingBuffer.GetAddressOf());
-    D3D::deviceContext->VSSetConstantBuffers(2, 1, D3D::materialBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(2, 1, D3D::materialBuffer.GetAddressOf());
     D3D::deviceContext->VSSetConstantBuffers(3, 1, D3D::offsetMatrixBuffer.GetAddressOf());
     D3D::deviceContext->VSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
@@ -87,6 +96,9 @@ void App::OnRender()
     // buffer data
     D3D::transformCBData.view = XMMatrixTranspose(view);
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
+    D3D::transformCBData.shadowView = XMMatrixTranspose(lightView);
+    D3D::transformCBData.shadowProjection = XMMatrixTranspose(lightProjection);
+
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;
     D3D::lightingCBData.indirectLight = light.indirectLight;
@@ -98,14 +110,40 @@ void App::OnRender()
     D3D::lightingCBData.cameraPos = camera.position;
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
 
-    // shader
+
+    // Model Render
+    // 1. Depth Only Pass
+    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_shadowMap);	// viewport binding
+    D3D::deviceContext->OMSetRenderTargets(0, nullptr, D3D::shadowDSV.Get());
+    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
+    D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+    D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Skinned_VS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(nullptr, nullptr, 0);
+    warrior->Render();
+    enemy->Render();
+
+    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
+    D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Static_VS.Get(), NULL, 0);
+    plane->Render();
+
+    // 2. Render Pass
+    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::BlinnPhong_PS.Get(), NULL, 0);
-
-    // model render
+    D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     warrior->Render();
     enemy->Render();
+
+    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
+    D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
+    plane->Render();
+
+    // 다음 shadowpass에서 SRV를 DSV로 다시 쓰기 위해 연결 해제
+    ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+    D3D::deviceContext->PSSetShaderResources(6, 1, nullSRV);     
 
     // GUI
     RenderGUI();
