@@ -31,16 +31,16 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
     {
-        // PCF
-        //shadowFactor = shadowMap.SampleCmpLevelZero(samShadow, uv, currentShadowDepth - 0.001);
-   
         // ´ÜÀÏ texel
-        float shadowMapDepth = shadowMap.Sample(samLinear, uv).r;
+        //float shadowMapDepth = shadowMap.Sample(samLinear, uv).r;
         
-        if (currentShadowDepth > shadowMapDepth + 0.001)
-            shadowFactor = 0.0f;
-        else
-            shadowFactor = 1.0;
+        //if (currentShadowDepth > shadowMapDepth + 0.001)
+        //    shadowFactor = 0.0f;
+        //else
+        //    shadowFactor = 1.0;
+        
+        // PCF
+        shadowFactor = shadowMap.SampleCmpLevelZero(samShadow, uv, currentShadowDepth - 0.001);
     }
     
     // normal

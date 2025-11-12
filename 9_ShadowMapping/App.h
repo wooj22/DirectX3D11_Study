@@ -24,8 +24,17 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 
-// 그림자 매핑 프로젝트입니다.
-// 이 프로젝트는 WinBase 정적 라이브러리의 Model 렌더 모듈을 사용합니다.
+// ShadowMapping 프로젝트입니다.
+// 이 프로젝트는 WinBase 정적 라이브러리의 객체들을 사용합니다.
+
+/*
+    [ShadowMapping]
+    [Pass 1] : 빛의 시점(Light View) 에서 장면을 렌더링하여 깊이 정보를 텍스처로 저장
+         → Shadow Map (Depth Texture)
+
+    [Pass 2] : 카메라 시점(Camera View) 에서 장면을 렌더링하면서, 픽셀마다 Shadow Map을 참조해 빛의 가림 여부를 판단
+         → 최종 픽셀 색상 (조명 + 그림자 적용)
+*/
 
 class App : public WinApp
 {
@@ -39,6 +48,9 @@ private:
     // models
     SkeletalMesh* warrior = nullptr;    
     SkeletalMesh* enemy = nullptr;    
+    StaticMesh* zelda = nullptr;
+    StaticMesh* tree = nullptr;
+    RigidMesh* boxHuman = nullptr;
     StaticMesh* plane = nullptr;
 
     // skybox

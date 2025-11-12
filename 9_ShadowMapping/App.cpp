@@ -26,12 +26,22 @@ bool App::OnInit()
     warrior = ModelLoader::LoadSkeletalMesh("../Resource/Girl.fbx");
     enemy = ModelLoader::LoadSkeletalMesh("../Resource/Enemy.fbx");
     enemy->SetPosition({ 200, 0,0 });
+
+    zelda = ModelLoader::LoadStaticMesh("../Resource/zeldaPosed001.fbx");
+    tree = ModelLoader::LoadStaticMesh("../Resource/Tree.fbx");
+    boxHuman = ModelLoader::LoadRigidMesh("../Resource/BoxHuman.fbx");
+    zelda->SetPosition({ -150, 0,0 });
+    boxHuman->SetPosition({ -320, 0,0 });
+    boxHuman->SetScale({ 0.2,0.2,0.2 });
+    tree->SetPosition({ -450, 0,0 });
+    tree->SetScale({ 100,100,100 });
+
     plane = ModelLoader::LoadStaticMesh("../Resource/Plane.fbx");
     plane->SetPosition({ 0,-5,0 });
     plane->SetScale({ 0.4,1,0.2 });
 
     // view init
-    camera.position = { 100, 100, -500 };
+    camera.position = { -200, 100, -500 };
     camera.Far = 1000.0f;
     camera.moveSpeed = 300.f;
     camera.GetViewMatrix(view);
@@ -57,10 +67,13 @@ void App::OnUpdate()
 {
     warrior->Update();
     enemy->Update();
+    zelda->Update();
+    boxHuman->Update();
+    tree->Update();
     plane->Update();
     camera.GetViewMatrix(view);
 
-    //// Light view, projection
+    // Light view, projection
     Vector3 sceneCenter = camera.position + camera.GetForward() * 300;
     Vector3 lightPos = sceneCenter - light.direction * 200;
     lightView = XMMatrixLookAtLH(lightPos, sceneCenter, { 0.0f, 0.0f, -1.0f });
@@ -115,6 +128,7 @@ void App::OnRender()
     // 1. Depth Only Pass
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_shadowMap);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(0, nullptr, D3D::shadowDSV.Get());
+    D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
     D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Skinned_VS.Get(), NULL, 0);
@@ -124,11 +138,15 @@ void App::OnRender()
 
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Static_VS.Get(), NULL, 0);
+    zelda->Render();
+    boxHuman->Render();
     plane->Render();
+    tree->Render();
 
     // 2. Render Pass
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::BlinnPhong_PS.Get(), NULL, 0);
@@ -139,7 +157,12 @@ void App::OnRender()
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
+    zelda->Render();
+    boxHuman->Render();
     plane->Render();
+
+    D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
+    tree->Render();
 
     // 다음 shadowpass에서 SRV를 DSV로 다시 쓰기 위해 연결 해제
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
