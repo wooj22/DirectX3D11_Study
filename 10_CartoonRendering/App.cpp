@@ -28,7 +28,7 @@ bool App::OnInit()
     enemy->SetPosition({ 200, 0,0 });
 
     // view init
-    camera.position = { 20, 70, -400 };
+    camera.position = { 70, 80, -300 };
     camera.Far = 1000.0f;
     camera.moveSpeed = 300.f;
     camera.GetViewMatrix(view);
@@ -36,6 +36,7 @@ bool App::OnInit()
     // light init
     light.indirectLight = 0.1;
     light.directLight = 1.3;
+    light.direction = {0,0,1};
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
 
     // projection init 
