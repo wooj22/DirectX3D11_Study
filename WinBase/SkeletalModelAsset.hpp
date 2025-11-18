@@ -8,9 +8,8 @@
 class SkeletalModelAsset
 {
 public:
-    // sub mesh, material, animation
     vector<SkeletalSubMesh> subMeshes;
-    Skeleton skeleton;
-    vector<Material> materials;
-    vector<AnimationClip> animationClips;
+    Skeleton                skeleton;
+    vector<Material>        materials;
+    vector<AnimationClip>   animationClips;
 };

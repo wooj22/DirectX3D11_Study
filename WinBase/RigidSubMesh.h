@@ -42,6 +42,8 @@ public:
 
     // transform
     Matrix bindMatrix = Matrix::Identity;
+
+    // 쓰기 데이터이므로 모델의 instance data로 따로 관리한다.
     //Matrix localMatrix = Matrix::Identity;
     //Matrix modelMatrix = Matrix::Identity;
 

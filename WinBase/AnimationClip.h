@@ -3,21 +3,21 @@
 #include <directxtk/simplemath.h>
 using namespace DirectX::SimpleMath;
 
-// 키프레임
+// vector3 keyframe
 struct VectorKey
 {
     float time;
     Vector3 value;
 };
 
+// quaternion keyframe
 struct QuatKey
 {
     float time;
     Quaternion value;
 };
 
-
-// 노드 애니메이션
+// node animation
 struct NodeAnimation
 {
     std::string nodeName;
@@ -119,13 +119,12 @@ struct NodeAnimation
     }
 };
 
-
-// 애니메이션 클립
+// animation clip
 struct AnimationClip
 {
-    std::string  name;					// 애니메이션 이름
-    float        duration;              // 애니메이션 길이 (초)
-    float        ticksPerSecond;        // 초당 프레임 수
+    std::string  name;					        // 애니메이션 이름
+    float        duration;                      // 애니메이션 길이 (초)
+    float        ticksPerSecond;                // 초당 프레임 수
     std::vector<NodeAnimation> nodeAnimations;  // 노드 애니메이션들
 };
 

@@ -7,5 +7,5 @@ class StaticModelAsset
 {
 public:
     vector<StaticSubMesh> subMeshes;
-    vector<Material> materials;
+    vector<Material>      materials;
 };

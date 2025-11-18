@@ -19,18 +19,10 @@ class DirectionalLight;
 class SkeletalModel
 {
 public:
-    // sub mesh, material, animation
-    // TODO :: 삭제
-    /*vector<SkeletalSubMesh> subMeshes;
-    vector<Material> materials;
-    Skeleton skeleton;
-    vector<AnimationClip> animationClips;*/
-
-    // 공유 리소스
-    // TODO :: SkeletalModelAsset 구조로 변경
+    /*---- [Model Asset] ----*/         // submeshs, skeleton, materials, animation clips
     shared_ptr<SkeletalModelAsset> model;
 
-    // 인스턴스 데이터
+    /*--- [Instance Data] ---*/
     // model transform
     Vector3 position;
     Vector3 rotation;

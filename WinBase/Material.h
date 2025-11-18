@@ -19,7 +19,7 @@ enum TextureFlags
 
 /*
 * [ Material ]
-*
+* 
 */
 class Material
 {

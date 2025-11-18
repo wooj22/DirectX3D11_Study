@@ -95,7 +95,6 @@ void SkeletalModel::Update()
     }
 
     // bone world update
-    //model->skeleton.UpdateBoneWorld();
     for (int i = 0; i < model->skeleton.bones.size(); ++i)
     {
         if (model->skeleton.bones[i].parentIndex == -1)

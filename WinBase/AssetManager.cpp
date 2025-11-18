@@ -25,6 +25,7 @@ void AssetManager::LoadStaticModelAsset(StaticModel* model, string filePath)
     asset_staticmodel[filePath] = model->model;
 }
 
+
 void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
 {
     string key = filePath;
@@ -36,10 +37,8 @@ void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
         // 인스턴스가 살아있다면 asset 넘겨주기
         if (!it->second.expired()) {
             model->model = it->second.lock();
-
-            // instance 데이터 size 맞춰주기
-            model->localMatrix.resize(model->model->subMeshes.size());
-            model->modelMatrix.resize(model->model->subMeshes.size());
+            model->submesh_localMatrices.resize(model->model->subMeshes.size());
+            model->submesh_modelMatrices.resize(model->model->subMeshes.size());
             return;
         }
         else asset_rigidmodel.erase(it);
@@ -48,11 +47,8 @@ void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
     // asset이 없을 경우 생성
     ModelLoader::LoadRigidMesh(model, filePath);
     asset_rigidmodel[filePath] = model->model;
-
-    // instance 데이터 size 맞춰주기
-    model->localMatrix.resize(model->model->subMeshes.size());
-    model->modelMatrix.resize(model->model->subMeshes.size());
 }
+
 
 void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
 {
@@ -65,8 +61,6 @@ void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
         // 인스턴스가 살아있다면 asset 넘겨주기
         if (!it->second.expired()) {
             model->model = it->second.lock();
-
-            // instance 데이터 size 맞춰주기
             model->localMatrix.resize(model->model->skeleton.bones.size());
             model->poseMatrix.resize(model->model->skeleton.bones.size());
             return;
@@ -77,8 +71,4 @@ void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
     // asset이 없을 경우 생성
     ModelLoader::LoadSkeletalMesh(model, filePath);
     asset_skeletalmodel[filePath] = model->model;
-
-    // instance 데이터 size 맞춰주기
-    model->localMatrix.resize(model->model->skeleton.bones.size());
-    model->poseMatrix.resize(model->model->skeleton.bones.size());
 }

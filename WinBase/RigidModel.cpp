@@ -83,14 +83,14 @@ void RigidModel::Update()
                 Vector3 pos;  Quaternion rot;	Vector3 scl;
                 nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
 
-                localMatrix[i] = Matrix::CreateScale(scl) *
+                submesh_localMatrices[i] = Matrix::CreateScale(scl) *
                     Matrix::CreateFromQuaternion(rot) *
                     Matrix::CreateTranslation(pos);
                 break;
             }
             else
             {
-                localMatrix[i] = sub.bindMatrix;
+                submesh_localMatrices[i] = sub.bindMatrix;
             }
         }
     }
@@ -101,9 +101,9 @@ void RigidModel::Update()
         auto& sub = model->subMeshes[i];
 
         if (sub.parentIndex != -1)
-            modelMatrix[i] = localMatrix[i] * modelMatrix[sub.parentIndex];
+            submesh_modelMatrices[i] = submesh_localMatrices[i] * submesh_modelMatrices[sub.parentIndex];
         else
-            modelMatrix[i] = localMatrix[i];
+            submesh_modelMatrices[i] = submesh_localMatrices[i];
     }
 }
 
@@ -118,7 +118,7 @@ void RigidModel::Render()
         Material& mat = model->materials[i];
 
         // model
-        D3D::transformCBData.model = modelMatrix[i].Transpose();
+        D3D::transformCBData.model = submesh_modelMatrices[i].Transpose();
 
         // vertex buffer, indexbuffer
         D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);

@@ -47,6 +47,9 @@ void ModelLoader::LoadRigidMesh(RigidModel* model, const string& modelPath)
     model->model = make_shared<RigidModelAsset>();
     ProcessRigidNode(scene->mRootNode, scene, model, -1);
     ProcessRigidAnimation(scene, model);
+
+    model->submesh_localMatrices.resize(model->model->subMeshes.size());
+    model->submesh_modelMatrices.resize(model->model->subMeshes.size());
 }
 
 // Skeletal Mesh Load
@@ -59,6 +62,9 @@ void ModelLoader::LoadSkeletalMesh(SkeletalModel* model, const string& modelPath
     ProcessSkeleton(scene, model);                               // bone
     ProcessSkeletalNode(scene->mRootNode, scene, model, -1);     // node(bone, mesh)
     ProcessSkeletalAnimation(scene, model);
+
+    model->localMatrix.resize(model->model->skeleton.bones.size());
+    model->poseMatrix.resize(model->model->skeleton.bones.size());
 }
 
 

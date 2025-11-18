@@ -11,28 +11,26 @@ using std::map;
 
 /*
    [Bone]
-
+   Skeletal Model을 이루는 각각의 Bone
 */
 struct Bone
 {
-    string name;
-    int parentIndex;
+    string name;                // bone name
+    int    parentIndex;         // skeleton에 저장된 bone vector의 부모 bone index
 
     Matrix offsetMatrix = Matrix::Identity;      // bind pose inverse transform
-    Matrix bindMatrix = Matrix::Identity;        // bind
-    //Matrix localMatrix = Matrix::Identity;       // animation
-    //Matrix poseMatrix = Matrix::Identity;        // parent * local
+    Matrix bindMatrix   = Matrix::Identity;      // bind pose transform
 };
 
 
 /*
     [Skeleton]
-    하나의 스켈레탈 메시가 가지는 Bone을 관리하는 구조체
+    하나의 Skeletal Model이 가지는 Bone의 모음
 */
 struct Skeleton
 {
     vector<Bone> bones;
-    map<string, int> nameToIndex;     // name -> index 매핑
+    map<string, int> nameToIndex;
 
     // bone name -> index
     int GetBoneIndex(const string& name) const
@@ -42,16 +40,4 @@ struct Skeleton
             return it->second;
         return -1;
     }
-
-    // world matrix udpate
-    /*void UpdateBoneWorld()
-    {
-        for (int i = 0; i < bones.size(); ++i)
-        {
-            if (bones[i].parentIndex == -1)
-                bones[i].poseMatrix = bones[i].localMatrix;
-            else
-                bones[i].poseMatrix = bones[i].localMatrix * bones[bones[i].parentIndex].poseMatrix;
-        }
-    }*/
 };

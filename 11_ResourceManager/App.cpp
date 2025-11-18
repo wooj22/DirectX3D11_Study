@@ -26,8 +26,8 @@ bool App::OnInit()
 
     // model init
     SkeletalModel* warrior = new SkeletalModel();
-    AssetManager::Instance().LoadSkeletalModelAsset(warrior, "../Resource/Girl.fbx");
-    //ModelLoader::LoadSkeletalMesh(warrior, "../Resource/Girl.fbx");
+    AssetManager::Instance().LoadSkeletalModelAsset(warrior, "../Resource/Girl.fbx");       // 공유자원 사용
+    //ModelLoader::LoadSkeletalMesh(warrior, "../Resource/Girl.fbx");                       // 개별자원 사용 (메모리 낭비)
     skeletals.push_back(warrior);
 
     // view init
@@ -61,7 +61,8 @@ void App::OnUpdate()
     if (Input::GetKeyDown('1'))
     {
         SkeletalModel* warrior = new SkeletalModel();
-        AssetManager::Instance().LoadSkeletalModelAsset(warrior, "../Resource/Girl.fbx");
+        AssetManager::Instance().LoadSkeletalModelAsset(warrior, "../Resource/Girl.fbx");   // 공유자원 사용
+        //ModelLoader::LoadSkeletalMesh(warrior, "../Resource/Girl.fbx");                   // 개별자원 사용 (메모리 낭비)
         skeletals.push_back(warrior);
 
         static std::random_device rd;
