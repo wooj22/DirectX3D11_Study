@@ -17,14 +17,12 @@ void AssetManager::LoadStaticModelAsset(StaticModel* model, string filePath)
             model->model = it->second.lock();
             return;
         }
-
-        // 인스턴스가 소멸된상태라면 map에서 제거
         else asset_staticmodel.erase(it);
     }
 
-    // asset이 없을 경우
-    // TODO :: ModelLoader asset 생성 구조로 바꾸기
-    //model->model = TODO
+    // asset이 없을 경우 생성
+    ModelLoader::LoadStaticMesh(model, filePath);
+    asset_staticmodel[filePath] = model->model;
 }
 
 void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
@@ -40,14 +38,12 @@ void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
             model->model = it->second.lock();
             return;
         }
-
-        // 인스턴스가 소멸된상태라면 map에서 제거
         else asset_rigidmodel.erase(it);
     }
 
-    // asset이 없을 경우
-    // TODO :: ModelLoader asset 생성 구조로 바꾸기
-    //model->model = TODO
+    // asset이 없을 경우 생성
+    ModelLoader::LoadRigidMesh(model, filePath);
+    asset_rigidmodel[filePath] = model->model;
 }
 
 void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
@@ -63,12 +59,10 @@ void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
             model->model = it->second.lock();
             return;
         }
-
-        // 인스턴스가 소멸된상태라면 map에서 제거
         else asset_skeletalmodel.erase(it);
     }
 
-    // asset이 없을 경우
-    // TODO :: ModelLoader asset 생성 구조로 바꾸기
-    //model->model = TODO
+    // asset이 없을 경우 생성
+    ModelLoader::LoadSkeletalMesh(model, filePath);
+    asset_skeletalmodel[filePath] = model->model;
 }

@@ -56,18 +56,12 @@ private:
     unordered_map<string, weak_ptr<RigidModelAsset>> asset_rigidmodel;
     unordered_map<string, weak_ptr<SkeletalModelAsset>> asset_skeletalmodel;
 
+public:
     // asset managing
     void LoadStaticModelAsset(StaticModel* model, string filePath);
     void LoadRigidModelAsset(RigidModel* model, string filePath);
     void LoadSkeletalModelAsset(SkeletalModel* model, string filePath);
-   
-public:
-    // memory function
-    
 
-    // asset loder
-    
-    
 
 private:
     AssetManager() = default;

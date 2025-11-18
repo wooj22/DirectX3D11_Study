@@ -27,9 +27,9 @@ public:
     static unsigned int skeletalImportFlags;
 
     // model loading
-    static StaticModel* LoadStaticMesh(const string& modelPath);
-    static RigidModel* LoadRigidMesh(const string& modelPath);
-    static SkeletalModel* LoadSkeletalMesh(const string& modelPath);
+    static void LoadStaticMesh(StaticModel* model, const string& modelPath);
+    static void LoadRigidMesh(RigidModel* model, const string& modelPath);
+    static void LoadSkeletalMesh(SkeletalModel* model, const string& modelPath);
 
     // flag setting
     static void SetImportFlags(unsigned int flags) { staticImportFlags = flags; }

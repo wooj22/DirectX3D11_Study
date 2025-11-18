@@ -1,9 +1,11 @@
 #include "App.h"
 #include "../WinBase/D3D.h"
 #include "../WinBase/Helper.h"
+#include "../WinBase/Camera.h"
+#include "../WinBase/AssetManager.h"
 #include <d3dcompiler.h>
 #include <Directxtk/DDSTextureLoader.h>
-#include "../WinBase/Camera.h"
+
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -23,20 +25,29 @@ bool App::OnInit()
     skybox.InitRenderPipeLine();
 
     // model init
-    warrior = ModelLoader::LoadSkeletalMesh("../Resource/Girl.fbx");
-    enemy = ModelLoader::LoadSkeletalMesh("../Resource/Enemy.fbx");
+    warrior = new SkeletalModel();
+    AssetManager::Instance().LoadSkeletalModelAsset(warrior, "../Resource/Girl.fbx");
+
+    enemy = new SkeletalModel();
+    AssetManager::Instance().LoadSkeletalModelAsset(enemy, "../Resource/Enemy.fbx");
     enemy->SetPosition({ 200, 0,0 });
 
-    zelda = ModelLoader::LoadStaticMesh("../Resource/zeldaPosed001.fbx");
-    tree = ModelLoader::LoadStaticMesh("../Resource/Tree.fbx");
-    boxHuman = ModelLoader::LoadRigidMesh("../Resource/BoxHuman.fbx");
+    zelda = new StaticModel();
+    AssetManager::Instance().LoadStaticModelAsset(zelda, "../Resource/zeldaPosed001.fbx");
+
+    tree = new StaticModel();
+    AssetManager::Instance().LoadStaticModelAsset(tree, "../Resource/Tree.fbx");
+
+    boxHuman = new RigidModel();
+    AssetManager::Instance().LoadRigidModelAsset(boxHuman, "../Resource/BoxHuman.fbx");
     zelda->SetPosition({ -150, 0,0 });
     boxHuman->SetPosition({ -320, 0,0 });
     boxHuman->SetScale({ 0.2,0.2,0.2 });
     tree->SetPosition({ -450, 0,0 });
     tree->SetScale({ 100,100,100 });
 
-    plane = ModelLoader::LoadStaticMesh("../Resource/Plane.fbx");
+    plane = new StaticModel();
+    ModelLoader::LoadStaticMesh(plane, "../Resource/Plane.fbx");
     plane->SetPosition({ 0,-5,0 });
     plane->SetScale({ 0.4,1,0.2 });
 

@@ -24,8 +24,8 @@ class StaticModel
 public:
     // sub mesh, material
     // TODO :: 삭제
-    vector<StaticSubMesh> subMeshes;
-    vector<Material> materials;
+    //vector<StaticSubMesh> subMeshes;
+    //vector<Material> materials;
 
     // 공유 리소스
     // TODO :: StaticModelAsset 구조로 변경

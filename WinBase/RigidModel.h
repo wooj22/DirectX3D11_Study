@@ -24,9 +24,9 @@ class RigidModel
 public:
     // sub mesh, material, animation
     // TODO :: 삭제
-    vector<RigidSubMesh> subMeshes;
+    /*vector<RigidSubMesh> subMeshes;
     vector<Material> materials;
-    vector<AnimationClip> animationClips;
+    vector<AnimationClip> animationClips;*/
 
     // 공유 리소스
     // TODO :: RigidModelAsset 구조로 변경

@@ -21,10 +21,10 @@ class SkeletalModel
 public:
     // sub mesh, material, animation
     // TODO :: 삭제
-    vector<SkeletalSubMesh> subMeshes;
+    /*vector<SkeletalSubMesh> subMeshes;
     vector<Material> materials;
     Skeleton skeleton;
-    vector<AnimationClip> animationClips;
+    vector<AnimationClip> animationClips;*/
 
     // 공유 리소스
     // TODO :: SkeletalModelAsset 구조로 변경

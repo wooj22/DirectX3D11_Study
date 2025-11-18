@@ -66,13 +66,13 @@ void SkeletalModel::Update()
 
     // animation time update
     currentAnimTime += Time::GetDeltaTime();
-    if (currentAnimTime > animationClips[0].duration)
-        currentAnimTime = fmod(currentAnimTime, animationClips[0].duration);
+    if (currentAnimTime > model->animationClips[0].duration)
+        currentAnimTime = fmod(currentAnimTime, model->animationClips[0].duration);
 
     // bone local update
-    for (auto& bone : skeleton.bones)
+    for (auto& bone : model->skeleton.bones)
     {
-        AnimationClip& clip = animationClips[0];
+        AnimationClip& clip = model->animationClips[0];
         for (auto& nodeAnim : clip.nodeAnimations)
         {
             if (nodeAnim.nodeName == bone.name)
@@ -93,7 +93,7 @@ void SkeletalModel::Update()
     }
 
     // bone world update
-    skeleton.UpdateBoneWorld();
+    model->skeleton.UpdateBoneWorld();
 }
 
 void SkeletalModel::Render()
@@ -102,22 +102,22 @@ void SkeletalModel::Render()
     D3D::transformCBData.world = world.Transpose();
 
     // bone world (animation)
-    for (int j = 0; j < skeleton.bones.size(); j++)
+    for (int j = 0; j < model->skeleton.bones.size(); j++)
     {
-        D3D::poseCBData.bonePose[j] = skeleton.bones[j].worldMatrix.Transpose();
+        D3D::poseCBData.bonePose[j] = model->skeleton.bones[j].worldMatrix.Transpose();
     }
 
     // bone offset
-    for (int j = 0; j < skeleton.bones.size(); j++)
+    for (int j = 0; j < model->skeleton.bones.size(); j++)
     {
-        D3D::offsetCBData.boneOffset[j] = skeleton.bones[j].offsetMatrix.Transpose();
+        D3D::offsetCBData.boneOffset[j] = model->skeleton.bones[j].offsetMatrix.Transpose();
     }
 
     // mesh render
-    for (int i = 0; i < subMeshes.size(); ++i)
+    for (int i = 0; i < model->subMeshes.size(); ++i)
     {
-        SkeletalSubMesh& sub = subMeshes[i];
-        Material& mat = materials[i];
+        SkeletalSubMesh& sub = model->subMeshes[i];
+        Material& mat = model->materials[i];
 
         // vertex buffer, indexbuffer
         D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);
@@ -128,10 +128,10 @@ void SkeletalModel::Render()
         D3D::deviceContext->PSSetShaderResources(1, 1, &mat.normalSRV);
         D3D::deviceContext->PSSetShaderResources(2, 1, &mat.specualrSRV);
         D3D::deviceContext->PSSetShaderResources(3, 1, &mat.emissiveSRV);
-        D3D::materialCBData.useDiffuse = (materials[i].textureFlags & TEX_DIFFUSE) != 0;
-        D3D::materialCBData.useNormal = (materials[i].textureFlags & TEX_NORMAL) != 0;
-        D3D::materialCBData.useSpecular = (materials[i].textureFlags & TEX_SPECULAR) != 0;
-        D3D::materialCBData.useEmissive = (materials[i].textureFlags & TEX_EMISSIVE) != 0;
+        D3D::materialCBData.useDiffuse = (model->materials[i].textureFlags & TEX_DIFFUSE) != 0;
+        D3D::materialCBData.useNormal = (model->materials[i].textureFlags & TEX_NORMAL) != 0;
+        D3D::materialCBData.useSpecular = (model->materials[i].textureFlags & TEX_SPECULAR) != 0;
+        D3D::materialCBData.useEmissive = (model->materials[i].textureFlags & TEX_EMISSIVE) != 0;
 
         // constant buffer
         D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);

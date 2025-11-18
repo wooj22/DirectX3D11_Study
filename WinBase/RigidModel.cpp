@@ -65,15 +65,15 @@ void RigidModel::Update()
 
     // animation time update
     currentAnimTime += Time::GetDeltaTime();
-    if (currentAnimTime > animationClips[0].duration)
-        currentAnimTime = fmod(currentAnimTime, animationClips[0].duration);
+    if (currentAnimTime > model->animationClips[0].duration)
+        currentAnimTime = fmod(currentAnimTime, model->animationClips[0].duration);
 
     // local matrix update
     // animaton key frame값을 보간해서 local matrix 업데이트
     // TODO :: 해시테이블로 바꾸기
-    for (auto& sub : subMeshes)
+    for (auto& sub : model->subMeshes)
     {
-        AnimationClip& clip = animationClips[0];
+        AnimationClip& clip = model->animationClips[0];
         for (auto& nodeAnim : clip.nodeAnimations)
         {
             if (nodeAnim.nodeName == sub.nodeName)
@@ -94,10 +94,10 @@ void RigidModel::Update()
     }
 
     // model matrix update
-    for (auto& sub : subMeshes)
+    for (auto& sub : model->subMeshes)
     {
         if (sub.parentIndex != -1)
-            sub.modelMatrix = sub.localMatrix * subMeshes[sub.parentIndex].modelMatrix;
+            sub.modelMatrix = sub.localMatrix * model->subMeshes[sub.parentIndex].modelMatrix;
         else
             sub.modelMatrix = sub.localMatrix;
     }
@@ -108,10 +108,10 @@ void RigidModel::Render()
     // world
     D3D::transformCBData.world = world.Transpose();
 
-    for (int i = 0; i < subMeshes.size(); ++i)
+    for (int i = 0; i < model->subMeshes.size(); ++i)
     {
-        RigidSubMesh& sub = subMeshes[i];
-        Material& mat = materials[i];
+        RigidSubMesh& sub = model->subMeshes[i];
+        Material& mat = model->materials[i];
 
         // model
         D3D::transformCBData.model = sub.modelMatrix.Transpose();
@@ -125,10 +125,10 @@ void RigidModel::Render()
         D3D::deviceContext->PSSetShaderResources(1, 1, &mat.normalSRV);
         D3D::deviceContext->PSSetShaderResources(2, 1, &mat.specualrSRV);
         D3D::deviceContext->PSSetShaderResources(3, 1, &mat.emissiveSRV);
-        D3D::materialCBData.useDiffuse = (materials[i].textureFlags & TEX_DIFFUSE) != 0;
-        D3D::materialCBData.useNormal = (materials[i].textureFlags & TEX_NORMAL) != 0;
-        D3D::materialCBData.useSpecular = (materials[i].textureFlags & TEX_SPECULAR) != 0;
-        D3D::materialCBData.useEmissive = (materials[i].textureFlags & TEX_EMISSIVE) != 0;
+        D3D::materialCBData.useDiffuse = (model->materials[i].textureFlags & TEX_DIFFUSE) != 0;
+        D3D::materialCBData.useNormal = (model->materials[i].textureFlags & TEX_NORMAL) != 0;
+        D3D::materialCBData.useSpecular = (model->materials[i].textureFlags & TEX_SPECULAR) != 0;
+        D3D::materialCBData.useEmissive = (model->materials[i].textureFlags & TEX_EMISSIVE) != 0;
 
         // constant buffer
         D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
