@@ -208,7 +208,6 @@ void ModelLoader::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMe
             aiNodeAnim* aiNodeAnim = aiAnim->mChannels[j];
             NodeAnimation nodeAnim;
             nodeAnim.nodeName = aiNodeAnim->mNodeName.C_Str();
-            //OutputDebugStringA((nodeAnim.nodeName + "\n").c_str());
 
             // keyframe
             // position
@@ -285,18 +284,6 @@ void ModelLoader::ProcessSkeleton(const aiScene* scene, SkeletalMesh* skeletalMe
             skeletalMesh->skeleton.nameToIndex[name] = skeletalMesh->skeleton.bones.size() - 1;
         }
     }
-
-
-    // debug - skeleton info 
-    /*OutputDebugStringA("Skeleton Bone Count : ");
-    OutputDebugStringA(std::to_string(skeletalMesh->skeleton.boneCount).c_str());
-    OutputDebugStringA("\n");
-    OutputDebugStringA("Skeleton Info\n");
-    for (int i = 0; i < skeletalMesh->skeleton.boneCount; i++)
-    {
-        OutputDebugStringA(skeletalMesh->skeleton.bones[i].name.c_str());
-        OutputDebugStringA("\n");
-    }*/
 }
 
 void ModelLoader::ProcessSkeletalNode(aiNode* node, const aiScene* scene, SkeletalMesh* skeletalMesh, int parentIndex)
@@ -308,12 +295,6 @@ void ModelLoader::ProcessSkeletalNode(aiNode* node, const aiScene* scene, Skelet
         Bone& bone = skeletalMesh->skeleton.bones[boneIndex];
         bone.bindMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&node->mTransformation));
         bone.parentIndex = parentIndex;
-
-        // debug - bone parent index (node 순회하면서 매핑 검사로 저장)
-        /*OutputDebugStringA(node->mName.C_Str());
-        OutputDebugStringA(" Parent Index : ");
-        OutputDebugStringA(std::to_string(bone.parentIndex).c_str());
-        OutputDebugStringA("\n");*/
     }
 
     // SubMesh
@@ -417,7 +398,6 @@ void ModelLoader::ProcessSkeletalAnimation(const aiScene* scene, SkeletalMesh* s
             aiNodeAnim* aiNodeAnim = aiAnim->mChannels[j];
             NodeAnimation nodeAnim;
             nodeAnim.nodeName = aiNodeAnim->mNodeName.C_Str();
-            //OutputDebugStringA((nodeAnim.nodeName + "\n").c_str());
 
             // keyframe
             // position

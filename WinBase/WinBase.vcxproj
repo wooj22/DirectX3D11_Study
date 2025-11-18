@@ -138,13 +138,17 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="AssetManager.h" />
     <ClInclude Include="RigidMesh.h" />
+    <ClInclude Include="RigidModelAsset.hpp" />
     <ClInclude Include="RigidSubMesh.h" />
     <ClInclude Include="SkeletalMesh.h" />
+    <ClInclude Include="SkeletalModelAsset.hpp" />
     <ClInclude Include="SkeletalSubMesh.h" />
     <ClInclude Include="Skeleton.hpp" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="StaticMesh.h" />
+    <ClInclude Include="StaticModelAsset.hpp" />
     <ClInclude Include="StaticSubMesh.h" />
     <ClInclude Include="Structures.hpp" />
     <ClInclude Include="Time.h" />
@@ -159,6 +163,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="RigidMesh.cpp" />
     <ClCompile Include="RigidSubMesh.cpp" />
     <ClCompile Include="SkeletalMesh.cpp" />

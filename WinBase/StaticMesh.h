@@ -1,6 +1,6 @@
 #pragma once
-#include "StaticSubMesh.h"
-#include "Material.h"
+#include <iostream>
+#include "StaticModelAsset.hpp"
 #include <string>
 #include <DirectXMath.h>
 #include <directxtk/simplemath.h>
@@ -26,6 +26,11 @@ public:
     vector<StaticSubMesh> subMeshes;
     vector<Material> materials;
 
+    // 공유 리소스
+    // TODO :: StaticModelAsset 구조로 변경
+    shared_ptr<StaticModelAsset> model;
+
+    // 인스턴스 데이터
     // transform
     Vector3 position;
     Vector3 rotation;

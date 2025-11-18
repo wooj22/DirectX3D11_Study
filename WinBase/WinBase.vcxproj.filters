@@ -16,29 +16,8 @@
     <Filter Include="01. D3D">
       <UniqueIdentifier>{7d2e5fa0-36e9-4bca-8f16-df6c0d89acee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. ModelImporter">
-      <UniqueIdentifier>{de76541a-6307-4b73-860f-fb75d9805c97}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. Graphics">
       <UniqueIdentifier>{1067d3e8-c160-44a0-9642-4de9cdc5b182}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Graphics\Model">
-      <UniqueIdentifier>{f1cb7515-c4aa-4ac9-8b1a-f494df7da15a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Graphics\Model\Mesh">
-      <UniqueIdentifier>{c640ebae-5c31-47f9-a5e8-225f1f9d5eb2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Graphics\Model\Mesh\SkeletalMesh">
-      <UniqueIdentifier>{37853e5b-dc6e-43e4-9da1-6017a16cf5bd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Graphics\Model\Mesh\StaticMesh">
-      <UniqueIdentifier>{844abf15-9e6c-4cbe-9080-4d0c99ef4cb7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Graphics\Model\Mesh\RigidMesh">
-      <UniqueIdentifier>{43e79195-24f0-4d25-992e-53212af59d2a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Graphics\Model\Skeleton">
-      <UniqueIdentifier>{f9d34f9f-4ca7-4769-ba04-b25e10c55954}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. Graphics\Material">
       <UniqueIdentifier>{aca393b4-646c-423a-9e76-5b959d14564a}</UniqueIdentifier>
@@ -67,6 +46,33 @@
     <Filter Include="04. Shaders\PixelShader">
       <UniqueIdentifier>{fcced5c6-e224-4bfc-8bce-318e9af81af6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. ModelLoader">
+      <UniqueIdentifier>{de76541a-6307-4b73-860f-fb75d9805c97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Graphics\Model">
+      <UniqueIdentifier>{f1cb7515-c4aa-4ac9-8b1a-f494df7da15a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Graphics\Model\Mesh">
+      <UniqueIdentifier>{c640ebae-5c31-47f9-a5e8-225f1f9d5eb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Graphics\Model\Mesh\SkeletalMesh">
+      <UniqueIdentifier>{37853e5b-dc6e-43e4-9da1-6017a16cf5bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Graphics\Model\Mesh\StaticMesh">
+      <UniqueIdentifier>{844abf15-9e6c-4cbe-9080-4d0c99ef4cb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Graphics\Model\Mesh\RigidMesh">
+      <UniqueIdentifier>{43e79195-24f0-4d25-992e-53212af59d2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Graphics\Model\Skeleton">
+      <UniqueIdentifier>{f9d34f9f-4ca7-4769-ba04-b25e10c55954}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. ResourceManager">
+      <UniqueIdentifier>{831f3da5-ebe6-40a2-b7b0-f93626ce3d47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. ResourceManager\MeshAsset">
+      <UniqueIdentifier>{746bad31-e215-44ad-84a2-ab71a17f3d54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinApp.h">
@@ -91,7 +97,7 @@
       <Filter>99. Module</Filter>
     </ClInclude>
     <ClInclude Include="ModelLoader.h">
-      <Filter>02. ModelImporter</Filter>
+      <Filter>02. ModelLoader</Filter>
     </ClInclude>
     <ClInclude Include="StaticSubMesh.h">
       <Filter>03. Graphics\Model\Mesh\StaticMesh</Filter>
@@ -129,6 +135,18 @@
     <ClInclude Include="SkyBox.h">
       <Filter>03. Graphics\SkyBox</Filter>
     </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>06. ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidModelAsset.hpp">
+      <Filter>06. ResourceManager\MeshAsset</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalModelAsset.hpp">
+      <Filter>06. ResourceManager\MeshAsset</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticModelAsset.hpp">
+      <Filter>06. ResourceManager\MeshAsset</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApp.cpp">
@@ -153,7 +171,7 @@
       <Filter>99. Module</Filter>
     </ClCompile>
     <ClCompile Include="ModelLoader.cpp">
-      <Filter>02. ModelImporter</Filter>
+      <Filter>02. ModelLoader</Filter>
     </ClCompile>
     <ClCompile Include="StaticMesh.cpp">
       <Filter>03. Graphics\Model\Mesh\StaticMesh</Filter>
@@ -181,6 +199,9 @@
     </ClCompile>
     <ClCompile Include="SkyBox.cpp">
       <Filter>03. Graphics\SkyBox</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>06. ResourceManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

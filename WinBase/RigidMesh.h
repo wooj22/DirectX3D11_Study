@@ -1,7 +1,6 @@
 #pragma once
-#include "RigidSubMesh.h"
-#include "Material.h"
-#include "AnimationClip.h"
+#include <iostream>
+#include "RigidModelAsset.hpp"
 #include <string>
 #include <DirectXMath.h>
 #include <directxtk/simplemath.h>
@@ -28,6 +27,11 @@ public:
     vector<Material> materials;
     vector<AnimationClip> animationClips;
 
+    // 공유 리소스
+    // TODO :: RigidModelAsset 구조로 변경
+    shared_ptr<RigidModelAsset> model;
+
+    // 인스턴스 데이터
     // transform
     Vector3 position;
     Vector3 rotation;
