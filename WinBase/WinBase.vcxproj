@@ -136,6 +136,7 @@
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="MemoryDebugger.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="AssetManager.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MemoryDebugger.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="AssetManager.cpp" />

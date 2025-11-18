@@ -204,7 +204,7 @@ void App::RenderGUI()
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+    ImGui::Begin("Shadings", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
     ImGui::Text("Light");
     ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
     ImGui::SliderFloat("indirectLight", &light.indirectLight, 0.0f, 50.0f, "%.2f");
@@ -220,6 +220,10 @@ void App::RenderGUI()
     ImGui::SliderFloat("outlineThickness", &D3D::outlineCBData.outlineThickness, 0.0f, 2.0f, "%.2f");
     ImGui::ColorEdit3("outlineColoe", &D3D::outlineCBData.outlineColor.x);
 
+    ImGui::End();
+
+    ImGui::Begin("Memory Debugger"); 
+    ImGui::Text("[1] Skinned Skeletal Mesh Create\n[2] Rigid Skeletal Mesh Create\n[3] Static Mesh Create");
     ImGui::End();
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

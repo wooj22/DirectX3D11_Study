@@ -3,22 +3,11 @@
 #include <vector>
 #include <unordered_map>
 
-#include <d3d11.h>
-#include <wrl.h>
-#include <wincodec.h>
-#include <dxgi1_6.h>
-#include <psapi.h>
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "psapi.lib")
-#pragma comment(lib,"windowscodecs.lib")
-
 using std::unordered_map;
 using std::vector;
 using std::string;
 using std::weak_ptr;
 using std::shared_ptr;
-using namespace Microsoft::WRL;
 
 class StaticModel;
 class RigidModel;
@@ -38,19 +27,7 @@ class SkeletalModelAsset;
 
 class AssetManager
 {
-public:
-    // singleton instance getter
-    static AssetManager& Instance()
-    {
-        static AssetManager instance;
-        return instance;
-    }
-
 private:
-    // d3d memory    
-    ComPtr<IDXGIDevice3> dxgiDevice;
-    ComPtr<IDXGIAdapter3> dxgiAdapter;
-
     // asseet data
     unordered_map<string, weak_ptr<StaticModelAsset>> asset_staticmodel;
     unordered_map<string, weak_ptr<RigidModelAsset>> asset_rigidmodel;
@@ -62,6 +39,12 @@ public:
     void LoadRigidModelAsset(RigidModel* model, string filePath);
     void LoadSkeletalModelAsset(SkeletalModel* model, string filePath);
 
+    // singleton instance getter
+    static AssetManager& Instance()
+    {
+        static AssetManager instance;
+        return instance;
+    }
 
 private:
     AssetManager() = default;
