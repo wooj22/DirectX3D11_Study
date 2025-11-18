@@ -22,6 +22,7 @@ bool App::OnInit()
     if (!D3D::Init(hWnd, screenWidth, screenHeight)) return false;
     if (!InitRenderPipeLine()) return false;
     if (!InitGUI()) return false;
+    debugger.Init();
     skybox.InitRenderPipeLine();
 
     // model init
@@ -44,7 +45,8 @@ bool App::OnInit()
 
     // projection init 
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
-
+    
+    debugger.CheakMemoryUsage();
     return true;
 }
 
@@ -58,6 +60,7 @@ void App::OnUninit()
 
 void App::OnUpdate()
 {
+    // Create new model
     if (Input::GetKeyDown('1'))
     {
         SkeletalModel* warrior = new SkeletalModel();
@@ -76,6 +79,23 @@ void App::OnUpdate()
         Vector3 scale(randScale(gen), randScale(gen), randScale(gen));
         
         warrior->SetTransform(pos, rotation, scale);    
+    }
+
+    if (Input::GetKeyDown('2'))
+    {
+        skeletals.pop_back();
+    }
+
+    // Memory Cheak
+    if (Input::GetKeyDown('M'))
+    {
+        debugger.CheakMemoryUsage();
+    }
+
+    // Trim
+    if (Input::GetKeyDown('T'))
+    {
+        debugger.Trim();
     }
 
     for (auto& m : skeletals)
@@ -134,7 +154,7 @@ void App::OnRender()
     D3D::deviceContext->PSSetShaderResources(4, 1, &diffuseRampTexture);
     D3D::deviceContext->PSSetShaderResources(5, 1, &specualrRampTexture);
 
-    // [Model 1]
+    // [Model Render]
     // outline render
     D3D::deviceContext->VSSetShader(D3D::Skinned_OutLine_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::OutLine_PS.Get(), NULL, 0);
@@ -207,8 +227,8 @@ void App::RenderGUI()
     ImGui::Begin("Shadings", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
     ImGui::Text("Light");
     ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
-    ImGui::SliderFloat("indirectLight", &light.indirectLight, 0.0f, 50.0f, "%.2f");
-    ImGui::SliderFloat("directLight", &light.directLight, 0.0f, 50.0f, "%.2f");
+    ImGui::SliderFloat("indirectLight", &light.indirectLight, 0.0f, 10.0f, "%.2f");
+    ImGui::SliderFloat("directLight", &light.directLight, 0.0f, 10.0f, "%.2f");
     ImGui::ColorEdit3("Color", &light.color.x);
 
     ImGui::SliderFloat("ambientHighlight", &ambientHighlight, 0.0f, 1.0f, "%.2f");
@@ -223,7 +243,10 @@ void App::RenderGUI()
     ImGui::End();
 
     ImGui::Begin("Memory Debugger"); 
-    ImGui::Text("[1] Skinned Skeletal Mesh Create\n[2] Rigid Skeletal Mesh Create\n[3] Static Mesh Create");
+    ImGui::Text("[M] Cheak memory usage");
+    ImGui::Text("[T] Trim");
+    ImGui::Text("[1] Create Model Create\n[2] Delete Model");
+    ImGui::Text("%ls", debugger.GetMemoryUsageWstring().c_str());
     ImGui::End();
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

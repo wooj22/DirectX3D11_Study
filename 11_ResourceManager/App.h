@@ -8,6 +8,7 @@
 #include "../WinBase/Material.h"
 #include "../WinBase/DirectionalLight.hpp"
 #include "../WinBase/SkyBox.h"
+#include "../WinBase/MemoryDebugger.h"
 
 #include <d3d11.h>
 #include <dxgidebug.h>
@@ -25,7 +26,8 @@ using namespace DirectX::SimpleMath;
 
 
 // 리소스매니저 테스트 프로젝트입니다.
-// 같은 Model끼리는 읽기 전용 asset을 공유하여 메모리를 절약합니다.
+// AssetManager를 통한 Model Load로 같은 Model끼리는 읽기 전용 asset을 공유하여 메모리를 절약합니다.
+// MemoryDebugger를 통해 메모리 사용량을 체크할 수 있습니다.
 
 class App : public WinApp
 {
@@ -40,8 +42,6 @@ private:
 
     // models
     vector<SkeletalModel*> skeletals;
-    //vector<StaticModel*> statics;
-    //vector<RigidModel*> rigids;
 
     // skybox
     SkyBox skybox;
@@ -56,6 +56,9 @@ private:
     float shininess = 500;
     float blendFactor[4] = { 0,0,0,0 }; UINT sampleMask = 0xffffffff;
     float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
+
+    // memory debugger
+    MemoryDebugger debugger;
 
 public:
     // main process
