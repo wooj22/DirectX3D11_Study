@@ -31,11 +31,15 @@ public:
     shared_ptr<SkeletalModelAsset> model;
 
     // 인스턴스 데이터
-    // transform
+    // model transform
     Vector3 position;
     Vector3 rotation;
     Vector3 scale;
     Matrix world;
+
+    // bone transform
+    vector<Matrix> localMatrix;      // bone animation
+    vector<Matrix> poseMatrix;       // bone parent * local
 
     // animation
     float currentAnimTime = 0.f;

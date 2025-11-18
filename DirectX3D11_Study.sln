@@ -5,27 +5,29 @@ VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinBase", "WinBase\WinBase.vcxproj", "{3A8B95D7-7011-4C23-82CF-2E9BC80A207A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1_SquareDrawing", "1_SquareDrawing\1_SquareDrawing.vcxproj", "{37725AF2-F642-4A9D-BE7D-034CFEB17E80}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_SquareDrawing", "1_SquareDrawing\1_SquareDrawing.vcxproj", "{37725AF2-F642-4A9D-BE7D-034CFEB17E80}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2_CubeDrawing", "2_CubeDrawing\2_CubeDrawing.vcxproj", "{A86913C0-7C83-4159-B939-6ECD094D3588}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_CubeDrawing", "2_CubeDrawing\2_CubeDrawing.vcxproj", "{A86913C0-7C83-4159-B939-6ECD094D3588}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3DBase", "D3DBase\D3DBase.vcxproj", "{0B4DEC3A-2373-4C07-B7A4-CEAF37A0750E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3_Lambert", "3_LambertLighting\3_LambertLighting.vcxproj", "{F52C35A0-F908-4F92-A772-E6ADE1DDBDA5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03_Lambert", "3_LambertLighting\3_LambertLighting.vcxproj", "{F52C35A0-F908-4F92-A772-E6ADE1DDBDA5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "4_TextureMapping", "4_TextureMapping\4_TextureMapping.vcxproj", "{F7E5FA37-7B9B-4657-8B6D-5E1AFDB47CF1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "04_TextureMapping", "4_TextureMapping\4_TextureMapping.vcxproj", "{F7E5FA37-7B9B-4657-8B6D-5E1AFDB47CF1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "5_Skybox", "5_Skybox\5_Skybox.vcxproj", "{B1C01584-C90E-4B9A-B02F-C2A53461C43C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "05_Skybox", "5_Skybox\5_Skybox.vcxproj", "{B1C01584-C90E-4B9A-B02F-C2A53461C43C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "6_Blinpong", "6_Blinpong\6_Blinpong.vcxproj", "{B2779905-9180-4DE8-A34A-574798CADC88}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "06_Blinpong", "6_Blinpong\6_Blinpong.vcxproj", "{B2779905-9180-4DE8-A34A-574798CADC88}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "7_NormalMap", "7_NormalMap\NormalMap.vcxproj", "{9E7CC468-7172-496C-81E5-3E0DE33C3A4C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "07_NormalMap", "7_NormalMap\NormalMap.vcxproj", "{9E7CC468-7172-496C-81E5-3E0DE33C3A4C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "8_FBX", "8_FBX\8_FBX.vcxproj", "{2E48427E-4535-481F-B7E7-03D4A0B2EC57}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "08_FBX", "8_FBX\8_FBX.vcxproj", "{2E48427E-4535-481F-B7E7-03D4A0B2EC57}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "9_ShadowMapping", "9_ShadowMapping\9_ShadowMapping.vcxproj", "{71F1CF60-B82A-45C6-9886-8624678BA80D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "09_ShadowMapping", "9_ShadowMapping\9_ShadowMapping.vcxproj", "{71F1CF60-B82A-45C6-9886-8624678BA80D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "10_CartoonRendering", "10_CartoonRendering\CartoonRendering.vcxproj", "{8DC3C32C-56E9-46C3-9D52-EFC86FEA49B5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "11_ResourceManager", "11_ResourceManager\11_ResourceManager.vcxproj", "{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,6 +133,14 @@ Global
 		{8DC3C32C-56E9-46C3-9D52-EFC86FEA49B5}.Release|x64.Build.0 = Release|x64
 		{8DC3C32C-56E9-46C3-9D52-EFC86FEA49B5}.Release|x86.ActiveCfg = Release|Win32
 		{8DC3C32C-56E9-46C3-9D52-EFC86FEA49B5}.Release|x86.Build.0 = Release|Win32
+		{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}.Debug|x64.ActiveCfg = Debug|x64
+		{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}.Debug|x64.Build.0 = Debug|x64
+		{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}.Debug|x86.ActiveCfg = Debug|Win32
+		{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}.Debug|x86.Build.0 = Debug|Win32
+		{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}.Release|x64.ActiveCfg = Release|x64
+		{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}.Release|x64.Build.0 = Release|x64
+		{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}.Release|x86.ActiveCfg = Release|Win32
+		{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

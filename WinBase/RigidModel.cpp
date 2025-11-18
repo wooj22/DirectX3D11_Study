@@ -71,8 +71,10 @@ void RigidModel::Update()
     // local matrix update
     // animaton key frame값을 보간해서 local matrix 업데이트
     // TODO :: 해시테이블로 바꾸기
-    for (auto& sub : model->subMeshes)
+    for(int i=0; i<model->subMeshes.size(); i++)
     {
+        auto& sub = model->subMeshes[i];
+
         AnimationClip& clip = model->animationClips[0];
         for (auto& nodeAnim : clip.nodeAnimations)
         {
@@ -81,25 +83,27 @@ void RigidModel::Update()
                 Vector3 pos;  Quaternion rot;	Vector3 scl;
                 nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
 
-                sub.localMatrix = Matrix::CreateScale(scl) *
+                localMatrix[i] = Matrix::CreateScale(scl) *
                     Matrix::CreateFromQuaternion(rot) *
                     Matrix::CreateTranslation(pos);
                 break;
             }
             else
             {
-                sub.localMatrix = sub.bindMatrix;
+                localMatrix[i] = sub.bindMatrix;
             }
         }
     }
 
     // model matrix update
-    for (auto& sub : model->subMeshes)
+    for (int i = 0; i < model->subMeshes.size(); i++)
     {
+        auto& sub = model->subMeshes[i];
+
         if (sub.parentIndex != -1)
-            sub.modelMatrix = sub.localMatrix * model->subMeshes[sub.parentIndex].modelMatrix;
+            modelMatrix[i] = localMatrix[i] * modelMatrix[sub.parentIndex];
         else
-            sub.modelMatrix = sub.localMatrix;
+            modelMatrix[i] = localMatrix[i];
     }
 }
 
@@ -114,7 +118,7 @@ void RigidModel::Render()
         Material& mat = model->materials[i];
 
         // model
-        D3D::transformCBData.model = sub.modelMatrix.Transpose();
+        D3D::transformCBData.model = modelMatrix[i].Transpose();
 
         // vertex buffer, indexbuffer
         D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);

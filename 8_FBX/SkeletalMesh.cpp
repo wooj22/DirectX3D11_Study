@@ -104,7 +104,7 @@ void SkeletalModel::Render(ID3D11Buffer* constantBuffer, ID3D11Buffer* offsetMat
     // bone world (animation)
     for (int j = 0; j < skeleton.boneCount; j++)
     {
-        poseCB.bonePose[j] = skeleton.bones[j].worldMatrix.Transpose();
+        poseCB.bonePose[j] = skeleton.bones[j].poseMatrix.Transpose();
     }
 
     // bone offset

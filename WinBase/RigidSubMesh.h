@@ -42,8 +42,8 @@ public:
 
     // transform
     Matrix bindMatrix = Matrix::Identity;
-    Matrix localMatrix = Matrix::Identity;
-    Matrix modelMatrix = Matrix::Identity;
+    //Matrix localMatrix = Matrix::Identity;
+    //Matrix modelMatrix = Matrix::Identity;
 
 public:
     void CreateBuffer();

@@ -21,7 +21,7 @@ struct Bone
     Matrix offsetMatrix = Matrix::Identity;      // bind pose inverse transform
     Matrix bindMatrix =  Matrix::Identity;       // bind
     Matrix localMatrix = Matrix::Identity;       // animation
-    Matrix worldMatrix = Matrix::Identity;       // parent * local
+    Matrix poseMatrix = Matrix::Identity;       // parent * local
 };
 
 
@@ -50,9 +50,9 @@ struct Skeleton
         for (int i = 0; i < bones.size(); ++i)
         {
             if (bones[i].parentIndex == -1)
-                bones[i].worldMatrix = bones[i].localMatrix;
+                bones[i].poseMatrix = bones[i].localMatrix;
             else
-                bones[i].worldMatrix = bones[i].localMatrix * bones[bones[i].parentIndex].worldMatrix;
+                bones[i].poseMatrix = bones[i].localMatrix * bones[bones[i].parentIndex].poseMatrix;
         }
     }
 };

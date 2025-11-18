@@ -70,8 +70,10 @@ void SkeletalModel::Update()
         currentAnimTime = fmod(currentAnimTime, model->animationClips[0].duration);
 
     // bone local update
-    for (auto& bone : model->skeleton.bones)
+    for(int i=0; i<model->skeleton.bones.size(); i++)
     {
+        auto& bone = model->skeleton.bones[i];
+
         AnimationClip& clip = model->animationClips[0];
         for (auto& nodeAnim : clip.nodeAnimations)
         {
@@ -80,20 +82,27 @@ void SkeletalModel::Update()
                 Vector3 pos;  Quaternion rot;	Vector3 scl;
                 nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
 
-                bone.localMatrix = Matrix::CreateScale(scl) *
+                localMatrix[i] = Matrix::CreateScale(scl) *
                     Matrix::CreateFromQuaternion(rot) *
                     Matrix::CreateTranslation(pos);
                 break;
             }
             else
             {
-                bone.localMatrix = bone.bindMatrix;
+                localMatrix[i] = bone.bindMatrix;
             }
         }
     }
 
     // bone world update
-    model->skeleton.UpdateBoneWorld();
+    //model->skeleton.UpdateBoneWorld();
+    for (int i = 0; i < model->skeleton.bones.size(); ++i)
+    {
+        if (model->skeleton.bones[i].parentIndex == -1)
+            poseMatrix[i] = localMatrix[i];
+        else
+            poseMatrix[i] = localMatrix[i] * poseMatrix[model->skeleton.bones[i].parentIndex];
+    }
 }
 
 void SkeletalModel::Render()
@@ -104,7 +113,7 @@ void SkeletalModel::Render()
     // bone world (animation)
     for (int j = 0; j < model->skeleton.bones.size(); j++)
     {
-        D3D::poseCBData.bonePose[j] = model->skeleton.bones[j].worldMatrix.Transpose();
+        D3D::poseCBData.bonePose[j] = poseMatrix[j].Transpose();
     }
 
     // bone offset

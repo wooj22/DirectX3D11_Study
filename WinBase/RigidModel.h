@@ -33,11 +33,15 @@ public:
     shared_ptr<RigidModelAsset> model;
 
     // 인스턴스 데이터
-    // transform
+    // model transform
     Vector3 position;
     Vector3 rotation;
     Vector3 scale;
     Matrix world;
+
+    // submesh transform
+    vector<Matrix> localMatrix;
+    vector<Matrix> modelMatrix;
 
     // animation
     float currentAnimTime = 0.f;
