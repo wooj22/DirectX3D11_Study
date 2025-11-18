@@ -23,8 +23,10 @@ bool App::OnInit()
     skybox.InitRenderPipeLine();
 
     // model init
-    warrior = ModelLoader::LoadSkeletalMesh("../Resource/Girl.fbx");
-    enemy = ModelLoader::LoadSkeletalMesh("../Resource/Enemy.fbx");
+    warrior = new SkeletalModel();
+    enemy = new SkeletalModel();
+    ModelLoader::LoadSkeletalMesh(warrior, "../Resource/Girl.fbx");
+    ModelLoader::LoadSkeletalMesh(enemy, "../Resource/Enemy.fbx");
     enemy->SetPosition({ 200, 0,0 });
 
     // view init
