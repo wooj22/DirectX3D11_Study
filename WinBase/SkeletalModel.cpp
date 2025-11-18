@@ -1,4 +1,4 @@
-#include "SkeletalMesh.h"
+#include "SkeletalModel.h"
 #include "D3D.h"
 #include "Camera.h"
 #include "Time.h"
@@ -7,17 +7,17 @@
 using namespace DirectX;
 
 
-SkeletalMesh::SkeletalMesh()
+SkeletalModel::SkeletalModel()
 {
     SetTransform(Vector3::Zero, Vector3::Zero, Vector3::One);
 }
 
-SkeletalMesh::SkeletalMesh(Vector3 p, Vector3 r, Vector3 s)
+SkeletalModel::SkeletalModel(Vector3 p, Vector3 r, Vector3 s)
 {
     SetTransform(p, r, s);
 }
 
-void SkeletalMesh::InitTransform()
+void SkeletalModel::InitTransform()
 {
     position = Vector3::Zero;
     rotation = Vector3::Zero;
@@ -25,7 +25,7 @@ void SkeletalMesh::InitTransform()
     world = XMMatrixIdentity();
 }
 
-void SkeletalMesh::SetTransform(Vector3 p, Vector3 r, Vector3 s)
+void SkeletalModel::SetTransform(Vector3 p, Vector3 r, Vector3 s)
 {
     position = p;
     rotation = r;
@@ -33,25 +33,25 @@ void SkeletalMesh::SetTransform(Vector3 p, Vector3 r, Vector3 s)
     MakeWorld();
 }
 
-void SkeletalMesh::SetPosition(Vector3 p)
+void SkeletalModel::SetPosition(Vector3 p)
 {
     position = p;
     MakeWorld();
 }
 
-void SkeletalMesh::SetRotation(Vector3 r)
+void SkeletalModel::SetRotation(Vector3 r)
 {
     rotation = r;
     MakeWorld();
 }
 
-void SkeletalMesh::SetScale(Vector3 s)
+void SkeletalModel::SetScale(Vector3 s)
 {
     scale = s;
     MakeWorld();
 }
 
-void SkeletalMesh::MakeWorld()
+void SkeletalModel::MakeWorld()
 {
     Matrix tm = XMMatrixTranslationFromVector(position);
     XMVECTOR q = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
@@ -60,7 +60,7 @@ void SkeletalMesh::MakeWorld()
     world = sm * rm * tm;
 }
 
-void SkeletalMesh::Update()
+void SkeletalModel::Update()
 {
     MakeWorld();
 
@@ -96,7 +96,7 @@ void SkeletalMesh::Update()
     skeleton.UpdateBoneWorld();
 }
 
-void SkeletalMesh::Render()
+void SkeletalModel::Render()
 {
     // model world
     D3D::transformCBData.world = world.Transpose();

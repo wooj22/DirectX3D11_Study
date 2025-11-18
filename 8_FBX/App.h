@@ -44,11 +44,11 @@ private:
 	Matrix projection;
 
 	// models
-	StaticMesh* character = nullptr;		// Diffuse, Normal, Emisive, Specular
-	StaticMesh* zelda = nullptr;			// Diffuse, Opacity
-	StaticMesh* tree = nullptr;				// Diffuse, Opacity
-	RigidMesh* boxHuman = nullptr;			// transform animation
-    SkeletalMesh* warrior = nullptr;	// transform animation
+	StaticModel* character = nullptr;		// Diffuse, Normal, Emisive, Specular
+	StaticModel* zelda = nullptr;			// Diffuse, Opacity
+	StaticModel* tree = nullptr;				// Diffuse, Opacity
+	RigidModel* boxHuman = nullptr;			// transform animation
+    SkeletalModel* warrior = nullptr;	// transform animation
 
 	// light
 	DirectionalLight light;

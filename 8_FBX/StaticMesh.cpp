@@ -3,17 +3,17 @@
 #include "../WinBase/Camera.h"
 #include "DirectionalLight.hpp"
 
-StaticMesh::StaticMesh()
+StaticModel::StaticModel()
 {
 	SetTransform(Vector3::Zero, Vector3::Zero, Vector3::One);
 }
 
-StaticMesh::StaticMesh(Vector3 p, Vector3 r, Vector3 s)
+StaticModel::StaticModel(Vector3 p, Vector3 r, Vector3 s)
 {
 	SetTransform(p, r, s);
 }
 
-void StaticMesh::InitTransform()
+void StaticModel::InitTransform()
 {
 	position = Vector3::Zero;
 	rotation = Vector3::Zero;
@@ -21,7 +21,7 @@ void StaticMesh::InitTransform()
 	world = XMMatrixIdentity();
 }
 
-void StaticMesh::SetTransform(Vector3 p, Vector3 r, Vector3 s)
+void StaticModel::SetTransform(Vector3 p, Vector3 r, Vector3 s)
 {
 	position = p;
 	rotation = r;
@@ -29,25 +29,25 @@ void StaticMesh::SetTransform(Vector3 p, Vector3 r, Vector3 s)
 	MakeWorld();
 }
 
-void StaticMesh::SetPosition(Vector3 p)
+void StaticModel::SetPosition(Vector3 p)
 {
 	position = p;
 	MakeWorld();
 }
 
-void StaticMesh::SetRotation(Vector3 r) 
+void StaticModel::SetRotation(Vector3 r) 
 {
 	rotation = r;
 	MakeWorld();
 }
 
-void StaticMesh::SetScale(Vector3 s)
+void StaticModel::SetScale(Vector3 s)
 {
 	scale = s;
 	MakeWorld();
 }
 
-void StaticMesh::MakeWorld() 
+void StaticModel::MakeWorld() 
 {
 	Matrix tm = XMMatrixTranslationFromVector(position);
 	XMVECTOR q = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
@@ -56,12 +56,12 @@ void StaticMesh::MakeWorld()
 	world = sm * rm * tm;
 }
 
-void StaticMesh::Update()
+void StaticModel::Update()
 {
 	//MakeWorld();
 }
 
-void StaticMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
+void StaticModel::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
 {
 	// world matrix
     cb.model = Matrix::Identity.Transpose();

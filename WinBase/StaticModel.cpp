@@ -1,22 +1,20 @@
-#include "RigidMesh.h"
+#include "StaticModel.h"
 #include "D3D.h"
 #include "Camera.h"
-#include "Time.h"
 #include "DirectionalLight.hpp"
 #include "Structures.hpp"
-using namespace DirectX;
 
-RigidMesh::RigidMesh()
+StaticModel::StaticModel()
 {
     SetTransform(Vector3::Zero, Vector3::Zero, Vector3::One);
 }
 
-RigidMesh::RigidMesh(Vector3 p, Vector3 r, Vector3 s)
+StaticModel::StaticModel(Vector3 p, Vector3 r, Vector3 s)
 {
     SetTransform(p, r, s);
 }
 
-void RigidMesh::InitTransform()
+void StaticModel::InitTransform()
 {
     position = Vector3::Zero;
     rotation = Vector3::Zero;
@@ -24,7 +22,7 @@ void RigidMesh::InitTransform()
     world = XMMatrixIdentity();
 }
 
-void RigidMesh::SetTransform(Vector3 p, Vector3 r, Vector3 s)
+void StaticModel::SetTransform(Vector3 p, Vector3 r, Vector3 s)
 {
     position = p;
     rotation = r;
@@ -32,25 +30,25 @@ void RigidMesh::SetTransform(Vector3 p, Vector3 r, Vector3 s)
     MakeWorld();
 }
 
-void RigidMesh::SetPosition(Vector3 p)
+void StaticModel::SetPosition(Vector3 p)
 {
     position = p;
     MakeWorld();
 }
 
-void RigidMesh::SetRotation(Vector3 r)
+void StaticModel::SetRotation(Vector3 r)
 {
     rotation = r;
     MakeWorld();
 }
 
-void RigidMesh::SetScale(Vector3 s)
+void StaticModel::SetScale(Vector3 s)
 {
     scale = s;
     MakeWorld();
 }
 
-void RigidMesh::MakeWorld()
+void StaticModel::MakeWorld()
 {
     Matrix tm = XMMatrixTranslationFromVector(position);
     XMVECTOR q = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
@@ -59,62 +57,22 @@ void RigidMesh::MakeWorld()
     world = sm * rm * tm;
 }
 
-void RigidMesh::Update()
+void StaticModel::Update()
 {
     //MakeWorld();
-
-    // animation time update
-    currentAnimTime += Time::GetDeltaTime();
-    if (currentAnimTime > animationClips[0].duration)
-        currentAnimTime = fmod(currentAnimTime, animationClips[0].duration);
-
-    // local matrix update
-    // animaton key frame값을 보간해서 local matrix 업데이트
-    // TODO :: 해시테이블로 바꾸기
-    for (auto& sub : subMeshes)
-    {
-        AnimationClip& clip = animationClips[0];
-        for (auto& nodeAnim : clip.nodeAnimations)
-        {
-            if (nodeAnim.nodeName == sub.nodeName)
-            {
-                Vector3 pos;  Quaternion rot;	Vector3 scl;
-                nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
-
-                sub.localMatrix = Matrix::CreateScale(scl) *
-                    Matrix::CreateFromQuaternion(rot) *
-                    Matrix::CreateTranslation(pos);
-                break;
-            }
-            else
-            {
-                sub.localMatrix = sub.bindMatrix;
-            }
-        }
-    }
-
-    // model matrix update
-    for (auto& sub : subMeshes)
-    {
-        if (sub.parentIndex != -1)
-            sub.modelMatrix = sub.localMatrix * subMeshes[sub.parentIndex].modelMatrix;
-        else
-            sub.modelMatrix = sub.localMatrix;
-    }
 }
 
-void RigidMesh::Render()
+void StaticModel::Render()
 {
-    // world
-    D3D::transformCBData.world = world.Transpose();
+    // world matrix
+    D3D::transformCBData.model = Matrix::Identity.Transpose();
+    D3D::transformCBData.world = XMMatrixTranspose(world);
 
+    // sub mesh render
     for (int i = 0; i < subMeshes.size(); ++i)
     {
-        RigidSubMesh& sub = subMeshes[i];
+        StaticSubMesh& sub = subMeshes[i];
         Material& mat = materials[i];
-
-        // model
-        D3D::transformCBData.model = sub.modelMatrix.Transpose();
 
         // vertex buffer, indexbuffer
         D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);
@@ -131,7 +89,7 @@ void RigidMesh::Render()
         D3D::materialCBData.useEmissive = (materials[i].textureFlags & TEX_EMISSIVE) != 0;
 
         // constant buffer
-        D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
+        D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0); // constant buffe가 예외
         D3D::deviceContext->UpdateSubresource(D3D::materialBuffer.Get(), 0, nullptr, &D3D::materialCBData, 0, 0);
 
         // draw call

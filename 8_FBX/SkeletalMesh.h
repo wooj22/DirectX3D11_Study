@@ -19,7 +19,7 @@ class DirectionalLight;
 * 
 */
 
-class SkeletalMesh
+class SkeletalModel
 {
 public:
 	// sub mesh, material, animation
@@ -38,8 +38,8 @@ public:
 	float currentAnimTime = 0.f;
 
 public:
-	SkeletalMesh();
-	SkeletalMesh(Vector3 p, Vector3 r, Vector3 s);
+	SkeletalModel();
+	SkeletalModel(Vector3 p, Vector3 r, Vector3 s);
 	void InitTransform();
 	void SetTransform(Vector3 p, Vector3 r, Vector3 s);
 	void SetPosition(Vector3 p);

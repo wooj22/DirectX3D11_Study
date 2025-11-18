@@ -39,8 +39,8 @@ private:
     Matrix projection;
 
     // models
-    SkeletalMesh* warrior = nullptr;
-    SkeletalMesh* enemy = nullptr;
+    SkeletalModel* warrior = nullptr;
+    SkeletalModel* enemy = nullptr;
 
     // skybox
     SkyBox skybox;

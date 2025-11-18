@@ -1,7 +1,7 @@
 #include "ModelLoader.h"
-#include "StaticMesh.h"
-#include "RigidMesh.h"
-#include "SkeletalMesh.h"
+#include "StaticModel.h"
+#include "RigidModel.h"
+#include "SkeletalModel.h"
 #include "Material.h"
 #include "AnimationClip.h"
 #include "Skeleton.hpp"
@@ -31,22 +31,22 @@ aiProcess_LimitBoneWeights |                        // 하나의 정점이 영향을 받는
 aiProcess_ConvertToLeftHanded;                      // DX용 왼손좌표계 변환
 
 // Static Mash Load
-StaticMesh* ModelLoader::LoadStaticMesh(const string& modelPath)
+StaticModel* ModelLoader::LoadStaticMesh(const string& modelPath)
 {
     const aiScene* scene = importer.ReadFile(modelPath, staticImportFlags);
 
-    StaticMesh* staticMesh = new StaticMesh();
+    StaticModel* staticMesh = new StaticModel();
     ProcessStaticNode(scene->mRootNode, scene, staticMesh);
 
     return staticMesh;
 }
 
 // Rigid Mesh Load
-RigidMesh* ModelLoader::LoadRigidMesh(const string& modelPath)
+RigidModel* ModelLoader::LoadRigidMesh(const string& modelPath)
 {
     const aiScene* scene = importer.ReadFile(modelPath, skeletalImportFlags);
 
-    RigidMesh* rigidMesh = new RigidMesh();
+    RigidModel* rigidMesh = new RigidModel();
     ProcessRigidNode(scene->mRootNode, scene, rigidMesh, -1);
     ProcessRigidAnimation(scene, rigidMesh);
 
@@ -54,12 +54,12 @@ RigidMesh* ModelLoader::LoadRigidMesh(const string& modelPath)
 }
 
 // Skeletal Mesh Load
-SkeletalMesh* ModelLoader::LoadSkeletalMesh(const string& modelPath)
+SkeletalModel* ModelLoader::LoadSkeletalMesh(const string& modelPath)
 {
     importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);
     const aiScene* scene = importer.ReadFile(modelPath, skeletalImportFlags);
 
-    SkeletalMesh* skeletalMesh = new SkeletalMesh();
+    SkeletalModel* skeletalMesh = new SkeletalModel();
     ProcessSkeleton(scene, skeletalMesh);                               // bone
     ProcessSkeletalNode(scene->mRootNode, scene, skeletalMesh, -1);     // node(bone, mesh)
     ProcessSkeletalAnimation(scene, skeletalMesh);
@@ -70,7 +70,7 @@ SkeletalMesh* ModelLoader::LoadSkeletalMesh(const string& modelPath)
 
 /*-------------------  Static Mesh ---------------------------*/
 // Node 순회
-void ModelLoader::ProcessStaticNode(aiNode* node, const aiScene* scene, StaticMesh* staticMesh)
+void ModelLoader::ProcessStaticNode(aiNode* node, const aiScene* scene, StaticModel* staticMesh)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
@@ -128,7 +128,7 @@ void ModelLoader::ProcessStaticMesh(aiMesh* mesh, const aiScene* scene, StaticSu
 
 /*-------------------  Rigid Skeletal Mesh ---------------------------*/
 // Node 순회 (초기 parent index = -1)
-void ModelLoader::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMesh* rigidMesh, int parentIndex)
+void ModelLoader::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidModel* rigidMesh, int parentIndex)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
@@ -187,7 +187,7 @@ void ModelLoader::ProcessRigidMesh(aiMesh* mesh, const aiScene* scene, RigidSubM
 }
 
 // Animation
-void ModelLoader::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMesh)
+void ModelLoader::ProcessRigidAnimation(const aiScene* scene, RigidModel* rigidMesh)
 {
     // 애니메이션이 없다면 return
     if (scene->mNumAnimations == 0) return;
@@ -260,7 +260,7 @@ void ModelLoader::ProcessRigidAnimation(const aiScene* scene, RigidMesh* rigidMe
 
 /*------------------- Skinned Skeletal Mesh ---------------------------*/
 
-void ModelLoader::ProcessSkeleton(const aiScene* scene, SkeletalMesh* skeletalMesh)
+void ModelLoader::ProcessSkeleton(const aiScene* scene, SkeletalModel* skeletalMesh)
 {
     skeletalMesh->skeleton.bones.clear();
 
@@ -286,7 +286,7 @@ void ModelLoader::ProcessSkeleton(const aiScene* scene, SkeletalMesh* skeletalMe
     }
 }
 
-void ModelLoader::ProcessSkeletalNode(aiNode* node, const aiScene* scene, SkeletalMesh* skeletalMesh, int parentIndex)
+void ModelLoader::ProcessSkeletalNode(aiNode* node, const aiScene* scene, SkeletalModel* skeletalMesh, int parentIndex)
 {
     // Skeleton
     int boneIndex = skeletalMesh->skeleton.GetBoneIndex(node->mName.C_Str());
@@ -377,7 +377,7 @@ void ModelLoader::ProcessSkeletalMesh(aiMesh* mesh, const aiScene* scene, Skelet
     }
 }
 
-void ModelLoader::ProcessSkeletalAnimation(const aiScene* scene, SkeletalMesh* skeletalMesh)
+void ModelLoader::ProcessSkeletalAnimation(const aiScene* scene, SkeletalModel* skeletalMesh)
 {
     // 애니메이션이 없다면 return
     if (scene->mNumAnimations == 0) return;

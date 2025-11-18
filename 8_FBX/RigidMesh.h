@@ -21,7 +21,7 @@ class DirectionalLight;
 * vertex_world = world_matrix * modelMatrix * vertex_local(기본저장값, animation 적용)
 */
 
-class RigidMesh
+class RigidModel
 {
 public:
 	// sub mesh, material, animation
@@ -39,8 +39,8 @@ public:
 	float currentAnimTime = 0.f;
 
 public:
-	RigidMesh();
-	RigidMesh(Vector3 p, Vector3 r, Vector3 s);
+	RigidModel();
+	RigidModel(Vector3 p, Vector3 r, Vector3 s);
 	void InitTransform();
 	void SetTransform(Vector3 p, Vector3 r, Vector3 s);
 	void SetPosition(Vector3 p);

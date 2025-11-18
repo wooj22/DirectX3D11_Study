@@ -52,26 +52,23 @@
     <Filter Include="03. Graphics\Model">
       <UniqueIdentifier>{f1cb7515-c4aa-4ac9-8b1a-f494df7da15a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. Graphics\Model\Mesh">
-      <UniqueIdentifier>{c640ebae-5c31-47f9-a5e8-225f1f9d5eb2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Graphics\Model\Mesh\SkeletalMesh">
-      <UniqueIdentifier>{37853e5b-dc6e-43e4-9da1-6017a16cf5bd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Graphics\Model\Mesh\StaticMesh">
-      <UniqueIdentifier>{844abf15-9e6c-4cbe-9080-4d0c99ef4cb7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Graphics\Model\Mesh\RigidMesh">
-      <UniqueIdentifier>{43e79195-24f0-4d25-992e-53212af59d2a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Graphics\Model\Skeleton">
-      <UniqueIdentifier>{f9d34f9f-4ca7-4769-ba04-b25e10c55954}</UniqueIdentifier>
-    </Filter>
     <Filter Include="06. ResourceManager">
       <UniqueIdentifier>{831f3da5-ebe6-40a2-b7b0-f93626ce3d47}</UniqueIdentifier>
     </Filter>
     <Filter Include="06. ResourceManager\MeshAsset">
       <UniqueIdentifier>{746bad31-e215-44ad-84a2-ab71a17f3d54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Graphics\Model\Rigid">
+      <UniqueIdentifier>{43e79195-24f0-4d25-992e-53212af59d2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Graphics\Model\Skeletal">
+      <UniqueIdentifier>{37853e5b-dc6e-43e4-9da1-6017a16cf5bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Graphics\Model\Static">
+      <UniqueIdentifier>{844abf15-9e6c-4cbe-9080-4d0c99ef4cb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Graphics\Skeleton">
+      <UniqueIdentifier>{f9d34f9f-4ca7-4769-ba04-b25e10c55954}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -100,13 +97,13 @@
       <Filter>02. ModelLoader</Filter>
     </ClInclude>
     <ClInclude Include="StaticSubMesh.h">
-      <Filter>03. Graphics\Model\Mesh\StaticMesh</Filter>
+      <Filter>03. Graphics\Model\Static</Filter>
     </ClInclude>
-    <ClInclude Include="StaticMesh.h">
-      <Filter>03. Graphics\Model\Mesh\StaticMesh</Filter>
+    <ClInclude Include="StaticModel.h">
+      <Filter>03. Graphics\Model\Static</Filter>
     </ClInclude>
     <ClInclude Include="Skeleton.hpp">
-      <Filter>03. Graphics\Model\Skeleton</Filter>
+      <Filter>03. Graphics\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="Structures.hpp">
       <Filter>03. Graphics</Filter>
@@ -117,20 +114,20 @@
     <ClInclude Include="DirectionalLight.hpp">
       <Filter>03. Graphics\Light</Filter>
     </ClInclude>
-    <ClInclude Include="RigidMesh.h">
-      <Filter>03. Graphics\Model\Mesh\RigidMesh</Filter>
+    <ClInclude Include="RigidModel.h">
+      <Filter>03. Graphics\Model\Rigid</Filter>
     </ClInclude>
     <ClInclude Include="RigidSubMesh.h">
-      <Filter>03. Graphics\Model\Mesh\RigidMesh</Filter>
+      <Filter>03. Graphics\Model\Rigid</Filter>
     </ClInclude>
     <ClInclude Include="AnimationClip.h">
       <Filter>03. Graphics\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="SkeletalMesh.h">
-      <Filter>03. Graphics\Model\Mesh\SkeletalMesh</Filter>
+    <ClInclude Include="SkeletalModel.h">
+      <Filter>03. Graphics\Model\Skeletal</Filter>
     </ClInclude>
     <ClInclude Include="SkeletalSubMesh.h">
-      <Filter>03. Graphics\Model\Mesh\SkeletalMesh</Filter>
+      <Filter>03. Graphics\Model\Skeletal</Filter>
     </ClInclude>
     <ClInclude Include="SkyBox.h">
       <Filter>03. Graphics\SkyBox</Filter>
@@ -173,29 +170,29 @@
     <ClCompile Include="ModelLoader.cpp">
       <Filter>02. ModelLoader</Filter>
     </ClCompile>
-    <ClCompile Include="StaticMesh.cpp">
-      <Filter>03. Graphics\Model\Mesh\StaticMesh</Filter>
+    <ClCompile Include="StaticModel.cpp">
+      <Filter>03. Graphics\Model\Static</Filter>
     </ClCompile>
     <ClCompile Include="StaticSubMesh.cpp">
-      <Filter>03. Graphics\Model\Mesh\StaticMesh</Filter>
+      <Filter>03. Graphics\Model\Static</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>03. Graphics\Material</Filter>
     </ClCompile>
-    <ClCompile Include="RigidMesh.cpp">
-      <Filter>03. Graphics\Model\Mesh\RigidMesh</Filter>
+    <ClCompile Include="RigidModel.cpp">
+      <Filter>03. Graphics\Model\Rigid</Filter>
     </ClCompile>
     <ClCompile Include="RigidSubMesh.cpp">
-      <Filter>03. Graphics\Model\Mesh\RigidMesh</Filter>
+      <Filter>03. Graphics\Model\Rigid</Filter>
     </ClCompile>
     <ClCompile Include="AnimationClip.cpp">
       <Filter>03. Graphics\Animation</Filter>
     </ClCompile>
-    <ClCompile Include="SkeletalMesh.cpp">
-      <Filter>03. Graphics\Model\Mesh\SkeletalMesh</Filter>
+    <ClCompile Include="SkeletalModel.cpp">
+      <Filter>03. Graphics\Model\Skeletal</Filter>
     </ClCompile>
     <ClCompile Include="SkeletalSubMesh.cpp">
-      <Filter>03. Graphics\Model\Mesh\SkeletalMesh</Filter>
+      <Filter>03. Graphics\Model\Skeletal</Filter>
     </ClCompile>
     <ClCompile Include="SkyBox.cpp">
       <Filter>03. Graphics\SkyBox</Filter>

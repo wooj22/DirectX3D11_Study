@@ -5,17 +5,17 @@
 #include "DirectionalLight.hpp"
 using namespace DirectX;
 
-RigidMesh::RigidMesh()
+RigidModel::RigidModel()
 {
 	SetTransform(Vector3::Zero, Vector3::Zero, Vector3::One);
 }
 
-RigidMesh::RigidMesh(Vector3 p, Vector3 r, Vector3 s)
+RigidModel::RigidModel(Vector3 p, Vector3 r, Vector3 s)
 {
 	SetTransform(p, r, s);
 }
 
-void RigidMesh::InitTransform()
+void RigidModel::InitTransform()
 {
 	position = Vector3::Zero;
 	rotation = Vector3::Zero;
@@ -23,7 +23,7 @@ void RigidMesh::InitTransform()
 	world = XMMatrixIdentity();
 }
 
-void RigidMesh::SetTransform(Vector3 p, Vector3 r, Vector3 s)
+void RigidModel::SetTransform(Vector3 p, Vector3 r, Vector3 s)
 {
 	position = p;
 	rotation = r;
@@ -31,25 +31,25 @@ void RigidMesh::SetTransform(Vector3 p, Vector3 r, Vector3 s)
 	MakeWorld();
 }
 
-void RigidMesh::SetPosition(Vector3 p)
+void RigidModel::SetPosition(Vector3 p)
 {
 	position = p;
 	MakeWorld();
 }
 
-void RigidMesh::SetRotation(Vector3 r)
+void RigidModel::SetRotation(Vector3 r)
 {
 	rotation = r;
 	MakeWorld();
 }
 
-void RigidMesh::SetScale(Vector3 s)
+void RigidModel::SetScale(Vector3 s)
 {
 	scale = s;
 	MakeWorld();
 }
 
-void RigidMesh::MakeWorld()
+void RigidModel::MakeWorld()
 {
 	Matrix tm = XMMatrixTranslationFromVector(position);
 	XMVECTOR q = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
@@ -58,7 +58,7 @@ void RigidMesh::MakeWorld()
 	world = sm * rm * tm;
 }
 
-void RigidMesh::Update()
+void RigidModel::Update()
 {
 	//MakeWorld();
 
@@ -102,7 +102,7 @@ void RigidMesh::Update()
 	}
 }
 
-void RigidMesh::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
+void RigidModel::Render(ID3D11Buffer* constantBuffer, ConstantBuffer& cb)
 {
     // world
     cb.world = world.Transpose();

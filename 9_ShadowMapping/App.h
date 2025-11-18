@@ -2,9 +2,9 @@
 #include "../WinBase/WinApp.h"
 #include "../WinBase/D3D.h"
 #include "../WinBase/ModelLoader.h"
-#include "../WinBase/StaticMesh.h"
-#include "../WinBase/RigidMesh.h"
-#include "../WinBase/SkeletalMesh.h"
+#include "../WinBase/StaticModel.h"
+#include "../WinBase/RigidModel.h"
+#include "../WinBase/SkeletalModel.h"
 #include "../WinBase/Material.h"
 #include "../WinBase/DirectionalLight.hpp"
 #include "../WinBase/SkyBox.h"
@@ -46,12 +46,12 @@ private:
     Matrix lightProjection;
 
     // models
-    SkeletalMesh* warrior = nullptr;    
-    SkeletalMesh* enemy = nullptr;    
-    StaticMesh* zelda = nullptr;
-    StaticMesh* tree = nullptr;
-    RigidMesh* boxHuman = nullptr;
-    StaticMesh* plane = nullptr;
+    SkeletalModel* warrior = nullptr;    
+    SkeletalModel* enemy = nullptr;    
+    StaticModel* zelda = nullptr;
+    StaticModel* tree = nullptr;
+    RigidModel* boxHuman = nullptr;
+    StaticModel* plane = nullptr;
 
     // skybox
     SkyBox skybox;

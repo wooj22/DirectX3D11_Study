@@ -20,7 +20,7 @@ class DirectionalLight;
 * vertex_world = world_matrix * vertex_model(기본저장값)
 */
 
-class StaticMesh
+class StaticModel
 {
 public:
 	// sub mesh, material
@@ -34,8 +34,8 @@ public:
 	Matrix world;
 
 public:
-	StaticMesh();
-	StaticMesh(Vector3 p, Vector3 r, Vector3 s);
+	StaticModel();
+	StaticModel(Vector3 p, Vector3 r, Vector3 s);
 	void InitTransform();
 	void SetTransform(Vector3 p, Vector3 r, Vector3 s);
 	void SetPosition(Vector3 p);
