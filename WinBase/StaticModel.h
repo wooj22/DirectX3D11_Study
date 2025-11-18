@@ -23,6 +23,7 @@ class StaticModel
 {
 public:
     // sub mesh, material
+    // TODO :: ªË¡¶
     vector<StaticSubMesh> subMeshes;
     vector<Material> materials;
 

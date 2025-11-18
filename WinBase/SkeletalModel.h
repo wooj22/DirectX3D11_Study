@@ -20,6 +20,7 @@ class SkeletalModel
 {
 public:
     // sub mesh, material, animation
+    // TODO :: ªË¡¶
     vector<SkeletalSubMesh> subMeshes;
     vector<Material> materials;
     Skeleton skeleton;

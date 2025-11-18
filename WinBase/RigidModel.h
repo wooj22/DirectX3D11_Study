@@ -23,6 +23,7 @@ class RigidModel
 {
 public:
     // sub mesh, material, animation
+    // TODO :: ªË¡¶
     vector<RigidSubMesh> subMeshes;
     vector<Material> materials;
     vector<AnimationClip> animationClips;
