@@ -29,10 +29,15 @@ using namespace DirectX::SimpleMath;
 // AssetManager를 통한 Model Load로 같은 Model끼리는 읽기 전용 asset을 공유하여 메모리를 절약합니다.
 // MemoryDebugger를 통해 메모리 사용량을 체크할 수 있습니다.
 
+// [1] : 모델 생성
+// [2] : 모델 삭제
+// [T] : Trim() 요청
+// [M] : 메모리 사용량 체크
+
 class App : public WinApp
 {
 private:
-    // RampTexture
+    // ramptexture
     ID3D11ShaderResourceView* diffuseRampTexture = nullptr;
     ID3D11ShaderResourceView* specualrRampTexture = nullptr;
 

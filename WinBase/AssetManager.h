@@ -17,7 +17,7 @@ class RigidModelAsset;
 class SkeletalModelAsset;
 
 /*
-* [ AssetManager Manager ]
+* [ Asset Manager ]
 *  공유 자원을 중복으로 메모리에 로드하지 않도록 해시테이블로 관리하는 클래스
 *  key값으로 weak_ptr을 내부에서 관리를 하며, 외부 요청이 들어왔을 경우 shared_ptr을 넘겨준다.
 *  아직 없는 에셋이라면 ModelLoader를 통해 새로 생성한다.
