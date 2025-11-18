@@ -102,13 +102,13 @@ void SkeletalMesh::Render()
     D3D::transformCBData.world = world.Transpose();
 
     // bone world (animation)
-    for (int j = 0; j < skeleton.boneCount; j++)
+    for (int j = 0; j < skeleton.bones.size(); j++)
     {
         D3D::poseCBData.bonePose[j] = skeleton.bones[j].worldMatrix.Transpose();
     }
 
     // bone offset
-    for (int j = 0; j < skeleton.boneCount; j++)
+    for (int j = 0; j < skeleton.bones.size(); j++)
     {
         D3D::offsetCBData.boneOffset[j] = skeleton.bones[j].offsetMatrix.Transpose();
     }

@@ -19,7 +19,7 @@ struct Bone
     int parentIndex;
 
     Matrix offsetMatrix = Matrix::Identity;      // bind pose inverse transform
-    Matrix bindMatrix = Matrix::Identity;       // bind
+    Matrix bindMatrix = Matrix::Identity;        // bind
     Matrix localMatrix = Matrix::Identity;       // animation
     Matrix worldMatrix = Matrix::Identity;       // parent * local
 };
@@ -33,7 +33,6 @@ struct Skeleton
 {
     vector<Bone> bones;
     map<string, int> nameToIndex;     // name -> index ╦егн
-    int boneCount;
 
     // bone name -> index
     int GetBoneIndex(const string& name) const

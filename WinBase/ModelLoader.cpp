@@ -285,7 +285,6 @@ void ModelLoader::ProcessSkeleton(const aiScene* scene, SkeletalMesh* skeletalMe
             skeletalMesh->skeleton.nameToIndex[name] = skeletalMesh->skeleton.bones.size() - 1;
         }
     }
-    skeletalMesh->skeleton.boneCount = skeletalMesh->skeleton.bones.size();
 
 
     // debug - skeleton info 
