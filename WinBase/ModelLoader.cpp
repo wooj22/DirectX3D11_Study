@@ -35,7 +35,7 @@ void ModelLoader::LoadStaticMesh(StaticModel* model, const string& modelPath)
 {
     const aiScene* scene = importer.ReadFile(modelPath, staticImportFlags);
 
-    model->model = make_shared<StaticModelAsset>();
+    model->model_data = make_shared<StaticModelAsset>();
     ProcessStaticNode(scene->mRootNode, scene, model);
 }
 
@@ -44,12 +44,12 @@ void ModelLoader::LoadRigidMesh(RigidModel* model, const string& modelPath)
 {
     const aiScene* scene = importer.ReadFile(modelPath, skeletalImportFlags);
 
-    model->model = make_shared<RigidModelAsset>();
+    model->model_data = make_shared<RigidModelAsset>();
     ProcessRigidNode(scene->mRootNode, scene, model, -1);
     ProcessRigidAnimation(scene, model);
 
-    model->submesh_localMatrices.resize(model->model->subMeshes.size());
-    model->submesh_modelMatrices.resize(model->model->subMeshes.size());
+    model->submesh_localMatrices.resize(model->model_data->subMeshes.size());
+    model->submesh_modelMatrices.resize(model->model_data->subMeshes.size());
 }
 
 // Skeletal Mesh Load
@@ -58,13 +58,13 @@ void ModelLoader::LoadSkeletalMesh(SkeletalModel* model, const string& modelPath
     importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);
     const aiScene* scene = importer.ReadFile(modelPath, skeletalImportFlags);
 
-    model->model = make_shared<SkeletalModelAsset>();
+    model->model_data = make_shared<SkeletalModelAsset>();
     ProcessSkeleton(scene, model);                               // bone
     ProcessSkeletalNode(scene->mRootNode, scene, model, -1);     // node(bone, mesh)
     ProcessSkeletalAnimation(scene, model);
 
-    model->localMatrix.resize(model->model->skeleton.bones.size());
-    model->poseMatrix.resize(model->model->skeleton.bones.size());
+    model->localMatrix.resize(model->model_data->skeleton.bones.size());
+    model->poseMatrix.resize(model->model_data->skeleton.bones.size());
 }
 
 
@@ -82,14 +82,14 @@ void ModelLoader::ProcessStaticNode(aiNode* node, const aiScene* scene, StaticMo
         aiMesh* aiMesh = scene->mMeshes[meshIndex];
         ProcessStaticMesh(aiMesh, scene, &subMesh);      // aiMesh -> subMesh data save
         subMesh.CreateBuffer();                          // vertex, index buffer create
-        staticMesh->model->subMeshes.push_back(move(subMesh));
+        staticMesh->model_data->subMeshes.push_back(move(subMesh));
 
         // material
         subMesh.materialIndex = aiMesh->mMaterialIndex;
         aiMaterial* aiMaterial = scene->mMaterials[aiMesh->mMaterialIndex];
         ProcessMaterial(aiMaterial, scene, &material);    // aiMaterial -> material data save
         material.CreateSRV();                             // shader resource view create
-        staticMesh->model->materials.push_back(move(material));
+        staticMesh->model_data->materials.push_back(move(material));
 
     }
 
@@ -143,18 +143,18 @@ void ModelLoader::ProcessRigidNode(aiNode* node, const aiScene* scene, RigidMode
         subMesh.parentIndex = parentIndex - 1;
         ProcessRigidMesh(aiMesh, scene, &subMesh);       // aiMesh -> subMesh data save
         subMesh.CreateBuffer();                          // vertex, index buffer create
-        rigidMesh->model->subMeshes.push_back(move(subMesh));
+        rigidMesh->model_data->subMeshes.push_back(move(subMesh));
 
         // material
         subMesh.materialIndex = aiMesh->mMaterialIndex;
         aiMaterial* aiMaterial = scene->mMaterials[aiMesh->mMaterialIndex];
         ProcessMaterial(aiMaterial, scene, &material);    // aiMaterial -> material data save
         material.CreateSRV();                             // shader resource view create
-        rigidMesh->model->materials.push_back(move(material));
+        rigidMesh->model_data->materials.push_back(move(material));
     }
 
     // child node
-    int myIndex = rigidMesh->model->subMeshes.size();
+    int myIndex = rigidMesh->model_data->subMeshes.size();
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
         ProcessRigidNode(node->mChildren[i], scene, rigidMesh, myIndex);
@@ -252,7 +252,7 @@ void ModelLoader::ProcessRigidAnimation(const aiScene* scene, RigidModel* rigidM
         }
 
         // animation clip push
-        rigidMesh->model->animationClips.push_back(move(clip));
+        rigidMesh->model_data->animationClips.push_back(move(clip));
     }
 }
 
@@ -262,7 +262,7 @@ void ModelLoader::ProcessRigidAnimation(const aiScene* scene, RigidModel* rigidM
 
 void ModelLoader::ProcessSkeleton(const aiScene* scene, SkeletalModel* skeletalMesh)
 {
-    skeletalMesh->model->skeleton.bones.clear();
+    skeletalMesh->model_data->skeleton.bones.clear();
 
     // scene의 mesh 전체를 순회하며 aiBone 저장
     for (unsigned int m = 0; m < scene->mNumMeshes; ++m)
@@ -272,7 +272,7 @@ void ModelLoader::ProcessSkeleton(const aiScene* scene, SkeletalModel* skeletalM
         {
             // bone 중복 skip
             std::string name = mesh->mBones[b]->mName.C_Str();
-            if (skeletalMesh->model->skeleton.nameToIndex.find(name) != skeletalMesh->model->skeleton.nameToIndex.end())
+            if (skeletalMesh->model_data->skeleton.nameToIndex.find(name) != skeletalMesh->model_data->skeleton.nameToIndex.end())
                 continue;
 
             // skeleton에 bone 추가
@@ -280,8 +280,8 @@ void ModelLoader::ProcessSkeleton(const aiScene* scene, SkeletalModel* skeletalM
             Bone bone;
             bone.name = name;
             bone.offsetMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&mesh->mBones[b]->mOffsetMatrix));
-            skeletalMesh->model->skeleton.bones.push_back(std::move(bone));
-            skeletalMesh->model->skeleton.nameToIndex[name] = skeletalMesh->model->skeleton.bones.size() - 1;
+            skeletalMesh->model_data->skeleton.bones.push_back(std::move(bone));
+            skeletalMesh->model_data->skeleton.nameToIndex[name] = skeletalMesh->model_data->skeleton.bones.size() - 1;
         }
     }
 }
@@ -289,10 +289,10 @@ void ModelLoader::ProcessSkeleton(const aiScene* scene, SkeletalModel* skeletalM
 void ModelLoader::ProcessSkeletalNode(aiNode* node, const aiScene* scene, SkeletalModel* skeletalMesh, int parentIndex)
 {
     // Skeleton
-    int boneIndex = skeletalMesh->model->skeleton.GetBoneIndex(node->mName.C_Str());
+    int boneIndex = skeletalMesh->model_data->skeleton.GetBoneIndex(node->mName.C_Str());
     if (boneIndex != -1)
     {
-        Bone& bone = skeletalMesh->model->skeleton.bones[boneIndex];
+        Bone& bone = skeletalMesh->model_data->skeleton.bones[boneIndex];
         bone.bindMatrix = XMMatrixTranspose(XMLoadFloat4x4((XMFLOAT4X4*)&node->mTransformation));
         bone.parentIndex = parentIndex;
     }
@@ -309,16 +309,16 @@ void ModelLoader::ProcessSkeletalNode(aiNode* node, const aiScene* scene, Skelet
         subMesh.nodeName = node->mName.C_Str();
 
         // vertex, index
-        ProcessSkeletalMesh(aiMesh, scene, &subMesh, skeletalMesh->model->skeleton);    // aiMesh -> subMesh data save
+        ProcessSkeletalMesh(aiMesh, scene, &subMesh, skeletalMesh->model_data->skeleton);    // aiMesh -> subMesh data save
         subMesh.CreateBuffer();                          // vertex, index buffer create
-        skeletalMesh->model->subMeshes.push_back(move(subMesh));
+        skeletalMesh->model_data->subMeshes.push_back(move(subMesh));
 
         // material
         subMesh.materialIndex = aiMesh->mMaterialIndex;
         aiMaterial* aiMaterial = scene->mMaterials[aiMesh->mMaterialIndex];
         ProcessMaterial(aiMaterial, scene, &material);    // aiMaterial -> material data save
         material.CreateSRV();                             // shader resource view create
-        skeletalMesh->model->materials.push_back(move(material));
+        skeletalMesh->model_data->materials.push_back(move(material));
     }
 
     // child node
@@ -442,7 +442,7 @@ void ModelLoader::ProcessSkeletalAnimation(const aiScene* scene, SkeletalModel* 
         }
 
         // animation clip push
-        skeletalMesh->model->animationClips.push_back(move(clip));
+        skeletalMesh->model_data->animationClips.push_back(move(clip));
     }
 }
 

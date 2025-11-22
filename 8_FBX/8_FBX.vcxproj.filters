@@ -40,7 +40,7 @@
     <Filter Include="Mesh\RigidMesh">
       <UniqueIdentifier>{cc634216-92ed-4184-926f-3294c1b83fca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Skeleton">
+    <Filter Include="Mesh\SkeletalMesh\Skeleton">
       <UniqueIdentifier>{7d4b47a1-a85b-4b4a-bf93-70928e31d5fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -105,7 +105,7 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Skeleton.h">
-      <Filter>Skeleton</Filter>
+      <Filter>Mesh\SkeletalMesh\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="AnimationClip.h">
       <Filter>Animation</Filter>

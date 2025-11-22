@@ -14,7 +14,7 @@ void AssetManager::LoadStaticModelAsset(StaticModel* model, string filePath)
     {
         // 인스턴스가 살아있다면 asset 넘겨주기
         if (!it->second.expired()) {
-            model->model = it->second.lock();
+            model->model_data = it->second.lock();
             return;
         }
         else asset_staticmodel.erase(it);
@@ -22,7 +22,7 @@ void AssetManager::LoadStaticModelAsset(StaticModel* model, string filePath)
 
     // asset이 없을 경우 생성
     ModelLoader::LoadStaticMesh(model, filePath);
-    asset_staticmodel[filePath] = model->model;
+    asset_staticmodel[filePath] = model->model_data;
 }
 
 
@@ -36,9 +36,9 @@ void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
     {
         // 인스턴스가 살아있다면 asset 넘겨주기
         if (!it->second.expired()) {
-            model->model = it->second.lock();
-            model->submesh_localMatrices.resize(model->model->subMeshes.size());
-            model->submesh_modelMatrices.resize(model->model->subMeshes.size());
+            model->model_data = it->second.lock();
+            model->submesh_localMatrices.resize(model->model_data->subMeshes.size());
+            model->submesh_modelMatrices.resize(model->model_data->subMeshes.size());
             return;
         }
         else asset_rigidmodel.erase(it);
@@ -46,7 +46,7 @@ void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
 
     // asset이 없을 경우 생성
     ModelLoader::LoadRigidMesh(model, filePath);
-    asset_rigidmodel[filePath] = model->model;
+    asset_rigidmodel[filePath] = model->model_data;
 }
 
 
@@ -60,9 +60,9 @@ void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
     {
         // 인스턴스가 살아있다면 asset 넘겨주기
         if (!it->second.expired()) {
-            model->model = it->second.lock();
-            model->localMatrix.resize(model->model->skeleton.bones.size());
-            model->poseMatrix.resize(model->model->skeleton.bones.size());
+            model->model_data = it->second.lock();
+            model->localMatrix.resize(model->model_data->skeleton.bones.size());
+            model->poseMatrix.resize(model->model_data->skeleton.bones.size());
             return;
         }
         else asset_skeletalmodel.erase(it);
@@ -70,5 +70,5 @@ void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
 
     // asset이 없을 경우 생성
     ModelLoader::LoadSkeletalMesh(model, filePath);
-    asset_skeletalmodel[filePath] = model->model;
+    asset_skeletalmodel[filePath] = model->model_data;
 }

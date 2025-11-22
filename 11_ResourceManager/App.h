@@ -32,7 +32,6 @@ using namespace DirectX::SimpleMath;
 // [1] : 모델 생성
 // [2] : 모델 삭제
 // [T] : Trim() 요청
-// [M] : 메모리 사용량 체크
 
 class App : public WinApp
 {

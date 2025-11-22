@@ -69,10 +69,10 @@ void StaticModel::Render()
     D3D::transformCBData.world = XMMatrixTranspose(world);
 
     // sub mesh render
-    for (int i = 0; i < model->subMeshes.size(); ++i)
+    for (int i = 0; i < model_data->subMeshes.size(); ++i)
     {
-        StaticSubMesh& sub = model->subMeshes[i];
-        Material& mat = model->materials[i];
+        StaticSubMesh& sub = model_data->subMeshes[i];
+        Material& mat = model_data->materials[i];
 
         // vertex buffer, indexbuffer
         D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);
@@ -83,10 +83,10 @@ void StaticModel::Render()
         D3D::deviceContext->PSSetShaderResources(1, 1, &mat.normalSRV);
         D3D::deviceContext->PSSetShaderResources(2, 1, &mat.specualrSRV);
         D3D::deviceContext->PSSetShaderResources(3, 1, &mat.emissiveSRV);
-        D3D::materialCBData.useDiffuse = (model->materials[i].textureFlags & TEX_DIFFUSE) != 0;
-        D3D::materialCBData.useNormal = (model->materials[i].textureFlags & TEX_NORMAL) != 0;
-        D3D::materialCBData.useSpecular = (model->materials[i].textureFlags & TEX_SPECULAR) != 0;
-        D3D::materialCBData.useEmissive = (model->materials[i].textureFlags & TEX_EMISSIVE) != 0;
+        D3D::materialCBData.useDiffuse = (model_data->materials[i].textureFlags & TEX_DIFFUSE) != 0;
+        D3D::materialCBData.useNormal = (model_data->materials[i].textureFlags & TEX_NORMAL) != 0;
+        D3D::materialCBData.useSpecular = (model_data->materials[i].textureFlags & TEX_SPECULAR) != 0;
+        D3D::materialCBData.useEmissive = (model_data->materials[i].textureFlags & TEX_EMISSIVE) != 0;
 
         // constant buffer
         D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0); // constant buffe°¡ ¿¹¿Ü

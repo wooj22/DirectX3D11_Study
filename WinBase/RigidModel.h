@@ -24,7 +24,7 @@ class RigidModel
 {
 public:
     /*---- [Model Asset] ----*/         // submeshs, materials, animation clips
-    shared_ptr<RigidModelAsset> model;
+    shared_ptr<RigidModelAsset> model_data;
 
     /*--- [Instance Data] ---*/
     // model transform

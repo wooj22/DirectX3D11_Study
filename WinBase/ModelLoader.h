@@ -17,7 +17,7 @@ class Skeleton;
 
 /*
 * [ Model Loder ]
-* - Static Mesh, Skeletal Mesh를 생성하여 포인터를 반환해주는 3D 모델 임포터
+* - Static Mesh, Skeletal Mesh 데이터를 로드하고 파싱하여 저장하는 클래스
 */
 class ModelLoader
 {

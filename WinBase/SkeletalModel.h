@@ -20,7 +20,7 @@ class SkeletalModel
 {
 public:
     /*---- [Model Asset] ----*/         // submeshs, skeleton, materials, animation clips
-    shared_ptr<SkeletalModelAsset> model;
+    shared_ptr<SkeletalModelAsset> model_data;
 
     /*--- [Instance Data] ---*/
     // model transform

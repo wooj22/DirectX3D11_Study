@@ -22,17 +22,11 @@ class DirectionalLight;
 class StaticModel
 {
 public:
-    // sub mesh, material
-    // TODO :: 삭제
-    //vector<StaticSubMesh> subMeshes;
-    //vector<Material> materials;
+    /*---- [Model Asset] ----*/         // submeshs, materials
+    shared_ptr<StaticModelAsset> model_data;
 
-    // 공유 리소스
-    // TODO :: StaticModelAsset 구조로 변경
-    shared_ptr<StaticModelAsset> model;
-
-    // 인스턴스 데이터
-    // transform
+    /*--- [Instance Data] ---*/
+    // model transform
     Vector3 position;
     Vector3 rotation;
     Vector3 scale;

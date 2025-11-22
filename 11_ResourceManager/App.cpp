@@ -87,10 +87,7 @@ void App::OnUpdate()
     }
 
     // Memory Cheak
-    if (Input::GetKeyDown('M'))
-    {
-        debugger.CheakMemoryUsage();
-    }
+    debugger.CheakMemoryUsage();
 
     // Trim
     if (Input::GetKeyDown('T'))
@@ -243,7 +240,6 @@ void App::RenderGUI()
     ImGui::End();
 
     ImGui::Begin("Memory Debugger"); 
-    ImGui::Text("[M] Cheak memory usage");
     ImGui::Text("[T] Trim");
     ImGui::Text("[1] Create Model Create\n[2] Delete Model");
     ImGui::Text("%ls", debugger.GetMemoryUsageWstring().c_str());
