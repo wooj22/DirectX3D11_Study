@@ -29,6 +29,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "10_CartoonRendering", "10_C
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "11_ResourceManager", "11_ResourceManager\11_ResourceManager.vcxproj", "{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "12_PBR", "12_PBR\12_PBR.vcxproj", "{A2346386-1D67-41D0-9651-ED86AB6417B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -141,6 +143,14 @@ Global
 		{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}.Release|x64.Build.0 = Release|x64
 		{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}.Release|x86.ActiveCfg = Release|Win32
 		{C2765DBD-2C20-4A17-8733-1C562EBB0D8C}.Release|x86.Build.0 = Release|Win32
+		{A2346386-1D67-41D0-9651-ED86AB6417B0}.Debug|x64.ActiveCfg = Debug|x64
+		{A2346386-1D67-41D0-9651-ED86AB6417B0}.Debug|x64.Build.0 = Debug|x64
+		{A2346386-1D67-41D0-9651-ED86AB6417B0}.Debug|x86.ActiveCfg = Debug|Win32
+		{A2346386-1D67-41D0-9651-ED86AB6417B0}.Debug|x86.Build.0 = Debug|Win32
+		{A2346386-1D67-41D0-9651-ED86AB6417B0}.Release|x64.ActiveCfg = Release|x64
+		{A2346386-1D67-41D0-9651-ED86AB6417B0}.Release|x64.Build.0 = Release|x64
+		{A2346386-1D67-41D0-9651-ED86AB6417B0}.Release|x86.ActiveCfg = Release|Win32
+		{A2346386-1D67-41D0-9651-ED86AB6417B0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

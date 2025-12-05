@@ -241,9 +241,15 @@
     <FxCompile Include="ShadowDepth_Static_VS.hlsl">
       <Filter>08. Shaders\VertexShader</Filter>
     </FxCompile>
+    <FxCompile Include="PBR_PS.hlsl">
+      <Filter>08. Shaders\PixelShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shared.fxh">
+      <Filter>08. Shaders</Filter>
+    </None>
+    <None Include="PBRCommom.fxh">
       <Filter>08. Shaders</Filter>
     </None>
   </ItemGroup>
