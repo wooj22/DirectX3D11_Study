@@ -64,36 +64,52 @@ void SkeletalModel::Update()
 {
     MakeWorld();
 
-    // animation time update
-    currentAnimTime += Time::GetDeltaTime();
-    if (currentAnimTime > model_data->animationClips[0].duration)
-        currentAnimTime = fmod(currentAnimTime, model_data->animationClips[0].duration);
-
-    // bone local update
-    for(int i=0; i<model_data->skeleton.bones.size(); i++)
+    if (model_data->animationClips.empty())
     {
-        auto& bone = model_data->skeleton.bones[i];
-
-        AnimationClip& clip = model_data->animationClips[0];
-        for (auto& nodeAnim : clip.nodeAnimations)
+        // animation ¾øÀ½ -> bind pose
+        // bone local update
+        for (int i = 0; i < model_data->skeleton.bones.size(); i++)
         {
-            if (nodeAnim.nodeName == bone.name)
-            {
-                Vector3 pos;  Quaternion rot;	Vector3 scl;
-                nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
+            localMatrix[i] = model_data->skeleton.bones[i].bindMatrix;
+        }
+    }
+    else {
+        // animation
+        currentAnimTime += Time::GetDeltaTime();
+        if (currentAnimTime > model_data->animationClips[0].duration)
+            currentAnimTime = fmod(currentAnimTime, model_data->animationClips[0].duration);
 
-                localMatrix[i] = Matrix::CreateScale(scl) *
-                    Matrix::CreateFromQuaternion(rot) *
-                    Matrix::CreateTranslation(pos);
-                break;
-            }
-            else
+        // bone local update
+        for (int i = 0; i < model_data->skeleton.bones.size(); i++)
+        {
+            auto& bone = model_data->skeleton.bones[i];
+
+            AnimationClip& clip = model_data->animationClips[0];
+            for (auto& nodeAnim : clip.nodeAnimations)
             {
-                localMatrix[i] = bone.bindMatrix;
+                if (nodeAnim.nodeName == bone.name)
+                {
+                    Vector3 pos;  Quaternion rot;	Vector3 scl;
+                    nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
+
+                    localMatrix[i] = Matrix::CreateScale(scl) *
+                        Matrix::CreateFromQuaternion(rot) *
+                        Matrix::CreateTranslation(pos);
+                    break;
+                }
+                else
+                {
+                    localMatrix[i] = bone.bindMatrix;
+                }
             }
         }
     }
 
+    for (int i = 0; i < model_data->skeleton.bones.size(); i++)
+    {
+        localMatrix[i] = model_data->skeleton.bones[i].bindMatrix;
+    }
+    
     // bone world update
     for (int i = 0; i < model_data->skeleton.bones.size(); ++i)
     {

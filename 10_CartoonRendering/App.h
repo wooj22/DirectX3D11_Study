@@ -40,7 +40,7 @@ private:
 
     // models
     SkeletalModel* warrior = nullptr;
-    SkeletalModel* enemy = nullptr;
+    SkeletalModel* character = nullptr;
 
     // skybox
     SkyBox skybox;

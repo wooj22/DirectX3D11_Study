@@ -1,18 +1,52 @@
-#include "AssetManager.h"
+ï»¿#include "AssetManager.h"
 #include "ModelLoader.h"
 #include "StaticModel.h"
 #include "RigidModel.h"
 #include "SkeletalModel.h"
+
+void DebugPrintSkeletalVertex(const SkeletalSubMesh& mesh)
+{
+    if (mesh.vertices.empty())
+    {
+        OutputDebugStringA("âŒ Skeletal Mesh has NO vertices!\n");
+        return;
+    }
+
+    const BoneWeightVertex& v = mesh.vertices[0];
+
+    char buf[512];
+
+    sprintf_s(buf, sizeof(buf),
+        "===== Skeletal Vertex Debug =====\n"
+        "pos        = %.4f, %.4f, %.4f\n"
+        "normal     = %.4f, %.4f, %.4f\n"
+        "tangent    = %.4f, %.4f, %.4f\n"
+        "bitangent  = %.4f, %.4f, %.4f\n"
+        "texcoord   = %.4f, %.4f\n"
+        "boneIndex  = %d, %d, %d, %d\n"
+        "boneWeight = %.4f, %.4f, %.4f, %.4f\n"
+        "==================================\n",
+        v.position.x, v.position.y, v.position.z,
+        v.normal.x, v.normal.y, v.normal.z,
+        v.tangent.x, v.tangent.y, v.tangent.z,
+        v.bitangent.x, v.bitangent.y, v.bitangent.z,
+        v.texcoord.x, v.texcoord.y,
+        v.boneIndices[0], v.boneIndices[1], v.boneIndices[2], v.boneIndices[3],
+        v.boneWeights[0], v.boneWeights[1], v.boneWeights[2], v.boneWeights[3]
+    );
+
+    OutputDebugStringA(buf);
+}
 
 void AssetManager::LoadStaticModelAsset(StaticModel* model, string filePath)
 {
     string key = filePath;
     auto it = asset_staticmodel.find(key);
 
-    // assetÀÌ ÀÖÀ» °æ¿ì
+    // assetì´ ìžˆì„ ê²½ìš°
     if (it != asset_staticmodel.end())
     {
-        // ÀÎ½ºÅÏ½º°¡ »ì¾ÆÀÖ´Ù¸é asset ³Ñ°ÜÁÖ±â
+        // ì¸ìŠ¤í„´ìŠ¤ê°€ ì‚´ì•„ìžˆë‹¤ë©´ asset ë„˜ê²¨ì£¼ê¸°
         if (!it->second.expired()) {
             model->model_data = it->second.lock();
             return;
@@ -20,7 +54,7 @@ void AssetManager::LoadStaticModelAsset(StaticModel* model, string filePath)
         else asset_staticmodel.erase(it);
     }
 
-    // assetÀÌ ¾øÀ» °æ¿ì »ý¼º
+    // assetì´ ì—†ì„ ê²½ìš° ìƒì„±
     ModelLoader::LoadStaticMesh(model, filePath);
     asset_staticmodel[filePath] = model->model_data;
 }
@@ -31,10 +65,10 @@ void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
     string key = filePath;
     auto it = asset_rigidmodel.find(key);
 
-    // assetÀÌ ÀÖÀ» °æ¿ì
+    // assetì´ ìžˆì„ ê²½ìš°
     if (it != asset_rigidmodel.end())
     {
-        // ÀÎ½ºÅÏ½º°¡ »ì¾ÆÀÖ´Ù¸é asset ³Ñ°ÜÁÖ±â
+        // ì¸ìŠ¤í„´ìŠ¤ê°€ ì‚´ì•„ìžˆë‹¤ë©´ asset ë„˜ê²¨ì£¼ê¸°
         if (!it->second.expired()) {
             model->model_data = it->second.lock();
             model->submesh_localMatrices.resize(model->model_data->subMeshes.size());
@@ -44,7 +78,7 @@ void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
         else asset_rigidmodel.erase(it);
     }
 
-    // assetÀÌ ¾øÀ» °æ¿ì »ý¼º
+    // assetì´ ì—†ì„ ê²½ìš° ìƒì„±
     ModelLoader::LoadRigidMesh(model, filePath);
     asset_rigidmodel[filePath] = model->model_data;
 }
@@ -55,10 +89,10 @@ void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
     string key = filePath;
     auto it = asset_skeletalmodel.find(key);
 
-    // assetÀÌ ÀÖÀ» °æ¿ì
+    // assetì´ ìžˆì„ ê²½ìš°
     if (it != asset_skeletalmodel.end())
     {
-        // ÀÎ½ºÅÏ½º°¡ »ì¾ÆÀÖ´Ù¸é asset ³Ñ°ÜÁÖ±â
+        // ì¸ìŠ¤í„´ìŠ¤ê°€ ì‚´ì•„ìžˆë‹¤ë©´ asset ë„˜ê²¨ì£¼ê¸°
         if (!it->second.expired()) {
             model->model_data = it->second.lock();
             model->localMatrix.resize(model->model_data->skeleton.bones.size());
@@ -68,7 +102,14 @@ void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
         else asset_skeletalmodel.erase(it);
     }
 
-    // assetÀÌ ¾øÀ» °æ¿ì »ý¼º
+    // assetì´ ì—†ì„ ê²½ìš° ìƒì„±
     ModelLoader::LoadSkeletalMesh(model, filePath);
+
+    // ë””ë²„ê·¸ ì¶œë ¥
+    for (auto& subMesh : model->model_data->subMeshes)
+    {
+        DebugPrintSkeletalVertex(subMesh);
+    }
+    OutputDebugStringA(">>> LoadSkeletalModelAsset CALLED\n");
     asset_skeletalmodel[filePath] = model->model_data;
 }

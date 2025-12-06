@@ -8,6 +8,7 @@
 #include "../WinBase/Material.h"
 #include "../WinBase/DirectionalLight.hpp"
 #include "../WinBase/SkyBox.h"
+#include "../WinBase/MemoryDebugger.h"
 
 #include <d3d11.h>
 #include <dxgidebug.h>
@@ -44,8 +45,7 @@ private:
     Matrix projection;
 
     // models
-    SkeletalModel* warrior = nullptr;
-    SkeletalModel* enemy = nullptr;
+    RigidModel* character = nullptr;
 
     // skybox
     SkyBox skybox;
@@ -60,6 +60,9 @@ private:
     float shininess = 500;
     float blendFactor[4] = { 0,0,0,0 }; UINT sampleMask = 0xffffffff;
     float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
+
+    // memory debugger
+    MemoryDebugger debugger;
 
 public:
     // main process

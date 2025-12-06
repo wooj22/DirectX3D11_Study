@@ -4,6 +4,7 @@
 #include <d3dcompiler.h>
 #include <Directxtk/DDSTextureLoader.h>
 #include "../WinBase/Camera.h"
+#include "../WinBase/AssetManager.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -20,17 +21,15 @@ bool App::OnInit()
     if (!D3D::Init(hWnd, screenWidth, screenHeight)) return false;
     if (!InitRenderPipeLine()) return false;
     if (!InitGUI()) return false;
+    debugger.Init();
     skybox.InitRenderPipeLine();
 
     // model init
-    warrior = new SkeletalModel();
-    enemy = new SkeletalModel();
-    ModelLoader::LoadSkeletalMesh(warrior, "../Resource/Girl.fbx");
-    ModelLoader::LoadSkeletalMesh(enemy, "../Resource/Enemy.fbx");
-    enemy->SetPosition({ 200, 0,0 });
+    character = new RigidModel();
+    AssetManager::Instance().LoadRigidModelAsset(character, "../Resource/char.fbx");
 
     // view init
-    camera.position = { 70, 80, -300 };
+    camera.position = { 0, 80, -300 };
     camera.Far = 1000.0f;
     camera.moveSpeed = 300.f;
     camera.GetViewMatrix(view);
@@ -44,6 +43,7 @@ bool App::OnInit()
     // projection init 
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 
+    debugger.CheakMemoryUsage();
     return true;
 }
 
@@ -57,9 +57,17 @@ void App::OnUninit()
 
 void App::OnUpdate()
 {
-    warrior->Update();
-    enemy->Update();
+    character->Update();
     camera.GetViewMatrix(view);
+
+    // Memory Cheak
+    debugger.CheakMemoryUsage();
+
+    // Trim
+    if (Input::GetKeyDown('T'))
+    {
+        debugger.Trim();
+    }
 }
 
 void App::OnRender()
@@ -81,12 +89,7 @@ void App::OnRender()
     D3D::deviceContext->PSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
     D3D::deviceContext->VSSetConstantBuffers(1, 1, D3D::lightingBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(1, 1, D3D::lightingBuffer.GetAddressOf());
-    D3D::deviceContext->VSSetConstantBuffers(2, 1, D3D::materialBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(2, 1, D3D::materialBuffer.GetAddressOf());
-    D3D::deviceContext->VSSetConstantBuffers(3, 1, D3D::offsetMatrixBuffer.GetAddressOf());
-    D3D::deviceContext->VSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
-    D3D::deviceContext->VSSetConstantBuffers(5, 1, D3D::outlineBuffer.GetAddressOf());
-    D3D::deviceContext->PSSetConstantBuffers(5, 1, D3D::outlineBuffer.GetAddressOf());
 
     // skybox render 
     skybox.Render(view, projection);
@@ -104,38 +107,16 @@ void App::OnRender()
     D3D::lightingCBData.shininess = shininess;
     D3D::lightingCBData.cameraPos = camera.position;
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
-    D3D::deviceContext->UpdateSubresource(D3D::outlineBuffer.Get(), 0, nullptr, &D3D::outlineCBData, 0, 0);
 
-    // Skeletal Mesh Render-------------------------------------
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
+    // Mesh Render-------------------------------------
+    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->PSSetShaderResources(4, 1, &diffuseRampTexture);
     D3D::deviceContext->PSSetShaderResources(5, 1, &specualrRampTexture);
 
-    // [Model 1]
-    // outline render
-    D3D::deviceContext->VSSetShader(D3D::Skinned_OutLine_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::OutLine_PS.Get(), NULL, 0);
-    D3D::deviceContext->RSSetState(D3D::rasterizerState.Get());
-    warrior->Render();
-    D3D::deviceContext->RSSetState(nullptr);
-
-    // model render
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::BlinnPhongToon_PS.Get(), NULL, 0);
-    warrior->Render();
-
-    // [Model 2]
-    // outline render
-    D3D::deviceContext->VSSetShader(D3D::Skinned_OutLine_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::OutLine_PS.Get(), NULL, 0);
-    D3D::deviceContext->RSSetState(D3D::rasterizerState.Get());
-    enemy->Render();
-    D3D::deviceContext->RSSetState(nullptr);
-
-    // model render
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::BlinnPhongToon_PS.Get(), NULL, 0);
-    enemy->Render();
+    // rigid model
+    D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::BlinnPhong_PS.Get(), NULL, 0);
+    character->Render();
 
     // GUI
     RenderGUI();
@@ -205,13 +186,21 @@ void App::RenderGUI()
     ImGui::ColorEdit3("outlineColoe", &D3D::outlineCBData.outlineColor.x);
 
     ImGui::Text("Models");
-    ImGui::InputFloat3("position", &warrior->position.x);
-    ImGui::SliderAngle("Pitch", &warrior->rotation.x, 0.0f, 360.0f);
-    ImGui::SliderAngle("Yaw", &warrior->rotation.y, 0.0f, 360.0f);
-    ImGui::SliderAngle("Roll", &warrior->rotation.z, 0.0f, 360.0f);
-    ImGui::InputFloat3("scale", &warrior->scale.x);
+    ImGui::InputFloat3("position", &character->position.x);
+    ImGui::SliderAngle("Pitch", &character->rotation.x, 0.0f, 360.0f);
+    ImGui::SliderAngle("Yaw", &character->rotation.y, 0.0f, 360.0f);
+    ImGui::SliderAngle("Roll", &character->rotation.z, 0.0f, 360.0f);
+    ImGui::InputFloat3("scale", &character->scale.x);
 
     ImGui::End();
+
+    ImGui::Begin("Memory Debugger");
+    ImGui::Text("[T] Trim");
+    ImGui::Text("%ls", debugger.GetMemoryUsageWstring().c_str());
+    ImGui::End();
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }

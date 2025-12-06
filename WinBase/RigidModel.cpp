@@ -61,39 +61,51 @@ void RigidModel::MakeWorld()
 
 void RigidModel::Update()
 {
-    //MakeWorld();
+    MakeWorld();
 
-    // animation time update
-    currentAnimTime += Time::GetDeltaTime();
-    if (currentAnimTime > model_data->animationClips[0].duration)
-        currentAnimTime = fmod(currentAnimTime, model_data->animationClips[0].duration);
-
-    // local matrix update
-    // animaton key frame값을 보간해서 local matrix 업데이트
-    // TODO :: 해시테이블로 바꾸기
-    for(int i=0; i<model_data->subMeshes.size(); i++)
+    if (model_data->animationClips.empty())
     {
-        auto& sub = model_data->subMeshes[i];
-
-        AnimationClip& clip = model_data->animationClips[0];
-        for (auto& nodeAnim : clip.nodeAnimations)
+        for (int i = 0; i < model_data->subMeshes.size(); i++)
         {
-            if (nodeAnim.nodeName == sub.nodeName)
-            {
-                Vector3 pos;  Quaternion rot;	Vector3 scl;
-                nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
+            auto& sub = model_data->subMeshes[i];
+            submesh_localMatrices[i] = sub.bindMatrix;
+        }
+    }
+    else
+    {
+        // animation time update
+        currentAnimTime += Time::GetDeltaTime();
+        if (currentAnimTime > model_data->animationClips[0].duration)
+            currentAnimTime = fmod(currentAnimTime, model_data->animationClips[0].duration);
 
-                submesh_localMatrices[i] = Matrix::CreateScale(scl) *
-                    Matrix::CreateFromQuaternion(rot) *
-                    Matrix::CreateTranslation(pos);
-                break;
-            }
-            else
+        // local matrix update
+        // animaton key frame값을 보간해서 local matrix 업데이트
+        // TODO :: 해시테이블로 바꾸기
+        for (int i = 0; i < model_data->subMeshes.size(); i++)
+        {
+            auto& sub = model_data->subMeshes[i];
+
+            AnimationClip& clip = model_data->animationClips[0];
+            for (auto& nodeAnim : clip.nodeAnimations)
             {
-                submesh_localMatrices[i] = sub.bindMatrix;
+                if (nodeAnim.nodeName == sub.nodeName)
+                {
+                    Vector3 pos;  Quaternion rot;	Vector3 scl;
+                    nodeAnim.Interpolate(currentAnimTime, pos, rot, scl);
+
+                    submesh_localMatrices[i] = Matrix::CreateScale(scl) *
+                        Matrix::CreateFromQuaternion(rot) *
+                        Matrix::CreateTranslation(pos);
+                    break;
+                }
+                else
+                {
+                    submesh_localMatrices[i] = sub.bindMatrix;
+                }
             }
         }
     }
+    
 
     // model matrix update
     for (int i = 0; i < model_data->subMeshes.size(); i++)

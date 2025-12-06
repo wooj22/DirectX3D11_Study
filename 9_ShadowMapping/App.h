@@ -47,7 +47,7 @@ private:
 
     // models
     SkeletalModel* warrior = nullptr;    
-    SkeletalModel* enemy = nullptr;    
+    SkeletalModel* character = nullptr;    
     StaticModel* zelda = nullptr;
     StaticModel* tree = nullptr;
     RigidModel* boxHuman = nullptr;

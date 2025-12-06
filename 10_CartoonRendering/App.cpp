@@ -24,10 +24,10 @@ bool App::OnInit()
 
     // model init
     warrior = new SkeletalModel();
-    enemy = new SkeletalModel();
+    character = new SkeletalModel();
     ModelLoader::LoadSkeletalMesh(warrior, "../Resource/Girl.fbx");
-    ModelLoader::LoadSkeletalMesh(enemy, "../Resource/Enemy.fbx");
-    enemy->SetPosition({ 200, 0,0 });
+    ModelLoader::LoadSkeletalMesh(character, "../Resource/Enemy.fbx");
+    character->SetPosition({ 200, 0,0 });
 
     // view init
     camera.position = { 70, 80, -300 };
@@ -58,7 +58,7 @@ void App::OnUninit()
 void App::OnUpdate()
 {
     warrior->Update();
-    enemy->Update();
+    character->Update();
     camera.GetViewMatrix(view);
 }
 
@@ -129,13 +129,13 @@ void App::OnRender()
     D3D::deviceContext->VSSetShader(D3D::Skinned_OutLine_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::OutLine_PS.Get(), NULL, 0);
     D3D::deviceContext->RSSetState(D3D::rasterizerState.Get());
-    enemy->Render();
+    character->Render();
     D3D::deviceContext->RSSetState(nullptr);
 
     // model render
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::BlinnPhongToon_PS.Get(), NULL, 0);
-    enemy->Render();
+    character->Render();
 
     // GUI
     RenderGUI();

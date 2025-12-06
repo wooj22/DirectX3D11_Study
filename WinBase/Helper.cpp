@@ -6,6 +6,7 @@
 #include <directXTK/WICTextureLoader.h>
 #include <dxgidebug.h>
 #include <dxgi1_3.h>    // DXGIGetDebugInterface1
+#include <DirectXTex.h>
 
 #pragma comment(lib, "dxguid.lib")  // 꼭 필요!
 #pragma comment(lib, "dxgi.lib")
@@ -72,20 +73,45 @@ HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCS
 
 HRESULT CreateTextureFromFile(ID3D11Device* d3dDevice, const wchar_t* szFileName, ID3D11ShaderResourceView** textureView)
 {
-	HRESULT hr = S_OK;
+    HRESULT hr = S_OK;
 
-	// Load the Texture
-	hr = DirectX::CreateDDSTextureFromFile(d3dDevice, szFileName, nullptr, textureView);
-	if (FAILED(hr))
-	{
-		hr = DirectX::CreateWICTextureFromFile(d3dDevice, szFileName, nullptr, textureView);
-		if (FAILED(hr))
-		{
-			MessageBoxW(NULL, GetComErrorString(hr), szFileName, MB_OK);
-			return hr;
-		}
-	}
-	return S_OK;
+    // 1) DDS 먼저 시도
+    hr = DirectX::CreateDDSTextureFromFile(d3dDevice, szFileName, nullptr, textureView);
+    if (SUCCEEDED(hr))
+        return S_OK;
+
+    // 2) WIC로 시도 (PNG, JPG, BMP, etc)
+    hr = DirectX::CreateWICTextureFromFile(d3dDevice, szFileName, nullptr, textureView);
+    if (SUCCEEDED(hr))
+        return S_OK;
+
+    // 3) TGA 시도
+    DirectX::ScratchImage img;
+    hr = DirectX::LoadFromTGAFile(szFileName, nullptr, img);
+    if (FAILED(hr))
+    {
+        MessageBoxW(NULL, GetComErrorString(hr), szFileName, MB_OK);
+        return hr;
+    }
+
+    ID3D11Resource* tex = nullptr;
+    hr = DirectX::CreateTexture(d3dDevice, img.GetImages(), img.GetImageCount(), img.GetMetadata(), &tex);
+    if (FAILED(hr))
+    {
+        MessageBoxW(NULL, GetComErrorString(hr), szFileName, MB_OK);
+        return hr;
+    }
+
+    hr = d3dDevice->CreateShaderResourceView(tex, nullptr, textureView);
+    tex->Release();
+
+    if (FAILED(hr))
+    {
+        MessageBoxW(NULL, GetComErrorString(hr), szFileName, MB_OK);
+        return hr;
+    }
+
+    return S_OK;
 }
 
 

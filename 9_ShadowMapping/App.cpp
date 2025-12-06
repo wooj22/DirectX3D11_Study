@@ -28,9 +28,9 @@ bool App::OnInit()
     warrior = new SkeletalModel();
     AssetManager::Instance().LoadSkeletalModelAsset(warrior, "../Resource/Girl.fbx");
 
-    enemy = new SkeletalModel();
-    AssetManager::Instance().LoadSkeletalModelAsset(enemy, "../Resource/Enemy.fbx");
-    enemy->SetPosition({ 200, 0,0 });
+    character = new SkeletalModel();
+    AssetManager::Instance().LoadSkeletalModelAsset(character, "../Resource/Enemy.fbx");
+    character->SetPosition({ 200, 0,0 });
 
     zelda = new StaticModel();
     AssetManager::Instance().LoadStaticModelAsset(zelda, "../Resource/zeldaPosed001.fbx");
@@ -77,7 +77,7 @@ void App::OnUninit()
 void App::OnUpdate()
 {
     warrior->Update();
-    enemy->Update();
+    character->Update();
     zelda->Update();
     boxHuman->Update();
     tree->Update();
@@ -145,7 +145,7 @@ void App::OnRender()
     D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Skinned_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(nullptr, nullptr, 0);
     warrior->Render();
-    enemy->Render();
+    character->Render();
 
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Static_VS.Get(), NULL, 0);
@@ -163,7 +163,7 @@ void App::OnRender()
     D3D::deviceContext->PSSetShader(D3D::BlinnPhong_PS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     warrior->Render();
-    enemy->Render();
+    character->Render();
 
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
