@@ -1,8 +1,7 @@
 #include <PBRCommom.fxh>
 #include <shared.fxh>
 
-
-// BlinnPhong Pixel Shader
+// PBR Pixel Shader
 // ShadowMapping (현재 연계 가능한 VS : BaseLit_Skinned_VS, BaseLit_Static_VS)
 
 Texture2D diffuseMap : register(t0);
@@ -26,24 +25,16 @@ float4 main(PS_INPUT input) : SV_TARGET
     float shadowFactor = 1.0f;
     
     // ShadowMapping
-    float currentShadowDepth = input.posShadow.z / input.posShadow.w;
-    float2 uv = input.posShadow.xy / input.posShadow.w;
-    uv.y = -uv.y;
-    uv = uv * 0.5 + 0.5;
+    //float currentShadowDepth = input.posShadow.z / input.posShadow.w;
+    //float2 uv = input.posShadow.xy / input.posShadow.w;
+    //uv.y = -uv.y;
+    //uv = uv * 0.5 + 0.5;
     
-    if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
-    {
-        // 단일 texel
-        //float shadowMapDepth = shadowMap.Sample(samLinear, uv).r;
-        
-        //if (currentShadowDepth > shadowMapDepth + 0.001)
-        //    shadowFactor = 0.0f;
-        //else
-        //    shadowFactor = 1.0;
-        
-        // PCF
-        shadowFactor = shadowMap.SampleCmpLevelZero(samShadow, uv, currentShadowDepth - 0.001);
-    }
+    //if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
+    //{
+        //// PCF
+        //shadowFactor = shadowMap.SampleCmpLevelZero(samShadow, uv, currentShadowDepth - 0.001);
+    //}
     
     // normal
     float3 N;

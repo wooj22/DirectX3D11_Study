@@ -512,4 +512,24 @@ void ModelLoader::ProcessMaterial(aiMaterial* aiMaterial, const aiScene* scene, 
         material->emissive_filename = fs::path(filepath.C_Str()).filename().wstring();
         material->textureFlags |= TEX_EMISSIVE;
     }
+
+    // roughness (PBR)
+    if (aiMaterial->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &filepath) == AI_SUCCESS)
+    {
+        std::string filename = fs::path(filepath.C_Str()).filename().string();
+        SaveEmbeddedTextureIfExists(scene, directory, filename);
+
+        material->roughness_filename = fs::path(filepath.C_Str()).filename().wstring();
+        material->textureFlags |= TEX_ROUGHNESS;
+    }
+
+    // metallic (PBR)
+    if (aiMaterial->GetTexture(aiTextureType_METALNESS, 0, &filepath) == AI_SUCCESS)
+    {
+        std::string filename = fs::path(filepath.C_Str()).filename().string();
+        SaveEmbeddedTextureIfExists(scene, directory, filename);
+
+        material->metallic_filename = fs::path(filepath.C_Str()).filename().wstring();
+        material->textureFlags |= TEX_METALLIC;
+    }
 }

@@ -11,10 +11,12 @@ using std::wstring;
  */
 enum TextureFlags
 {
-    TEX_DIFFUSE = 1 << 0,		// 0001
-    TEX_NORMAL = 1 << 1,		// 0010
-    TEX_SPECULAR = 1 << 2,		// 0100
-    TEX_EMISSIVE = 1 << 3		// 1000
+    TEX_DIFFUSE = 1 << 0,		// 000001
+    TEX_NORMAL = 1 << 1,		// 000010
+    TEX_SPECULAR = 1 << 2,		// 000100
+    TEX_EMISSIVE = 1 << 3,   	// 001000
+    TEX_ROUGHNESS = 1 << 4,     // 010000
+    TEX_METALLIC = 1 << 5       // 100000
 };
 
 /*
@@ -31,16 +33,20 @@ public:
     UINT textureFlags = 0;
 
     // file path
-    wstring diffuse_filename = L"";
-    wstring normal_filename = L"";
-    wstring specular_filename = L"";
-    wstring emissive_filename = L"";
+    wstring diffuse_filename = L"";         // ºí¸°Æþ(diffuse), PBR(albedo)
+    wstring normal_filename = L"";          // ºí¸°Æþ, PBR
+    wstring specular_filename = L"";        // ºí¸°Æþ
+    wstring emissive_filename = L"";        // ºí¸°Æþ, PBR
+    wstring roughness_filename = L"";       // PBR
+    wstring metallic_filename = L"";        // PBR
 
     // texture
     ID3D11ShaderResourceView* diffuseSRV = nullptr;
     ID3D11ShaderResourceView* normalSRV = nullptr;
     ID3D11ShaderResourceView* specualrSRV = nullptr;
     ID3D11ShaderResourceView* emissiveSRV = nullptr;
+    ID3D11ShaderResourceView* roughnessSRV = nullptr;
+    ID3D11ShaderResourceView* metallicSRV = nullptr;
 
 public:
     void CreateSRV();

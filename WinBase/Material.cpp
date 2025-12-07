@@ -24,6 +24,16 @@ void Material::CreateSRV()
     {
         CreateTextureFromFile(D3D::device.Get(), (directory + emissive_filename).c_str(), &emissiveSRV);
     }
+
+    if (textureFlags & TEX_ROUGHNESS)
+    {
+        CreateTextureFromFile(D3D::device.Get(), (directory + roughness_filename).c_str(), &roughnessSRV);
+    }
+
+    if (textureFlags & TEX_METALLIC)
+    {
+        CreateTextureFromFile(D3D::device.Get(), (directory + metallic_filename).c_str(), &metallicSRV);
+    }
 }
 
 void Material::SetDirectoryPath(wstring& path)
