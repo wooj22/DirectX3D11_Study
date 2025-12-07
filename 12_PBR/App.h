@@ -36,10 +36,6 @@ using namespace DirectX::SimpleMath;
 class App : public WinApp
 {
 private:
-    // RampTexture
-    ID3D11ShaderResourceView* diffuseRampTexture = nullptr;
-    ID3D11ShaderResourceView* specualrRampTexture = nullptr;
-
     // matrix
     Matrix view;
     Matrix projection;
@@ -54,10 +50,14 @@ private:
     DirectionalLight light;
 
     // else
-    float ambientHighlight = 0.3;
-    float diffuseHighlight = 0.7;
-    float specularHighlight = 0.9;
-    float shininess = 500;
+    float metallicFactor = 1.0f;
+    float roughnessFactor = 1.0f;
+    float metallicOverride = 1.0f;
+    float roughnessOverride = 1.0f;
+
+    bool useMetallicOverride = 0;
+    bool useRoughnessOverride = 0;
+
     float blendFactor[4] = { 0,0,0,0 }; UINT sampleMask = 0xffffffff;
     float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
 

@@ -105,6 +105,7 @@ struct alignas(16) MaterialCB
     UINT useEmissive;
     UINT useMetallic;
     UINT useRoughness;
+    Vector2 padding;
 };
 
 // OffsetMatrix -> b3
@@ -129,4 +130,20 @@ struct alignas(16) OutLineCB
 {
     float outlineThickness = 0.3f;
     Vector3 outlineColor = Vector3(0,0,0);
+};
+
+// Debug Constant Buffer -> b6
+struct alignas(16) DebugCB
+{
+    // factor
+    float metallicFactor = 1.0f;
+    float roughnessFactor = 1.0f;
+
+    // override
+    float metallicOverride = 1.0f;
+    float roughnessOverride = 1.0f;
+
+    UINT useMetallicOverride = 0;
+    UINT useRoughnessOverride = 0;
+    Vector2 padding;
 };

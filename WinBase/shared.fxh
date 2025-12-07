@@ -65,6 +65,9 @@ cbuffer MaterialCB : register(b2)
     bool useNormal;
     bool useSpecular;
     bool useEmissive;
+    bool useMetallic;
+    bool useRoughness;
+    float2 padding;
 }
 
 cbuffer OffsetMatrixCB : register(b3)
@@ -81,6 +84,18 @@ cbuffer OutLineCB : register(b5)
 {
     float outlineThickness;
     float3 outlineColor;
+}
+
+cbuffer DebugCB : register(b6)
+{
+    float metallicFactor = 1.0f;
+    float roughnessFactor = 1.0f;
+    float metallicOverride = 1.0f;
+    float roughnessOverride = 1.0f;
+    
+    bool useMetallicOverride = false;
+    bool useRoughnessOverride = false;
+    float2 padding2;
 }
 
 // ----------------------

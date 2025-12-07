@@ -35,8 +35,6 @@ bool App::OnInit()
     camera.GetViewMatrix(view);
 
     // light init
-    light.indirectLight = 0.1;
-    light.directLight = 1.3;
     light.direction = { 0,0,1 };
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
 
@@ -90,6 +88,7 @@ void App::OnRender()
     D3D::deviceContext->VSSetConstantBuffers(1, 1, D3D::lightingBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(1, 1, D3D::lightingBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(2, 1, D3D::materialBuffer.GetAddressOf());
+    D3D::deviceContext->PSSetConstantBuffers(6, 1, D3D::debugBuffer.GetAddressOf());
 
     // skybox render 
     skybox.Render(view, projection);
@@ -99,19 +98,18 @@ void App::OnRender()
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;
-    D3D::lightingCBData.indirectLight = light.indirectLight;
-    D3D::lightingCBData.directLight = light.directLight;
-    D3D::lightingCBData.ambientHighlight = ambientHighlight;
-    D3D::lightingCBData.diffuseHighlight = diffuseHighlight;
-    D3D::lightingCBData.specularHighlight = specularHighlight;
-    D3D::lightingCBData.shininess = shininess;
     D3D::lightingCBData.cameraPos = camera.position;
+    D3D::debugCBData.metallicFactor = metallicFactor;
+    D3D::debugCBData.roughnessFactor = roughnessFactor;
+    D3D::debugCBData.metallicOverride = metallicOverride;
+    D3D::debugCBData.roughnessOverride = roughnessOverride;
+    D3D::debugCBData.useMetallicOverride = useMetallicOverride ? 1 : 0;
+    D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
+    D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
 
     // Mesh Render-------------------------------------
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->PSSetShaderResources(4, 1, &diffuseRampTexture);
-    D3D::deviceContext->PSSetShaderResources(5, 1, &specualrRampTexture);
 
     // rigid model
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
@@ -127,10 +125,6 @@ void App::OnRender()
 
 bool App::InitRenderPipeLine()
 {
-    // RampTexture Create
-    CreateTextureFromFile(D3D::device.Get(), L"../Resource/RampTexture.png", &diffuseRampTexture);
-    CreateTextureFromFile(D3D::device.Get(), L"../Resource/SpecularRampTexture.png", &specualrRampTexture);
-
     return true;
 }
 
@@ -172,18 +166,15 @@ void App::RenderGUI()
     ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
     ImGui::Text("Light");
     ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
-    ImGui::SliderFloat("indirectLight", &light.indirectLight, 0.0f, 50.0f, "%.2f");
-    ImGui::SliderFloat("directLight", &light.directLight, 0.0f, 50.0f, "%.2f");
     ImGui::ColorEdit3("Color", &light.color.x);
 
-    ImGui::SliderFloat("ambientHighlight", &ambientHighlight, 0.0f, 1.0f, "%.2f");
-    ImGui::SliderFloat("diffuseHighlight", &diffuseHighlight, 0.0f, 1.0f, "%.2f");
-    ImGui::SliderFloat("specularHighlight", &specularHighlight, 0.0f, 1.0f, "%.2f");
-    ImGui::SliderFloat("shininess", &shininess, 0.0f, 3000.0f, "%.2f");
-
-    ImGui::Text("OutLine");
-    ImGui::SliderFloat("outlineThickness", &D3D::outlineCBData.outlineThickness, 0.0f, 2.0f, "%.2f");
-    ImGui::ColorEdit3("outlineColoe", &D3D::outlineCBData.outlineColor.x);
+    ImGui::Text("Material");
+    ImGui::SliderFloat("Metallic Factor", &metallicFactor, 0.0f, 1.0f);
+    ImGui::SliderFloat("Roughness Factor", &roughnessFactor, 0.0f, 1.0f);
+    ImGui::Checkbox("Metallic Override", &useMetallicOverride);
+    ImGui::SliderFloat("Metallic", &metallicOverride, 0.0f, 1.0f);
+    ImGui::Checkbox("Roughness Override", &useRoughnessOverride);
+    ImGui::SliderFloat("Roughness", &roughnessOverride, 0.0f, 1.0f);
 
     ImGui::Text("Models");
     ImGui::InputFloat3("position", &character->position.x);

@@ -249,8 +249,5 @@
     <None Include="shared.fxh">
       <Filter>08. Shaders</Filter>
     </None>
-    <None Include="PBRCommom.fxh">
-      <Filter>08. Shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>
