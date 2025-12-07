@@ -115,7 +115,7 @@ void App::OnRender()
 
     // rigid model
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::BlinnPhong_PS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PBR_PS.Get(), NULL, 0);
     character->Render();
 
     // GUI

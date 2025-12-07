@@ -33,6 +33,7 @@ ComPtr<ID3D11VertexShader>        D3D::Skinned_OutLine_VS = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::ShadowDepth_Skinned_VS = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::ShadowDepth_Static_VS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::BlinnPhong_PS = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PBR_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::BlinnPhongToon_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::Skybox_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::OutLine_PS = nullptr;
@@ -346,6 +347,16 @@ bool D3D::CreateShader()
         HR_T(CompileShaderFromFile(L"../WinBase/BlinnPhong_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
             pixelShaderBuffer->GetBufferSize(), NULL, &BlinnPhong_PS));
+    }
+
+
+    //---------------------------
+    // PBR PS
+    {
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/PBR_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &PBR_PS));
     }
 
 

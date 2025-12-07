@@ -53,7 +53,9 @@ public:
     static ComPtr<ID3D11VertexShader> Skinned_OutLine_VS;
     static ComPtr<ID3D11VertexShader> ShadowDepth_Skinned_VS;
     static ComPtr<ID3D11VertexShader> ShadowDepth_Static_VS;
+
     static ComPtr<ID3D11PixelShader> BlinnPhong_PS;
+    static ComPtr<ID3D11PixelShader> PBR_PS;
     static ComPtr<ID3D11PixelShader> BlinnPhongToon_PS;
     static ComPtr<ID3D11PixelShader> Skybox_PS;
     static ComPtr<ID3D11PixelShader> OutLine_PS;

@@ -103,6 +103,8 @@ struct alignas(16) MaterialCB
     UINT useNormal;
     UINT useSpecular;
     UINT useEmissive;
+    UINT useMetallic;
+    UINT useRoughness;
 };
 
 // OffsetMatrix -> b3

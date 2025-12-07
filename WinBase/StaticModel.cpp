@@ -83,10 +83,14 @@ void StaticModel::Render()
         D3D::deviceContext->PSSetShaderResources(1, 1, &mat.normalSRV);
         D3D::deviceContext->PSSetShaderResources(2, 1, &mat.specualrSRV);
         D3D::deviceContext->PSSetShaderResources(3, 1, &mat.emissiveSRV);
+        D3D::deviceContext->PSSetShaderResources(7, 1, &mat.metallicSRV);
+        D3D::deviceContext->PSSetShaderResources(8, 1, &mat.roughnessSRV);
         D3D::materialCBData.useDiffuse = (model_data->materials[i].textureFlags & TEX_DIFFUSE) != 0;
         D3D::materialCBData.useNormal = (model_data->materials[i].textureFlags & TEX_NORMAL) != 0;
         D3D::materialCBData.useSpecular = (model_data->materials[i].textureFlags & TEX_SPECULAR) != 0;
         D3D::materialCBData.useEmissive = (model_data->materials[i].textureFlags & TEX_EMISSIVE) != 0;
+        D3D::materialCBData.useMetallic = (model_data->materials[i].textureFlags & TEX_METALLIC) != 0;
+        D3D::materialCBData.useRoughness = (model_data->materials[i].textureFlags & TEX_ROUGHNESS) != 0;
 
         // constant buffer
         D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0); // constant buffe°¡ ¿¹¿Ü

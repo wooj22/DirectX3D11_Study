@@ -18,6 +18,9 @@
 // TextureCube skyboxTexture : register(t4)
 // Texture2D diffuseRamp : register(t4);
 // Texture2D specualrRamp : register(t5);
+// Texture2D shadowMap : register(t6);
+// Texture2D metallicMap : register(t7);
+// Texture2D roughnessMap : register(t8);
 
 
 // [ SamplerState ]
