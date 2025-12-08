@@ -7,6 +7,7 @@
         - Emissive Map
         - Metallic Map
         - Roughness Map
+    - Shadow Mapping Support
 */
 
 #include <shared.fxh>
@@ -76,6 +77,19 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     // shadowFactor
     float shadowFactor = 1.0f;
+    
+    
+    // --- [ShadowMapping] ---------------------------
+    float currentShadowDepth = input.posShadow.z / input.posShadow.w;
+    float2 uv = input.posShadow.xy / input.posShadow.w;
+    uv.y = -uv.y;
+    uv = uv * 0.5 + 0.5;
+    
+    if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
+    {
+        // PCF
+        shadowFactor = shadowMap.SampleCmpLevelZero(samShadow, uv, currentShadowDepth - 0.001);
+    }
 
     
     // --- [Material]  ----------------------------------
@@ -147,5 +161,6 @@ float4 main(PS_INPUT input) : SV_TARGET
 
     // final color
     float3 finalColor = (SpecularBRDF + DiffuseBRDF) * lightColor * intensity * dot(N, L);
+    finalColor = finalColor * shadowFactor + emissive_color;
     return float4(finalColor, alpha);
 }
