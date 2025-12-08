@@ -46,17 +46,16 @@ cbuffer LightingCB : register(b1)
     float4 lightDirection;
     float4 lightColor;
     
-    float indirectLight;
-    float directLight;
-    
-    float ambientHighlight;
-    float diffuseHighlight;
-    float specularHighlight;
-    float shininess;
+    float indirectLight;            // blinpong
+    float directLight;              // blinpong
+    float ambientHighlight;         // blinpong
+    float diffuseHighlight;         // blinpong
+    float specularHighlight;        // blinpong
+    float shininess;                // blinpong
     float2 padding1;
     
     float3 cameraPos;
-    float padidng2;
+    float intensity;                // pbr
 }
 
 cbuffer MaterialCB : register(b2)
@@ -95,7 +94,11 @@ cbuffer DebugCB : register(b6)
     
     bool useMetallicOverride = false;
     bool useRoughnessOverride = false;
-    float2 padding2;
+    
+    bool useBaseColorOverride = 0;
+    float padding2;
+    float3 baseColorOverride = { 0, 0, 0 };
+    float padding3;
 }
 
 // ----------------------

@@ -105,11 +105,6 @@ void SkeletalModel::Update()
         }
     }
 
-    for (int i = 0; i < model_data->skeleton.bones.size(); i++)
-    {
-        localMatrix[i] = model_data->skeleton.bones[i].bindMatrix;
-    }
-    
     // bone world update
     for (int i = 0; i < model_data->skeleton.bones.size(); ++i)
     {

@@ -161,8 +161,8 @@ void Cube::Render(Matrix& view, Matrix& projection, Camera& camera, DirectionalL
 	constBuffer.projection = XMMatrixTranspose(projection);
 	constBuffer.lightDirection = light.direction;
 	constBuffer.lightColor = light.color;
-	constBuffer.indirectLight = light.indirectLight;
-	constBuffer.directLight = light.directLight;
+	constBuffer.indirectLight = light.indirectIntensity;
+	constBuffer.directLight = light.directIntensity;
 	constBuffer.ambientHighlight = material.ambientHighlight;
 	constBuffer.diffuseHighlight = material.diffuseHighlight;
 	constBuffer.specularHighlight = material.specularReflection;

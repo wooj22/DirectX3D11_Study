@@ -9,6 +9,6 @@ struct DirectionalLight
 	Vector4 color{ 1.0, 1.0f, 1.0, 1.0 };
 
 	// ±¤¿ø ¼¼±â
-	float indirectLight = 0.3f;		// °£Á¢±¤ ¼¼±â -> È¯°æ±¤
-	float directLight = 1.0f;		// Á÷Á¢±¤ ¼¼±â -> ³­¹Ý»ç±¤, Á¤¹Ý»ç±¤
+	float indirectIntensity = 0.3f;		// °£Á¢±¤ ¼¼±â -> È¯°æ±¤
+	float directIntensity = 1.0f;		// Á÷Á¢±¤ ¼¼±â -> ³­¹Ý»ç±¤, Á¤¹Ý»ç±¤
 };

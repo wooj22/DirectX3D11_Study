@@ -150,20 +150,6 @@ void RigidModel::Render()
         D3D::materialCBData.useMetallic = (model_data->materials[i].textureFlags & TEX_METALLIC) != 0;
         D3D::materialCBData.useRoughness = (model_data->materials[i].textureFlags & TEX_ROUGHNESS) != 0;
 
-        char debugMsg[256];
-        sprintf_s(debugMsg,
-            "[SubMesh %d] Diffuse:%d Normal:%d Specular:%d Emissive:%d Metallic:%d Roughness:%d\n",
-            i,
-            D3D::materialCBData.useDiffuse,
-            D3D::materialCBData.useNormal,
-            D3D::materialCBData.useSpecular,
-            D3D::materialCBData.useEmissive,
-            D3D::materialCBData.useMetallic,
-            D3D::materialCBData.useRoughness
-        );
-        OutputDebugStringA(debugMsg);
-    
-
         // constant buffer
         D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
         D3D::deviceContext->UpdateSubresource(D3D::materialBuffer.Get(), 0, nullptr, &D3D::materialCBData, 0, 0);

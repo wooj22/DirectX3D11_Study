@@ -137,8 +137,8 @@ void App::RenderGUI()
 	ImGui::SliderFloat("z", &light.direction.z, -1.0f, 1.0f, "%.2f");
 	ImGui::InputFloat3("Color", &light.color.x);
 
-	ImGui::SliderFloat("indirectLight", &light.indirectLight, 0.0f, 30.0f, "%.2f");
-	ImGui::SliderFloat("directLight", &light.directLight, 0.0f, 30.0f, "%.2f");
+	ImGui::SliderFloat("indirectLight", &light.indirectIntensity, 0.0f, 30.0f, "%.2f");
+	ImGui::SliderFloat("directLight", &light.directIntensity, 0.0f, 30.0f, "%.2f");
 
 	ImGui::Text("Material");
 	ImGui::SliderFloat("ambientReflection", &material.ambientHighlight, 0.0f, 1.0f, "%.2f");

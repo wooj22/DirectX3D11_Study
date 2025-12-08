@@ -36,8 +36,8 @@ bool App::OnInit()
     camera.GetViewMatrix(view);
 
     // light init
-    light.indirectLight = 0.1;
-    light.directLight = 1.3;
+    light.indirectIntensity = 0.1;
+    light.directIntensity = 1.3;
     light.direction = {0,0,1};
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
 
@@ -96,8 +96,8 @@ void App::OnRender()
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;
-    D3D::lightingCBData.indirectLight = light.indirectLight;
-    D3D::lightingCBData.directLight = light.directLight;
+    D3D::lightingCBData.indirectLight = light.indirectIntensity;
+    D3D::lightingCBData.directLight = light.directIntensity;
     D3D::lightingCBData.ambientHighlight = ambientHighlight;
     D3D::lightingCBData.diffuseHighlight = diffuseHighlight;
     D3D::lightingCBData.specularHighlight = specularHighlight;
@@ -191,8 +191,8 @@ void App::RenderGUI()
     ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
     ImGui::Text("Light");
     ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
-    ImGui::SliderFloat("indirectLight", &light.indirectLight, 0.0f, 50.0f, "%.2f");
-    ImGui::SliderFloat("directLight", &light.directLight, 0.0f, 50.0f, "%.2f");
+    ImGui::SliderFloat("indirectLight", &light.indirectIntensity, 0.0f, 50.0f, "%.2f");
+    ImGui::SliderFloat("directLight", &light.directIntensity, 0.0f, 50.0f, "%.2f");
     ImGui::ColorEdit3("Color", &light.color.x);
 
     ImGui::SliderFloat("ambientHighlight", &ambientHighlight, 0.0f, 1.0f, "%.2f");

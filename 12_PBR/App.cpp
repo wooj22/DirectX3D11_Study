@@ -35,7 +35,7 @@ bool App::OnInit()
     camera.GetViewMatrix(view);
 
     // light init
-    light.direction = { 0,0,1 };
+    light.direction = { 0,-0.5,1 };
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
 
     // projection init 
@@ -80,9 +80,8 @@ void App::OnRender()
     // --------------------- Stage Setting -----------------------
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
-    D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
+    //D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
 
-    // constant buffer
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
     D3D::deviceContext->VSSetConstantBuffers(1, 1, D3D::lightingBuffer.GetAddressOf());
@@ -90,31 +89,35 @@ void App::OnRender()
     D3D::deviceContext->PSSetConstantBuffers(2, 1, D3D::materialBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(6, 1, D3D::debugBuffer.GetAddressOf());
 
-    // skybox render 
+    // Skybox render  --------------------------------
     skybox.Render(view, projection);
 
-    // buffer data
+    // buffer data -----------------------------------
     D3D::transformCBData.view = XMMatrixTranspose(view);
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;
+    D3D::lightingCBData.intensity = light.intensity;
     D3D::lightingCBData.cameraPos = camera.position;
     D3D::debugCBData.metallicFactor = metallicFactor;
     D3D::debugCBData.roughnessFactor = roughnessFactor;
+    D3D::debugCBData.baseColorOverride = baseColorOverride;
     D3D::debugCBData.metallicOverride = metallicOverride;
     D3D::debugCBData.roughnessOverride = roughnessOverride;
+    D3D::debugCBData.useBaseColorOverride = useBaseColorOverride ? 1 : 0;
     D3D::debugCBData.useMetallicOverride = useMetallicOverride ? 1 : 0;
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
 
     // Mesh Render-------------------------------------
+    // PBR (rigid model)
+    //D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-
-    // rigid model
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PBR_PS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PBR_PS.Get(), NULL, 0); 
     character->Render();
+
 
     // GUI
     RenderGUI();
@@ -167,10 +170,14 @@ void App::RenderGUI()
     ImGui::Text("Light");
     ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
     ImGui::ColorEdit3("Color", &light.color.x);
+    ImGui::SliderFloat("Intensity", &light.intensity, 0.0f, 10.0f);
 
     ImGui::Text("Material");
     ImGui::SliderFloat("Metallic Factor", &metallicFactor, 0.0f, 1.0f);
     ImGui::SliderFloat("Roughness Factor", &roughnessFactor, 0.0f, 1.0f);
+    ImGui::Checkbox("BaseColor Override", &useBaseColorOverride);
+    ImGui::ColorEdit3("BaseColor", &baseColorOverride.x);
+
     ImGui::Checkbox("Metallic Override", &useMetallicOverride);
     ImGui::SliderFloat("Metallic", &metallicOverride, 0.0f, 1.0f);
     ImGui::Checkbox("Roughness Override", &useRoughnessOverride);

@@ -92,8 +92,8 @@ void App::OnRender()
 	cb.projection = XMMatrixTranspose(projection);
 	cb.lightDirection = light.direction;
 	cb.lightColor = light.color;
-	cb.indirectLight = light.indirectLight;
-	cb.directLight = light.directLight;
+	cb.indirectLight = light.indirectIntensity;
+	cb.directLight = light.directIntensity;
 	cb.ambientHighlight = ambientHighlight;
 	cb.diffuseHighlight = diffuseHighlight;
 	cb.specularHighlight = specularHighlight;
@@ -259,8 +259,8 @@ void App::RenderGUI()
 	ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 	ImGui::Text("Light");
 	ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
-	ImGui::SliderFloat("indirectLight", &light.indirectLight, 0.0f, 50.0f, "%.2f");
-	ImGui::SliderFloat("directLight", &light.directLight, 0.0f, 50.0f, "%.2f");
+	ImGui::SliderFloat("indirectLight", &light.indirectIntensity, 0.0f, 50.0f, "%.2f");
+	ImGui::SliderFloat("directLight", &light.directIntensity, 0.0f, 50.0f, "%.2f");
 	ImGui::ColorEdit3("Color", &light.color.x);
 
 	ImGui::SliderFloat("ambientHighlight", &ambientHighlight, 0.0f, 1.0f, "%.2f");

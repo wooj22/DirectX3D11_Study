@@ -83,17 +83,16 @@ struct alignas(16) LightingCB
     Vector4 lightDirection;
     Vector4 lightColor;
 
-    float indirectLight;
-    float directLight;
-    float ambientHighlight;
-    float diffuseHighlight;
-
-    float specularHighlight;
-    float shininess;
+    float indirectLight;          // blinpong
+    float directLight;            // blinpong
+    float ambientHighlight;       // blinpong
+    float diffuseHighlight;       // blinpong
+    float specularHighlight;      // blinpong
+    float shininess;              // blinpong
     Vector2 padding;
 
     Vector3 cameraPos;
-    float padding2;
+    float intensity;              // pbr
 };
 
 // MaterialCB -> b2
@@ -142,8 +141,11 @@ struct alignas(16) DebugCB
     // override
     float metallicOverride = 1.0f;
     float roughnessOverride = 1.0f;
-
     UINT useMetallicOverride = 0;
     UINT useRoughnessOverride = 0;
-    Vector2 padding;
+
+    UINT useBaseColorOverride = 0;
+    float padding1;
+    Vector3 baseColorOverride = { 1,1,1 };
+    float padding2;
 };

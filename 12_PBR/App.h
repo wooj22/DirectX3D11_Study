@@ -42,6 +42,8 @@ private:
 
     // models
     RigidModel* character = nullptr;
+    SkeletalModel* girl = nullptr;
+    SkeletalModel* enemy = nullptr;
 
     // skybox
     SkyBox skybox;
@@ -52,13 +54,16 @@ private:
     // else
     float metallicFactor = 1.0f;
     float roughnessFactor = 1.0f;
-    float metallicOverride = 1.0f;
-    float roughnessOverride = 1.0f;
-
+    Vector3 baseColorOverride = { 1,1,1 };
+    float metallicOverride = 0.5f;
+    float roughnessOverride = 0.5f;
+    
+    bool useBaseColorOverride = 0;
     bool useMetallicOverride = 0;
     bool useRoughnessOverride = 0;
 
-    float blendFactor[4] = { 0,0,0,0 }; UINT sampleMask = 0xffffffff;
+    float blendFactor[4] = { 0,0,0,0 }; 
+    UINT sampleMask = 0xffffffff;
     float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
 
     // memory debugger
