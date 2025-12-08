@@ -122,8 +122,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     // --- [Facotr] -----------------------------------
     metallic *= metallicFactor;
-    roughness *= roughnessFactor;
-
+    float rf = max(roughnessFactor, 0.04);
+    roughness *= rf;
     
     // --- [Vector]  ----------------------------------
     float3 L = normalize(-lightDirection.xyz);
