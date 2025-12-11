@@ -197,7 +197,7 @@ float4 main(PS_INPUT input) : SV_TARGET
         float3 SpecularIBL = PrefilteredColor * (F0 * BRDF_LUT.x + BRDF_LUT.y);
 
         // Final InDirectLight
-        indirectIBL = DiffuseIBL + SpecularIBL;
+        indirectIBL = (DiffuseIBL + SpecularIBL) * indirectIntensity;
     }
     
     

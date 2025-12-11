@@ -10,5 +10,5 @@ struct DirectionalLight
 
     // Intensity
     float directIntensity = 1.0f;
-    float indirectIntensity = 0.3f;		 		
+    float indirectIntensity = 1.0f;		 		
 };
