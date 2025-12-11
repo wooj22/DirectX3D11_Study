@@ -52,7 +52,7 @@ bool App::OnInit()
     // light init
     light.direction = { 0,-0.5,1 };
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
-    light.intensity = 5.0f;
+    light.directIntensity = 5.0f;
 
     // projection init 
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
@@ -131,7 +131,7 @@ void App::OnRender()
 
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;
-    D3D::lightingCBData.intensity = light.intensity;
+    D3D::lightingCBData.directIntensity = light.directIntensity;
     D3D::lightingCBData.cameraPos = camera.position;
 
     D3D::debugCBData.metallicFactor = metallicFactor;
@@ -243,7 +243,7 @@ void App::RenderGUI()
     ImGui::Text("[Light]");
     ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
     ImGui::ColorEdit3("Color", &light.color.x);
-    ImGui::SliderFloat("Intensity", &light.intensity, 0.0f, 10.0f);
+    ImGui::SliderFloat("Intensity", &light.directIntensity, 0.0f, 10.0f);
 
     ImGui::Text("[Material]");
     ImGui::SliderFloat("Metallic Factor", &metallicFactor, 0.0f, 1.0f);

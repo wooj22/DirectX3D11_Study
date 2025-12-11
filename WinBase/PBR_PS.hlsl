@@ -19,6 +19,9 @@ Texture2D emissiveMap : register(t3);
 Texture2D shadowMap : register(t6);
 Texture2D metallicMap : register(t7);
 Texture2D roughnessMap : register(t8);
+TextureCube IBL_IrradianceMap : register(t9);
+TextureCube IBL_SpecularEnvMap : register(t10);
+Texture2D IBL_BRDF_LUT : register(t11);
 
 
 // --- Sampler Bind Slot ------------------
@@ -94,8 +97,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     // --- [Material]  ----------------------------------
     // base color
-        if (useDiffuse)
-            base_color = diffuseMap.Sample(samLinear, input.texCoord).rgb;
+    if (useDiffuse)
+        base_color = diffuseMap.Sample(samLinear, input.texCoord).rgb;
     
     // normal
     float3 N;
@@ -115,23 +118,26 @@ float4 main(PS_INPUT input) : SV_TARGET
         emissive_color = emissiveMap.Sample(samLinear, input.texCoord).rgb;
     
     // metallic
-    if(useMetallic)
+    if (useMetallic)
         metallic = metallicMap.Sample(samLinear, input.texCoord).r;
 
     // roughness
-    if(useRoughness)
+    if (useRoughness)
         roughness = roughnessMap.Sample(samLinear, input.texCoord).r;
     
     // alpha
-    if(useDiffuse)
+    if (useDiffuse)
         alpha = diffuseMap.Sample(samLinear, input.texCoord).a;
     
     
     
     // --- [Override] ----------------------------------
-    if(useMetallicOverride) metallic = metallicOverride;
-    if(useRoughnessOverride) roughness = roughnessOverride;
-    if(useBaseColorOverride) base_color = baseColorOverride;
+    if (useMetallicOverride)
+        metallic = metallicOverride;
+    if (useRoughnessOverride)
+        roughness = roughnessOverride;
+    if (useBaseColorOverride)
+        base_color = baseColorOverride;
     roughness = max(roughness, 0.04);
     
     // --- [Facotr] -----------------------------------
@@ -145,9 +151,9 @@ float4 main(PS_INPUT input) : SV_TARGET
     float3 H = normalize(L + V);
     
     
-    // --- [BRDF]  ----------------------------------
+    // --- [Direct Light]  ----------------------------------
     // Specular BRDF (Cook-Torrance)
-    float3 F0 = lerp(float3(0.04f, 0.04f, 0.04f), base_color, metallic); 
+    float3 F0 = lerp(float3(0.04f, 0.04f, 0.04f), base_color, metallic);
     float D = D_NDFGGXTR(N, H, roughness);
     float3 F = F_Schlick(H, V, F0);
     float G = G_Smith(N, V, L, roughness);
@@ -156,11 +162,41 @@ float4 main(PS_INPUT input) : SV_TARGET
 
     
     // Diffuse BRDF (Lambertian)
-    float3 DiffuseBRDF = (1.0f - F) * (1.0f - metallic) * (base_color / PI);
+    float3 kd = lerp(1.0 - F, 0.0, metallic);
+    float3 DiffuseBRDF = (base_color / PI) * kd;
     
+    // Final DirectLight
+    float3 directBRDF = (SpecularBRDF + DiffuseBRDF) * lightColor * directIntensity * dot(N, L);
 
-    // final color
-    float3 finalColor = (SpecularBRDF + DiffuseBRDF) * lightColor * intensity * dot(N, L);
-    finalColor = finalColor * shadowFactor + emissive_color;
+    
+    // --- [Indirect Light]  ----------------------------------
+    float3 indirectIBL = { 0, 0, 0 };
+    if (useIBL)
+    {
+        // 1) IBL Diffuse Term
+        float3 Irradiance = IBL_IrradianceMap.Sample(samLinear, N).rgb;
+        float DiffuseIBL = kd * base_color * Irradiance * PI;
+        
+        // 2) IBL Specular Term
+        uint specularTextureLevels, width, height;
+        IBL_SpecularEnvMap.GetDimensions(0, width, height, specularTextureLevels);
+        
+        // Prefiltered
+        float3 R = reflect(-V, N);
+        float3 PrefilteredColor = IBL_SpecularEnvMap.SampleLevel(samLinear, R, roughness * specularTextureLevels).rgb;
+
+        // LUT
+        float2 BRDF_LUT = IBL_BRDF_LUT.Sample(samLinear, float2(saturate(dot(N, L)), roughness)).rg;
+        
+        // Specular IBL
+        float3 SpecularIBL = PrefilteredColor * (F0 * BRDF_LUT.x + BRDF_LUT.y);
+
+        // Final InDirectLight
+        indirectIBL = DiffuseIBL + SpecularIBL;
+    }
+    
+    
+    // --- [Final Color]  ----------------------------------
+    float3 finalColor = (directBRDF + indirectIBL) * shadowFactor + emissive_color;
     return float4(finalColor, alpha);
 }

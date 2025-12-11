@@ -8,10 +8,7 @@ struct DirectionalLight
     Vector4 direction = { 0, -1, 0, 0 };
     Vector4 color{ 1.0, 1.0f, 1.0, 1.0 };
 
-    // PBR intensity
-    float intensity = 3.0f;
-
-    // ºí¸°Æþ intensity
-    float indirectIntensity = 0.3f;		// ambient
-    float directIntensity = 1.0f;		// diffuse, specular
+    // Intensity
+    float directIntensity = 1.0f;
+    float indirectIntensity = 0.3f;		 		
 };

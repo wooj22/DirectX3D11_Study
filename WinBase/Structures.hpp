@@ -83,16 +83,17 @@ struct alignas(16) LightingCB
     Vector4 lightDirection;
     Vector4 lightColor;
 
-    float indirectLight;          // blinpong
-    float directLight;            // blinpong
-    float ambientHighlight;       // blinpong
+    float directIntensity;            // blinpong, PBR
+    float indirectIntensity;          // blinpong, PBR
+
+    float ambientHighlight;       // blinpong  // TODO :: debug CB로 옮기기
     float diffuseHighlight;       // blinpong
     float specularHighlight;      // blinpong
     float shininess;              // blinpong
     Vector2 padding;
 
     Vector3 cameraPos;
-    float intensity;              // pbr
+    float padding2;
 };
 
 // MaterialCB -> b2
@@ -145,7 +146,8 @@ struct alignas(16) DebugCB
     UINT useRoughnessOverride = 0;
 
     UINT useBaseColorOverride = 0;
-    float padding1;
+    UINT useIBL = 0;
+
     Vector3 baseColorOverride = { 1,1,1 };
     float padding2;
 };

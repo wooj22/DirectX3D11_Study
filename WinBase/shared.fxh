@@ -21,6 +21,9 @@
 // Texture2D shadowMap : register(t6);
 // Texture2D metallicMap : register(t7);
 // Texture2D roughnessMap : register(t8);
+// Texture2D IBL_IrradianceMap : register(t9);
+// Texture2D IBL_SpecularEnvMap : register(t10);
+// Texture2D IBL_BRDF_LUT : register(t11);
 
 
 // [ SamplerState ]
@@ -46,8 +49,9 @@ cbuffer LightingCB : register(b1)
     float4 lightDirection;
     float4 lightColor;
     
-    float indirectLight;            // blinpong
-    float directLight;              // blinpong
+    float directIntensity; // blinpong, PBR
+    float indirectIntensity; // blinpong, PBR
+   
     float ambientHighlight;         // blinpong
     float diffuseHighlight;         // blinpong
     float specularHighlight;        // blinpong
@@ -55,7 +59,7 @@ cbuffer LightingCB : register(b1)
     float2 padding1;
     
     float3 cameraPos;
-    float intensity;                // pbr
+    float padding2;
 }
 
 cbuffer MaterialCB : register(b2)
@@ -96,7 +100,7 @@ cbuffer DebugCB : register(b6)
     bool useRoughnessOverride = false;
     
     bool useBaseColorOverride = 0;
-    float padding2;
+    bool useIBL = true;
     float3 baseColorOverride = { 0, 0, 0 };
     float padding3;
 }

@@ -52,11 +52,15 @@ bool App::OnInit()
     // light init
     light.direction = { 0,-0.5,1 };
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
-    light.intensity = 5.0f;
+    light.directIntensity = 3.0f;
 
     // projection init 
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 
+    // use IBL
+    D3D::debugCBData.useIBL = 1;
+
+    // debugger init
     debugger.CheakMemoryUsage();
     return true;
 }
@@ -131,7 +135,7 @@ void App::OnRender()
 
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;
-    D3D::lightingCBData.intensity = light.intensity;
+    D3D::lightingCBData.directIntensity = light.directIntensity;
     D3D::lightingCBData.cameraPos = camera.position;
 
     D3D::debugCBData.metallicFactor = metallicFactor;
@@ -142,6 +146,7 @@ void App::OnRender()
     D3D::debugCBData.useBaseColorOverride = useBaseColorOverride ? 1 : 0;
     D3D::debugCBData.useMetallicOverride = useMetallicOverride ? 1 : 0;
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
+    D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
@@ -176,6 +181,9 @@ void App::OnRender()
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PBR_PS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap);
+    D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap);
+    D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     floor->Render();
     zelda->Render();
@@ -201,6 +209,11 @@ void App::OnRender()
 
 bool App::InitRenderPipeLine()
 {
+    // IBL texture load
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapDiffuseHDR.dds", nullptr, &IBL_IrradianceMap);
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap);
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapBrdf.dds", nullptr, &IBL_BRDF_LUT);
+
     return true;
 }
 
@@ -243,8 +256,9 @@ void App::RenderGUI()
     ImGui::Text("[Light]");
     ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
     ImGui::ColorEdit3("Color", &light.color.x);
-    ImGui::SliderFloat("Intensity", &light.intensity, 0.0f, 10.0f);
+    ImGui::SliderFloat("Intensity", &light.directIntensity, 0.0f, 10.0f);
 
+    ImGui::Text("");
     ImGui::Text("[Material]");
     ImGui::SliderFloat("Metallic Factor", &metallicFactor, 0.0f, 1.0f);
     ImGui::SliderFloat("Roughness Factor", &roughnessFactor, 0.0f, 1.0f);
@@ -256,6 +270,11 @@ void App::RenderGUI()
     ImGui::Checkbox("Roughness Override", &useRoughnessOverride);
     ImGui::SliderFloat("Roughness", &roughnessOverride, 0.0f, 1.0f);
 
+    ImGui::Text("");
+    ImGui::Text("[IBL]");
+    ImGui::Checkbox("use IBL", &useIBL);
+
+    ImGui::Text("");
     ImGui::Text("[Models]");
     ImGui::InputFloat3("position", &character->position.x);
     ImGui::SliderAngle("Pitch", &character->rotation.x, 0.0f, 360.0f);

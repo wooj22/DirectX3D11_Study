@@ -124,8 +124,8 @@ void App::OnRender()
 
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;
-    D3D::lightingCBData.indirectLight = light.indirectIntensity;
-    D3D::lightingCBData.directLight = light.directIntensity;
+    D3D::lightingCBData.indirectIntensity = light.indirectIntensity;
+    D3D::lightingCBData.directIntensity = light.directIntensity;
     D3D::lightingCBData.ambientHighlight = ambientHighlight;
     D3D::lightingCBData.diffuseHighlight = diffuseHighlight;
     D3D::lightingCBData.specularHighlight = specularHighlight;
