@@ -21,7 +21,7 @@ bool App::OnInit()
     if (!D3D::Init(hWnd, screenWidth, screenHeight)) return false;
     if (!InitRenderPipeLine()) return false;
     if (!InitGUI()) return false;
-    skybox.InitRenderPipeLine();
+    skybox1.InitRenderPipeLine(L"../Resource/skybox_cubmap.dds");
 
     // model init
     warrior = new SkeletalModel();
@@ -114,7 +114,7 @@ void App::OnRender()
     D3D::deviceContext->VSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
 
     // skybox render 
-    skybox.Render(view, projection);
+    skybox1.Render(view, projection);
 
     // buffer data
     D3D::transformCBData.view = XMMatrixTranspose(view);
@@ -192,7 +192,7 @@ bool App::InitRenderPipeLine()
 
 void App::UninitRenderPipeLine()
 {
-    skybox.UninitRenderPipeLine();
+    skybox1.UninitRenderPipeLine();
 }
 
 bool App::InitGUI()

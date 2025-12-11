@@ -50,7 +50,7 @@ private:
     SkeletalModel* enemy = nullptr;
 
     // skybox
-    SkyBox skybox;
+    SkyBox skybox1;
 
     // light
     DirectionalLight light;

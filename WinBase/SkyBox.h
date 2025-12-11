@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 #include <directxtk/simplemath.h>
 #include "D3D.h"
+#include <string>
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
 using namespace DirectX;
@@ -31,7 +32,7 @@ class SkyBox
     UINT indexCount = 0;
 
 public:
-    void InitRenderPipeLine();
+    void InitRenderPipeLine(const std::wstring& filePath);
     void Render(Matrix& view, Matrix& projection);
     void UninitRenderPipeLine();
 };

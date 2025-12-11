@@ -23,7 +23,7 @@ bool App::OnInit()
     if (!InitRenderPipeLine()) return false;
     if (!InitGUI()) return false;
     debugger.Init();
-    skybox.InitRenderPipeLine();
+    skybox1.InitRenderPipeLine(L"../Resource/skybox_cubmap.dds");
 
     // model init
     SkeletalModel* warrior = new SkeletalModel();
@@ -129,7 +129,7 @@ void App::OnRender()
     D3D::deviceContext->PSSetConstantBuffers(5, 1, D3D::outlineBuffer.GetAddressOf());
 
     // skybox render 
-    skybox.Render(view, projection);
+    skybox1.Render(view, projection);
 
     // buffer data
     D3D::transformCBData.view = XMMatrixTranspose(view);
@@ -188,7 +188,7 @@ bool App::InitRenderPipeLine()
 
 void App::UninitRenderPipeLine()
 {
-    skybox.UninitRenderPipeLine();
+    skybox1.UninitRenderPipeLine();
 }
 
 bool App::InitGUI()

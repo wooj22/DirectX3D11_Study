@@ -29,7 +29,7 @@ private:
 	// Objects
 	Cube cube;
 	DirectionalLight light;
-	Skybox skybox;
+	Skybox skybox1;
 
 	// matrix
 	Matrix view;

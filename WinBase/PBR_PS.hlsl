@@ -1,12 +1,16 @@
 /*
     [ PBR Pixel Shader ]
-    - Cook-Torrance BRDF
+    - Direct BRDF(Cook-Torrance)
+    - Indirect IBL(BRDF)
     - Texture Map Support
         - Diffuse Map (Albedo Map)
         - Normal Map
         - Emissive Map
         - Metallic Map
         - Roughness Map
+        - IBL_IrradianceMap
+        - IBL_SpecularEnvMap
+        - IBL_BRDF_LUT
     - Shadow Mapping Support
 */
 
@@ -154,15 +158,15 @@ float4 main(PS_INPUT input) : SV_TARGET
     // --- [Direct Light]  ----------------------------------
     // Specular BRDF (Cook-Torrance)
     float3 F0 = lerp(float3(0.04f, 0.04f, 0.04f), base_color, metallic);
-    float D = D_NDFGGXTR(N, H, roughness);
-    float3 F = F_Schlick(H, V, F0);
-    float G = G_Smith(N, V, L, roughness);
+    float D = D_NDFGGXTR(N, H, roughness);      // 미세면 정렬정도
+    float3 F = F_Schlick(H, V, F0);             // 프레넬 반사율
+    float G = G_Smith(N, V, L, roughness);      // shadowing & masking
     
     float3 SpecularBRDF = (D * F * G) / (4.0f * saturate(dot(N, L)) * saturate(dot(N, V)));
 
     
     // Diffuse BRDF (Lambertian)
-    float3 kd = lerp(1.0 - F, 0.0, metallic);
+    float3 kd = lerp(1.0 - F, 0.0, metallic);   // 표면산란 계수
     float3 DiffuseBRDF = (base_color / PI) * kd;
     
     // Final DirectLight
@@ -174,18 +178,19 @@ float4 main(PS_INPUT input) : SV_TARGET
     if (useIBL)
     {
         // 1) IBL Diffuse Term
-        float3 Irradiance = IBL_IrradianceMap.Sample(samLinear, N).rgb;
+        // Irradiance - diffuse BRDF 적분값
+        float3 Irradiance = IBL_IrradianceMap.Sample(samLinear, N).rgb;     
         float DiffuseIBL = kd * base_color * Irradiance * PI;
         
         // 2) IBL Specular Term
         uint specularTextureLevels, width, height;
         IBL_SpecularEnvMap.GetDimensions(0, width, height, specularTextureLevels);
         
-        // Prefiltered
+        // Prefiltered - 환경 Radiance + D(미세면 분포) + roughness 관련 적분값
         float3 R = reflect(-V, N);
         float3 PrefilteredColor = IBL_SpecularEnvMap.SampleLevel(samLinear, R, roughness * specularTextureLevels).rgb;
 
-        // LUT
+        // LUT - F + G 적분값
         float2 BRDF_LUT = IBL_BRDF_LUT.Sample(samLinear, float2(saturate(dot(N, L)), roughness)).rg;
         
         // Specular IBL

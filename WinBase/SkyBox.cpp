@@ -4,7 +4,7 @@
 #include <Directxtk/DDSTextureLoader.h>
 using namespace DirectX;
 
-void SkyBox::InitRenderPipeLine()
+void SkyBox::InitRenderPipeLine(const std::wstring& filePath)
 {
     // Vertex Buffer, Index Buffer
     Skybox_Vertex vertices[] =
@@ -52,7 +52,7 @@ void SkyBox::InitRenderPipeLine()
     D3D::device->CreateBuffer(&ibDesc, &ibData, &indexBuffer);
 
     // CubeMap Texture Load
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/skybox_cubmap.dds", nullptr, &skyboxTRV);
+    CreateDDSTextureFromFile(D3D::device.Get(), filePath.c_str() , nullptr, &skyboxTRV);
 }
 
 void SkyBox::Render(Matrix& view, Matrix& projection)

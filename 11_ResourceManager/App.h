@@ -48,7 +48,7 @@ private:
     vector<SkeletalModel*> skeletals;
 
     // skybox
-    SkyBox skybox;
+    SkyBox skybox1;
 
     // light
     DirectionalLight light;

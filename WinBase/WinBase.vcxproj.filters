@@ -16,9 +16,6 @@
     <Filter Include="99. Module">
       <UniqueIdentifier>{f88a6b82-7cb9-46b5-9b30-31bca36e08ed}</UniqueIdentifier>
     </Filter>
-    <Filter Include="99. Module\SkyBox">
-      <UniqueIdentifier>{44229881-09b6-497c-b635-10920a56faaa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="07. Camera">
       <UniqueIdentifier>{11c18ae4-18bd-4566-a39a-41a45d6172d1}</UniqueIdentifier>
     </Filter>
@@ -72,6 +69,9 @@
     </Filter>
     <Filter Include="09. Resource Manager\MemoryDebugger">
       <UniqueIdentifier>{88cb7635-fe67-4418-a62f-dadfef4274b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. SkyBox">
+      <UniqueIdentifier>{44229881-09b6-497c-b635-10920a56faaa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -127,7 +127,7 @@
       <Filter>02. Model\Skeletal</Filter>
     </ClInclude>
     <ClInclude Include="SkyBox.h">
-      <Filter>99. Module\SkyBox</Filter>
+      <Filter>98. SkyBox</Filter>
     </ClInclude>
     <ClInclude Include="RigidModelAsset.hpp">
       <Filter>02. Model\MeshAsset</Filter>
@@ -198,7 +198,7 @@
       <Filter>02. Model\Skeletal</Filter>
     </ClCompile>
     <ClCompile Include="SkyBox.cpp">
-      <Filter>99. Module\SkyBox</Filter>
+      <Filter>98. SkyBox</Filter>
     </ClCompile>
     <ClCompile Include="AssetManager.cpp">
       <Filter>09. Resource Manager\AssetManager</Filter>

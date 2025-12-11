@@ -34,16 +34,20 @@ using namespace DirectX::SimpleMath;
 class App : public WinApp
 {
 private:
-    // texture
-    ID3D11ShaderResourceView* IBL_IrradianceMap = nullptr;
-    ID3D11ShaderResourceView* IBL_SpecularEnvMap = nullptr;
-    ID3D11ShaderResourceView* IBL_BRDF_LUT = nullptr;
+    // skybox
+    SkyBox skybox1;
+    SkyBox skybox2;
 
-    // matrix
-    Matrix view;
-    Matrix projection;
-    Matrix lightView;
-    Matrix lightProjection;
+    // IBL texture
+    ID3D11ShaderResourceView* IBL_IrradianceMap1 = nullptr;
+    ID3D11ShaderResourceView* IBL_IrradianceMap2 = nullptr;
+    ID3D11ShaderResourceView* IBL_SpecularEnvMap1 = nullptr;
+    ID3D11ShaderResourceView* IBL_SpecularEnvMap2 = nullptr;
+    ID3D11ShaderResourceView* IBL_BRDF_LUT1 = nullptr;
+    ID3D11ShaderResourceView* IBL_BRDF_LUT2 = nullptr;
+
+    // light
+    DirectionalLight light;
 
     // models
     StaticModel* floor = nullptr;
@@ -52,11 +56,11 @@ private:
     SkeletalModel* girl = nullptr;
     SkeletalModel* enemy = nullptr;
 
-    // skybox
-    SkyBox skybox;
-
-    // light
-    DirectionalLight light;
+    // matrix
+    Matrix view;
+    Matrix projection;
+    Matrix lightView;
+    Matrix lightProjection;
 
     // PBR debug
     float metallicFactor = 1.0f;

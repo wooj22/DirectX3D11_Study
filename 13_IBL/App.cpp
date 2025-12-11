@@ -15,6 +15,9 @@ using namespace DirectX::SimpleMath;
 
 #define USE_FLIPMODE 1
 
+static int currentSkybox = 0;
+const char* skyboxes[] = { "OutDoor", "InDoor" };
+
 // Main process
 bool App::OnInit()
 {
@@ -22,7 +25,8 @@ bool App::OnInit()
     if (!InitRenderPipeLine()) return false;
     if (!InitGUI()) return false;
     debugger.Init();
-    skybox.InitRenderPipeLine();
+    skybox1.InitRenderPipeLine(L"../Resource/Skybox/skybox_cubmap.dds");
+    skybox2.InitRenderPipeLine(L"../Resource/Skybox/indoorEnvHDR.dds");
 
     // model init
     floor = new StaticModel();
@@ -125,7 +129,16 @@ void App::OnRender()
     D3D::deviceContext->PSSetConstantBuffers(6, 1, D3D::debugBuffer.GetAddressOf());
 
     // Skybox render  --------------------------------
-    skybox.Render(view, projection);
+    switch (currentSkybox)
+    {
+    case 0:
+        skybox1.Render(view, projection);
+        break;
+    case 1:
+        skybox2.Render(view, projection);
+        break;
+    }
+   
 
     // buffer data -----------------------------------
     D3D::transformCBData.view = XMMatrixTranspose(view);
@@ -181,10 +194,20 @@ void App::OnRender()
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PBR_PS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap);
-    D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap);
-    D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
+    switch (currentSkybox)
+    {
+    case 0:
+        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap1);
+        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap1);
+        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT1);
+        break;
+    case 1:
+        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap2);
+        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap2);
+        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT2);
+        break;
+    }
     floor->Render();
     zelda->Render();
     character->Render();
@@ -210,16 +233,19 @@ void App::OnRender()
 bool App::InitRenderPipeLine()
 {
     // IBL texture load
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapDiffuseHDR.dds", nullptr, &IBL_IrradianceMap);
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap);
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapBrdf.dds", nullptr, &IBL_BRDF_LUT);
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapDiffuseHDR.dds", nullptr, &IBL_IrradianceMap1);
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap1);
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapBrdf.dds", nullptr, &IBL_BRDF_LUT1);
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorDiffuseHDR.dds", nullptr, &IBL_IrradianceMap2);
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap2);
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorBrdf.dds", nullptr, &IBL_BRDF_LUT2);
 
     return true;
 }
 
 void App::UninitRenderPipeLine()
 {
-    skybox.UninitRenderPipeLine();
+    skybox1.UninitRenderPipeLine();
 }
 
 bool App::InitGUI()
@@ -257,6 +283,10 @@ void App::RenderGUI()
     ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
     ImGui::ColorEdit3("Color", &light.color.x);
     ImGui::SliderFloat("Intensity", &light.directIntensity, 0.0f, 10.0f);
+
+    ImGui::Text("");
+    ImGui::Text("[Skybox]");
+    ImGui::Combo("Skybox Mode", &currentSkybox, skyboxes, IM_ARRAYSIZE(skyboxes));
 
     ImGui::Text("");
     ImGui::Text("[Material]");
