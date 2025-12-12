@@ -203,7 +203,7 @@ float4 main(PS_INPUT input) : SV_TARGET
         float3 PrefilteredColor = IBL_SpecularEnvMap.SampleLevel(samLinear, R, mip).rgb;
 
         // LUT - F + G ÀûºÐ°ª
-        float2 BRDF_LUT = IBL_BRDF_LUT.Sample(samLinear, float2(NdotV, roughness)).rg;
+        float2 BRDF_LUT = IBL_BRDF_LUT.Sample(samLinear, float2(NdotL, roughness)).rg;
         
         // Specular IBL
         float3 SpecularIBL = PrefilteredColor * (F0 * BRDF_LUT.x + BRDF_LUT.y);
