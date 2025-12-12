@@ -67,7 +67,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 	swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapDesc.OutputWindow = hWnd;
 	swapDesc.Windowed = true;
-	swapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;    // UNORM : PS에서 감마 인코딩 필요, UNORM_SRGB : PS 자동 감마 적용
 	swapDesc.BufferDesc.Width = screenWidth;
 	swapDesc.BufferDesc.Height = screenHeight;
 	swapDesc.BufferDesc.RefreshRate.Numerator = 60;

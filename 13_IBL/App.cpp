@@ -56,8 +56,8 @@ bool App::OnInit()
     // light init
     light.direction = { 0,-0.5,1 };
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
-    light.directIntensity = 3.0f;
-    light.indirectIntensity = 0.3f;
+    light.directIntensity = 1.0f;
+    light.indirectIntensity = 0.8f;
 
     // projection init 
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);

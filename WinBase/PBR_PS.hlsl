@@ -150,6 +150,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     float rf = max(roughnessFactor, 0.04);
     roughness *= rf;
     
+
+
     // --- [Vector]  ----------------------------------
     float3 L = normalize(-lightDirection.xyz);
     float3 V = normalize(cameraPos - input.worldPos);
@@ -158,8 +160,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     float NdotL = max(dot(N, L), 0.0);
     float NdotV = max(dot(N, V), 0.0);
     
-    
-    
+
     
     // --- [Direct Light]  ----------------------------------
     // Specular BRDF (Cook-Torrance)
@@ -192,7 +193,7 @@ float4 main(PS_INPUT input) : SV_TARGET
         float3 Irradiance = IBL_IrradianceMap.Sample(samLinear, N).rgb;     
         float3 DiffuseIBL = base_color * Irradiance * kd;
         
-        // 2) Specular Term -----------------------
+        // Specular Term -----------------------
         uint specularTextureLevels, width, height;
         IBL_SpecularEnvMap.GetDimensions(0, width, height, specularTextureLevels);
         float maxLevel = max(1.0, (float) (specularTextureLevels - 1));
