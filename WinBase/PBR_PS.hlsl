@@ -40,23 +40,24 @@ static const float EPSILON = 0.00001f;
 // D (Normal Distribution Function)
 float D_NDFGGXTR(float3 N, float3 H, float roughness)
 {
-    float NdotH = saturate(dot(N, H));
+    float NdotH = max(dot(N, H), 0.0);
     float alpha = roughness * roughness;
     float lower = (NdotH * NdotH) * (alpha - 1.0) + 1.0;
     
-    return alpha / max(EPSILON, PI * lower * lower);
+    return alpha / max(EPSILON, PI * (lower * lower));
 }
 
 // F (Fresnel reflection)
 float3 F_Schlick(float3 H, float3 V, float3 F0)
 {
-    return F0 + (1.0 - F0) * pow(1.0 - saturate(dot(H, V)), 5.0);
+    float HdotV = max(dot(H, V), 0.0);
+    return F0 + (1.0 - F0) * pow(1.0 - HdotV, 5.0);
 }
 
 // GSub (SchlickGGX)
 float G_SchlickGGX(float3 N, float3 V, float k)
 {
-    float NdotV = saturate(dot(N, V));
+    float NdotV = max(dot(N, V), 0.0);
     return NdotV / (NdotV * (1.0 - k) + k);
 }
 
@@ -154,6 +155,11 @@ float4 main(PS_INPUT input) : SV_TARGET
     float3 V = normalize(cameraPos - input.worldPos);
     float3 H = normalize(L + V);
     
+    float NdotL = max(dot(N, L), 0.0);
+    float NdotV = max(dot(N, V), 0.0);
+    
+    
+    
     
     // --- [Direct Light]  ----------------------------------
     // Specular BRDF (Cook-Torrance)
@@ -162,7 +168,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     float3 F = F_Schlick(H, V, F0);             // 프레넬 반사율
     float G = G_Smith(N, V, L, roughness);      // shadowing & masking
     
-    float3 SpecularBRDF = (D * F * G) / (4.0f * saturate(dot(N, L)) * saturate(dot(N, V)));
+    float denom = 4.0f * max(NdotL, 0.001) * max(NdotV, 0.001);
+    float3 SpecularBRDF = (D * F * G) / denom;
 
     
     // Diffuse BRDF (Lambertian)
@@ -170,38 +177,43 @@ float4 main(PS_INPUT input) : SV_TARGET
     float3 DiffuseBRDF = (base_color / PI) * kd;
     
     // Final DirectLight
-    float3 directBRDF = (SpecularBRDF + DiffuseBRDF) * lightColor * directIntensity * dot(N, L);
+    float3 DirectColor = (SpecularBRDF + DiffuseBRDF) * lightColor * directIntensity * NdotL;
 
     
+    
+    
+    
     // --- [Indirect Light]  ----------------------------------
-    float3 indirectIBL = { 0, 0, 0 };
+    float3 IndirectColor = { 0, 0, 0 };
     if (useIBL)
     {
-        // 1) IBL Diffuse Term
+        // Diffuse Term --------------------------
         // Irradiance - diffuse BRDF 적분값
         float3 Irradiance = IBL_IrradianceMap.Sample(samLinear, N).rgb;     
-        float DiffuseIBL = kd * base_color * Irradiance * PI;
+        float3 DiffuseIBL = base_color * Irradiance * kd;
         
-        // 2) IBL Specular Term
+        // 2) Specular Term -----------------------
         uint specularTextureLevels, width, height;
         IBL_SpecularEnvMap.GetDimensions(0, width, height, specularTextureLevels);
+        float maxLevel = max(1.0, (float) (specularTextureLevels - 1));
+        float mip = saturate(roughness) * maxLevel;
         
         // Prefiltered - 환경 Radiance + D(미세면 분포) + roughness 관련 적분값
         float3 R = reflect(-V, N);
-        float3 PrefilteredColor = IBL_SpecularEnvMap.SampleLevel(samLinear, R, roughness * specularTextureLevels).rgb;
+        float3 PrefilteredColor = IBL_SpecularEnvMap.SampleLevel(samLinear, R, mip).rgb;
 
         // LUT - F + G 적분값
-        float2 BRDF_LUT = IBL_BRDF_LUT.Sample(samLinear, float2(saturate(dot(N, L)), roughness)).rg;
+        float2 BRDF_LUT = IBL_BRDF_LUT.Sample(samLinear, float2(NdotV, roughness)).rg;
         
         // Specular IBL
         float3 SpecularIBL = PrefilteredColor * (F0 * BRDF_LUT.x + BRDF_LUT.y);
 
         // Final InDirectLight
-        indirectIBL = (DiffuseIBL + SpecularIBL) * indirectIntensity;
+        IndirectColor = (DiffuseIBL + SpecularIBL) * indirectIntensity;
     }
     
     
     // --- [Final Color]  ----------------------------------
-    float3 finalColor = (directBRDF + indirectIBL) * shadowFactor + emissive_color;
+    float3 finalColor = (DirectColor * shadowFactor) + IndirectColor + emissive_color;
     return float4(finalColor, alpha);
 }
