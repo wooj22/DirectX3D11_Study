@@ -110,7 +110,8 @@ public:
     void RenderGUI();
 
     // debug draw
-    void FrustumDebugDraw();
+    void FrustumDebugDraw(const Matrix& frustumView, const Matrix& frustumProj,
+        const Matrix& renderView, const Matrix& renderProj, FXMVECTOR color = Colors::Red);
 
     LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
 };

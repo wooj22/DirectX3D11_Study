@@ -115,7 +115,7 @@ void App::OnUpdate()
     Vector3 sceneCenter = camera.position + camera.GetForward() * 300;
     Vector3 lightPos = sceneCenter - light.direction * 200;
     lightView = XMMatrixLookAtLH(lightPos, sceneCenter, { 0.0f, 0.0f, -1.0f });
-    lightProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
+    //lightProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
     lightProjection = XMMatrixOrthographicLH(screenWidth, screenHeight, camera.Near, camera.Far);
 
     // Memory Cheak
@@ -130,7 +130,7 @@ void App::OnUpdate()
 
 void App::OnRender()
 {
-    // clear
+    // Clear
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->ClearRenderTargetView(D3D::renderTargetView.Get(), clearColor);
@@ -154,7 +154,7 @@ void App::OnRender()
     D3D::deviceContext->VSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(6, 1, D3D::debugBuffer.GetAddressOf());
 
-    // Skybox render  --------------------------------
+    // Skybox Render  --------------------------------
     switch (currentSkybox)
     {
     case 0:
@@ -166,7 +166,7 @@ void App::OnRender()
     }
    
 
-    // buffer data -----------------------------------
+    // Buffer Data Update -----------------------------------
     D3D::transformCBData.view = XMMatrixTranspose(view);
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::transformCBData.shadowView = XMMatrixTranspose(lightView);
@@ -198,14 +198,14 @@ void App::OnRender()
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-    // static, rigid model
+    // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Static_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(nullptr, NULL, 0);
     zelda->Render();
     character->Render();
 
-    // skeletal model
+    // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Skinned_VS.Get(), NULL, 0);
     girl->Render();
@@ -213,7 +213,7 @@ void App::OnRender()
 
 
     // 2. PBR Mesh Render Pass -------------------------------------
-    // static, rigid model
+    // Static, Rigid Model
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
@@ -239,7 +239,7 @@ void App::OnRender()
     zelda->Render();
     character->Render();
 
-    // skeletal model
+    // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
@@ -251,18 +251,19 @@ void App::OnRender()
     D3D::deviceContext->PSSetShaderResources(6, 1, nullSRV);
 
     // Debug Draw
-    FrustumDebugDraw();
+    FrustumDebugDraw(view, projection, view, projection, Colors::GreenYellow);
+    FrustumDebugDraw(lightView, lightProjection, view, projection, Colors::BlueViolet);
 
     // GUI
     RenderGUI();
 
-    // present
+    // Present
     D3D::swapChain->Present(1, 0);
 }
 
 bool App::InitRenderPipeLine()
 {
-    // IBL texture load
+    // IBL Textures Load
     CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapDiffuseHDR.dds", nullptr, &IBL_IrradianceMap1);
     CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap1);
     CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapBrdf.dds", nullptr, &IBL_BRDF_LUT1);
@@ -308,16 +309,13 @@ void App::RenderGUI()
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
+    // Inspector
     ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
     ImGui::Text("[Light]");
     ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
     ImGui::ColorEdit3("Color", &light.color.x);
     ImGui::SliderFloat("Direct Intensity", &light.directIntensity, 0.0f, 10.0f);
     ImGui::SliderFloat("Indirect Intensity", &light.indirectIntensity, 0.0f, 10.0f);
-
-    ImGui::Text("");
-    ImGui::Text("[Skybox]");
-    ImGui::Combo("Skybox Mode", &currentSkybox, skyboxes, IM_ARRAYSIZE(skyboxes));
 
     ImGui::Text("");
     ImGui::Text("[Material]");
@@ -332,25 +330,29 @@ void App::RenderGUI()
     ImGui::SliderFloat("Roughness", &roughnessOverride, 0.0f, 1.0f);
 
     ImGui::Text("");
-    ImGui::Text("[IBL]");
-    ImGui::Checkbox("use IBL", &useIBL);
-
-    ImGui::Text("");
-    ImGui::Text("[Models]");
+    ImGui::Text("[Transform]");
     ImGui::InputFloat3("position", &character->position.x);
     ImGui::SliderAngle("Pitch", &character->rotation.x, 0.0f, 360.0f);
     ImGui::SliderAngle("Yaw", &character->rotation.y, 0.0f, 360.0f);
     ImGui::SliderAngle("Roll", &character->rotation.z, 0.0f, 360.0f);
     ImGui::InputFloat3("scale", &character->scale.x);
-
     ImGui::End();
 
+    // IBL
+    ImGui::Begin("[IBL]");
+    ImGui::Checkbox("use IBL", &useIBL);
+
+    ImGui::Text("");
+    ImGui::Text("[Skybox]");
+    ImGui::Combo("Skybox Mode", &currentSkybox, skyboxes, IM_ARRAYSIZE(skyboxes));
+    ImGui::End();
+
+    // Memory
     ImGui::Begin("[Memory Debugger]");
     ImGui::Text("[T] Trim");
     ImGui::Text("%ls", memory_debugger.GetMemoryUsageWstring().c_str());
     ImGui::End();
-    ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -358,18 +360,19 @@ void App::RenderGUI()
 
 
 // Frustum Debug Draw
-void App::FrustumDebugDraw()
+void App::FrustumDebugDraw(const Matrix& frustumView, const Matrix& frustumProj,
+    const Matrix& renderView, const Matrix& renderProj, FXMVECTOR color)
 {
     // Frustum Create
     BoundingFrustum frustum{};
-    BoundingFrustum::CreateFromMatrix(frustum, projection); // view space 기준
-    Matrix invView = view.Invert();             
-    frustum.Transform(frustum, invView);        // view -> world
+    BoundingFrustum::CreateFromMatrix(frustum, frustumProj); // view space 기준
+    Matrix invFrustumView = frustumView.Invert();
+    frustum.Transform(frustum, invFrustumView);        // view -> world
 
-    // Effect Update
+    // Effect Update (render 기준은 항상 main camera)
     m_effect->SetWorld(Matrix::Identity);	
-    m_effect->SetView(view);			
-    m_effect->SetProjection(projection);
+    m_effect->SetView(renderView);
+    m_effect->SetProjection(renderProj);
     m_effect->Apply(D3D::deviceContext.Get());
 
     // Stage Setting
@@ -380,7 +383,7 @@ void App::FrustumDebugDraw()
 
     // Draw
     m_batch->Begin();
-    Draw(m_batch.get(), frustum, Colors::Blue);      
+    Draw(m_batch.get(), frustum, color);      
     m_batch->End();
 }
 
