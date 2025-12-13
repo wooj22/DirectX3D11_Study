@@ -68,6 +68,14 @@ private:
     Matrix lightView;
     Matrix lightProjection;
 
+    // shadow debug
+    float lookPointDist = 300.f;
+    float shadowLightDist = 200.f;
+    float shadowWidth = 1920.0f;
+    float shadowHeight = 1080.0f;
+    float shadowNear = 0.01f;
+    float shadowFar = 2000.0f;
+
     // PBR debug
     float metallicFactor = 1.0f;
     float roughnessFactor = 1.0f;

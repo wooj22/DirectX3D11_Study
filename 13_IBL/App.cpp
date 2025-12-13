@@ -57,7 +57,7 @@ bool App::OnInit()
 
     // view maxtrix
     camera.position = { 0, 80, -300 };
-    camera.Far = 1000.0f;
+    camera.Far = 2000.0f;
     camera.moveSpeed = 300.f;
     camera.GetViewMatrix(view);
 
@@ -105,6 +105,8 @@ void App::OnUninit()
 
 void App::OnUpdate()
 {
+    projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
+
     // model update(local, model matrix)
     character->Update();
     girl->Update();
@@ -112,11 +114,10 @@ void App::OnUpdate()
     camera.GetViewMatrix(view);
 
     // light update
-    Vector3 sceneCenter = camera.position + camera.GetForward() * 300;
-    Vector3 lightPos = sceneCenter - light.direction * 200;
-    lightView = XMMatrixLookAtLH(lightPos, sceneCenter, { 0.0f, 0.0f, -1.0f });
-    //lightProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
-    lightProjection = XMMatrixOrthographicLH(screenWidth, screenHeight, camera.Near, camera.Far);
+    Vector3 sceneCenter = camera.position + camera.GetForward() * lookPointDist;
+    Vector3 lightPos = sceneCenter - light.direction * shadowLightDist;
+    lightView = XMMatrixLookAtLH(lightPos, sceneCenter, Vector3::Up);
+    lightProjection = XMMatrixOrthographicLH(shadowWidth, shadowHeight, shadowNear, shadowFar);
 
     // Memory Cheak
     memory_debugger.CheakMemoryUsage();
@@ -251,8 +252,8 @@ void App::OnRender()
     D3D::deviceContext->PSSetShaderResources(6, 1, nullSRV);
 
     // Debug Draw
-    FrustumDebugDraw(view, projection, view, projection, Colors::GreenYellow);
-    FrustumDebugDraw(lightView, lightProjection, view, projection, Colors::BlueViolet);
+    FrustumDebugDraw(view, projection, view, projection, Colors::FloralWhite);
+    FrustumDebugDraw(lightView, lightProjection, view, projection, Colors::GreenYellow);
 
     // GUI
     RenderGUI();
@@ -336,6 +337,32 @@ void App::RenderGUI()
     ImGui::SliderAngle("Yaw", &character->rotation.y, 0.0f, 360.0f);
     ImGui::SliderAngle("Roll", &character->rotation.z, 0.0f, 360.0f);
     ImGui::InputFloat3("scale", &character->scale.x);
+    ImGui::End();
+
+    // Camera
+    ImGui::Begin("[Camera]");
+    ImGui::SliderFloat("Near", &camera.Near, 0.01f, 10000.0f);
+    ImGui::SliderFloat("Far", &camera.Far, 0.01f, 10000.0f);
+    float fovDeg = 60.0f;
+    ImGui::SliderFloat("FOV", &fovDeg, 20.0f, 90.0f);
+
+    camera.FovY = XMConvertToRadians(fovDeg);
+    camera.FovY = std::clamp(camera.FovY, 0.3f, 1.7f);
+    ImGui::InputFloat("Move Speec", &camera.moveSpeed, 0.0f, 0.0f, "%.3f");
+    ImGui::End();
+
+    // Shadow
+    ImGui::Begin("[Shadow]");
+    ImGui::Text("[Shadow Frustum]");
+    ImGui::SliderFloat("Near", &shadowNear, 0.01f, 10000.0f);
+    ImGui::SliderFloat("Far", &shadowFar, 0.01f, 10000.0f);
+    ImGui::InputFloat("Width", &shadowWidth);
+    ImGui::InputFloat("Height", &shadowHeight);
+
+    ImGui::Text("");
+    ImGui::Text("[Shadow Light Pos]");
+    ImGui::SliderFloat("lookPointDist", &lookPointDist, 1.f, 5000.0f);
+    ImGui::SliderFloat("shadowLightDist", &shadowLightDist, 1.f, 5000.0f);
     ImGui::End();
 
     // IBL
