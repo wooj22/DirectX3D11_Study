@@ -21,7 +21,7 @@ bool App::OnInit()
     if (!D3D::Init(hWnd, screenWidth, screenHeight)) return false;
     if (!InitRenderPipeLine()) return false;
     if (!InitGUI()) return false;
-    debugger.Init();
+    memory_debugger.Init();
     skybox1.InitRenderPipeLine(L"../Resource/skybox_cubmap.dds");
 
     // model init
@@ -57,7 +57,7 @@ bool App::OnInit()
     // projection init 
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 
-    debugger.CheakMemoryUsage();
+    memory_debugger.CheakMemoryUsage();
     return true;
 }
 
@@ -85,12 +85,12 @@ void App::OnUpdate()
     lightProjection = XMMatrixOrthographicLH(screenWidth, screenHeight, camera.Near, camera.Far);
 
     // Memory Cheak
-    debugger.CheakMemoryUsage();
+    memory_debugger.CheakMemoryUsage();
 
     // Trim
     if (Input::GetKeyDown('T'))
     {
-        debugger.Trim();
+        memory_debugger.Trim();
     }
 }
 
@@ -267,7 +267,7 @@ void App::RenderGUI()
 
     ImGui::Begin("[Memory Debugger]");
     ImGui::Text("[T] Trim");
-    ImGui::Text("%ls", debugger.GetMemoryUsageWstring().c_str());
+    ImGui::Text("%ls", memory_debugger.GetMemoryUsageWstring().c_str());
     ImGui::End();
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

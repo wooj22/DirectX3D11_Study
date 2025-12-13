@@ -69,7 +69,7 @@ private:
     float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
 
     // memory debugger
-    MemoryDebugger debugger;
+    MemoryDebugger memory_debugger;
 
 public:
     // main process

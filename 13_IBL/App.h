@@ -9,6 +9,10 @@
 #include "../WinBase/DirectionalLight.hpp"
 #include "../WinBase/SkyBox.h"
 #include "../WinBase/MemoryDebugger.h"
+#include "../WinBase/DebugDraw.h"
+
+#include <iostream>
+using namespace std;
 
 #include <d3d11.h>
 #include <dxgidebug.h>
@@ -19,6 +23,8 @@
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
+#include <directxtk/CommonStates.h>
+#include <directxtk/Effects.h>
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -78,8 +84,14 @@ private:
     // clear color
     float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
 
+    // draw debug
+    unique_ptr<CommonStates> m_states;
+    unique_ptr<PrimitiveBatch<VertexPositionColor>> m_batch;
+    unique_ptr<BasicEffect> m_effect;
+    ComPtr<ID3D11InputLayout> m_layout = nullptr;
+
     // memory debugger
-    MemoryDebugger debugger;
+    MemoryDebugger memory_debugger;
 
 public:
     // main process
@@ -96,6 +108,9 @@ public:
     bool InitGUI();
     void UninitGUI();
     void RenderGUI();
+
+    // debug draw
+    void FrustumDebugDraw();
 
     LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
 };

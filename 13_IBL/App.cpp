@@ -5,7 +5,7 @@
 #include <Directxtk/DDSTextureLoader.h>
 #include "../WinBase/Camera.h"
 #include "../WinBase/AssetManager.h"
-#include "../WinBase/DebugDraw.h"
+
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -25,9 +25,6 @@ bool App::OnInit()
     if (!D3D::Init(hWnd, screenWidth, screenHeight)) return false;
     if (!InitRenderPipeLine()) return false;
     if (!InitGUI()) return false;
-
-    // debugger
-    debugger.Init();
 
     // skybox
     skybox1.InitRenderPipeLine(L"../Resource/Skybox/skybox_cubmap.dds");
@@ -70,6 +67,31 @@ bool App::OnInit()
     // use IBL
     D3D::debugCBData.useIBL = 1;
 
+    // memory debugger
+    memory_debugger.Init();
+
+    // debug draw set up
+
+    m_states = std::make_unique<CommonStates>(D3D::device.Get());
+    m_batch = std::make_unique<PrimitiveBatch<VertexPositionColor>>(D3D::deviceContext.Get());
+    m_effect = std::make_unique<BasicEffect>((D3D::device.Get()));
+    m_effect->SetVertexColorEnabled(true);
+    m_effect->SetView(view);
+    m_effect->SetProjection(projection);
+
+    {
+        void const* shaderByteCode;
+        size_t byteCodeLength;
+
+        m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+
+        HR_T(D3D::device.Get()->CreateInputLayout(
+            VertexPositionColor::InputElements, VertexPositionColor::InputElementCount,
+            shaderByteCode, byteCodeLength,
+            m_layout.ReleaseAndGetAddressOf())
+        );
+    }
+
     return true;
 }
 
@@ -97,12 +119,12 @@ void App::OnUpdate()
     lightProjection = XMMatrixOrthographicLH(screenWidth, screenHeight, camera.Near, camera.Far);
 
     // Memory Cheak
-    debugger.CheakMemoryUsage();
+    memory_debugger.CheakMemoryUsage();
 
     // Trim
     if (Input::GetKeyDown('T'))
     {
-        debugger.Trim();
+        memory_debugger.Trim();
     }
 }
 
@@ -228,6 +250,9 @@ void App::OnRender()
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
     D3D::deviceContext->PSSetShaderResources(6, 1, nullSRV);
 
+    // Debug Draw
+    FrustumDebugDraw();
+
     // GUI
     RenderGUI();
 
@@ -322,7 +347,7 @@ void App::RenderGUI()
 
     ImGui::Begin("[Memory Debugger]");
     ImGui::Text("[T] Trim");
-    ImGui::Text("%ls", debugger.GetMemoryUsageWstring().c_str());
+    ImGui::Text("%ls", memory_debugger.GetMemoryUsageWstring().c_str());
     ImGui::End();
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -330,6 +355,35 @@ void App::RenderGUI()
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
+
+
+// Frustum Debug Draw
+void App::FrustumDebugDraw()
+{
+    // Frustum Create
+    BoundingFrustum frustum{};
+    BoundingFrustum::CreateFromMatrix(frustum, projection); // view space ±âÁØ
+    Matrix invView = view.Invert();             
+    frustum.Transform(frustum, invView);        // view -> world
+
+    // Effect Update
+    m_effect->SetWorld(Matrix::Identity);	
+    m_effect->SetView(view);			
+    m_effect->SetProjection(projection);
+    m_effect->Apply(D3D::deviceContext.Get());
+
+    // Stage Setting
+    D3D::deviceContext.Get()->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+    D3D::deviceContext.Get()->OMSetDepthStencilState(m_states->DepthNone(), 0);
+    D3D::deviceContext.Get()->RSSetState(m_states->CullNone());
+    D3D::deviceContext.Get()->IASetInputLayout(m_layout.Get());
+
+    // Draw
+    m_batch->Begin();
+    Draw(m_batch.get(), frustum, Colors::Blue);      
+    m_batch->End();
+}
+
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
