@@ -113,6 +113,9 @@ WinApp::~WinApp()
 
 bool WinApp::Init()
 {
+    // mouse auto salceing x
+    SetProcessDPIAware();
+
 	// exception handler set
 	SetUnhandledExceptionFilter(CustomExceptionHandler);
 
