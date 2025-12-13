@@ -5,6 +5,7 @@
 #include <Directxtk/DDSTextureLoader.h>
 #include "../WinBase/Camera.h"
 #include "../WinBase/AssetManager.h"
+#include "../WinBase/DebugDraw.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -24,11 +25,15 @@ bool App::OnInit()
     if (!D3D::Init(hWnd, screenWidth, screenHeight)) return false;
     if (!InitRenderPipeLine()) return false;
     if (!InitGUI()) return false;
+
+    // debugger
     debugger.Init();
+
+    // skybox
     skybox1.InitRenderPipeLine(L"../Resource/Skybox/skybox_cubmap.dds");
     skybox2.InitRenderPipeLine(L"../Resource/Skybox/indoorEnvHDR.dds");
 
-    // model init
+    // model
     floor = new StaticModel();
     zelda = new StaticModel();
     character = new RigidModel();
@@ -47,26 +52,24 @@ bool App::OnInit()
     girl->SetPosition({ 100,0,70 });
     enemy->SetPosition({ 250,0,20 });
 
-    // view init
-    camera.position = { 0, 80, -300 };
-    camera.Far = 1000.0f;
-    camera.moveSpeed = 300.f;
-    camera.GetViewMatrix(view);
-
-    // light init
+    // light
     light.direction = { 0,-0.5,1 };
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
     light.directIntensity = 1.0f;
     light.indirectIntensity = 0.8f;
 
-    // projection init 
+    // view maxtrix
+    camera.position = { 0, 80, -300 };
+    camera.Far = 1000.0f;
+    camera.moveSpeed = 300.f;
+    camera.GetViewMatrix(view);
+
+    // projection matrix 
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 
     // use IBL
     D3D::debugCBData.useIBL = 1;
 
-    // debugger init
-    debugger.CheakMemoryUsage();
     return true;
 }
 

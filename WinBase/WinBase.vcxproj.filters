@@ -19,24 +19,6 @@
     <Filter Include="07. Camera">
       <UniqueIdentifier>{11c18ae4-18bd-4566-a39a-41a45d6172d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="08. Shaders">
-      <UniqueIdentifier>{b3001ec8-abda-4c8c-81fd-3f888cf00b87}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="08. Shaders\VertexShader">
-      <UniqueIdentifier>{837d2599-fb93-4e3b-b6e1-1c5e363dea21}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="08. Shaders\PixelShader">
-      <UniqueIdentifier>{fcced5c6-e224-4bfc-8bce-318e9af81af6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="09. Resource Manager">
-      <UniqueIdentifier>{831f3da5-ebe6-40a2-b7b0-f93626ce3d47}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="09. Resource Manager\AssetManager">
-      <UniqueIdentifier>{7a6bd753-f479-45fb-8c86-a974586fc682}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="09. Resource Manager\ModelLoader">
-      <UniqueIdentifier>{693aa5dc-b422-402d-9123-9c682806d4dc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. Model">
       <UniqueIdentifier>{f1cb7515-c4aa-4ac9-8b1a-f494df7da15a}</UniqueIdentifier>
     </Filter>
@@ -67,11 +49,35 @@
     <Filter Include="01. D3D">
       <UniqueIdentifier>{7d2e5fa0-36e9-4bca-8f16-df6c0d89acee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="09. Resource Manager\MemoryDebugger">
+    <Filter Include="98. Shaders">
+      <UniqueIdentifier>{b3001ec8-abda-4c8c-81fd-3f888cf00b87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Shaders\VertexShader">
+      <UniqueIdentifier>{837d2599-fb93-4e3b-b6e1-1c5e363dea21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Shaders\PixelShader">
+      <UniqueIdentifier>{fcced5c6-e224-4bfc-8bce-318e9af81af6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. SkyBox">
+      <UniqueIdentifier>{44229881-09b6-497c-b635-10920a56faaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="09. Resource Manager">
+      <UniqueIdentifier>{831f3da5-ebe6-40a2-b7b0-f93626ce3d47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="09. Resource Manager\AssetManager">
+      <UniqueIdentifier>{7a6bd753-f479-45fb-8c86-a974586fc682}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="09. Resource Manager\ModelLoader">
+      <UniqueIdentifier>{693aa5dc-b422-402d-9123-9c682806d4dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="10. Debugger">
+      <UniqueIdentifier>{a8c86706-2c17-455b-8b79-1ff57f3961a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="10. Debugger\MemoryDebugger">
       <UniqueIdentifier>{88cb7635-fe67-4418-a62f-dadfef4274b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="98. SkyBox">
-      <UniqueIdentifier>{44229881-09b6-497c-b635-10920a56faaa}</UniqueIdentifier>
+    <Filter Include="10. Debugger\DebugDraw">
+      <UniqueIdentifier>{c65398b7-7f36-4c83-a57b-5a1fc3ca0578}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -127,7 +133,7 @@
       <Filter>02. Model\Skeletal</Filter>
     </ClInclude>
     <ClInclude Include="SkyBox.h">
-      <Filter>98. SkyBox</Filter>
+      <Filter>08. SkyBox</Filter>
     </ClInclude>
     <ClInclude Include="RigidModelAsset.hpp">
       <Filter>02. Model\MeshAsset</Filter>
@@ -148,7 +154,10 @@
       <Filter>09. Resource Manager\ModelLoader</Filter>
     </ClInclude>
     <ClInclude Include="MemoryDebugger.h">
-      <Filter>09. Resource Manager\MemoryDebugger</Filter>
+      <Filter>10. Debugger\MemoryDebugger</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugDraw.h">
+      <Filter>10. Debugger\DebugDraw</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -198,7 +207,7 @@
       <Filter>02. Model\Skeletal</Filter>
     </ClCompile>
     <ClCompile Include="SkyBox.cpp">
-      <Filter>98. SkyBox</Filter>
+      <Filter>08. SkyBox</Filter>
     </ClCompile>
     <ClCompile Include="AssetManager.cpp">
       <Filter>09. Resource Manager\AssetManager</Filter>
@@ -207,47 +216,50 @@
       <Filter>09. Resource Manager\ModelLoader</Filter>
     </ClCompile>
     <ClCompile Include="MemoryDebugger.cpp">
-      <Filter>09. Resource Manager\MemoryDebugger</Filter>
+      <Filter>10. Debugger\MemoryDebugger</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugDraw.cpp">
+      <Filter>10. Debugger\DebugDraw</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Skybox_PS.hlsl">
-      <Filter>08. Shaders\PixelShader</Filter>
+      <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="Skybox_VS.hlsl">
-      <Filter>08. Shaders\VertexShader</Filter>
+      <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="BlinnPhongToon_PS.hlsl">
-      <Filter>08. Shaders\PixelShader</Filter>
+      <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="BaseLit_Skinned_VS.hlsl">
-      <Filter>08. Shaders\VertexShader</Filter>
+      <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="BaseLit_Static_VS.hlsl">
-      <Filter>08. Shaders\VertexShader</Filter>
+      <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="OutLine_PS.hlsl">
-      <Filter>08. Shaders\PixelShader</Filter>
+      <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="Skinned_OutLine_VS.hlsl">
-      <Filter>08. Shaders\VertexShader</Filter>
+      <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="ShadowDepth_Skinned_VS.hlsl">
-      <Filter>08. Shaders\VertexShader</Filter>
+      <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="BlinnPhong_PS.hlsl">
-      <Filter>08. Shaders\PixelShader</Filter>
+      <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="ShadowDepth_Static_VS.hlsl">
-      <Filter>08. Shaders\VertexShader</Filter>
+      <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="PBR_PS.hlsl">
-      <Filter>08. Shaders\PixelShader</Filter>
+      <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shared.fxh">
-      <Filter>08. Shaders</Filter>
+      <Filter>98. Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

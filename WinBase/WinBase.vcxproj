@@ -132,6 +132,7 @@
     <ClInclude Include="AnimationClip.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="D3D.h" />
+    <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="DirectionalLight.hpp" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Input.h" />
@@ -159,6 +160,7 @@
     <ClCompile Include="AnimationClip.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="D3D.cpp" />
+    <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Material.cpp" />
