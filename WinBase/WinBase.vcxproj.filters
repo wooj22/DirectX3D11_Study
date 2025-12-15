@@ -144,9 +144,6 @@
     <ClInclude Include="StaticModelAsset.hpp">
       <Filter>02. Model\MeshAsset</Filter>
     </ClInclude>
-    <ClInclude Include="Structures.hpp">
-      <Filter>99. Module</Filter>
-    </ClInclude>
     <ClInclude Include="AssetManager.h">
       <Filter>09. Resource Manager\AssetManager</Filter>
     </ClInclude>
@@ -158,6 +155,9 @@
     </ClInclude>
     <ClInclude Include="DebugDraw.h">
       <Filter>10. Debugger\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures.hpp">
+      <Filter>02. Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -254,6 +254,12 @@
       <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="PBR_PS.hlsl">
+      <Filter>98. Shaders\PixelShader</Filter>
+    </FxCompile>
+    <FxCompile Include="Fullscreen_VS.hlsl">
+      <Filter>98. Shaders\VertexShader</Filter>
+    </FxCompile>
+    <FxCompile Include="PostProcess_PS.hlsl">
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
   </ItemGroup>

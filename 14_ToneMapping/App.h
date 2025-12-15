@@ -35,6 +35,12 @@ using namespace DirectX::SimpleMath;
 /*
     HDR 백버퍼를 사용하여 1.0 이상의 밝기값을 계산하고, 
     Exposure와 ToneMapping을 통해 HDR의 밝은 부분(1.0이 넘는 부분)의 디테일을 살려 출력합니다.
+
+    - 계산 -> HDR 백버퍼를 사용하여 1이상의 밝기값을 계산 (DXGI_FORMAT_R16G16B16A16_FLOAT)
+    - 출력 -> LDR 백버퍼에 HDR 텍스처를 샘플링하여 0~1로 압출하여 출력 (DXGI_FORMAT_R8G8B8A8_UNORM)
+
+    - 노출(Exposure) : 밝기값 조정
+    - 톤매핑(ToneMapping) : HDR의 넓은 밝기 범위(1~1000 같은 값)를 LDR 디스플레이가 보여줄 수 있는 0~1 범위로 변환
 */
 
 class App : public WinApp
@@ -110,6 +116,9 @@ public:
     virtual void OnUninit() override;
     virtual void OnUpdate() override;
     virtual void OnRender() override;
+
+    void HDRRender();
+    void PostProcessing();
 
     // rendering pipeline
     bool InitRenderPipeLine();

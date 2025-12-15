@@ -131,10 +131,28 @@ void App::OnUpdate()
 
 void App::OnRender()
 {
+    // Render
+    HDRRender();          // Gaometry + Lighting + Shadow
+    PostProcessing();     // ToneMapping + Exposure  (TODO :: Bloom, ColorGrading, Vignette, Film Grain)
+
+    // Debug Draw
+    FrustumDebugDraw(view, projection, view, projection, Colors::FloralWhite);
+    FrustumDebugDraw(lightView, lightProjection, view, projection, Colors::GreenYellow);
+
+    // GUI
+    RenderGUI();
+
+    // Present
+    D3D::swapChain->Present(1, 0);
+}
+
+// [ Gaometry + Lighting + Shadow Pass ]
+void App::HDRRender()
+{
     // Clear
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
-    D3D::deviceContext->ClearRenderTargetView(D3D::renderTargetView.Get(), clearColor);
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::hdrRTV.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->ClearRenderTargetView(D3D::hdrRTV.Get(), clearColor);
 
     // death buffer clear
     D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -216,7 +234,7 @@ void App::OnRender()
     // 2. PBR Mesh Render Pass -------------------------------------
     // Static, Rigid Model
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::hdrRTV.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     //D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
@@ -247,19 +265,42 @@ void App::OnRender()
     girl->Render();
     enemy->Render();
 
-    // 다음 shadowpass에서 SRV를 DSV로 다시 쓰기 위해 연결 해제
+    // SRV hazard 방지
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
     D3D::deviceContext->PSSetShaderResources(6, 1, nullSRV);
+}
 
-    // Debug Draw
-    FrustumDebugDraw(view, projection, view, projection, Colors::FloralWhite);
-    FrustumDebugDraw(lightView, lightProjection, view, projection, Colors::GreenYellow);
+// [ PostProcessing Pass ]
+// ToneMapping + Exposure  (TODO :: Bloom, ColorGrading, Vignette, Film Grain)
+// Tone Mapping 패스는 화면을 덮는 FullScreen 사각형을 그리면서,
+// HDR SRV를 샘플링해 색을 계산하고, 그 결과를 BackBuffer에 기록하는 단계
+void App::PostProcessing()
+{
+    // view port
+    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
 
-    // GUI
-    RenderGUI();
+    // SRV hazard 방지
+    ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+    D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
 
-    // Present
-    D3D::swapChain->Present(1, 0);
+    // OM 
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), nullptr);
+    D3D::deviceContext->ClearRenderTargetView(D3D::renderTargetView.Get(), clearColor);
+
+    // IA
+    D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    D3D::deviceContext->IASetInputLayout(nullptr);
+
+    // Shaders
+    D3D::deviceContext->VSSetShader(D3D::FullScreen_VS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PostProcess_PS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShaderResources(12, 1, D3D::hdrSRV.GetAddressOf());
+
+    // Render
+    D3D::deviceContext.Get()->Draw(3, 0);
+
+    // SRV hazard 방지
+    D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
 }
 
 bool App::InitRenderPipeLine()
@@ -385,7 +426,6 @@ void App::RenderGUI()
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
-
 // Frustum Debug Draw
 void App::FrustumDebugDraw(const Matrix& frustumView, const Matrix& frustumProj,
     const Matrix& renderView, const Matrix& renderProj, FXMVECTOR color)
@@ -413,7 +453,6 @@ void App::FrustumDebugDraw(const Matrix& frustumView, const Matrix& frustumProj,
     Draw(m_batch.get(), frustum, color);
     m_batch->End();
 }
-
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

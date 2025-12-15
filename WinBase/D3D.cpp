@@ -37,16 +37,19 @@ ComPtr<ID3D11VertexShader>        D3D::Skybox_VS = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::Skinned_OutLine_VS = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::ShadowDepth_Skinned_VS = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::ShadowDepth_Static_VS = nullptr;
+ComPtr<ID3D11VertexShader>        D3D::FullScreen_VS = nullptr;
+
 ComPtr<ID3D11PixelShader>         D3D::BlinnPhong_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::PBR_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::BlinnPhongToon_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::Skybox_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::OutLine_PS = nullptr;
-                                  
+ComPtr<ID3D11PixelShader>         D3D::PostProcess_PS = nullptr;
+                     
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_Vertex = nullptr;
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_BoneWeightVertex = nullptr;
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_Skybox = nullptr;
-                                  
+
 ComPtr<ID3D11Buffer>              D3D::transformBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::lightingBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::materialBuffer = nullptr;
@@ -382,6 +385,16 @@ bool D3D::CreateShader()
         SAFE_RELEASE(vertexShaderBuffer3);
     }
 
+    //---------------------------
+    // Full Screen VS
+    {
+        ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
+        HR_T(CompileShaderFromFile(L"../WinBase/Fullscreen_VS.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
+            vertexShaderBuffer->GetBufferSize(), NULL, &FullScreen_VS));
+        SAFE_RELEASE(vertexShaderBuffer);
+    }
+  
 
     //---------------------------
     // BlinnPhong PS
@@ -390,16 +403,18 @@ bool D3D::CreateShader()
         HR_T(CompileShaderFromFile(L"../WinBase/BlinnPhong_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
             pixelShaderBuffer->GetBufferSize(), NULL, &BlinnPhong_PS));
+        SAFE_RELEASE(pixelShaderBuffer);
     }
 
 
     //---------------------------
-    // PBR PS
+    // PBR (+IBL) PS
     {
         ID3D10Blob* pixelShaderBuffer = nullptr;
         HR_T(CompileShaderFromFile(L"../WinBase/PBR_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
             pixelShaderBuffer->GetBufferSize(), NULL, &PBR_PS));
+        SAFE_RELEASE(pixelShaderBuffer);
     }
 
 
@@ -421,6 +436,16 @@ bool D3D::CreateShader()
         HR_T(CompileShaderFromFile(L"../WinBase/OutLine_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
             pixelShaderBuffer->GetBufferSize(), NULL, &OutLine_PS));
+        SAFE_RELEASE(pixelShaderBuffer);
+    }
+
+    //---------------------------
+    // PostProcess PS
+    {
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/PostProcess_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &PostProcess_PS));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 

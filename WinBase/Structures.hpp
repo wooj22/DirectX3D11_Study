@@ -7,6 +7,13 @@ using namespace DirectX::SimpleMath;
 ////////////    [ Vertex ]     /////////////
 ////////////////////////////////////////////
 
+// 2D FullscreenVertex
+//struct FullscreenVertex
+//{
+//    Vector2 position;
+//    Vector2 uv;
+//};
+
 // Default Model
 struct Vertex
 {

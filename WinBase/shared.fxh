@@ -24,7 +24,7 @@
 // Texture2D IBL_IrradianceMap : register(t9);
 // Texture2D IBL_SpecularEnvMap : register(t10);
 // Texture2D IBL_BRDF_LUT : register(t11);
-
+// Texture2D sceneHDR : register(t12);
 
 // [ SamplerState ]
 // SamplerState samLinear : register(s0)
@@ -105,6 +105,8 @@ cbuffer DebugCB : register(b6)
     float padding3;
 }
 
+
+
 // ----------------------
 //  Vertex Input Layout
 // ----------------------
@@ -156,4 +158,10 @@ struct PS_Skybox_INPUT
 {
     float4 position : SV_POSITION;
     float3 texCoord : TEXCOORD0; // CubeMap »ùÇÃ¿ë ¹æÇâ º¤ÅÍ
+};
+
+struct PS_FullScreen_Input
+{
+    float4 position : SV_POSITION;
+    float2 uv : TEXCOORD;
 };

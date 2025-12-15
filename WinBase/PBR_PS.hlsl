@@ -215,6 +215,6 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     
     // --- [Final Color]  ----------------------------------
-    float3 finalColor = (DirectColor * shadowFactor) + IndirectColor + emissive_color;
+    float3 finalColor = (DirectColor) + IndirectColor + emissive_color;
     return float4(finalColor, alpha);
 }
