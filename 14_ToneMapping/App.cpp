@@ -165,7 +165,7 @@ void App::OnRender()
         skybox2.Render(view, projection);
         break;
     }
-   
+
 
     // Buffer Data Update -----------------------------------
     D3D::transformCBData.view = XMMatrixTranspose(view);
@@ -343,7 +343,7 @@ void App::RenderGUI()
     ImGui::Begin("[Camera]");
     ImGui::SliderFloat("Near", &camera.Near, 0.01f, 10000.0f);
     ImGui::SliderFloat("Far", &camera.Far, 0.01f, 10000.0f);
-    
+
     ImGui::SliderFloat("FOV", &fovDeg, 20.0f, 90.0f);
 
     camera.FovY = XMConvertToRadians(fovDeg);
@@ -397,7 +397,7 @@ void App::FrustumDebugDraw(const Matrix& frustumView, const Matrix& frustumProj,
     frustum.Transform(frustum, invFrustumView);        // view -> world
 
     // Effect Update (render 기준은 항상 main camera)
-    m_effect->SetWorld(Matrix::Identity);	
+    m_effect->SetWorld(Matrix::Identity);
     m_effect->SetView(renderView);
     m_effect->SetProjection(renderProj);
     m_effect->Apply(D3D::deviceContext.Get());
@@ -410,7 +410,7 @@ void App::FrustumDebugDraw(const Matrix& frustumView, const Matrix& frustumProj,
 
     // Draw
     m_batch->Begin();
-    Draw(m_batch.get(), frustum, color);      
+    Draw(m_batch.get(), frustum, color);
     m_batch->End();
 }
 

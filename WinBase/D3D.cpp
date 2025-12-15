@@ -17,14 +17,19 @@ ComPtr<ID3D11DepthStencilView>    D3D::depthStencilView = nullptr;
 D3D11_VIEWPORT D3D::viewport_screen = {};
 D3D11_VIEWPORT D3D::viewport_shadowMap = {};
 
+ComPtr<ID3D11Texture2D>           D3D::hdrTexture = nullptr;
+ComPtr<ID3D11RenderTargetView>    D3D::hdrRTV = nullptr;   
+ComPtr<ID3D11ShaderResourceView>  D3D::hdrSRV = nullptr;   
+
+ComPtr<ID3D11Texture2D>           D3D::shadowMap = nullptr;
 ComPtr<ID3D11DepthStencilView>    D3D::shadowDSV = nullptr;
 ComPtr<ID3D11ShaderResourceView>  D3D::shadowSRV = nullptr;
 ComPtr<ID3D11SamplerState>        D3D::shadowSamplerState = nullptr;
 
-ComPtr<ID3D11DepthStencilState>   D3D::depthStencilState = nullptr;
-ComPtr<ID3D11RasterizerState>     D3D::rasterizerState = nullptr;
-ComPtr<ID3D11SamplerState>        D3D::samplerState = nullptr;
-ComPtr<ID3D11BlendState>          D3D::blendState = nullptr;
+ComPtr<ID3D11DepthStencilState>   D3D::wirteoffDSS = nullptr;
+ComPtr<ID3D11RasterizerState>     D3D::cullfrontRS = nullptr;
+ComPtr<ID3D11SamplerState>        D3D::linearSamplerState = nullptr;
+ComPtr<ID3D11BlendState>          D3D::alphaBlendState = nullptr;
                                   
 ComPtr<ID3D11VertexShader>        D3D::BaseLit_Static_VS = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::BaseLit_Skinned_VS = nullptr;
@@ -138,6 +143,42 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 	descDSV.Texture2D.MipSlice = 0;
 	HR_T(device->CreateDepthStencilView(pTextureDepthStencil.Get(), &descDSV, depthStencilView.GetAddressOf()));
 
+
+    // create HDR RTV, SRV
+    {
+        // texture
+        D3D11_TEXTURE2D_DESC texDesc = {};
+        texDesc.Width = screenWidth;
+        texDesc.Height = screenHeight;
+        texDesc.MipLevels = 1;
+        texDesc.ArraySize = 1;
+        texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;       // HDR 포멧
+        texDesc.SampleDesc.Count = 1;
+        texDesc.Usage = D3D11_USAGE_DEFAULT;
+        texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+        HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, hdrTexture.GetAddressOf());
+        if (FAILED(hr)) { OutputDebugStringA("FAILED Create HDR Texture"); }
+
+        // RTV
+        D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+        rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;       // HDR 포멧
+        rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        rtvDesc.Texture2D.MipSlice = 0;
+        hr = device->CreateRenderTargetView(hdrTexture.Get(), &rtvDesc, hdrRTV.GetAddressOf());
+        if (FAILED(hr)) { OutputDebugStringA("FAILED Create HDR RTV"); }
+
+        // SRV
+        D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+        srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;       // HDR 포멧
+        srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        srvDesc.Texture2D.MipLevels = 1;
+        srvDesc.Texture2D.MostDetailedMip = 0;
+        hr = device->CreateShaderResourceView(hdrTexture.Get(), &srvDesc, hdrSRV.GetAddressOf());
+        if(FAILED(hr)) { OutputDebugStringA("FAILED Create HDR SRV"); }
+    }
+
+
     // create shadowDSV, shadowSRV
     {
         // viewport
@@ -162,7 +203,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         texDesc.SampleDesc.Count = 1;
         texDesc.SampleDesc.Quality = 0;
 
-        ComPtr<ID3D11Texture2D> shadowMap = nullptr;
+        
         HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, shadowMap.GetAddressOf());
         if (FAILED(hr)) { OutputDebugStringA("FAILED Create ShadowMapTexture"); }
 
@@ -170,7 +211,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
         dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
         dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-        hr = device->CreateDepthStencilView(shadowMap.Get(), &dsvDesc, &shadowDSV);
+        hr = device->CreateDepthStencilView(shadowMap.Get(), &dsvDesc, shadowDSV.GetAddressOf());
         if (FAILED(hr)) { OutputDebugStringA("FAILED Create Shadow Depth Stencil View"); }
 
         // SRV
@@ -178,7 +219,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
         srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
         srvDesc.Texture2D.MipLevels = 1;
-        hr = device->CreateShaderResourceView(shadowMap.Get(), &srvDesc, &shadowSRV);
+        hr = device->CreateShaderResourceView(shadowMap.Get(), &srvDesc, shadowSRV.GetAddressOf());
         if (FAILED(hr)) { OutputDebugStringA("FAILED Create Shadow Shader Resource View"); }
 
         // Sampler State
@@ -199,7 +240,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
         dsDesc.StencilEnable = FALSE;
 
-        HR_T(device->CreateDepthStencilState(&dsDesc, depthStencilState.GetAddressOf()));
+        HR_T(device->CreateDepthStencilState(&dsDesc, wirteoffDSS.GetAddressOf()));
     }
 
     // create rasterizer state (skybox 큐브의 안쪽이 그려지도록 cull mode front)
@@ -208,7 +249,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         rsDesc.FillMode = D3D11_FILL_SOLID;
         rsDesc.CullMode = D3D11_CULL_FRONT;
         rsDesc.DepthClipEnable = TRUE;
-        HR_T(device->CreateRasterizerState(&rsDesc, rasterizerState.GetAddressOf()));
+        HR_T(device->CreateRasterizerState(&rsDesc, cullfrontRS.GetAddressOf()));
     }
 
 	// create smapler state 
@@ -221,7 +262,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         sample_Desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
         sample_Desc.MinLOD = 0;
         sample_Desc.MaxLOD = D3D11_FLOAT32_MAX;
-        HR_T(device->CreateSamplerState(&sample_Desc, samplerState.GetAddressOf()));
+        HR_T(device->CreateSamplerState(&sample_Desc, linearSamplerState.GetAddressOf()));
     }
 
 	// create blend state
@@ -235,7 +276,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
         blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
         blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-        D3D::device->CreateBlendState(&blendDesc, blendState.GetAddressOf());
+        D3D::device->CreateBlendState(&blendDesc, alphaBlendState.GetAddressOf());
     }
 
     if (!CreateShader()) return false;

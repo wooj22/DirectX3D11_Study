@@ -83,8 +83,8 @@ void App::OnRender()
     D3D::deviceContext->VSSetConstantBuffers(1, 1, &offsetMatrixCB);
     D3D::deviceContext->VSSetConstantBuffers(2, 1, &poseMatrixCB);
 	D3D::deviceContext->PSSetConstantBuffers(0, 1, &constantBuffer);
-	D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
-	D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
+	D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
+	D3D::deviceContext->OMSetBlendState(D3D::alphaBlendState.Get(), blendFactor, sampleMask);
 
 	// constant buffer
 	ConstantBuffer cb;
@@ -121,7 +121,7 @@ void App::OnRender()
 
 	// 투명 모델
 	// 만약 모델이 여러개 있다면 Back to Front 순서 렌더 (카메라에서 먼 것부터 렌더링되도록 정렬하여 렌더링)
-    D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
+    D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 0);
     D3D::deviceContext->IASetInputLayout(inputLayout);
     D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
 

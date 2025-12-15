@@ -103,9 +103,9 @@ void App::OnRender()
 
     // --------------------- stage setting -----------------------
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
+    D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
     D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
-    D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
+    D3D::deviceContext->OMSetBlendState(D3D::alphaBlendState.Get(), blendFactor, sampleMask);
 
     // constant buffer
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
@@ -172,7 +172,7 @@ void App::OnRender()
     boxHuman->Render();
     plane->Render();
 
-    D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
+    D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 0);
     tree->Render();
 
     // 다음 shadowpass에서 SRV를 DSV로 다시 쓰기 위해 연결 해제

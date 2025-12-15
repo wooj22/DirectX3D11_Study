@@ -107,7 +107,7 @@ void App::OnRender()
 
     // --------------------- Stage Setting -----------------------
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
+    D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
     D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
     //D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
 

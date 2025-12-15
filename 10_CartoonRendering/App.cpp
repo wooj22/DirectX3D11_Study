@@ -73,8 +73,8 @@ void App::OnRender()
 
     // --------------------- Stage Setting -----------------------
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    D3D::deviceContext->PSSetSamplers(0, 1, D3D::samplerState.GetAddressOf());
-    D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
+    D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
+    D3D::deviceContext->OMSetBlendState(D3D::alphaBlendState.Get(), blendFactor, sampleMask);
 
     // constant buffer
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
@@ -115,7 +115,7 @@ void App::OnRender()
     // outline render
     D3D::deviceContext->VSSetShader(D3D::Skinned_OutLine_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::OutLine_PS.Get(), NULL, 0);
-    D3D::deviceContext->RSSetState(D3D::rasterizerState.Get());
+    D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
     warrior->Render();
     D3D::deviceContext->RSSetState(nullptr);
 
@@ -128,7 +128,7 @@ void App::OnRender()
     // outline render
     D3D::deviceContext->VSSetShader(D3D::Skinned_OutLine_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::OutLine_PS.Get(), NULL, 0);
-    D3D::deviceContext->RSSetState(D3D::rasterizerState.Get());
+    D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
     character->Render();
     D3D::deviceContext->RSSetState(nullptr);
 

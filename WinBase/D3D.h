@@ -29,23 +29,29 @@ public:
 	static ComPtr<ID3D11Device>		         device;
 	static ComPtr<ID3D11DeviceContext>       deviceContext;
 	static ComPtr<IDXGISwapChain>		     swapChain;
-	static ComPtr<ID3D11RenderTargetView>    renderTargetView;
+	static ComPtr<ID3D11RenderTargetView>    renderTargetView;      // LDR
 	static ComPtr<ID3D11DepthStencilView>    depthStencilView;
 
     // viewport
     static D3D11_VIEWPORT viewport_screen;
     static D3D11_VIEWPORT viewport_shadowMap;
 
+    // HDR
+    static ComPtr<ID3D11Texture2D>           hdrTexture;
+    static ComPtr<ID3D11RenderTargetView>    hdrRTV;         // HDR RTV
+    static ComPtr<ID3D11ShaderResourceView>  hdrSRV;         // HDR SRV
+
     // Shadow
+    static ComPtr<ID3D11Texture2D>           shadowMap;
     static ComPtr<ID3D11DepthStencilView>    shadowDSV;
-    static ComPtr<ID3D11ShaderResourceView>  shadowSRV;
-    static ComPtr<ID3D11SamplerState>        shadowSamplerState;
+    static ComPtr<ID3D11ShaderResourceView>  shadowSRV;             // ShadowMap Texture
+    static ComPtr<ID3D11SamplerState>        shadowSamplerState;    // clmap
 
     // ¿É¼Ç
-	static ComPtr<ID3D11DepthStencilState>   depthStencilState;		// write off
-    static ComPtr <ID3D11RasterizerState>    rasterizerState;       // cullmode = front
-	static ComPtr<ID3D11SamplerState>	     samplerState;
-	static ComPtr<ID3D11BlendState>          blendState;			// alpha
+	static ComPtr<ID3D11DepthStencilState>   wirteoffDSS;           // write off
+    static ComPtr <ID3D11RasterizerState>    cullfrontRS;           // cullmode = front
+	static ComPtr<ID3D11SamplerState>	     linearSamplerState;    // linear    
+	static ComPtr<ID3D11BlendState>          alphaBlendState;       // alpha
 
     // Shader
     static ComPtr<ID3D11VertexShader> BaseLit_Static_VS;

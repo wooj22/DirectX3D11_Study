@@ -82,8 +82,8 @@ void SkyBox::Render(Matrix& view, Matrix& projection)
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
     // Rasterizer, DepthStencilState ¼³Á¤
-    D3D::deviceContext->RSSetState(D3D::rasterizerState.Get());     
-    D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 1);
+    D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());     
+    D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 1);
 
     // Draw
     D3D::deviceContext->DrawIndexed(indexCount, 0, 0);

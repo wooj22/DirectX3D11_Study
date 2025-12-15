@@ -31,10 +31,10 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 
-// IBL(Image Based Lighting) 프로젝트입니다.
+// Tone Mapping 프로젝트입니다.
 /*
-    IBL_IrradianceMap, IBL_SpecularEnvMap, IBL_BRDF_LUT 텍스처를 사용하여
-    정적 간접광을 구현합니다.
+    HDR 백버퍼를 사용하여 1.0 이상의 밝기값을 계산하고, 
+    Exposure와 ToneMapping을 통해 HDR의 밝은 부분(1.0이 넘는 부분)의 디테일을 살려 출력합니다.
 */
 
 class App : public WinApp
