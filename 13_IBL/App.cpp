@@ -154,6 +154,7 @@ void App::OnRender()
     D3D::deviceContext->VSSetConstantBuffers(3, 1, D3D::offsetMatrixBuffer.GetAddressOf());
     D3D::deviceContext->VSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(6, 1, D3D::debugBuffer.GetAddressOf());
+    D3D::deviceContext->PSSetConstantBuffers(7, 1, D3D::postprocessBuffer.GetAddressOf());
 
     // Skybox Render  --------------------------------
     switch (currentSkybox)
@@ -189,8 +190,11 @@ void App::OnRender()
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
     D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
+    D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
+
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
+    D3D::deviceContext->UpdateSubresource(D3D::postprocessBuffer.Get(), 0, nullptr, &D3D::postprocessCBData, 0, 0);
 
 
     // 1. Depth Only Pass -------------------------------------
@@ -317,6 +321,7 @@ void App::RenderGUI()
     ImGui::ColorEdit3("Color", &light.color.x);
     ImGui::SliderFloat("Direct Intensity", &light.directIntensity, 0.0f, 10.0f);
     ImGui::SliderFloat("Indirect Intensity", &light.indirectIntensity, 0.0f, 10.0f);
+    ImGui::Checkbox("Use Gamma", &useGamma);
 
     ImGui::Text("");
     ImGui::Text("[Material]");

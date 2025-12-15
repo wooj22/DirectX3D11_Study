@@ -105,7 +105,12 @@ cbuffer DebugCB : register(b6)
     float padding3;
 }
 
-
+cbuffer PostProcessCB : register(b7)
+{
+    bool useGamma = 1.0f;
+    float exposure = 1.0f;
+    float2 padding4;
+};
 
 // ----------------------
 //  Vertex Input Layout

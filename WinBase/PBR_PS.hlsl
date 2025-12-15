@@ -71,6 +71,12 @@ float G_Smith(float3 N, float3 V, float3 L, float roughness)
 }
 
 
+// --- Gamma ------------------------------
+float3 LinearToSRGB(float3 c)
+{
+    return pow(c, 1.0 / 2.2);
+}
+
 
 
 float4 main(PS_INPUT input) : SV_TARGET
@@ -216,5 +222,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     // --- [Final Color]  ----------------------------------
     float3 finalColor = (DirectColor) + IndirectColor + emissive_color;
+    if(useGamma)
+        finalColor = LinearToSRGB(finalColor);
     return float4(finalColor, alpha);
 }

@@ -95,6 +95,9 @@ private:
     bool useMetallicOverride = 0;
     bool useRoughnessOverride = 0;
 
+    // Gamma debug
+    bool useGamma = 0;
+
     // IBL debug
     bool useIBL = 1;
 

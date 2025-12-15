@@ -158,3 +158,11 @@ struct alignas(16) DebugCB
     Vector3 baseColorOverride = { 1,1,1 };
     float padding2;
 };
+
+// PostProcess CB
+struct alignas(16) PostProcessCB
+{
+    UINT useGamma = 1.0f;
+    float exposure = 1.0f;
+    Vector2 padding;
+};

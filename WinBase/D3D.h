@@ -16,6 +16,7 @@ struct OffsetMatrixCB;
 struct PoseMatrixCB;
 struct OutLineCB;
 struct DebugCB;
+struct PostProcessCB;
 
 /*
 *   Direct3D 리소스 초기화용 정적 헬퍼 클래스
@@ -82,6 +83,7 @@ public:
     static ComPtr<ID3D11Buffer> poseMatrixBuffer;
     static ComPtr<ID3D11Buffer> outlineBuffer;
     static ComPtr<ID3D11Buffer> debugBuffer;
+    static ComPtr<ID3D11Buffer> postprocessBuffer;
 
     static TransformCB     transformCBData;
     static LightingCB      lightingCBData;
@@ -90,6 +92,7 @@ public:
     static PoseMatrixCB    poseCBData;
     static OutLineCB       outlineCBData;
     static DebugCB         debugCBData;
+    static PostProcessCB   postprocessCBData;
 
 
     //--------------------------------
