@@ -91,25 +91,31 @@ cbuffer OutLineCB : register(b5)
 
 cbuffer DebugCB : register(b6)
 {
-    float metallicFactor = 1.0f;
-    float roughnessFactor = 1.0f;
-    float metallicOverride = 1.0f;
-    float roughnessOverride = 1.0f;
+    float metallicFactor;
+    float roughnessFactor;
+    float metallicOverride;
+    float roughnessOverride;
     
-    bool useMetallicOverride = false;
-    bool useRoughnessOverride = false;
+    bool useMetallicOverride;
+    bool useRoughnessOverride;
     
-    bool useBaseColorOverride = 0;
-    bool useIBL = true;
-    float3 baseColorOverride = { 0, 0, 0 };
+    bool useBaseColorOverride ;
+    bool useIBL;
+    float3 baseColorOverride;
     float padding3;
 }
 
 cbuffer PostProcessCB : register(b7)
 {
-    bool useGamma = 1.0f;
-    float exposure = 1.0f;
-    float2 padding4;
+    bool useGamma;
+    bool useTint;
+    float exposure;
+    float padding4;
+    
+    float3 hueShift; 
+    float contrast; 
+    float saturation; 
+    float3 colorTint;
 };
 
 // ----------------------

@@ -1,6 +1,7 @@
 #include "shared.fxh"
 
 // Full Screen Vertex Shader
+// PostProcessing 단계를 위한 VS.
 // SV_VertexID 시멘틱 : 현재 Vertex Shader가 처리 중인 정점의 인덱스 번호
 
 PS_FullScreen_Input main(uint id : SV_VertexID)

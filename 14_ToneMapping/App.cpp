@@ -52,8 +52,8 @@ bool App::OnInit()
     // light
     light.direction = { 0,-0.5,1 };
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
-    light.directIntensity = 1.0f;
-    light.indirectIntensity = 0.8f;
+    light.directIntensity = 2.f;
+    light.indirectIntensity = 0.5f;
 
     // view maxtrix
     camera.position = { 0, 80, -300 };
@@ -64,21 +64,21 @@ bool App::OnInit()
     // projection matrix 
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 
-    // use IBL
+    // debug settup
     D3D::debugCBData.useIBL = 1;
+    D3D::postprocessCBData.contrast = 1.5;
+    D3D::postprocessCBData.saturation = 1.5;
 
     // memory debugger
     memory_debugger.Init();
 
     // debug draw set up
-
     m_states = std::make_unique<CommonStates>(D3D::device.Get());
     m_batch = std::make_unique<PrimitiveBatch<VertexPositionColor>>(D3D::deviceContext.Get());
     m_effect = std::make_unique<BasicEffect>((D3D::device.Get()));
     m_effect->SetVertexColorEnabled(true);
     m_effect->SetView(view);
     m_effect->SetProjection(projection);
-
     {
         void const* shaderByteCode;
         size_t byteCodeLength;
@@ -133,7 +133,7 @@ void App::OnRender()
 {
     // Render
     HDRRender();          // Gaometry + Lighting + Shadow
-    PostProcessing();     // ToneMapping + Exposure  (TODO :: Bloom, ColorGrading, Vignette, Film Grain)
+    PostProcessing();     // ToneMapping + Exposure +ColorGrading (TODO :: Bloom, Vignette, Film Grain)
 
     // Debug Draw
     FrustumDebugDraw(view, projection, view, projection, Colors::FloralWhite);
@@ -209,6 +209,7 @@ void App::HDRRender()
     D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
     D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
+    D3D::postprocessCBData.useTint = useTint ? 1 : 0;
 
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
@@ -275,7 +276,7 @@ void App::HDRRender()
 }
 
 // [ PostProcessing Pass ]
-// ToneMapping + Exposure  (TODO :: Bloom, ColorGrading, Vignette, Film Grain)
+// ToneMapping + Exposure + ColorGrading (TODO :: Bloom, Vignette, Film Grain)
 // Tone Mapping 패스는 화면을 덮는 FullScreen 사각형을 그리면서,
 // HDR SRV를 샘플링해 색을 계산하고, 그 결과를 BackBuffer에 기록하는 단계
 void App::PostProcessing()
@@ -421,8 +422,17 @@ void App::RenderGUI()
 
     // PostProcess
     ImGui::Begin("[PostProcess]");
-    ImGui::Checkbox("use Gamma", &useGamma);
+    ImGui::Checkbox("use Gamma(LDR Only)", &useGamma);
 
+    ImGui::Text("");
+    //ImGui::ColorEdit3("Hue Shift", &D3D::postprocessCBData.hueShift.x);
+    ImGui::SliderFloat("Exposure", &D3D::postprocessCBData.exposure, 0.f, 5.0f);
+    ImGui::SliderFloat("Contrast", &D3D::postprocessCBData.contrast, 0, 5.0f);
+    ImGui::SliderFloat("Saturation", &D3D::postprocessCBData.saturation, 0, 5.0f);
+
+    ImGui::Text("");
+    ImGui::Checkbox("use ColorTine", &useTint);
+    ImGui::ColorEdit3("Color Tint", &D3D::postprocessCBData.colorTint.x);
     ImGui::End();
 
     // Memory

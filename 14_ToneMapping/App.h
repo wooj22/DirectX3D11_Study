@@ -90,13 +90,16 @@ private:
     float roughnessFactor = 1.0f;
     Vector3 baseColorOverride = { 1,1,1 };
     float metallicOverride = 1.0f;
-    float roughnessOverride = 0.3f;
+    float roughnessOverride = 0.0f;
     bool useBaseColorOverride = 0;
     bool useMetallicOverride = 0;
-    bool useRoughnessOverride = 0;
+    bool useRoughnessOverride = 1;
 
     // Gamma debug
     bool useGamma = 0;
+
+    // PostProcess
+    bool useTint = 0;
 
     // IBL debug
     bool useIBL = 1;

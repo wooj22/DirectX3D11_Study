@@ -12,7 +12,7 @@ public:
 	Vector3 position;
 
 	float FovY = 45.0f;
-	float Near = 0.01f;
+	float Near = 0.1f;
 	float Far = 1000.0f;
 
 	Matrix world;
