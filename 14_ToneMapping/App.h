@@ -78,12 +78,12 @@ private:
     float fovDeg = 60.0f;
 
     // shadow debug
-    float lookPointDist = 300.f;
-    float shadowLightDist = 200.f;
-    float shadowWidth = 1920.0f;
-    float shadowHeight = 1080.0f;
+    float lookPointDist = 500.f;
+    float shadowLightDist = 1000.f;
+    float shadowWidth = 3000.0f;
+    float shadowHeight = 3000.0f;
     float shadowNear = 0.01f;
-    float shadowFar = 2000.0f;
+    float shadowFar = 5000.0f;
 
     // PBR debug
     float metallicFactor = 1.0f;

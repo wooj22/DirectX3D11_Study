@@ -57,7 +57,6 @@ bool App::OnInit()
 
     // view maxtrix
     camera.position = { 0, 80, -300 };
-    camera.Far = 2000.0f;
     camera.moveSpeed = 300.f;
     camera.GetViewMatrix(view);
 
