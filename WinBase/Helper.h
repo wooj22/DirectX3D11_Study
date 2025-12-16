@@ -149,6 +149,13 @@ inline void HR_T_Impl(HRESULT hr, const char* file, int line, const char* func)
 //
 // With VS 11, we could load up prebuilt .cso files instead...
 //--------------------------------------------------------------------------------------
+
+enum class TextureColorSpace
+{
+    SRGB,
+    LINEAR
+};
+
 HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
 
-HRESULT CreateTextureFromFile(ID3D11Device* d3dDevice, const wchar_t* szFileName, ID3D11ShaderResourceView** textureView);
+HRESULT CreateTextureFromFile(ID3D11Device* d3dDevice, const wchar_t* szFileName, ID3D11ShaderResourceView** textureView, TextureColorSpace colorSpace = TextureColorSpace::LINEAR);

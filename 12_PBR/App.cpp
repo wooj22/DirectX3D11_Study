@@ -54,6 +54,10 @@ bool App::OnInit()
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
     light.directIntensity = 5.0f;
 
+    // LDR
+    D3D::postprocessCBData.isHDR = 0;
+    D3D::postprocessCBData.gamma = 1.7;
+
     // projection init 
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 
@@ -144,7 +148,7 @@ void App::OnRender()
     D3D::debugCBData.useMetallicOverride = useMetallicOverride ? 1 : 0;
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
 
-    D3D::postprocessCBData.isHDR = isHDR ? 1 : 0;
+    D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
 
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
@@ -248,7 +252,6 @@ void App::RenderGUI()
     ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
     ImGui::ColorEdit3("Color", &light.color.x);
     ImGui::SliderFloat("Intensity", &light.directIntensity, 0.0f, 10.0f);
-    ImGui::Checkbox("Is HDR?", &isHDR);
 
     ImGui::Text("[Material]");
     ImGui::SliderFloat("Metallic Factor", &metallicFactor, 0.0f, 1.0f);
@@ -268,6 +271,12 @@ void App::RenderGUI()
     ImGui::SliderAngle("Roll", &character->rotation.z, 0.0f, 360.0f);
     ImGui::InputFloat3("scale", &character->scale.x);
 
+    ImGui::End();
+
+    // Gamma
+    ImGui::Begin("[Gamma]");
+    ImGui::Checkbox("useGamma", &useGamma);
+    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.gamma, 0.f, 5.0f);
     ImGui::End();
 
     ImGui::Begin("[Memory Debugger]");

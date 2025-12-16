@@ -52,8 +52,8 @@ bool App::OnInit()
     // light
     light.direction = { 0,-0.5,1 };
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
-    light.directIntensity = 1.0f;
-    light.indirectIntensity = 0.8f;
+    light.directIntensity = 3.0f;
+    light.indirectIntensity = 0.3f;
 
     // view maxtrix
     camera.position = { 0, 80, -300 };
@@ -67,11 +67,14 @@ bool App::OnInit()
     // use IBL
     D3D::debugCBData.useIBL = 1;
 
+    // postProcess
+    D3D::postprocessCBData.isHDR = 0;
+    D3D::postprocessCBData.gamma = 1.4f;
+
     // memory debugger
     memory_debugger.Init();
 
     // debug draw set up
-
     m_states = std::make_unique<CommonStates>(D3D::device.Get());
     m_batch = std::make_unique<PrimitiveBatch<VertexPositionColor>>(D3D::deviceContext.Get());
     m_effect = std::make_unique<BasicEffect>((D3D::device.Get()));
@@ -190,7 +193,7 @@ void App::OnRender()
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
     D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
-    D3D::postprocessCBData.isHDR = isHDR ? 1 : 0;
+    D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
 
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
@@ -321,7 +324,6 @@ void App::RenderGUI()
     ImGui::ColorEdit3("Color", &light.color.x);
     ImGui::SliderFloat("Direct Intensity", &light.directIntensity, 0.0f, 10.0f);
     ImGui::SliderFloat("Indirect Intensity", &light.indirectIntensity, 0.0f, 10.0f);
-    ImGui::Checkbox("Is HDR?", &isHDR);
 
     ImGui::Text("");
     ImGui::Text("[Material]");
@@ -368,6 +370,12 @@ void App::RenderGUI()
     ImGui::Text("[Shadow Light Pos]");
     ImGui::SliderFloat("lookPointDist", &lookPointDist, 1.f, 5000.0f);
     ImGui::SliderFloat("shadowLightDist", &shadowLightDist, 1.f, 5000.0f);
+    ImGui::End();
+
+    // Gamma
+    ImGui::Begin("[Gamma]");
+    ImGui::Checkbox("useGamma", &useGamma);
+    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.gamma, 0.f, 5.0f);
     ImGui::End();
 
     // IBL

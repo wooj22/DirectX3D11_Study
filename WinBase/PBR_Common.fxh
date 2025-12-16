@@ -1,3 +1,5 @@
+#include <shared.fxh>
+
 // --- Cook -Torrance BRDF Functions ------
 static const float PI = 3.141592f;
 static const float EPSILON = 0.00001f;
@@ -39,5 +41,5 @@ float G_Smith(float3 N, float3 V, float3 L, float roughness)
 // --- Gamma ------------------------------
 float3 LinearToSRGB(float3 c)
 {
-    return pow(c, 1.0 / 2.2);
+    return pow(c, 1.0 / gamma);
 }

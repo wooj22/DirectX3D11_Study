@@ -52,7 +52,21 @@ void SkyBox::InitRenderPipeLine(const std::wstring& filePath)
     D3D::device->CreateBuffer(&ibDesc, &ibData, &indexBuffer);
 
     // CubeMap Texture Load
-    CreateDDSTextureFromFile(D3D::device.Get(), filePath.c_str() , nullptr, &skyboxTRV);
+    //CreateDDSTextureFromFile(D3D::device.Get(), filePath.c_str() , nullptr, &skyboxTRV);
+    DirectX::CreateDDSTextureFromFileEx(
+        D3D::device.Get(),
+        nullptr,                        
+        filePath.c_str(),
+        0,                              
+        D3D11_USAGE_DEFAULT,            
+        D3D11_BIND_SHADER_RESOURCE,     
+        0,                              
+        0,                              
+        DirectX::DDS_LOADER_FORCE_SRGB,          // SRGB
+        nullptr,                    
+        &skyboxTRV,                 
+        nullptr                     
+    );
 }
 
 void SkyBox::Render(Matrix& view, Matrix& projection)

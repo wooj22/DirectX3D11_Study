@@ -107,14 +107,17 @@ cbuffer DebugCB : register(b6)
 
 cbuffer PostProcessCB : register(b7)
 {
-    bool isHDR;
-    bool useTint;
-    float exposure;
-    float padding4;
+    bool useGamma;
+    float3 padding4;
     
-    float3 hueShift; 
-    float contrast; 
+    bool isHDR;
+    float gamma;
+    float exposure;
+    float contrast;
+
     float saturation; 
+    float3 hueShift;
+    bool useTint;
     float3 colorTint;
 };
 

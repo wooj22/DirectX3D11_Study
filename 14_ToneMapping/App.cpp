@@ -52,8 +52,8 @@ bool App::OnInit()
     // light
     light.direction = { 0,-0.5,1 };
     light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
-    light.directIntensity = 2.f;
-    light.indirectIntensity = 0.5f;
+    light.directIntensity = 2.0f;
+    light.indirectIntensity = 0.2f;
 
     // view maxtrix
     camera.position = { 0, 80, -300 };
@@ -65,8 +65,9 @@ bool App::OnInit()
 
     // debug settup
     D3D::debugCBData.useIBL = 1;
-    D3D::postprocessCBData.contrast = 1.5;
-    D3D::postprocessCBData.saturation = 1.5;
+    D3D::postprocessCBData.isHDR = 1;
+    D3D::postprocessCBData.contrast = 1.1;
+    D3D::postprocessCBData.saturation = 1.1;
 
     // memory debugger
     memory_debugger.Init();
@@ -207,7 +208,7 @@ void App::HDRRender()
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
     D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
-    D3D::postprocessCBData.isHDR = isHDR ? 1 : 0;
+    D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
     D3D::postprocessCBData.useTint = useTint ? 1 : 0;
 
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
@@ -422,13 +423,14 @@ void App::RenderGUI()
 
     // PostProcess
     ImGui::Begin("[PostProcess]");
-    ImGui::Checkbox("IsHDR? (gamma)", &isHDR);
+    ImGui::Checkbox("useGamma", &useGamma);
+    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.gamma, 0.f, 5.0f);
 
     ImGui::Text("");
     //ImGui::ColorEdit3("Hue Shift", &D3D::postprocessCBData.hueShift.x);
     ImGui::SliderFloat("Exposure", &D3D::postprocessCBData.exposure, 0.f, 5.0f);
-    ImGui::SliderFloat("Contrast", &D3D::postprocessCBData.contrast, 0, 5.0f);
-    ImGui::SliderFloat("Saturation", &D3D::postprocessCBData.saturation, 0, 5.0f);
+    ImGui::SliderFloat("Contrast", &D3D::postprocessCBData.contrast, 0.5f, 2.0f);
+    ImGui::SliderFloat("Saturation", &D3D::postprocessCBData.saturation, 0.5f, 2.0f);
 
     ImGui::Text("");
     ImGui::Checkbox("use ColorTine", &useTint);

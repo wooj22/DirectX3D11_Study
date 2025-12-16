@@ -93,10 +93,10 @@ private:
     float roughnessOverride = 0.0f;
     bool useBaseColorOverride = 0;
     bool useMetallicOverride = 0;
-    bool useRoughnessOverride = 1;
+    bool useRoughnessOverride = 0;
 
     // Gamma debug
-    bool isHDR = 1;
+    bool useGamma = 1;
 
     // PostProcess
     bool useTint = 0;

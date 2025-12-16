@@ -7,7 +7,7 @@ void Material::CreateSRV()
     // Shader Resource View create
     if (textureFlags & TEX_DIFFUSE)
     {
-        CreateTextureFromFile(D3D::device.Get(), (directory + diffuse_filename).c_str(), &diffuseSRV);
+        CreateTextureFromFile(D3D::device.Get(), (directory + diffuse_filename).c_str(), &diffuseSRV, TextureColorSpace::SRGB);
     }
 
     if (textureFlags & TEX_NORMAL)

@@ -162,14 +162,16 @@ struct alignas(16) DebugCB
 // PostProcess CB
 struct alignas(16) PostProcessCB
 {
-    // gamma
-    UINT    isHDR = 0;               // LDR/HDR 감마보정
-    UINT    useTint = 0;             // Color Tint
-    float   exposure = 1.0f;         // 노출
-    float   padding1;
+    UINT useGamma = 1;
+    Vector3 padding;
 
-    Vector3 hueShift = { 0,0,0 };       // 색상 이동
-    float   contrast = 1;               // 대비
-    float   saturation = 1;             // 채도
-    Vector3 colorTint = { 0,0,0 };      // 색상 톤
+    UINT    isHDR = 0;               // LDR/HDR 감마 적용
+    float   gamma = 2.2f;            // 감마
+    float   exposure = 0;            // 노출
+    float   contrast = 1;            // 대비
+
+    float   saturation = 1;          // 채도
+    Vector3 hueShift = { 0,0,0 };    // 색상 이동
+    UINT    useTint = 0;             // Color Tint
+    Vector3 colorTint = { 0,0,0 };   // 색상 톤
 };

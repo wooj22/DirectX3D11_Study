@@ -3,7 +3,6 @@
 // ToneMapping + Exposure + ColorGrading
 // TODO :: Bloom, Vignette, Film Grain
 
-#include <shared.fxh>
 #include <PBR_Common.fxh>
 
 Texture2D sceneHDR : register(t12);
@@ -47,7 +46,8 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     float3 hdr = sceneHDR.Sample(samplerLinear, input.uv).rgb;
 
     // exposure
-    hdr *= exposure;
+    float exposureScale = pow(2.0, exposure);
+    hdr *= exposureScale;
     
     // tone mapping
     float3 mapped = ACESFilm(hdr);
@@ -57,7 +57,7 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     
     // Gamma
     float3 finalColor = colorGrade;
-    if (isHDR)
+    if (useGamma && isHDR)
         finalColor = LinearToSRGB(finalColor);
 
     return float4(finalColor, 1.0f);
