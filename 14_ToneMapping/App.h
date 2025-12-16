@@ -104,6 +104,10 @@ private:
     // IBL debug
     bool useIBL = 1;
 
+    // alpha
+    float blendFactor[4] = { 0,0,0,0 }; 
+    UINT sampleMask = 0xffffffff;
+
     // clear color
     float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
 

@@ -161,7 +161,7 @@ void App::HDRRender()
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
     D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
-    //D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
+    D3D::deviceContext->OMSetBlendState(D3D::alphaBlendState.Get(), blendFactor, sampleMask);
 
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
@@ -240,7 +240,6 @@ void App::HDRRender()
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(1, D3D::hdrRTV.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
-    //D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PBR_PS.Get(), NULL, 0);
@@ -260,8 +259,10 @@ void App::HDRRender()
     }
     floor->Render();
     zelda->Render();
+    //D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 0);
     character->Render();
-
+    //D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
+    
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);

@@ -140,7 +140,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     if (useDiffuse)
         alpha = diffuseMap.Sample(samLinear, input.texCoord).a;
     
-    
+    if (alpha < 0.5)
+        discard;
     
     // --- [Override] ----------------------------------
     if (useMetallicOverride)
