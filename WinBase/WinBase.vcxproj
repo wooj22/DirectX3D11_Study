@@ -259,6 +259,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="PBR_Common.fxh" />
     <None Include="shared.fxh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

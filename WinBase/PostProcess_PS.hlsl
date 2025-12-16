@@ -1,10 +1,10 @@
-#include <shared.fxh>
-
 // PostProcess PixelShader
 // 렌더링 후처리 단계
 // ToneMapping + Exposure + ColorGrading
 // TODO :: Bloom, Vignette, Film Grain
 
+#include <shared.fxh>
+#include <PBR_Common.fxh>
 
 Texture2D sceneHDR : register(t12);
 SamplerState samplerLinear : register(s0);
@@ -54,6 +54,11 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     
     // Color Grading
     float3 colorGrade = ApplyColorGrading(mapped);
+    
+    // Gamma
+    float3 finalColor = colorGrade;
+    if (isHDR)
+        finalColor = LinearToSRGB(finalColor);
 
-    return float4(colorGrade, 1.0f);
+    return float4(finalColor, 1.0f);
 }

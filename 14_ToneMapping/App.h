@@ -96,7 +96,7 @@ private:
     bool useRoughnessOverride = 1;
 
     // Gamma debug
-    bool useGamma = 0;
+    bool isHDR = 1;
 
     // PostProcess
     bool useTint = 0;

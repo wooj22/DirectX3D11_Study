@@ -207,7 +207,7 @@ void App::HDRRender()
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
     D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
-    D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
+    D3D::postprocessCBData.isHDR = isHDR ? 1 : 0;
     D3D::postprocessCBData.useTint = useTint ? 1 : 0;
 
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
@@ -422,7 +422,7 @@ void App::RenderGUI()
 
     // PostProcess
     ImGui::Begin("[PostProcess]");
-    ImGui::Checkbox("use Gamma(LDR Only)", &useGamma);
+    ImGui::Checkbox("IsHDR? (gamma)", &isHDR);
 
     ImGui::Text("");
     //ImGui::ColorEdit3("Hue Shift", &D3D::postprocessCBData.hueShift.x);

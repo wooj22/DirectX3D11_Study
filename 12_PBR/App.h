@@ -66,7 +66,7 @@ private:
     bool useRoughnessOverride = 0;
 
     // Gamma debug
-    bool useGamma = 0;
+    bool isHDR = 0;
 
     // clear color
     float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };

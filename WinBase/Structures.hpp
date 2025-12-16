@@ -163,7 +163,7 @@ struct alignas(16) DebugCB
 struct alignas(16) PostProcessCB
 {
     // gamma
-    UINT    useGamma = 1;            // LDR 감마보정 (PBR_PS)
+    UINT    isHDR = 0;               // LDR/HDR 감마보정
     UINT    useTint = 0;             // Color Tint
     float   exposure = 1.0f;         // 노출
     float   padding1;

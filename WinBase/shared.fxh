@@ -107,7 +107,7 @@ cbuffer DebugCB : register(b6)
 
 cbuffer PostProcessCB : register(b7)
 {
-    bool useGamma;
+    bool isHDR;
     bool useTint;
     float exposure;
     float padding4;
@@ -176,3 +176,7 @@ struct PS_FullScreen_Input
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
 };
+
+
+
+

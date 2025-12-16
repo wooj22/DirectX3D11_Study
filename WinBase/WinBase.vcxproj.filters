@@ -267,5 +267,8 @@
     <None Include="shared.fxh">
       <Filter>98. Shaders</Filter>
     </None>
+    <None Include="PBR_Common.fxh">
+      <Filter>98. Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -190,7 +190,7 @@ void App::OnRender()
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
     D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
-    D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
+    D3D::postprocessCBData.isHDR = isHDR ? 1 : 0;
 
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
@@ -321,7 +321,7 @@ void App::RenderGUI()
     ImGui::ColorEdit3("Color", &light.color.x);
     ImGui::SliderFloat("Direct Intensity", &light.directIntensity, 0.0f, 10.0f);
     ImGui::SliderFloat("Indirect Intensity", &light.indirectIntensity, 0.0f, 10.0f);
-    ImGui::Checkbox("Use Gamma", &useGamma);
+    ImGui::Checkbox("Is HDR?", &isHDR);
 
     ImGui::Text("");
     ImGui::Text("[Material]");
