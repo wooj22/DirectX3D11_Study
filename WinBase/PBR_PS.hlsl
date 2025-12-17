@@ -56,8 +56,27 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
     {
-        // PCF
-        shadowFactor = shadowMap.SampleCmpLevelZero(samShadow, uv, currentShadowDepth - 0.001);
+        // 9개의 텍셀 PCF (부드러운 그림자)
+        float2 offsets[9] =
+        {
+            float2(-1, -1), float2(0, -1), float2(1, -1),
+            float2(-1, 0), float2(0, 0), float2(1, 0),
+            float2(-1, 1), float2(0, 1), float2(1, 1)
+        };
+        
+        float2 ShadowMapSize = { 3000, 3000 };      // 하드코딩
+        float2 texelSize = 1.0 / ShadowMapSize;
+        
+        [unroll]
+        for (int i = 0; i < 9; i++)
+        {
+            float2 sampleUV = uv + offsets[i] * texelSize;
+            shadowFactor += shadowMap.SampleCmpLevelZero(samShadow, sampleUV, currentShadowDepth - 0.001);
+        }
+        shadowFactor = shadowFactor / 9.0f;
+        
+        // 단일 텍셀 PCF
+        //shadowFactor = shadowMap.SampleCmpLevelZero(samShadow, uv, currentShadowDepth - 0.001);
     }
 
     
