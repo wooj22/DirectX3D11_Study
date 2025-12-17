@@ -34,12 +34,14 @@ bool App::OnInit()
 
     // model
     floor = new StaticModel();
+    tree = new StaticModel();
     zelda = new StaticModel();
     character = new RigidModel();
     girl = new SkeletalModel();
     enemy = new SkeletalModel();
     
     AssetManager::Instance().LoadStaticModelAsset(floor, "../Resource/Plane.fbx");
+    AssetManager::Instance().LoadStaticModelAsset(tree, "../Resource/Tree.fbx");
     AssetManager::Instance().LoadStaticModelAsset(zelda, "../Resource/zeldaPosed001.fbx");
     AssetManager::Instance().LoadRigidModelAsset(character, "../Resource/char.fbx");
     AssetManager::Instance().LoadSkeletalModelAsset(girl, "../Resource/Girl.fbx");
@@ -63,7 +65,9 @@ bool App::OnInit()
 
     floor->SetPosition({ 0,-5, 600 });
     floor->SetScale({ 0.5,0.3,0.5 });
-    zelda->SetPosition({ -200,0,0 });
+    tree->SetPosition({ -150, 0, 130 });
+    tree->SetScale({ 80, 80, 80 });
+    zelda->SetPosition({ -180,0,0 });
     character->SetPosition({ -20,0,0 });
     girl->SetPosition({ 100,0,70 });
     enemy->SetPosition({ 250,0,20 });
@@ -250,7 +254,8 @@ void App::HDRRender()
     // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Static_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(nullptr, NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::ShadowDepth_PS.Get(), NULL, 0);
+    tree->Render();
     zelda->Render();
     character->Render();
     for (int i = 0; i < 10; i++)
@@ -305,6 +310,7 @@ void App::HDRRender()
         torus[i]->Render();
     }
     floor->Render();
+    tree->Render();
     zelda->Render();
     //D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 0);
     character->Render();

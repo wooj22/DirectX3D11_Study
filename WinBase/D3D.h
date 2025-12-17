@@ -69,6 +69,7 @@ public:
     static ComPtr<ID3D11PixelShader> Skybox_PS;
     static ComPtr<ID3D11PixelShader> OutLine_PS;
     static ComPtr<ID3D11PixelShader> PostProcess_PS;
+    static ComPtr<ID3D11PixelShader> ShadowDepth_PS;
 
     // InputLayout
     static ComPtr<ID3D11InputLayout> inputLayout_Vertex;

@@ -45,6 +45,7 @@ ComPtr<ID3D11PixelShader>         D3D::BlinnPhongToon_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::Skybox_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::OutLine_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::PostProcess_PS = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::ShadowDepth_PS = nullptr;
                      
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_Vertex = nullptr;
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_BoneWeightVertex = nullptr;
@@ -448,6 +449,16 @@ bool D3D::CreateShader()
         HR_T(CompileShaderFromFile(L"../WinBase/PostProcess_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
             pixelShaderBuffer->GetBufferSize(), NULL, &PostProcess_PS));
+        SAFE_RELEASE(pixelShaderBuffer);
+    }
+
+    //---------------------------
+    // ShadowDepth PS
+    {
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/ShadowDepth_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &ShadowDepth_PS));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 
