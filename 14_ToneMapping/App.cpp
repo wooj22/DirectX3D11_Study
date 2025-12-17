@@ -16,8 +16,8 @@ using namespace DirectX::SimpleMath;
 
 #define USE_FLIPMODE 1
 
-static int currentSkybox = 0;
-const char* skyboxes[] = { "OutDoor", "InDoor" };
+static int currentSkybox = 3;
+const char* skyboxes[] = { "OutDoor", "InDoor", "BlueSky", "RedSky"};
 
 // Main process
 bool App::OnInit()
@@ -29,6 +29,8 @@ bool App::OnInit()
     // skybox
     skybox1.InitRenderPipeLine(L"../Resource/Skybox/skybox_cubmap.dds");
     skybox2.InitRenderPipeLine(L"../Resource/Skybox/indoorEnvHDR.dds");
+    skybox3.InitRenderPipeLine(L"../Resource/Skybox/blueskyEnvHDR.dds");
+    skybox4.InitRenderPipeLine(L"../Resource/Skybox/redskyEnvHDR.dds");
 
     // model
     floor = new StaticModel();
@@ -36,16 +38,33 @@ bool App::OnInit()
     character = new RigidModel();
     girl = new SkeletalModel();
     enemy = new SkeletalModel();
+    
     AssetManager::Instance().LoadStaticModelAsset(floor, "../Resource/Plane.fbx");
     AssetManager::Instance().LoadStaticModelAsset(zelda, "../Resource/zeldaPosed001.fbx");
     AssetManager::Instance().LoadRigidModelAsset(character, "../Resource/char.fbx");
     AssetManager::Instance().LoadSkeletalModelAsset(girl, "../Resource/Girl.fbx");
     AssetManager::Instance().LoadSkeletalModelAsset(enemy, "../Resource/Enemy.fbx");
 
-    floor->SetPosition({ 0,-5, 50 });
-    floor->SetScale({ 0.4,1,0.3 });
-    zelda->SetPosition({ -100,0,0 });
-    character->SetPosition({ 0,0,0 });
+    for (int i = 0; i < 10; i++)
+    {
+        spheres.push_back(new StaticModel());
+        AssetManager::Instance().LoadStaticModelAsset(spheres[i], "../Resource/sphere.fbx");
+        spheres[i]->SetPosition({-900 + i*200.0f, 50.0f, 1000 });
+        spheres[i]->SetScale({0.85,0.85,0.85});
+    }
+
+    for (int i = 0; i < 10; i++)
+    {
+        torus.push_back(new StaticModel());
+        AssetManager::Instance().LoadStaticModelAsset(torus[i], "../Resource/Torus.fbx");
+        torus[i]->SetPosition({ -900 + i*200.0f, 50.0f, 500 });
+        torus[i]->SetScale({ 0.7,0.7,0.7 });
+    }
+
+    floor->SetPosition({ 0,-5, 600 });
+    floor->SetScale({ 0.5,0.3,0.5 });
+    zelda->SetPosition({ -200,0,0 });
+    character->SetPosition({ -20,0,0 });
     girl->SetPosition({ 100,0,70 });
     enemy->SetPosition({ 250,0,20 });
 
@@ -66,8 +85,8 @@ bool App::OnInit()
     // debug settup
     D3D::debugCBData.useIBL = 1;
     D3D::postprocessCBData.isHDR = 1;
-    D3D::postprocessCBData.contrast = 1.1;
-    D3D::postprocessCBData.saturation = 1.1;
+    D3D::postprocessCBData.contrast = 1.0;
+    D3D::postprocessCBData.saturation = 1.0;
 
     // memory debugger
     memory_debugger.Init();
@@ -183,6 +202,12 @@ void App::HDRRender()
     case 1:
         skybox2.Render(view, projection);
         break;
+    case 2:
+        skybox3.Render(view, projection);
+        break;
+    case 3:
+        skybox4.Render(view, projection);
+        break;
     }
 
 
@@ -228,6 +253,11 @@ void App::HDRRender()
     D3D::deviceContext->PSSetShader(nullptr, NULL, 0);
     zelda->Render();
     character->Render();
+    for (int i = 0; i < 10; i++)
+    {
+        spheres[i]->Render();
+        torus[i]->Render();
+    }
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
@@ -257,6 +287,22 @@ void App::HDRRender()
         D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap2);
         D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT2);
         break;
+    case 2:
+        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap3);
+        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap3);
+        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT3);
+        break;
+    case 3:
+        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap4);
+        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap4);
+        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT4);
+        break;
+    }
+
+    for (int i = 0; i < 10; i++)
+    {
+        spheres[i]->Render();
+        torus[i]->Render();
     }
     floor->Render();
     zelda->Render();
@@ -315,9 +361,18 @@ bool App::InitRenderPipeLine()
     CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapDiffuseHDR.dds", nullptr, &IBL_IrradianceMap1);
     CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap1);
     CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapBrdf.dds", nullptr, &IBL_BRDF_LUT1);
+
     CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorDiffuseHDR.dds", nullptr, &IBL_IrradianceMap2);
     CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap2);
     CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorBrdf.dds", nullptr, &IBL_BRDF_LUT2);
+
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/blueskyDiffuseHDR.dds", nullptr, &IBL_IrradianceMap3);
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/blueskySpecularHDR.dds", nullptr, &IBL_SpecularEnvMap3);
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/blueskyBrdf.dds", nullptr, &IBL_BRDF_LUT3);
+
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/redskyDiffuseHDR.dds", nullptr, &IBL_IrradianceMap4);
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/redskySpecularHDR.dds", nullptr, &IBL_SpecularEnvMap4);
+    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/redskyBrdf.dds", nullptr, &IBL_BRDF_LUT4);
 
     return true;
 }

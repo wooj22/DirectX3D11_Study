@@ -49,19 +49,32 @@ private:
     // skybox
     SkyBox skybox1;
     SkyBox skybox2;
+    SkyBox skybox3;
+    SkyBox skybox4;
 
     // IBL texture
     ID3D11ShaderResourceView* IBL_IrradianceMap1 = nullptr;
-    ID3D11ShaderResourceView* IBL_IrradianceMap2 = nullptr;
     ID3D11ShaderResourceView* IBL_SpecularEnvMap1 = nullptr;
-    ID3D11ShaderResourceView* IBL_SpecularEnvMap2 = nullptr;
     ID3D11ShaderResourceView* IBL_BRDF_LUT1 = nullptr;
+
+    ID3D11ShaderResourceView* IBL_IrradianceMap2 = nullptr;
+    ID3D11ShaderResourceView* IBL_SpecularEnvMap2 = nullptr;
     ID3D11ShaderResourceView* IBL_BRDF_LUT2 = nullptr;
+
+    ID3D11ShaderResourceView* IBL_IrradianceMap3 = nullptr;
+    ID3D11ShaderResourceView* IBL_SpecularEnvMap3 = nullptr;
+    ID3D11ShaderResourceView* IBL_BRDF_LUT3 = nullptr;
+
+    ID3D11ShaderResourceView* IBL_IrradianceMap4 = nullptr;
+    ID3D11ShaderResourceView* IBL_SpecularEnvMap4 = nullptr;
+    ID3D11ShaderResourceView* IBL_BRDF_LUT4 = nullptr;
 
     // light
     DirectionalLight light;
 
     // models
+    vector<StaticModel*> spheres;
+    vector<StaticModel*> torus;
     StaticModel* floor = nullptr;
     StaticModel* zelda = nullptr;
     RigidModel* character = nullptr;
