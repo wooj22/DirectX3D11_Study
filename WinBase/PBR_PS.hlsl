@@ -56,27 +56,24 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
     {
-        // 9개의 텍셀 PCF (부드러운 그림자)
         float2 offsets[9] =
         {
             float2(-1, -1), float2(0, -1), float2(1, -1),
             float2(-1, 0), float2(0, 0), float2(1, 0),
             float2(-1, 1), float2(0, 1), float2(1, 1)
         };
-        
-        float2 ShadowMapSize = { 3000, 3000 };      // 하드코딩
-        float2 texelSize = 1.0 / ShadowMapSize;
-        
-        [unroll]
+        float2 shadowmapsize = { 3000, 3000 };
+        float2 texelSize = 1.0 / shadowmapsize; // 텍셀 크기 (ShadowMap 해상도 기준)
+        shadowFactor = 0.0f;
+       
+       //  PCF - 9 texel 평균으로 그림자 팩터 계산
+       [unroll]
         for (int i = 0; i < 9; i++)
         {
             float2 sampleUV = uv + offsets[i] * texelSize;
             shadowFactor += shadowMap.SampleCmpLevelZero(samShadow, sampleUV, currentShadowDepth - 0.001);
         }
         shadowFactor = shadowFactor / 9.0f;
-        
-        // 단일 텍셀 PCF
-        //shadowFactor = shadowMap.SampleCmpLevelZero(samShadow, uv, currentShadowDepth - 0.001);
     }
 
     
@@ -146,16 +143,16 @@ float4 main(PS_INPUT input) : SV_TARGET
     // --- [Direct Light]  ----------------------------------
     // Specular BRDF (Cook-Torrance)
     float3 F0 = lerp(float3(0.04f, 0.04f, 0.04f), base_color, metallic);
-    float D = D_NDFGGXTR(N, H, roughness);      // 미세면 정렬정도
-    float3 F = F_Schlick(H, V, F0);             // 프레넬 반사율
-    float G = G_Smith(N, V, L, roughness);      // shadowing & masking
+    float D = D_NDFGGXTR(N, H, roughness); // 미세면 정렬정도
+    float3 F = F_Schlick(H, V, F0); // 프레넬 반사율
+    float G = G_Smith(N, V, L, roughness); // shadowing & masking
     
     float denom = 4.0f * max(NdotL, 0.001) * max(NdotV, 0.001);
     float3 SpecularBRDF = (D * F * G) / denom;
 
     
     // Diffuse BRDF (Lambertian)
-    float3 kd = lerp(1.0 - F, 0.0, metallic);   // 표면산란 계수
+    float3 kd = lerp(1.0 - F, 0.0, metallic); // 표면산란 계수
     float3 DiffuseBRDF = (base_color / PI) * kd;
     
     // Final DirectLight
@@ -171,7 +168,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     {
         // Diffuse Term --------------------------
         // Irradiance - diffuse BRDF 적분값
-        float3 Irradiance = IBL_IrradianceMap.Sample(samLinear, N).rgb;     
+        float3 Irradiance = IBL_IrradianceMap.Sample(samLinear, N).rgb;
         float3 DiffuseIBL = base_color * Irradiance * kd;
         
         // Specular Term -----------------------
