@@ -175,3 +175,21 @@ struct alignas(16) PostProcessCB
     UINT    useTint = 0;             // Color Tint
     Vector3 colorTint = { 0,0,0 };   // 색상 톤
 };
+
+struct alignas(16) ScreenFX
+{
+    // toggles (0/1)
+    int enableWaterDistortion = 0;  
+    int enablePlasmaOverlay = 0;    
+    int enableFilmGrain = 0;        
+    float time;                     
+
+    float cellScale = 3.0f;                  // Noise Cell Scale         
+    float randomIntensity = 43758.5453f;     // Random 해시 분산 강도
+    float warpStrength = 0.8f;               // Domain Warping 강도  
+    float distortionStrength = 0.008f;       // UV 왜곡 강도
+
+    float plasmaIntensity = 0.35;       
+    float grainIntensity = 0.05f;       
+    Vector2 screenTexelSize = Vector2(1.0 / 1920.0, 1.0 / 1080.0); 
+};

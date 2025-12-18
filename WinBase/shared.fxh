@@ -122,6 +122,23 @@ cbuffer PostProcessCB : register(b7)
     float3 colorTint;
 };
 
+cbuffer CB_PostFX : register(b8)
+{
+    int enableWaterDistortion;
+    int enablePlasmaOverlay;  
+    int enableFilmGrain;      
+    float time;
+    
+    float cellScale; 
+    float randomIntensity;
+    float warpStrength; 
+    float distortionStrength; 
+    
+    float plasmaIntensity; 
+    float grainIntensity; 
+    float2 screenTexelSize;
+}
+
 // ----------------------
 //  Vertex Input Layout
 // ----------------------

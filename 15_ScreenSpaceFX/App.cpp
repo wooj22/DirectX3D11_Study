@@ -17,7 +17,7 @@ using namespace DirectX::SimpleMath;
 #define USE_FLIPMODE 1
 
 static int currentSkybox = 3;
-const char* skyboxes[] = { "OutDoor", "InDoor", "BlueSky", "RedSky"};
+const char* skyboxes[] = { "OutDoor", "InDoor", "BlueSky", "RedSky" };
 
 // Main process
 bool App::OnInit()
@@ -39,7 +39,7 @@ bool App::OnInit()
     character = new RigidModel();
     girl = new SkeletalModel();
     enemy = new SkeletalModel();
-    
+
     AssetManager::Instance().LoadStaticModelAsset(floor, "../Resource/Plane.fbx");
     AssetManager::Instance().LoadStaticModelAsset(tree, "../Resource/Tree.fbx");
     AssetManager::Instance().LoadStaticModelAsset(zelda, "../Resource/zeldaPosed001.fbx");
@@ -51,15 +51,15 @@ bool App::OnInit()
     {
         spheres.push_back(new StaticModel());
         AssetManager::Instance().LoadStaticModelAsset(spheres[i], "../Resource/sphere.fbx");
-        spheres[i]->SetPosition({-900 + i*200.0f, 50.0f, 1000 });
-        spheres[i]->SetScale({0.85,0.85,0.85});
+        spheres[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 1000 });
+        spheres[i]->SetScale({ 0.85,0.85,0.85 });
     }
 
     for (int i = 0; i < 10; i++)
     {
         torus.push_back(new StaticModel());
         AssetManager::Instance().LoadStaticModelAsset(torus[i], "../Resource/Torus.fbx");
-        torus[i]->SetPosition({ -900 + i*200.0f, 50.0f, 500 });
+        torus[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 500 });
         torus[i]->SetScale({ 0.7,0.7,0.7 });
     }
 
@@ -91,6 +91,7 @@ bool App::OnInit()
     D3D::postprocessCBData.isHDR = 1;
     D3D::postprocessCBData.contrast = 1.0;
     D3D::postprocessCBData.saturation = 1.0;
+    D3D::screenFxCBData.enableWaterDistortion = 1;
 
     // memory debugger
     memory_debugger.Init();
@@ -197,6 +198,7 @@ void App::HDRRender()
     D3D::deviceContext->VSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(6, 1, D3D::debugBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(7, 1, D3D::postprocessBuffer.GetAddressOf());
+    D3D::deviceContext->PSSetConstantBuffers(8, 1, D3D::screenFxBuffer.GetAddressOf());
 
     // Skybox Render  --------------------------------
     switch (currentSkybox)
@@ -241,16 +243,23 @@ void App::HDRRender()
     D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
     D3D::postprocessCBData.useTint = useTint ? 1 : 0;
 
+    D3D::screenFxCBData.time = Time::GetTotalTime();
+    D3D::screenFxCBData.enableWaterDistortion = enableWaterDistortion == 1 ? 1 : 0;
+    D3D::screenFxCBData.enablePlasmaOverlay = enablePlasmaOverlay == 1 ? 1 : 0;
+    D3D::screenFxCBData.enableFilmGrain = enableFilmGrain == 1 ? 1 : 0;
+
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::postprocessBuffer.Get(), 0, nullptr, &D3D::postprocessCBData, 0, 0);
+    D3D::deviceContext->UpdateSubresource(D3D::screenFxBuffer.Get(), 0, nullptr, &D3D::screenFxCBData, 0, 0);
+
 
     // 1. Depth Only Pass -------------------------------------
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_shadowMap);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(0, nullptr, D3D::shadowDSV.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-    
+
     // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Static_VS.Get(), NULL, 0);
@@ -315,7 +324,7 @@ void App::HDRRender()
     //D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 0);
     character->Render();
     //D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
-    
+
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
@@ -496,6 +505,26 @@ void App::RenderGUI()
     ImGui::Text("");
     ImGui::Checkbox("use ColorTine", &useTint);
     ImGui::ColorEdit3("Color Tint", &D3D::postprocessCBData.colorTint.x);
+    ImGui::End();
+
+    // Screen Space Effect
+    ImGui::Begin("[Screen Effect]");
+    ImGui::Text("Enable");
+    ImGui::Checkbox("useWaterDistortion", &enableWaterDistortion);
+    ImGui::Checkbox("usePlasmaOverlay", &enablePlasmaOverlay);
+    ImGui::Checkbox("useFilmGrain", &enableFilmGrain);
+
+    ImGui::Text("Pattern / Noise");  
+    ImGui::SliderFloat("Cell Scale", &D3D::screenFxCBData.cellScale, 0.1f, 10.0f);
+    ImGui::SliderFloat("Random Intensity", &D3D::screenFxCBData.randomIntensity,1000.0f, 60000.0f);
+    ImGui::SliderFloat("Warp Strength", &D3D::screenFxCBData.warpStrength, 0.0f, 3.0f);
+    ImGui::SliderFloat("distortion Strength", &D3D::screenFxCBData.distortionStrength, 0.002f, 0.008f);
+
+    ImGui::Text("Plasma Overlay");
+    ImGui::SliderFloat("Plasma Intensity", &D3D::screenFxCBData.plasmaIntensity, 0.0f, 1.5f);
+
+    ImGui::Text("Film Grain");
+    ImGui::SliderFloat("Grain Intensity",  &D3D::screenFxCBData.grainIntensity, 0.0f, 0.15f);
     ImGui::End();
 
     // Memory

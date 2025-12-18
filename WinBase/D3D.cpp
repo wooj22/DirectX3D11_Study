@@ -60,6 +60,7 @@ ComPtr<ID3D11Buffer>              D3D::poseMatrixBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::outlineBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::debugBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::postprocessBuffer = nullptr;
+ComPtr<ID3D11Buffer>              D3D::screenFxBuffer = nullptr;
 
 TransformCB        D3D::transformCBData;
 LightingCB         D3D::lightingCBData;
@@ -69,6 +70,7 @@ PoseMatrixCB       D3D::poseCBData;
 OutLineCB          D3D::outlineCBData;
 DebugCB            D3D::debugCBData;
 PostProcessCB      D3D::postprocessCBData;
+ScreenFX           D3D::screenFxCBData;
 
 
 bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
@@ -561,6 +563,16 @@ bool D3D::CreateConstantBuffer()
         constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         constBuffer_Desc.CPUAccessFlags = 0;
         HR_T(device->CreateBuffer(&constBuffer_Desc, nullptr, &postprocessBuffer));
+    }
+
+    // 9. Post Ex CB
+    {
+        D3D11_BUFFER_DESC constBuffer_Desc = {};
+        constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
+        constBuffer_Desc.ByteWidth = sizeof(ScreenFX);
+        constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        constBuffer_Desc.CPUAccessFlags = 0;
+        HR_T(device->CreateBuffer(&constBuffer_Desc, nullptr, &screenFxBuffer));
     }
 
     return true;

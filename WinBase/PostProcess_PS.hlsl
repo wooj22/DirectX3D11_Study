@@ -1,62 +1,47 @@
 // PostProcess PixelShader
 // 렌더링 후처리 단계
+
+// [Post Process]
 // ToneMapping + Exposure + ColorGrading
 // TODO :: Bloom, Vignette, Film Grain
 
-#include <PBR_Common.fxh>
+// [Screen Space Effect]
+// 물결, 필름그레인, 플라즈마 효과
+
+#include <PostFxCommon.fxh>
 
 Texture2D sceneHDR : register(t12);
 SamplerState samplerLinear : register(s0);
 
-// ColorGrading
-float3 ApplyColorGrading(float3 color)
-{
-    // 색상 이동
-    // TODO :: hue shift
-
-    // 대비
-    color = ((color - 0.5) * contrast + 0.5);
-
-    // 채도
-    float gray = dot(color, float3(0.299, 0.587, 0.114));
-    color = lerp(float3(gray, gray, gray), color, saturation);
-
-    // 톤
-    if (useTint)
-        color += colorTint;
-
-    return saturate(color);
-}
-
-
-// ACES Filmic Tone Mapping : HDR -> LDR 압축 (0~1)
-float3 ACESFilm(float3 x)
-{
-    float a = 2.51f;
-    float b = 0.03f;
-    float c = 2.43f;
-    float d = 0.59f;
-    float e = 0.14f;
-    return saturate(x * (a * x + b) / (x * (c * x + d) + e));
-}
 
 float4 main(PS_FullScreen_Input input) : SV_TARGET
-{
-    // hdr scene smapling
-    float3 hdr = sceneHDR.Sample(samplerLinear, input.uv).rgb;
+{ 
+    // UV distortion
+    float2 uv = input.uv;
+    if (enableWaterDistortion)
+        uv = ApplyWaterDistortion(input.uv);
+
+    // HDR sample
+    float3 hdr = sceneHDR.Sample(samplerLinear, uv).rgb;
 
     // exposure
     float exposureScale = pow(2.0, exposure);
     hdr *= exposureScale;
-    
+
     // tone mapping
     float3 mapped = ACESFilm(hdr);
-    
-    // Color Grading
+
+    // color grading
     float3 colorGrade = ApplyColorGrading(mapped);
-    
-    // Gamma
+
+    // screen space Effect
     float3 finalColor = colorGrade;
+    if (enablePlasmaOverlay)
+        finalColor = ApplyPlasmaOverlay(input.uv, finalColor);
+    if(enableFilmGrain)
+        finalColor = ApplyFilmGrain(input.uv, finalColor);
+
+    // gamma
     if (useGamma && isHDR)
         finalColor = LinearToSRGB(finalColor);
 
