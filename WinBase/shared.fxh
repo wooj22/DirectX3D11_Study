@@ -29,6 +29,7 @@
 // [ SamplerState ]
 // SamplerState samLinear : register(s0)
 // SamplerComparisonState samShadow : register(s1);
+// SamplerState samLinearClamp : register(s2);
 
 
 // ------------------

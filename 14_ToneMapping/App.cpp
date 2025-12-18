@@ -185,6 +185,7 @@ void App::HDRRender()
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
     D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
+    D3D::deviceContext->PSSetSamplers(2, 1, D3D::linearClamSamplerState.GetAddressOf());
     D3D::deviceContext->OMSetBlendState(D3D::alphaBlendState.Get(), blendFactor, sampleMask);
 
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
@@ -489,7 +490,7 @@ void App::RenderGUI()
 
     ImGui::Text("");
     //ImGui::ColorEdit3("Hue Shift", &D3D::postprocessCBData.hueShift.x);
-    ImGui::SliderFloat("Exposure", &D3D::postprocessCBData.exposure, 0.f, 5.0f);
+    ImGui::SliderFloat("Exposure", &D3D::postprocessCBData.exposure, -5.f, 5.0f);
     ImGui::SliderFloat("Contrast", &D3D::postprocessCBData.contrast, 0.5f, 2.0f);
     ImGui::SliderFloat("Saturation", &D3D::postprocessCBData.saturation, 0.5f, 2.0f);
 

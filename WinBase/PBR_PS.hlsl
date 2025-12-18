@@ -31,6 +31,7 @@ Texture2D IBL_BRDF_LUT : register(t11);
 // --- Sampler Bind Slot ------------------
 SamplerState samLinear : register(s0);
 SamplerComparisonState samShadow : register(s1);
+SamplerState samLinearClamp : register(s2);
 
 
 
@@ -40,8 +41,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     // color
     float3 base_color = float3(1.0f, 1.0f, 1.0f);
     float3 emissive_color = float3(0.0f, 0.0f, 0.0f);
-    float metallic = 0.5f;
-    float roughness = 0.5f;
+    float metallic = 0.0f;
+    float roughness = 0.0f;
     float alpha = 1.0f;
     
     // shadowFactor
@@ -178,11 +179,11 @@ float4 main(PS_INPUT input) : SV_TARGET
         float mip = saturate(roughness) * maxLevel;
         
         // Prefiltered - 환경 Radiance + D(미세면 분포) + roughness 관련 적분값
-        float3 R = reflect(-V, N);
+        float3 R = normalize(reflect(-V, N));
         float3 PrefilteredColor = IBL_SpecularEnvMap.SampleLevel(samLinear, R, mip).rgb;
 
         // LUT - F + G 적분값
-        float2 BRDF_LUT = IBL_BRDF_LUT.Sample(samLinear, float2(NdotL, roughness)).rg;
+        float2 BRDF_LUT = IBL_BRDF_LUT.Sample(samLinearClamp, float2(NdotV, roughness)).rg;
         
         // Specular IBL
         float3 SpecularIBL = PrefilteredColor * (F0 * BRDF_LUT.x + BRDF_LUT.y);

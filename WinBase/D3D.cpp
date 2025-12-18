@@ -29,6 +29,7 @@ ComPtr<ID3D11SamplerState>        D3D::shadowSamplerState = nullptr;
 ComPtr<ID3D11DepthStencilState>   D3D::wirteoffDSS = nullptr;
 ComPtr<ID3D11RasterizerState>     D3D::cullfrontRS = nullptr;
 ComPtr<ID3D11SamplerState>        D3D::linearSamplerState = nullptr;
+ComPtr<ID3D11SamplerState>        D3D::linearClamSamplerState = nullptr;
 ComPtr<ID3D11BlendState>          D3D::alphaBlendState = nullptr;
                                   
 ComPtr<ID3D11VertexShader>        D3D::BaseLit_Static_VS = nullptr;
@@ -258,7 +259,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         HR_T(device->CreateRasterizerState(&rsDesc, cullfrontRS.GetAddressOf()));
     }
 
-	// create smapler state 
+	// create smapler state
     {
         D3D11_SAMPLER_DESC sample_Desc = {};
         sample_Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;			// 상하좌우 텍셀 보간
@@ -269,6 +270,21 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         sample_Desc.MinLOD = 0;
         sample_Desc.MaxLOD = D3D11_FLOAT32_MAX;
         HR_T(device->CreateSamplerState(&sample_Desc, linearSamplerState.GetAddressOf()));
+    }
+
+    // create smapler state 
+    {
+        D3D11_SAMPLER_DESC sampDesc = {};
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.MipLODBias = 0.0f;
+        sampDesc.MaxAnisotropy = 1;
+        sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+        sampDesc.MinLOD = 0.0f;
+        sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+        HR_T(device->CreateSamplerState(&sampDesc, linearClamSamplerState.GetAddressOf()));
     }
 
 	// create blend state

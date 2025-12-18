@@ -49,10 +49,11 @@ public:
     static ComPtr<ID3D11SamplerState>        shadowSamplerState;    // clmap
 
     // ¿É¼Ç
-	static ComPtr<ID3D11DepthStencilState>   wirteoffDSS;           // write off
-    static ComPtr <ID3D11RasterizerState>    cullfrontRS;           // cullmode = front
-	static ComPtr<ID3D11SamplerState>	     linearSamplerState;    // linear    
-	static ComPtr<ID3D11BlendState>          alphaBlendState;       // alpha
+	static ComPtr<ID3D11DepthStencilState>   wirteoffDSS;              // write off
+    static ComPtr <ID3D11RasterizerState>    cullfrontRS;              // cullmode = front
+	static ComPtr<ID3D11SamplerState>	     linearSamplerState;       // linear    
+	static ComPtr<ID3D11SamplerState>	     linearClamSamplerState;   // linear + clamp    
+	static ComPtr<ID3D11BlendState>          alphaBlendState;          // alpha
 
     // Shader
     static ComPtr<ID3D11VertexShader> BaseLit_Static_VS;
