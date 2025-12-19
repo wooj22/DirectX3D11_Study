@@ -241,6 +241,8 @@ void App::HDRRender()
     D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
     D3D::postprocessCBData.useDefalutGamma = usedefalutGamma ? 1 : 0;
+    D3D::postprocessCBData.useColorAdjustments = useColorAdjustments ? 1 : 0;
+    D3D::postprocessCBData.useWhiteBalance = useWhiteBalance ? 1 : 0;
     D3D::postprocessCBData.useHueShift = useHueShift ? 1 : 0;
     D3D::postprocessCBData.useColorTint = useColorTint ? 1 : 0;
 
@@ -502,19 +504,26 @@ void App::RenderGUI()
 
     ImGui::Text("");
     ImGui::Text("[Color Adjustments]");
+    ImGui::Checkbox("Enable Color Adjustments", &useColorAdjustments);
+    ImGui::BeginDisabled(!useColorAdjustments);
     ImGui::SliderFloat("Exposure", &D3D::postprocessCBData.exposure, -5.f, 5.0f);
     ImGui::SliderFloat("Contrast", &D3D::postprocessCBData.contrast, 0.5f, 2.0f);
     ImGui::SliderFloat("Saturation", &D3D::postprocessCBData.saturation, 0.5f, 2.0f);
 
     ImGui::Checkbox("use HueShift", &useHueShift);
-    ImGui::BeginDisabled(!useHueShift);
     ImGui::SliderAngle("HueShift", &D3D::postprocessCBData.hueShift, -180.0f, 180.0f);
-    ImGui::EndDisabled();
     
-    ImGui::Checkbox("use ColorTine", &useColorTint);
-    ImGui::BeginDisabled(!useColorTint);
+    ImGui::Checkbox("use ColorTint", &useColorTint);
     ImGui::ColorEdit3("Color Tint", &D3D::postprocessCBData.colorTint.x);
     ImGui::SliderFloat("Strength", &D3D::postprocessCBData.colorTint_strength, 0, 1.0f);
+    ImGui::EndDisabled();
+
+    ImGui::Text("");
+    ImGui::Text("[White Balance]");
+    ImGui::Checkbox("Enable White Balance", &useWhiteBalance);
+    ImGui::BeginDisabled(!useWhiteBalance);
+    ImGui::SliderFloat("Temperature", &D3D::postprocessCBData.temperature, -1.f, 1.0f);
+    ImGui::SliderFloat("Tint", &D3D::postprocessCBData.tint, -1.f, 1.0f);
     ImGui::EndDisabled();
     ImGui::End();
 

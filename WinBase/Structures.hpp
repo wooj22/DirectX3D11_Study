@@ -168,6 +168,11 @@ struct alignas(16) PostProcessCB
     float   defalutGamma = 2.2f;     // Gamma (defalut)
     float   exposure = 0;            // 노출
 
+    // Enable
+    UINT useColorAdjustments = 0;
+    UINT useWhiteBalance = 0;
+    Vector2 padding1;
+
     // Color Adjustments (대비, 채도, Hue Shift, Tint)
     float   contrast = 1;            
     float   saturation = 1;     
@@ -177,7 +182,12 @@ struct alignas(16) PostProcessCB
     UINT    useColorTint = 0;             
     Vector3 colorTint = { 0,0,0 };   
     float   colorTint_strength = 0.5;
-    Vector3 padding;
+    Vector3 padding2;
+
+    // White Balance (온도, 색조)
+    float temperature = 0;
+    float tint = 0;
+    Vector2 padding3;
 };
 
 struct alignas(16) ScreenFX

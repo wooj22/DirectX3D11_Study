@@ -114,6 +114,11 @@ cbuffer PostProcessCB : register(b7)
     float defalutGamma;
     float exposure;
     
+    // Enable
+    bool   useColorAdjustments;
+    bool   useWhiteBalance;
+    float2 padding4;
+    
     // Color Adjustments (대비, 채도, Hue Shift, Tint)
     float  contrast;
     float  saturation; 
@@ -123,7 +128,12 @@ cbuffer PostProcessCB : register(b7)
     bool   useTint;
     float3 colorTint;
     float  colorTint_strength;
-    float3 padding4;
+    float3 padding5;
+    
+    // White Balance (온도, 색조)
+    float temperature;
+    float tint;
+    float2 padding6;
 };
 
 cbuffer CB_PostFX : register(b8)

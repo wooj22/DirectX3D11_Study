@@ -1,5 +1,67 @@
 #include <PBR_Common.fxh>
 
+
+// ----------------------------------------
+// [ Post Process ] 
+// ----------------------------------------
+// Color Adjustments
+float3 ApplyColorAdjustments(float3 color)
+{
+    // 색상 이동
+    if (useHueShift)
+    {
+        // RGB -> YIQ
+        float Y = dot(color, float3(0.299, 0.587, 0.114));
+        float I = dot(color, float3(0.596, -0.274, -0.322));
+        float Q = dot(color, float3(0.211, -0.523, 0.312));
+
+        float cosA = cos(hueShift);
+        float sinA = sin(hueShift);
+
+        float I2 = I * cosA - Q * sinA;
+        float Q2 = I * sinA + Q * cosA;
+
+        // YIQ -> RGB
+        color.r = Y + 0.956 * I2 + 0.621 * Q2;
+        color.g = Y - 0.272 * I2 - 0.647 * Q2;
+        color.b = Y - 1.106 * I2 + 1.703 * Q2;
+    }
+
+    // 대비
+    color = ((color - 0.5) * contrast + 0.5);
+
+    // 채도
+    float gray = dot(color, float3(0.299, 0.587, 0.114));
+    color = lerp(float3(gray, gray, gray), color, saturation);
+
+    // 톤
+    if (useTint)
+        color = lerp(color, color * colorTint, colorTint_strength);
+
+    return saturate(color);
+}
+
+// Film Grain
+
+// Vinette
+
+// Lift/ gamma/ Gain
+
+// White Balance
+float3 ApplyWhiteBalance(float3 color)
+{
+    // Temperature : Blue <-> Yellow
+    float3 tempOffset = float3(0.10, 0.0, -0.10) * temperature;
+
+    // Tint : Magenta <-> Green 
+    float3 tintOffset = float3(-0.05, 0.10, -0.05) * tint;
+
+    color += tempOffset + tintOffset;
+    return color;
+}
+
+
+
 // ----------------------------------------
 // [ Random -> Noise -> FBM ->Domain Warping ]
 // ----------------------------------------
@@ -169,52 +231,3 @@ float3 ACESFilm(float3 x)
     float e = 0.14f;
     return saturate(x * (a * x + b) / (x * (c * x + d) + e));
 }
-
-// ----------------------------------------
-// [ Post Process ] 
-// ----------------------------------------
-// Color Adjustments
-float3 ApplyColorAdjustments(float3 color)
-{
-    // 색상 이동
-    if (useHueShift)
-    {
-        // RGB -> YIQ
-        float Y = dot(color, float3(0.299, 0.587, 0.114));
-        float I = dot(color, float3(0.596, -0.274, -0.322));
-        float Q = dot(color, float3(0.211, -0.523, 0.312));
-
-        float cosA = cos(hueShift);
-        float sinA = sin(hueShift);
-
-        float I2 = I * cosA - Q * sinA;
-        float Q2 = I * sinA + Q * cosA;
-
-        // YIQ -> RGB
-        color.r = Y + 0.956 * I2 + 0.621 * Q2;
-        color.g = Y - 0.272 * I2 - 0.647 * Q2;
-        color.b = Y - 1.106 * I2 + 1.703 * Q2;
-    }
-
-    // 대비
-    color = ((color - 0.5) * contrast + 0.5);
-
-    // 채도
-    float gray = dot(color, float3(0.299, 0.587, 0.114));
-    color = lerp(float3(gray, gray, gray), color, saturation);
-
-    // 톤
-    if (useTint)
-        color = lerp(color, color * colorTint, colorTint_strength);
-
-    return saturate(color);
-}
-
-// Film Grain
-
-// Vinette
-
-// Lift/ gamma/ Gain
-
-// While Balance
-

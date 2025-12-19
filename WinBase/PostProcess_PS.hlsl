@@ -21,7 +21,6 @@ SamplerState samplerLinear : register(s0);
 
 float4 main(PS_FullScreen_Input input) : SV_TARGET
 { 
-    // UV ¿Ö°î
     float2 uv = input.uv;
     
     // UV ¿Ö°î
@@ -39,19 +38,31 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     // tone Mapping
     float3 mapped = ACESFilm(hdr);
 
-    // Color Adjustments
-    float3 colorGrade = ApplyColorAdjustments(mapped);
-
-    // ScreenFx - Plasma
-    float3 finalColor = colorGrade;
-    if (enablePlasmaOverlay)
-        finalColor = ApplyPlasmaOverlay(input.uv, finalColor);
+    // [ PostProcess ] ------------------------------
+    float3 colorAdjustments = mapped;
     
-    // ScreenFx - Film Grain
+    // Color Adjustments
+    if (useWhiteBalance)
+        colorAdjustments = ApplyWhiteBalance(colorAdjustments);
+      
+    if (useColorAdjustments)
+        colorAdjustments = ApplyColorAdjustments(colorAdjustments);
+    
+      
+    // White Balance
+
+    // [ ScreenFx ] ------------------------------
+    // Plasma
+        float3 screenFx = colorAdjustments;
+    if (enablePlasmaOverlay)
+        screenFx = ApplyPlasmaOverlay(input.uv, screenFx);
+    
+    // Film Grain
     if(enableFilmGrain)
-        finalColor = ApplyFilmGrain(input.uv, finalColor);
+        screenFx = ApplyFilmGrain(input.uv, screenFx);
 
     // gamma
+    float3 finalColor = screenFx;
     if (useDefalutGamma && isHDR)
         finalColor = LinearToSRGB(finalColor);
 
