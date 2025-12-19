@@ -162,18 +162,22 @@ struct alignas(16) DebugCB
 // PostProcess CB
 struct alignas(16) PostProcessCB
 {
-    UINT useGamma = 1;
-    Vector3 padding;
-
-    UINT    isHDR = 0;               // LDR/HDR 감마 적용
-    float   gamma = 2.2f;            // 감마
+    // Base
+    UINT    isHDR = 0;               // LDR/HDR
+    UINT    useDefalutGamma = 1;     // Linear -> SRGB
+    float   defalutGamma = 2.2f;     // Gamma (defalut)
     float   exposure = 0;            // 노출
-    float   contrast = 1;            // 대비
 
-    float   saturation = 1;          // 채도
-    Vector3 hueShift = { 0,0,0 };    // 색상 이동
-    UINT    useTint = 0;             // Color Tint
-    Vector3 colorTint = { 0,0,0 };   // 색상 톤
+    // Color Adjustments (대비, 채도, Hue Shift, Tint)
+    float   contrast = 1;            
+    float   saturation = 1;     
+    UINT    useHueShift = 0;
+    float   hueShift = 0;
+
+    UINT    useColorTint = 0;             
+    Vector3 colorTint = { 0,0,0 };   
+    float   colorTint_strength = 0.5;
+    Vector3 padding;
 };
 
 struct alignas(16) ScreenFX

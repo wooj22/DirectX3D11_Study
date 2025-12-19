@@ -1,7 +1,7 @@
 #include <PBR_Common.fxh>
 
 // ----------------------------------------
-// Random -> Noise -> FBM ->Domain Warping 
+// [ Random -> Noise -> FBM ->Domain Warping ]
 // ----------------------------------------
 // Random
 float Random(float2 uv)
@@ -95,7 +95,7 @@ float3 palette(float t)
 }
 
 // ----------------------------------------
-// Screen Space Effect
+// [ Screen Space Effect ]
 // ----------------------------------------
 float2 ApplyRipple(float2 uv)
 {
@@ -171,13 +171,30 @@ float3 ACESFilm(float3 x)
 }
 
 // ----------------------------------------
-// Post Process (Color)
+// [ Post Process ] 
 // ----------------------------------------
-// ColorGrading
-float3 ApplyColorGrading(float3 color)
+// Color Adjustments
+float3 ApplyColorAdjustments(float3 color)
 {
     // 색상 이동
-    // TODO :: hue shift
+    if (useHueShift)
+    {
+        // RGB -> YIQ
+        float Y = dot(color, float3(0.299, 0.587, 0.114));
+        float I = dot(color, float3(0.596, -0.274, -0.322));
+        float Q = dot(color, float3(0.211, -0.523, 0.312));
+
+        float cosA = cos(hueShift);
+        float sinA = sin(hueShift);
+
+        float I2 = I * cosA - Q * sinA;
+        float Q2 = I * sinA + Q * cosA;
+
+        // YIQ -> RGB
+        color.r = Y + 0.956 * I2 + 0.621 * Q2;
+        color.g = Y - 0.272 * I2 - 0.647 * Q2;
+        color.b = Y - 1.106 * I2 + 1.703 * Q2;
+    }
 
     // 대비
     color = ((color - 0.5) * contrast + 0.5);
@@ -188,7 +205,16 @@ float3 ApplyColorGrading(float3 color)
 
     // 톤
     if (useTint)
-        color += colorTint;
+        color = lerp(color, color * colorTint, colorTint_strength);
 
     return saturate(color);
 }
+
+// Film Grain
+
+// Vinette
+
+// Lift/ gamma/ Gain
+
+// While Balance
+

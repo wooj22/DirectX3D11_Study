@@ -66,7 +66,7 @@ private:
     bool useRoughnessOverride = 0;
 
     // Gamma debug
-    bool useGamma = 1;
+    bool usedefalutGamma = 1;
 
     // clear color
     float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };

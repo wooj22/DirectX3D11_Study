@@ -238,8 +238,8 @@ void App::HDRRender()
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
     D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
-    D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
-    D3D::postprocessCBData.useTint = useTint ? 1 : 0;
+    D3D::postprocessCBData.useDefalutGamma = usedefalutGamma ? 1 : 0;
+    D3D::postprocessCBData.useColorTint = useColorTint ? 1 : 0;
 
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
@@ -484,8 +484,8 @@ void App::RenderGUI()
 
     // PostProcess
     ImGui::Begin("[PostProcess]");
-    ImGui::Checkbox("useGamma", &useGamma);
-    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.gamma, 0.f, 5.0f);
+    ImGui::Checkbox("useGamma", &usedefalutGamma);
+    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.defalutGamma, 0.f, 5.0f);
 
     ImGui::Text("");
     //ImGui::ColorEdit3("Hue Shift", &D3D::postprocessCBData.hueShift.x);
@@ -494,7 +494,7 @@ void App::RenderGUI()
     ImGui::SliderFloat("Saturation", &D3D::postprocessCBData.saturation, 0.5f, 2.0f);
 
     ImGui::Text("");
-    ImGui::Checkbox("use ColorTine", &useTint);
+    ImGui::Checkbox("use ColorTine", &useColorTint);
     ImGui::ColorEdit3("Color Tint", &D3D::postprocessCBData.colorTint.x);
     ImGui::End();
 

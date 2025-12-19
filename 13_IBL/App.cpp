@@ -69,7 +69,7 @@ bool App::OnInit()
 
     // postProcess
     D3D::postprocessCBData.isHDR = 0;
-    D3D::postprocessCBData.gamma = 1.4f;
+    D3D::postprocessCBData.defalutGamma = 1.4f;
 
     // memory debugger
     memory_debugger.Init();
@@ -194,7 +194,7 @@ void App::OnRender()
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
     D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
-    D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
+    D3D::postprocessCBData.useDefalutGamma = usedefalutGamma ? 1 : 0;
 
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
@@ -375,8 +375,8 @@ void App::RenderGUI()
 
     // Gamma
     ImGui::Begin("[Gamma]");
-    ImGui::Checkbox("useGamma", &useGamma);
-    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.gamma, 0.f, 5.0f);
+    ImGui::Checkbox("useGamma", &usedefalutGamma);
+    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.defalutGamma, 0.f, 5.0f);
     ImGui::End();
 
     // IBL

@@ -240,8 +240,9 @@ void App::HDRRender()
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
     D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
-    D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
-    D3D::postprocessCBData.useTint = useTint ? 1 : 0;
+    D3D::postprocessCBData.useDefalutGamma = usedefalutGamma ? 1 : 0;
+    D3D::postprocessCBData.useHueShift = useHueShift ? 1 : 0;
+    D3D::postprocessCBData.useColorTint = useColorTint ? 1 : 0;
 
     D3D::screenFxCBData.time = Time::GetTotalTime();
     D3D::screenFxCBData.enableWaterDistortion = enableRipple == 1 ? 1 : 0;
@@ -493,18 +494,28 @@ void App::RenderGUI()
 
     // PostProcess
     ImGui::Begin("[PostProcess]");
-    ImGui::Checkbox("useGamma", &useGamma);
-    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.gamma, 0.f, 5.0f);
+    ImGui::Text("Gamma (Linear->SRGB)");
+    ImGui::Checkbox("use defalutGamma", &usedefalutGamma);
+    ImGui::BeginDisabled(!usedefalutGamma);
+    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.defalutGamma, 0.f, 5.0f);
+    ImGui::EndDisabled();
 
     ImGui::Text("");
-    //ImGui::ColorEdit3("Hue Shift", &D3D::postprocessCBData.hueShift.x);
+    ImGui::Text("[Color Adjustments]");
     ImGui::SliderFloat("Exposure", &D3D::postprocessCBData.exposure, -5.f, 5.0f);
     ImGui::SliderFloat("Contrast", &D3D::postprocessCBData.contrast, 0.5f, 2.0f);
     ImGui::SliderFloat("Saturation", &D3D::postprocessCBData.saturation, 0.5f, 2.0f);
 
-    ImGui::Text("");
-    ImGui::Checkbox("use ColorTine", &useTint);
+    ImGui::Checkbox("use HueShift", &useHueShift);
+    ImGui::BeginDisabled(!useHueShift);
+    ImGui::SliderAngle("HueShift", &D3D::postprocessCBData.hueShift, -180.0f, 180.0f);
+    ImGui::EndDisabled();
+    
+    ImGui::Checkbox("use ColorTine", &useColorTint);
+    ImGui::BeginDisabled(!useColorTint);
     ImGui::ColorEdit3("Color Tint", &D3D::postprocessCBData.colorTint.x);
+    ImGui::SliderFloat("Strength", &D3D::postprocessCBData.colorTint_strength, 0, 1.0f);
+    ImGui::EndDisabled();
     ImGui::End();
 
     // Screen Space Effect

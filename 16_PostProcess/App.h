@@ -31,14 +31,15 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 
-// Screen Space Effect 프로젝트입니다.
+// PostProcess 테스트 프로젝트입니다.
 /*
-    Random -> Noise -> FBM -> Domain Wraping 패턴을 기반으로
-    리플(물결), 플라즈마, 필름그레인 효과를 적용합니다.
-
-    1. Water Distortion : Domain Wraping 노이즈로 UV 좌표를 왜곡
-    2. Plasma Overlay : Domain Warping + FBM 패턴의 color
-    3. Film Grain : FBM 기반 노이즈로 미세한 입자감
+*   - 노출
+    - Color Adjustments (채도, 대비, Hue Shift, Tint)
+    - Bloom
+    - Film Grain
+    - Vignette
+    - Lift, Gamma, Gain
+    - White Balance (온도, 색조)
 */
 
 class App : public WinApp
@@ -108,10 +109,13 @@ private:
     bool useRoughnessOverride = 0;
 
     // Gamma debug
-    bool useGamma = 1;
+    bool usedefalutGamma = 1;
 
     // PostProcess
-    bool useTint = 0;
+    bool useHueShift = 0;
+    bool useColorTint = 0;
+
+    // Screen Space Effect
     bool enableRipple;
     bool enablePlasmaOverlay;
     bool enableFilmGrain;

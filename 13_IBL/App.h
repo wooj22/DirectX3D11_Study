@@ -90,7 +90,7 @@ private:
     bool useRoughnessOverride = 0;
 
     // Gamma debug
-    bool useGamma = 1;
+    bool usedefalutGamma = 1;
 
     // IBL debug
     bool useIBL = 1;

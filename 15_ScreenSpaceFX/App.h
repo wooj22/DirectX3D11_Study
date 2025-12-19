@@ -108,10 +108,10 @@ private:
     bool useRoughnessOverride = 0;
 
     // Gamma debug
-    bool useGamma = 1;
+    bool usedefalutGamma = 1;
 
     // PostProcess
-    bool useTint = 0;
+    bool useColorTint = 0;
     bool enableRipple = 1;
     bool enablePlasmaOverlay;
     bool enableFilmGrain;

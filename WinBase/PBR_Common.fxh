@@ -38,8 +38,8 @@ float G_Smith(float3 N, float3 V, float3 L, float roughness)
 }
 
 
-// --- Gamma ------------------------------
+// --- Defalut Gamma ------------------------------
 float3 LinearToSRGB(float3 c)
 {
-    return pow(c, 1.0 / gamma);
+    return pow(c, 1.0 / defalutGamma);
 }

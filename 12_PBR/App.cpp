@@ -56,7 +56,7 @@ bool App::OnInit()
 
     // LDR
     D3D::postprocessCBData.isHDR = 0;
-    D3D::postprocessCBData.gamma = 1.7;
+    D3D::postprocessCBData.defalutGamma = 1.7;
 
     // projection init 
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
@@ -148,7 +148,7 @@ void App::OnRender()
     D3D::debugCBData.useMetallicOverride = useMetallicOverride ? 1 : 0;
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
 
-    D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
+    D3D::postprocessCBData.useDefalutGamma = usedefalutGamma ? 1 : 0;
 
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
@@ -275,8 +275,8 @@ void App::RenderGUI()
 
     // Gamma
     ImGui::Begin("[Gamma]");
-    ImGui::Checkbox("useGamma", &useGamma);
-    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.gamma, 0.f, 5.0f);
+    ImGui::Checkbox("useGamma", &usedefalutGamma);
+    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.defalutGamma, 0.f, 5.0f);
     ImGui::End();
 
     ImGui::Begin("[Memory Debugger]");

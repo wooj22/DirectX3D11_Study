@@ -108,18 +108,22 @@ cbuffer DebugCB : register(b6)
 
 cbuffer PostProcessCB : register(b7)
 {
-    bool useGamma;
-    float3 padding4;
-    
-    bool isHDR;
-    float gamma;
+    // Base
+    bool  isHDR;
+    bool  useDefalutGamma;
+    float defalutGamma;
     float exposure;
-    float contrast;
-
-    float saturation; 
-    float3 hueShift;
-    bool useTint;
+    
+    // Color Adjustments (대비, 채도, Hue Shift, Tint)
+    float  contrast;
+    float  saturation; 
+    bool   useHueShift;
+    float  hueShift;
+    
+    bool   useTint;
     float3 colorTint;
+    float  colorTint_strength;
+    float3 padding4;
 };
 
 cbuffer CB_PostFX : register(b8)
