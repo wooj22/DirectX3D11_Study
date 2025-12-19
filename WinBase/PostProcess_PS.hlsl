@@ -18,8 +18,8 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
 { 
     // UV distortion
     float2 uv = input.uv;
-    if (enableWaterDistortion)
-        uv = ApplyWaterDistortion(input.uv);
+    if (enableRipple)
+        uv = ApplyRipple(input.uv);
 
     // HDR sample
     float3 hdr = sceneHDR.Sample(samplerLinear, uv).rgb;

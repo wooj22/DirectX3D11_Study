@@ -112,8 +112,8 @@ private:
 
     // PostProcess
     bool useTint = 0;
-    bool enableWaterDistortion = 1;
-    bool enablePlasmaOverlay = 1;
+    bool enableRipple = 1;
+    bool enablePlasmaOverlay;
     bool enableFilmGrain;
     bool enableDither;
 

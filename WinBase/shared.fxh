@@ -124,7 +124,7 @@ cbuffer PostProcessCB : register(b7)
 
 cbuffer CB_PostFX : register(b8)
 {
-    int enableWaterDistortion;
+    int enableRipple;
     int enablePlasmaOverlay;  
     int enableFilmGrain;      
     float time;

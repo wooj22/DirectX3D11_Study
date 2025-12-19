@@ -244,7 +244,7 @@ void App::HDRRender()
     D3D::postprocessCBData.useTint = useTint ? 1 : 0;
 
     D3D::screenFxCBData.time = Time::GetTotalTime();
-    D3D::screenFxCBData.enableWaterDistortion = enableWaterDistortion == 1 ? 1 : 0;
+    D3D::screenFxCBData.enableWaterDistortion = enableRipple == 1 ? 1 : 0;
     D3D::screenFxCBData.enablePlasmaOverlay = enablePlasmaOverlay == 1 ? 1 : 0;
     D3D::screenFxCBData.enableFilmGrain = enableFilmGrain == 1 ? 1 : 0;
 
@@ -510,7 +510,7 @@ void App::RenderGUI()
     // Screen Space Effect
     ImGui::Begin("[Screen Effect]");
     ImGui::Text("Enable");
-    ImGui::Checkbox("useWaterDistortion", &enableWaterDistortion);
+    ImGui::Checkbox("useRipple", &enableRipple);
     ImGui::Checkbox("usePlasmaOverlay", &enablePlasmaOverlay);
     ImGui::Checkbox("useFilmGrain", &enableFilmGrain);
 

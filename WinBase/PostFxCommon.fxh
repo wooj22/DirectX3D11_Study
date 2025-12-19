@@ -97,7 +97,7 @@ float3 palette(float t)
 // ----------------------------------------
 // Screen Space Effect
 // ----------------------------------------
-float2 ApplyWaterDistortion(float2 uv)
+float2 ApplyRipple(float2 uv)
 {
     float2 flowDir = normalize(float2(0.8, -0.6));
 
