@@ -42,8 +42,40 @@ float3 ApplyColorAdjustments(float3 color)
 }
 
 // Film Grain
+float3 ApplyFilmGrain(float3 color)
+{
+    return color;
+}
 
 // Vinette
+float3 ApplyVignette(float2 uv, float3 color)
+{
+    // 화면 종횡비 보정
+    // screenTexelSize = (1/width, 1/height)
+    float aspect = screenTexelSize.y / max(screenTexelSize.x, 1e-8); 
+    float2 p = uv - vignetteCenter;
+    p.x *= aspect;
+
+    // 중심에서 코너까지의 최대 거리로 정규화 0(center) ~ 1(corner)
+    float2 corner = float2(0.5 * aspect, 0.5);
+    float rMax = max(length(corner), 1e-6);
+    float d = length(p) / rMax;
+
+    // intensity : 어두운 영역 범위(inner)
+    // smoothness : 부드러운 경계(outer)
+    float intensity = saturate(vignette_intensity);
+    float smoothness = saturate(vignette_smoothness);
+    
+    float inner = saturate(1.0 - intensity);
+    float outer = saturate(inner + max(smoothness, 1e-4));
+    float mask = smoothstep(inner, outer, d);
+
+    // vinette color
+    float t = mask * intensity;
+    return lerp(color, vignetteColor, t);
+    
+    return color;
+}
 
 // Lift/ gamma/ Gain
 float3 ApplyLGG(float3 color)

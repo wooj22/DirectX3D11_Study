@@ -66,10 +66,16 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     if(enableFilmGrain)
         screenFx = ApplyFilmGrain(input.uv, screenFx);
 
-    // gamma
+    
+    // [ Defalut Gamma ] --------------------------
     float3 finalColor = screenFx;
     if (useDefalutGamma && isHDR)
         finalColor = LinearToSRGB(finalColor);
+    
+    
+    // [ Vinette ] --------------------------------
+    if (useVinette)
+        finalColor = ApplyVignette(uv, finalColor);
 
     return float4(finalColor, 1.0f);
 }

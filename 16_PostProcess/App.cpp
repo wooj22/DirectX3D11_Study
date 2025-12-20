@@ -243,6 +243,7 @@ void App::HDRRender()
     D3D::postprocessCBData.useDefalutGamma = usedefalutGamma ? 1 : 0;
     D3D::postprocessCBData.useColorAdjustments = useColorAdjustments ? 1 : 0;
     D3D::postprocessCBData.useLGG = useLGG ? 1 : 0;
+    D3D::postprocessCBData.useVignette = useVignette ? 1 : 0;
 
     D3D::postprocessCBData.useWhiteBalance = useWhiteBalance ? 1 : 0;
     D3D::postprocessCBData.useHueShift = useHueShift ? 1 : 0;
@@ -544,6 +545,16 @@ void App::RenderGUI()
     ImGui::Checkbox("use Gain", &useGain);
     ImGui::SliderFloat3("Gain RGB", &D3D::postprocessCBData.gain.x, -1.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Gain Strength", &D3D::postprocessCBData.gain_strength, 0.0f, 1.0f, "%.3f");
+    ImGui::EndDisabled();
+
+    ImGui::Text("");
+    ImGui::Text("[Vignette]");
+    ImGui::Checkbox("Enable Vignette", &useVignette);
+    ImGui::BeginDisabled(!useVignette);
+    ImGui::SliderFloat("Intensity", &D3D::postprocessCBData.vignette_intensity, 0.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Smoothness", &D3D::postprocessCBData.vignette_smoothness, 0.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat2("Center", &D3D::postprocessCBData.vignetteCenter.x, 0.0f, 1.0f, "%.3f");
+    ImGui::ColorEdit3("Color", &D3D::postprocessCBData.vignetteColor.x);
     ImGui::EndDisabled();
     ImGui::End();
 

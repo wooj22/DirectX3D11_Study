@@ -171,7 +171,8 @@ struct alignas(16) PostProcessCB
     // Enable
     UINT useColorAdjustments = 0;
     UINT useWhiteBalance = 0;
-    Vector2 padding1;
+    UINT useLGG = 0;
+    UINT useVignette = 0;
 
     // Color Adjustments (´ëºñ, Ã¤µµ, Hue Shift, Tint)
     float   contrast = 1;            
@@ -190,19 +191,26 @@ struct alignas(16) PostProcessCB
     Vector2 padding3;
 
     // Lift / Gamma / Gain (¾îµÎ¿îÅæ, ¹ÌµåÅæ, ¹àÀºÅæ ¹à±â Á¶Á¤)
-    UINT  useLGG = 0;
     UINT  useLift = 0;
     UINT  useGamma = 0;
     UINT  useGain = 0;
+    int   padding4;
 
     Vector3 lift = { 0,0,0 };
-    float lift_strength = 0.5;
+    float   lift_strength = 0.5;
 
     Vector3 gamma = { 0,0,0 };
-    float gamma_strength = 1.0;
+    float   gamma_strength = 1.0;
 
     Vector3 gain = { 0,0,0 };
-    float gain_strength = 0.5;
+    float   gain_strength = 0.5;
+
+    // Vinette
+    float   vignette_intensity = 0.5;  
+    float   vignette_smoothness = 0.5; 
+    Vector2 vignetteCenter = { 0.5,0.5 };
+    Vector3 vignetteColor = { 0,0,0 };
+    int     padding5;
 };
 
 struct alignas(16) ScreenFX

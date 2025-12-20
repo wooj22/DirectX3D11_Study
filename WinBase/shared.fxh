@@ -117,7 +117,8 @@ cbuffer PostProcessCB : register(b7)
     // Enable
     bool   useColorAdjustments;
     bool   useWhiteBalance;
-    float2 padding4;
+    bool   useLGG;
+    bool   useVinette;
     
     // Color Adjustments (대비, 채도, Hue Shift, Tint)
     float  contrast;
@@ -128,27 +129,34 @@ cbuffer PostProcessCB : register(b7)
     bool   useTint;
     float3 colorTint;
     float  colorTint_strength;
-    float3 padding5;
+    float3 padding4;
     
     // White Balance (온도, 색조)
     float temperature;
     float tint;
-    float2 padding6;
+    float2 padding5;
     
     // Lift / Gamma / Gain
-    bool useLGG;
     bool useLift;
     bool useGamma;
     bool useGain;
+    float padding6;
     
     float3 lift;
-    float lift_strength;
+    float  lift_strength;
 
     float3 gamma;
-    float gamma_strength;
+    float  gamma_strength;
 
     float3 gain ;
-    float gain_strength;
+    float  gain_strength;
+    
+    // Vinette
+    float  vignette_intensity;
+    float  vignette_smoothness;
+    float2 vignetteCenter;
+    float3 vignetteColor;
+    int    padding7;
 };
 
 cbuffer CB_PostFX : register(b8)

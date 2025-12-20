@@ -115,6 +115,7 @@ private:
     bool useColorAdjustments = 0;
     bool useWhiteBalance = 0;
     bool useLGG = 0;
+    bool useVignette = 0;
 
     bool useHueShift = 0;
     bool useColorTint = 0;
