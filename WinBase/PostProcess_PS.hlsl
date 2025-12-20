@@ -39,21 +39,26 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     float3 mapped = ACESFilm(hdr);
 
     // [ PostProcess ] ------------------------------
-    float3 colorAdjustments = mapped;
+    float3 colorGrade = mapped;
+
+    // White Balance
+    if (useWhiteBalance)
+        colorGrade = ApplyWhiteBalance(colorGrade);
+      
+    // LGG
+    if (useLGG)
+        colorGrade = ApplyLGG(colorGrade);
     
     // Color Adjustments
-    if (useWhiteBalance)
-        colorAdjustments = ApplyWhiteBalance(colorAdjustments);
-      
-    if (useColorAdjustments)
-        colorAdjustments = ApplyColorAdjustments(colorAdjustments);
+   if (useColorAdjustments)
+        colorGrade = ApplyColorAdjustments(colorGrade);
     
       
-    // White Balance
+    
 
     // [ ScreenFx ] ------------------------------
     // Plasma
-        float3 screenFx = colorAdjustments;
+    float3 screenFx = colorGrade;
     if (enablePlasmaOverlay)
         screenFx = ApplyPlasmaOverlay(input.uv, screenFx);
     

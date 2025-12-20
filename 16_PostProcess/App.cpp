@@ -242,9 +242,14 @@ void App::HDRRender()
 
     D3D::postprocessCBData.useDefalutGamma = usedefalutGamma ? 1 : 0;
     D3D::postprocessCBData.useColorAdjustments = useColorAdjustments ? 1 : 0;
+    D3D::postprocessCBData.useLGG = useLGG ? 1 : 0;
+
     D3D::postprocessCBData.useWhiteBalance = useWhiteBalance ? 1 : 0;
     D3D::postprocessCBData.useHueShift = useHueShift ? 1 : 0;
     D3D::postprocessCBData.useColorTint = useColorTint ? 1 : 0;
+    D3D::postprocessCBData.useLift = useLift ? 1 : 0;
+    D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
+    D3D::postprocessCBData.useGain = useGain ? 1 : 0;
 
     D3D::screenFxCBData.time = Time::GetTotalTime();
     D3D::screenFxCBData.enableWaterDistortion = enableRipple == 1 ? 1 : 0;
@@ -524,6 +529,21 @@ void App::RenderGUI()
     ImGui::BeginDisabled(!useWhiteBalance);
     ImGui::SliderFloat("Temperature", &D3D::postprocessCBData.temperature, -1.f, 1.0f);
     ImGui::SliderFloat("Tint", &D3D::postprocessCBData.tint, -1.f, 1.0f);
+    ImGui::EndDisabled();
+
+    ImGui::Text("");
+    ImGui::Text("[Lift / Gamma / Gain]");
+    ImGui::Checkbox("Enable LGG", &useLGG);
+    ImGui::BeginDisabled(!useLGG);
+    ImGui::Checkbox("use Lift", &useLift);
+    ImGui::SliderFloat3("Lift RGB", &D3D::postprocessCBData.lift.x, -1.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Lift Strength", &D3D::postprocessCBData.lift_strength, 0.0f, 1.0f, "%.3f");
+    ImGui::Checkbox("use Gamma", &useGamma);
+    ImGui::SliderFloat3("Gamma RGB", &D3D::postprocessCBData.gamma.x, -1.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Gamma Strength", &D3D::postprocessCBData.gamma_strength, 0.0f, 1.0f, "%.3f");
+    ImGui::Checkbox("use Gain", &useGain);
+    ImGui::SliderFloat3("Gain RGB", &D3D::postprocessCBData.gain.x, -1.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Gain Strength", &D3D::postprocessCBData.gain_strength, 0.0f, 1.0f, "%.3f");
     ImGui::EndDisabled();
     ImGui::End();
 

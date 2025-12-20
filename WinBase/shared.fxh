@@ -134,6 +134,21 @@ cbuffer PostProcessCB : register(b7)
     float temperature;
     float tint;
     float2 padding6;
+    
+    // Lift / Gamma / Gain
+    bool useLGG;
+    bool useLift;
+    bool useGamma;
+    bool useGain;
+    
+    float3 lift;
+    float lift_strength;
+
+    float3 gamma;
+    float gamma_strength;
+
+    float3 gain ;
+    float gain_strength;
 };
 
 cbuffer CB_PostFX : register(b8)

@@ -180,7 +180,7 @@ struct alignas(16) PostProcessCB
     float   hueShift = 0;
 
     UINT    useColorTint = 0;             
-    Vector3 colorTint = { 0,0,0 };   
+    Vector3 colorTint = { 1,1,1 };   
     float   colorTint_strength = 0.5;
     Vector3 padding2;
 
@@ -188,6 +188,21 @@ struct alignas(16) PostProcessCB
     float temperature = 0;
     float tint = 0;
     Vector2 padding3;
+
+    // Lift / Gamma / Gain (¾îµÎ¿îÅæ, ¹ÌµåÅæ, ¹àÀºÅæ ¹à±â Á¶Á¤)
+    UINT  useLGG = 0;
+    UINT  useLift = 0;
+    UINT  useGamma = 0;
+    UINT  useGain = 0;
+
+    Vector3 lift = { 0,0,0 };
+    float lift_strength = 0.5;
+
+    Vector3 gamma = { 0,0,0 };
+    float gamma_strength = 1.0;
+
+    Vector3 gain = { 0,0,0 };
+    float gain_strength = 0.5;
 };
 
 struct alignas(16) ScreenFX

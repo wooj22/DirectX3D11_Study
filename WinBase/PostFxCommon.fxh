@@ -46,6 +46,34 @@ float3 ApplyColorAdjustments(float3 color)
 // Vinette
 
 // Lift/ gamma/ Gain
+float3 ApplyLGG(float3 color)
+{
+    // Lift (shadows offset)
+    if (useLift)
+    {
+        color += lift * lift_strength;
+        color = max(color, 0.0);
+    }
+
+    // Gamma (midtones curve)
+    if (useGamma)
+    {
+        // float3 v = {1,1,1} == 1.0.xxx
+        float3 gammaPower = lerp(1.0.xxx, 1.0.xxx + gamma, gamma_strength);
+        gammaPower = max(gammaPower, 0.05.xxx); // 폭발 방지
+        color = pow(max(color, 1e-4.xxx), 1.0 / gammaPower);
+    }
+
+    // Gain (highlights scale)
+    if (useGain)
+    {
+        float3 gainScale = lerp(1.0.xxx, 1.0.xxx + gain, gain_strength);
+        gainScale = max(gainScale, 0.0.xxx); // 음수 방지
+        color *= gainScale;
+    }
+
+    return color;
+}
 
 // White Balance
 float3 ApplyWhiteBalance(float3 color)
