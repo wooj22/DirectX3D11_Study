@@ -244,6 +244,7 @@ void App::HDRRender()
     D3D::postprocessCBData.useColorAdjustments = useColorAdjustments ? 1 : 0;
     D3D::postprocessCBData.useLGG = useLGG ? 1 : 0;
     D3D::postprocessCBData.useVignette = useVignette ? 1 : 0;
+    D3D::postprocessCBData.useFilmGrain = useFilmGrain ? 1 : 0;
 
     D3D::postprocessCBData.useWhiteBalance = useWhiteBalance ? 1 : 0;
     D3D::postprocessCBData.useHueShift = useHueShift ? 1 : 0;
@@ -551,10 +552,19 @@ void App::RenderGUI()
     ImGui::Text("[Vignette]");
     ImGui::Checkbox("Enable Vignette", &useVignette);
     ImGui::BeginDisabled(!useVignette);
-    ImGui::SliderFloat("Intensity", &D3D::postprocessCBData.vignette_intensity, 0.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Vignette Intensity", &D3D::postprocessCBData.vignette_intensity, 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Smoothness", &D3D::postprocessCBData.vignette_smoothness, 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat2("Center", &D3D::postprocessCBData.vignetteCenter.x, 0.0f, 1.0f, "%.3f");
-    ImGui::ColorEdit3("Color", &D3D::postprocessCBData.vignetteColor.x);
+    ImGui::ColorEdit3("Vignette Color", &D3D::postprocessCBData.vignetteColor.x);
+    ImGui::EndDisabled();
+
+    ImGui::Text("");
+    ImGui::Text("[Film Grain]");
+    ImGui::Checkbox("Enable FilmGrain", &useFilmGrain);
+    ImGui::BeginDisabled(!useFilmGrain);
+    ImGui::SliderFloat("FilmGrain Intensity", &D3D::postprocessCBData.grain_intensity, 0.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Response", &D3D::postprocessCBData.grain_response, 0.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("GrainScale", &D3D::postprocessCBData.grain_scale, 0.0f, 5.0f, "%.2f");
     ImGui::EndDisabled();
     ImGui::End();
 

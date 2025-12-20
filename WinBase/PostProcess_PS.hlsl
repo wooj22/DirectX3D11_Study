@@ -26,7 +26,7 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     // UV ¿Ö°î
     // ScreenFx - Ripple
     if (enableRipple)
-        uv = ApplyRipple(input.uv);
+        uv = ApplyRippleFx(input.uv);
         
     // HDR sample
     float3 hdr = sceneHDR.Sample(samplerLinear, uv).rgb;
@@ -52,19 +52,21 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     // Color Adjustments
    if (useColorAdjustments)
         colorGrade = ApplyColorAdjustments(colorGrade);
-    
-      
-    
 
+    // Film Grain
+    if (useFilmGrain)
+        colorGrade = ApplyFilmGrain(uv, colorGrade);
+    
+    
     // [ ScreenFx ] ------------------------------
     // Plasma
-    float3 screenFx = colorGrade;
+        float3 screenFx = colorGrade;
     if (enablePlasmaOverlay)
-        screenFx = ApplyPlasmaOverlay(input.uv, screenFx);
+        screenFx = ApplyPlasmaOverlayFx(input.uv, screenFx);
     
     // Film Grain
     if(enableFilmGrain)
-        screenFx = ApplyFilmGrain(input.uv, screenFx);
+        screenFx = ApplyFilmGrainFx(input.uv, screenFx);
 
     
     // [ Defalut Gamma ] --------------------------

@@ -9,6 +9,9 @@
 // OffsetMatrixCB -> b3
 // PoseMatrixCB -> b4
 // OutLineCB -> b5
+// DebugCB -> b6
+// PostProcessCB -> b7
+// ScreenFX -> b8
 
 // [ Texture ]
 // Texture2D diffuseMap : register(t0)
@@ -119,6 +122,8 @@ cbuffer PostProcessCB : register(b7)
     bool   useWhiteBalance;
     bool   useLGG;
     bool   useVinette;
+    bool   useFilmGrain;
+    float3 padding0;
     
     // Color Adjustments (대비, 채도, Hue Shift, Tint)
     float  contrast;
@@ -157,6 +162,12 @@ cbuffer PostProcessCB : register(b7)
     float2 vignetteCenter;
     float3 vignetteColor;
     int    padding7;
+    
+    // FilmGrain
+    float grain_intensity;
+    float grain_response;
+    float grain_scale;
+    int   padding8;
 };
 
 cbuffer CB_PostFX : register(b8)

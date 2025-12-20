@@ -116,6 +116,7 @@ private:
     bool useWhiteBalance = 0;
     bool useLGG = 0;
     bool useVignette = 0;
+    bool useFilmGrain = 0;
 
     bool useHueShift = 0;
     bool useColorTint = 0;

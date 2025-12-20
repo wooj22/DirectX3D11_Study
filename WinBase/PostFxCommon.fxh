@@ -2,6 +2,109 @@
 
 
 // ----------------------------------------
+// [ Random -> Noise -> FBM ->Domain Warping ]
+// ----------------------------------------
+// Random
+float Random(float2 uv)
+{
+    float v = sin(dot(uv, float2(22.8897, 98.537))) * randomIntensity;
+    return frac(v);
+}
+
+// Perlin Fade
+float2 PerlinFade(float2 t)
+{
+    return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
+}
+
+// Value Noise
+float Noise(float2 uv)
+{
+    float2 cellID = floor(uv);
+    float2 f = frac(uv);
+
+    float a = Random(cellID);
+    float b = Random(cellID + float2(1, 0));
+    float c = Random(cellID + float2(0, 1));
+    float d = Random(cellID + float2(1, 1));
+
+    float2 u = PerlinFade(f);
+
+    float top = lerp(a, b, u.x);
+    float bottom = lerp(c, d, u.x);
+    return lerp(top, bottom, u.y);
+}
+
+// Hash Noise
+float Hash12(float2 p)
+{
+    float h = dot(p, float2(127.1, 311.7));
+    return frac(sin(h) * 43758.5453);
+}
+
+// fbm: 0..~1
+float FBM(float2 uv)
+{
+    float value = 0.0;
+    float amp = 0.5;
+    float freq = 1.0;
+
+    [unroll]
+    for (int i = 0; i < 5; i++)
+    {
+        value += amp * Noise(uv * freq);
+        freq *= 2.0;
+        amp *= 0.5;
+    }
+    return value;
+}
+
+float2 Warp(float2 uv)
+{
+    float2 offset1 = float2(5.2, 1.3);
+    float2 offset2 = float2(1.7, 9.2);
+
+    float wx = FBM(uv + offset1);
+    float wy = FBM(uv + offset2);
+    
+    return (float2(wx, wy) * 2.0 - 1.0) * warpStrength;
+}
+
+
+// double domain warping
+float DomainWarpValue(float2 uv)
+{
+    float2 w1 = Warp(uv);
+    float2 w2 = Warp(uv + w1 * 0.5);
+    return FBM(uv + w2);
+}
+
+// warp vector for distortion
+float2 DomainWarpVector(float2 uv)
+{
+    float2 w1 = Warp(uv);
+    float2 w2 = Warp(uv + w1 * 0.5);
+
+    // use two decorrelated samples to build vector
+    float vx = FBM(uv + w2 + float2(13.7, 9.1));
+    float vy = FBM(uv + w2 + float2(4.2, 27.9));
+    return float2(vx, vy) * 2.0 - 1.0; // -1..1
+}
+
+// ----------------------------------------
+// simple palette for plasma
+float3 palette(float t)
+{
+    float3 a = float3(0.50, 0.50, 0.50);
+    float3 b = float3(0.50, 0.50, 0.50);
+    float3 c = float3(1.00, 1.00, 1.00);
+    float3 d = float3(0.00, 0.33, 0.67);
+    return a + b * cos(6.2831853 * (c * t + d));
+}
+
+
+
+// ----------------------------------------
 // [ Post Process ] 
 // ----------------------------------------
 // Color Adjustments
@@ -42,9 +145,26 @@ float3 ApplyColorAdjustments(float3 color)
 }
 
 // Film Grain
-float3 ApplyFilmGrain(float3 color)
+float3 ApplyFilmGrain(float2 uv, float3 color)
 {
-    return color;
+    // lumma (밝기)
+    float lum = dot(color, float3(0.2126, 0.7152, 0.0722));
+
+    // response 0(shadow 강조) ~ 1(highlight 강조)
+    float resp = saturate(grain_response);
+    float weight = lerp(1.0 - lum, lum, resp);
+    weight = pow(saturate(weight), 0.75);
+
+    // pixel 좌표 기반
+    float2 pixel = uv / max(screenTexelSize, 1e-8.xx);
+    float2 p = pixel * max(grain_scale, 1e-3);
+
+    // noise
+    float n = Hash12(p) * 2.0 - 1.0; 
+    float amt = saturate(grain_intensity) * weight;
+
+    // 모노 그레인(additive)
+    return saturate(color + n * amt);
 }
 
 // Vinette
@@ -123,103 +243,9 @@ float3 ApplyWhiteBalance(float3 color)
 
 
 // ----------------------------------------
-// [ Random -> Noise -> FBM ->Domain Warping ]
-// ----------------------------------------
-// Random
-float Random(float2 uv)
-{
-    float v = sin(dot(uv, float2(22.8897, 98.537))) * randomIntensity;
-    return frac(v);
-}
-
-// Perlin Fade
-float2 PerlinFade(float2 t)
-{
-    return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
-}
-
-// Value Noise
-float Noise(float2 uv)
-{
-    float2 cellID = floor(uv);
-    float2 f = frac(uv);
-
-    float a = Random(cellID);
-    float b = Random(cellID + float2(1, 0));
-    float c = Random(cellID + float2(0, 1));
-    float d = Random(cellID + float2(1, 1));
-
-    float2 u = PerlinFade(f);
-
-    float top = lerp(a, b, u.x);
-    float bottom = lerp(c, d, u.x);
-    return lerp(top, bottom, u.y);
-}
-
-// fbm: 0..~1
-float FBM(float2 uv)
-{
-    float value = 0.0;
-    float amp = 0.5;
-    float freq = 1.0;
-
-    [unroll]
-    for (int i = 0; i < 5; i++)
-    {
-        value += amp * Noise(uv * freq);
-        freq *= 2.0;
-        amp *= 0.5;
-    }
-    return value;
-}
-
-float2 Warp(float2 uv)
-{
-    float2 offset1 = float2(5.2, 1.3);
-    float2 offset2 = float2(1.7, 9.2);
-
-    float wx = FBM(uv + offset1);
-    float wy = FBM(uv + offset2);
-    
-    return (float2(wx, wy) * 2.0 - 1.0) * warpStrength;
-}
-
-
-// double domain warping
-float DomainWarpValue(float2 uv)
-{
-    float2 w1 = Warp(uv);
-    float2 w2 = Warp(uv + w1 * 0.5);
-    return FBM(uv + w2);
-}
-
-// warp vector for distortion
-float2 DomainWarpVector(float2 uv)
-{
-    float2 w1 = Warp(uv);
-    float2 w2 = Warp(uv + w1 * 0.5);
-
-    // use two decorrelated samples to build vector
-    float vx = FBM(uv + w2 + float2(13.7, 9.1));
-    float vy = FBM(uv + w2 + float2(4.2, 27.9));
-    return float2(vx, vy) * 2.0 - 1.0; // -1..1
-}
-
-// ----------------------------------------
-// simple palette for plasma
-float3 palette(float t)
-{
-    float3 a = float3(0.50, 0.50, 0.50);
-    float3 b = float3(0.50, 0.50, 0.50);
-    float3 c = float3(1.00, 1.00, 1.00);
-    float3 d = float3(0.00, 0.33, 0.67);
-    return a + b * cos(6.2831853 * (c * t + d));
-}
-
-// ----------------------------------------
 // [ Screen Space Effect ]
 // ----------------------------------------
-float2 ApplyRipple(float2 uv)
+float2 ApplyRippleFx(float2 uv)
 {
     float2 flowDir = normalize(float2(0.8, -0.6));
 
@@ -243,7 +269,7 @@ float2 ApplyRipple(float2 uv)
     return uv + wv * (distortionStrength * 2.2);
 }
 
-float3 ApplyPlasmaOverlay(float2 uv, float3 ldrColor)
+float3 ApplyPlasmaOverlayFx(float2 uv, float3 ldrColor)
 {
     // 화면 전체에 깔리는 움직임
     float2 p = uv * cellScale + float2(time * 0.18, time * 0.12);
@@ -267,7 +293,7 @@ float3 ApplyPlasmaOverlay(float2 uv, float3 ldrColor)
     return saturate(lerp(ldrColor, col, a));
 }
 
-float3 ApplyFilmGrain(float2 uv, float3 ldrColor)
+float3 ApplyFilmGrainFx(float2 uv, float3 ldrColor)
 {
     float2 p = uv * (cellScale * 120.0) + float2(time * 17.0, time * 9.0);
     float g = DomainWarpValue(p) * 2.0 - 1.0; // -1..1

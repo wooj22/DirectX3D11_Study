@@ -17,7 +17,7 @@ struct PoseMatrixCB;
 struct OutLineCB;
 struct DebugCB;
 struct PostProcessCB;
-struct ScreenFX;
+struct ScreenFxCB;
 
 /*
 *   Direct3D 리소스 초기화용 정적 헬퍼 클래스
@@ -97,7 +97,7 @@ public:
     static OutLineCB       outlineCBData;
     static DebugCB         debugCBData;
     static PostProcessCB   postprocessCBData;
-    static ScreenFX        screenFxCBData;
+    static ScreenFxCB        screenFxCBData;
 
 
     //--------------------------------

@@ -173,6 +173,8 @@ struct alignas(16) PostProcessCB
     UINT useWhiteBalance = 0;
     UINT useLGG = 0;
     UINT useVignette = 0;
+    UINT useFilmGrain = 0;
+    Vector3 padding0;
 
     // Color Adjustments (대비, 채도, Hue Shift, Tint)
     float   contrast = 1;            
@@ -211,9 +213,15 @@ struct alignas(16) PostProcessCB
     Vector2 vignetteCenter = { 0.5,0.5 };
     Vector3 vignetteColor = { 0,0,0 };
     int     padding5;
+
+    // FilmGrain
+    float grain_intensity = 0.5; 
+    float grain_response = 0.5;  
+    float grain_scale = 1;  
+    int   padding6;
 };
 
-struct alignas(16) ScreenFX
+struct alignas(16) ScreenFxCB
 {
     // toggles (0/1)
     int enableWaterDistortion = 0;  
