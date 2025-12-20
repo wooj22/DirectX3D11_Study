@@ -164,8 +164,8 @@ struct alignas(16) PostProcessCB
 {
     // Base
     UINT    isHDR = 0;               // LDR/HDR
-    UINT    useDefalutGamma = 1;     // Linear -> SRGB
-    float   defalutGamma = 2.2f;     // Gamma (defalut)
+    UINT    useDefaultGamma = 1;     // Linear -> SRGB
+    float   defaultGamma = 2.2f;     // Gamma (defalut)
     float   exposure = 0;            // ≥Î√‚
 
     // Enable
@@ -215,8 +215,8 @@ struct alignas(16) PostProcessCB
     int     padding5;
 
     // FilmGrain
-    float grain_intensity = 0.5; 
-    float grain_response = 0.5;  
+    float grain_intensity = 0.3; 
+    float grain_response = 0.8;  
     float grain_scale = 1;  
     int   padding6;
 };

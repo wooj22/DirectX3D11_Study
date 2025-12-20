@@ -240,7 +240,7 @@ void App::HDRRender()
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
     D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
-    D3D::postprocessCBData.useDefalutGamma = usedefalutGamma ? 1 : 0;
+    D3D::postprocessCBData.useDefaultGamma = usedefalutGamma ? 1 : 0;
     D3D::postprocessCBData.useColorTint = useColorTint ? 1 : 0;
 
     D3D::screenFxCBData.time = Time::GetTotalTime();
@@ -494,7 +494,7 @@ void App::RenderGUI()
     // PostProcess
     ImGui::Begin("[PostProcess]");
     ImGui::Checkbox("useGamma", &usedefalutGamma);
-    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.defalutGamma, 0.f, 5.0f);
+    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.defaultGamma, 0.f, 5.0f);
 
     ImGui::Text("");
     //ImGui::ColorEdit3("Hue Shift", &D3D::postprocessCBData.hueShift.x);

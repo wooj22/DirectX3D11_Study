@@ -113,7 +113,7 @@ cbuffer PostProcessCB : register(b7)
 {
     // Base
     bool  isHDR;
-    bool  useDefalutGamma;
+    bool useDefaultGamma;
     float defalutGamma;
     float exposure;
     
@@ -121,7 +121,7 @@ cbuffer PostProcessCB : register(b7)
     bool   useColorAdjustments;
     bool   useWhiteBalance;
     bool   useLGG;
-    bool   useVinette;
+    bool useVignette;
     bool   useFilmGrain;
     float3 padding0;
     

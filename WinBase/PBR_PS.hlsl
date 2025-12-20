@@ -197,7 +197,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     float3 finalColor = (DirectColor * shadowFactor) + IndirectColor + emissive_color;
     
      // LDR 단독패스일 때만 감마보정
-    if (useDefalutGamma && !isHDR)
+    if (useDefaultGamma && !isHDR)
         finalColor = LinearToSRGB(finalColor);
 
     return float4(finalColor, alpha);

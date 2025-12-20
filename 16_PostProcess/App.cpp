@@ -240,7 +240,7 @@ void App::HDRRender()
     D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
     D3D::debugCBData.useIBL = useIBL ? 1 : 0;
 
-    D3D::postprocessCBData.useDefalutGamma = usedefalutGamma ? 1 : 0;
+    D3D::postprocessCBData.useDefaultGamma = usedefalutGamma ? 1 : 0;
     D3D::postprocessCBData.useColorAdjustments = useColorAdjustments ? 1 : 0;
     D3D::postprocessCBData.useLGG = useLGG ? 1 : 0;
     D3D::postprocessCBData.useVignette = useVignette ? 1 : 0;
@@ -506,7 +506,7 @@ void App::RenderGUI()
     ImGui::Text("Gamma (Linear->SRGB)");
     ImGui::Checkbox("use defalutGamma", &usedefalutGamma);
     ImGui::BeginDisabled(!usedefalutGamma);
-    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.defalutGamma, 0.f, 5.0f);
+    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.defaultGamma, 0.f, 5.0f);
     ImGui::EndDisabled();
 
     ImGui::Text("");

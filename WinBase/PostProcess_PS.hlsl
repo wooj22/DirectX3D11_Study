@@ -22,14 +22,14 @@ SamplerState samplerLinear : register(s0);
 float4 main(PS_FullScreen_Input input) : SV_TARGET
 { 
     float2 uv = input.uv;
+    float2 sampleUV = uv;
     
-    // UV ¿Ö°î
-    // ScreenFx - Ripple
+    // ScreenFx - Ripple (UV ¿Ö°î) // TODO :: delete
     if (enableRipple)
-        uv = ApplyRippleFx(input.uv);
+        sampleUV = ApplyRippleFx(input.uv);
         
     // HDR sample
-    float3 hdr = sceneHDR.Sample(samplerLinear, uv).rgb;
+    float3 hdr = sceneHDR.Sample(samplerLinear, sampleUV).rgb;
 
     // Exposure
     float exposureScale = pow(2.0, exposure);
@@ -57,8 +57,13 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     if (useFilmGrain)
         colorGrade = ApplyFilmGrain(uv, colorGrade);
     
+    // [ Vinette ] --------------------------------
+    if (useVignette)
+        colorGrade = ApplyVignette(uv, colorGrade);
+    
     
     // [ ScreenFx ] ------------------------------
+    // TODO :: delete
     // Plasma
         float3 screenFx = colorGrade;
     if (enablePlasmaOverlay)
@@ -71,13 +76,8 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     
     // [ Defalut Gamma ] --------------------------
     float3 finalColor = screenFx;
-    if (useDefalutGamma && isHDR)
+    if (useDefaultGamma)
         finalColor = LinearToSRGB(finalColor);
-    
-    
-    // [ Vinette ] --------------------------------
-    if (useVinette)
-        finalColor = ApplyVignette(uv, finalColor);
 
     return float4(finalColor, 1.0f);
 }
