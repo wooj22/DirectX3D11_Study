@@ -1,11 +1,15 @@
-﻿#include "D3D.h"
+﻿#define NOMINMAX
+
+#include "D3D.h"
 #include "Helper.h"
 #include "Structures.hpp"
 #include <d3dcompiler.h>
+#include <algorithm>
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib, "dxguid.lib") 
+
 
 // static member init
 ComPtr<ID3D11Device>		      D3D::device = nullptr;
@@ -23,6 +27,11 @@ ComPtr<ID3D11ShaderResourceView>  D3D::hdrSRV = nullptr;
 
 ComPtr<ID3D11Texture2D>           D3D::bloomATexture = nullptr;
 ComPtr<ID3D11Texture2D>           D3D::bloomBTexture = nullptr;
+ComPtr<ID3D11ShaderResourceView>  D3D::bloomASRV = nullptr;
+ComPtr<ID3D11ShaderResourceView>  D3D::bloomBSRV = nullptr;
+std::vector<ComPtr<ID3D11RenderTargetView>> D3D::bloomARTVs;
+std::vector<ComPtr<ID3D11RenderTargetView>> D3D::bloomBRTVs;
+UINT D3D::bloomMipCount = 1;
 
 ComPtr<ID3D11Texture2D>           D3D::shadowMap = nullptr;
 ComPtr<ID3D11DepthStencilView>    D3D::shadowDSV = nullptr;
@@ -195,7 +204,6 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         if(FAILED(hr)) { OutputDebugStringA("FAILED Create HDR SRV"); }
     }
 
-
     // create shadowDSV, shadowSRV
     {
         // viewport
@@ -247,6 +255,77 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
         sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
         HR_T(device->CreateSamplerState(&sampDesc, shadowSamplerState.GetAddressOf()));
+    }
+
+    // create Bloom SRV, RTVs
+    {
+        // half-res
+        const UINT bloomW = std::max<UINT>(1, screenWidth / 2);
+        const UINT bloomH = std::max<UINT>(1, screenHeight / 2);
+
+        // Mip Count
+        UINT w = bloomW;
+        UINT h = bloomH;
+        bloomMipCount = 1;
+        while (w > 1 && h > 1)
+        {
+            w = std::max<UINT>(1, w >> 1);
+            h = std::max<UINT>(1, h >> 1);
+            ++bloomMipCount;
+            if (bloomMipCount >= 6) break;
+        }
+
+        // Texture
+        D3D11_TEXTURE2D_DESC td{};
+        td.Width = bloomW;
+        td.Height = bloomH;
+        td.MipLevels = bloomMipCount;
+        td.ArraySize = 1;
+        td.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+        td.SampleDesc.Count = 1;
+        td.SampleDesc.Quality = 0;
+        td.Usage = D3D11_USAGE_DEFAULT;
+        td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+        td.CPUAccessFlags = 0;
+        td.MiscFlags = 0;
+
+        HRESULT hr = S_OK;
+        hr = device->CreateTexture2D(&td, nullptr, bloomATexture.GetAddressOf());
+        if (FAILED(hr)) return false;
+
+        hr = device->CreateTexture2D(&td, nullptr, bloomBTexture.GetAddressOf());
+        if (FAILED(hr)) return false;
+
+        // SRV
+        D3D11_SHADER_RESOURCE_VIEW_DESC sd{};
+        sd.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+        sd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        sd.Texture2D.MostDetailedMip = 0;
+        sd.Texture2D.MipLevels = bloomMipCount;
+
+        hr = device->CreateShaderResourceView(bloomATexture.Get(), &sd, bloomASRV.GetAddressOf());
+        if (FAILED(hr)) return false;
+
+        hr = device->CreateShaderResourceView(bloomBTexture.Get(), &sd, bloomBSRV.GetAddressOf());
+        if (FAILED(hr)) return false;
+
+        // RTV
+        bloomARTVs.resize(bloomMipCount);
+        bloomBRTVs.resize(bloomMipCount);
+
+        for (UINT mip = 0; mip < bloomMipCount; ++mip)
+        {
+            D3D11_RENDER_TARGET_VIEW_DESC rd{};
+            rd.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+            rd.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+            rd.Texture2D.MipSlice = mip;
+
+            hr = device->CreateRenderTargetView(bloomATexture.Get(), &rd, bloomARTVs[mip].GetAddressOf());
+            if (FAILED(hr)) return false;
+
+            hr = device->CreateRenderTargetView(bloomBTexture.Get(), &rd, bloomBRTVs[mip].GetAddressOf());
+            if (FAILED(hr)) return false;
+        }
     }
 
 	// create depth stencil state (alpha, skybox)
@@ -485,6 +564,36 @@ bool D3D::CreateShader()
         HR_T(CompileShaderFromFile(L"../WinBase/ShadowDepth_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
             pixelShaderBuffer->GetBufferSize(), NULL, &ShadowDepth_PS));
+        SAFE_RELEASE(pixelShaderBuffer);
+    }
+
+    //---------------------------
+    // BloomPrefilter PS
+    {
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/BloomPrefilter_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &BloomPrefilter_PS));
+        SAFE_RELEASE(pixelShaderBuffer);
+    }
+
+    //---------------------------
+    // BloomDownsampleBlur PS
+    {
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/BloomDownsampleBlur_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &BloomDownsampleBlur_PS));
+        SAFE_RELEASE(pixelShaderBuffer);
+    }
+
+    //---------------------------
+    // BloomUpsampleCombine PS
+    {
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/BloomUpsampleCombine_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &BloomUpsampleCombine_PS));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 

@@ -3,6 +3,7 @@
 #include <dxgidebug.h>
 #include <dxgi1_3.h>
 #include <wrl/client.h>
+#include <vector>
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"dxgi.lib")
@@ -53,6 +54,11 @@ public:
     // Bloom
     static ComPtr<ID3D11Texture2D>           bloomATexture;
     static ComPtr<ID3D11Texture2D>           bloomBTexture;
+    static ComPtr<ID3D11ShaderResourceView>  bloomASRV;
+    static ComPtr<ID3D11ShaderResourceView>  bloomBSRV;
+    static std::vector<ComPtr<ID3D11RenderTargetView>> bloomARTVs;
+    static std::vector<ComPtr<ID3D11RenderTargetView>> bloomBRTVs;
+    static UINT bloomMipCount;
 
     // ¿É¼Ç
 	static ComPtr<ID3D11DepthStencilState>   wirteoffDSS;              // write off
