@@ -200,10 +200,8 @@ struct alignas(16) PostProcessCB
 
     Vector3 lift = { 0,0,0 };
     float   lift_strength = 0.5;
-
     Vector3 gamma = { 0,0,0 };
     float   gamma_strength = 1.0;
-
     Vector3 gain = { 0,0,0 };
     float   gain_strength = 0.5;
 
@@ -215,7 +213,7 @@ struct alignas(16) PostProcessCB
     int     padding5;
 
     // FilmGrain
-    float grain_intensity = 0.3; 
+    float grain_intensity = 0.2; 
     float grain_response = 0.8;  
     float grain_scale = 1;  
     int   padding6;
@@ -223,7 +221,6 @@ struct alignas(16) PostProcessCB
 
 struct alignas(16) ScreenFxCB
 {
-    // toggles (0/1)
     int enableWaterDistortion = 0;  
     int enablePlasmaOverlay = 0;    
     int enableFilmGrain = 0;        
@@ -237,4 +234,19 @@ struct alignas(16) ScreenFxCB
     float plasmaIntensity = 0.35;       
     float grainIntensity = 0.05f;       
     Vector2 screenTexelSize = Vector2(1.0 / 1920.0, 1.0 / 1080.0); 
+};
+
+struct alignas(16) BloomCB
+{
+    float bloom_threshold = 1.0f; 
+    float bloom_intensity = 0.5f; 
+    float bloom_scatter = 0.5f;
+    float bloom_clamp = 0.0f;
+
+    Vector3 bloom_tint = { 1.0f, 1.0f, 1.0f };
+    int     padding; 
+    
+    int     srcMip = 0;                      // SampleLevel용 mip 인덱스
+    Vector2 srcTexelSize = { 0.0f, 0.0f };   // (1/srcW, 1/srcH) : 현재 입력 텍스처 기준
+    int     padding2;
 };

@@ -21,6 +21,9 @@ ComPtr<ID3D11Texture2D>           D3D::hdrTexture = nullptr;
 ComPtr<ID3D11RenderTargetView>    D3D::hdrRTV = nullptr;   
 ComPtr<ID3D11ShaderResourceView>  D3D::hdrSRV = nullptr;   
 
+ComPtr<ID3D11Texture2D>           D3D::bloomATexture = nullptr;
+ComPtr<ID3D11Texture2D>           D3D::bloomBTexture = nullptr;
+
 ComPtr<ID3D11Texture2D>           D3D::shadowMap = nullptr;
 ComPtr<ID3D11DepthStencilView>    D3D::shadowDSV = nullptr;
 ComPtr<ID3D11ShaderResourceView>  D3D::shadowSRV = nullptr;
@@ -47,6 +50,9 @@ ComPtr<ID3D11PixelShader>         D3D::Skybox_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::OutLine_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::PostProcess_PS = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::ShadowDepth_PS = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::BloomPrefilter_PS = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::BloomDownsampleBlur_PS = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::BloomUpsampleCombine_PS = nullptr;
                      
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_Vertex = nullptr;
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_BoneWeightVertex = nullptr;
@@ -61,6 +67,7 @@ ComPtr<ID3D11Buffer>              D3D::outlineBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::debugBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::postprocessBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::screenFxBuffer = nullptr;
+ComPtr<ID3D11Buffer>              D3D::bloomBuffer = nullptr;
 
 TransformCB        D3D::transformCBData;
 LightingCB         D3D::lightingCBData;
@@ -70,7 +77,8 @@ PoseMatrixCB       D3D::poseCBData;
 OutLineCB          D3D::outlineCBData;
 DebugCB            D3D::debugCBData;
 PostProcessCB      D3D::postprocessCBData;
-ScreenFxCB           D3D::screenFxCBData;
+ScreenFxCB         D3D::screenFxCBData;
+BloomCB            D3D::bloomCBData;
 
 
 bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)

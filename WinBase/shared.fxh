@@ -11,7 +11,8 @@
 // OutLineCB -> b5
 // DebugCB -> b6
 // PostProcessCB -> b7
-// ScreenFX -> b8
+// ScreenFxCB -> b8
+// BloomCB -> b9
 
 // [ Texture ]
 // Texture2D diffuseMap : register(t0)
@@ -170,7 +171,7 @@ cbuffer PostProcessCB : register(b7)
     int   padding8;
 };
 
-cbuffer CB_PostFX : register(b8)
+cbuffer ScreenFxCB : register(b8)
 {
     int enableRipple;
     int enablePlasmaOverlay;  
@@ -186,6 +187,22 @@ cbuffer CB_PostFX : register(b8)
     float grainIntensity; 
     float2 screenTexelSize;
 }
+
+cbuffer BloomCB : register(b9)
+{
+    float bloom_threshold;
+    float bloom_intensity;
+    float bloom_scatter;
+    float bloom_clamp;
+
+    float3 bloom_tint;
+    int padding9;
+    
+    int srcMip;
+    float2 srcTexelSize;
+    int padding10;
+}
+
 
 // ----------------------
 //  Vertex Input Layout

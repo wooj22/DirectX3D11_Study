@@ -18,6 +18,7 @@ struct OutLineCB;
 struct DebugCB;
 struct PostProcessCB;
 struct ScreenFxCB;
+struct BloomCB;
 
 /*
 *   Direct3D 리소스 초기화용 정적 헬퍼 클래스
@@ -31,7 +32,7 @@ public:
 	static ComPtr<ID3D11Device>		         device;
 	static ComPtr<ID3D11DeviceContext>       deviceContext;
 	static ComPtr<IDXGISwapChain>		     swapChain;
-	static ComPtr<ID3D11RenderTargetView>    renderTargetView;      // LDR
+	static ComPtr<ID3D11RenderTargetView>    renderTargetView;      // LDR (final)
 	static ComPtr<ID3D11DepthStencilView>    depthStencilView;
 
     // viewport
@@ -49,14 +50,18 @@ public:
     static ComPtr<ID3D11ShaderResourceView>  shadowSRV;             // ShadowMap Texture
     static ComPtr<ID3D11SamplerState>        shadowSamplerState;    // clmap
 
+    // Bloom
+    static ComPtr<ID3D11Texture2D>           bloomATexture;
+    static ComPtr<ID3D11Texture2D>           bloomBTexture;
+
     // 옵션
 	static ComPtr<ID3D11DepthStencilState>   wirteoffDSS;              // write off
-    static ComPtr <ID3D11RasterizerState>    cullfrontRS;              // cullmode = front
+    static ComPtr<ID3D11RasterizerState>     cullfrontRS;              // cullmode = front
 	static ComPtr<ID3D11SamplerState>	     linearSamplerState;       // linear    
 	static ComPtr<ID3D11SamplerState>	     linearClamSamplerState;   // linear + clamp    
 	static ComPtr<ID3D11BlendState>          alphaBlendState;          // alpha
 
-    // Shader
+    // Vertex Shader
     static ComPtr<ID3D11VertexShader> BaseLit_Static_VS;
     static ComPtr<ID3D11VertexShader> BaseLit_Skinned_VS;
     static ComPtr<ID3D11VertexShader> Skybox_VS;
@@ -65,6 +70,7 @@ public:
     static ComPtr<ID3D11VertexShader> ShadowDepth_Static_VS;
     static ComPtr<ID3D11VertexShader> FullScreen_VS;
 
+    // Pixel Shader
     static ComPtr<ID3D11PixelShader> BlinnPhong_PS;
     static ComPtr<ID3D11PixelShader> PBR_PS;
     static ComPtr<ID3D11PixelShader> BlinnPhongToon_PS;
@@ -72,6 +78,9 @@ public:
     static ComPtr<ID3D11PixelShader> OutLine_PS;
     static ComPtr<ID3D11PixelShader> PostProcess_PS;
     static ComPtr<ID3D11PixelShader> ShadowDepth_PS;
+    static ComPtr<ID3D11PixelShader> BloomPrefilter_PS;
+    static ComPtr<ID3D11PixelShader> BloomDownsampleBlur_PS;
+    static ComPtr<ID3D11PixelShader> BloomUpsampleCombine_PS;
 
     // InputLayout
     static ComPtr<ID3D11InputLayout> inputLayout_Vertex;
@@ -88,6 +97,7 @@ public:
     static ComPtr<ID3D11Buffer> debugBuffer;
     static ComPtr<ID3D11Buffer> postprocessBuffer;
     static ComPtr<ID3D11Buffer> screenFxBuffer;
+    static ComPtr<ID3D11Buffer> bloomBuffer;
 
     static TransformCB     transformCBData;
     static LightingCB      lightingCBData;
@@ -97,7 +107,8 @@ public:
     static OutLineCB       outlineCBData;
     static DebugCB         debugCBData;
     static PostProcessCB   postprocessCBData;
-    static ScreenFxCB        screenFxCBData;
+    static ScreenFxCB      screenFxCBData;
+    static BloomCB         bloomCBData;
 
 
     //--------------------------------

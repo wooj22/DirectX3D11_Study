@@ -33,6 +33,15 @@ using namespace DirectX::SimpleMath;
 
 // PostProcess 테스트 프로젝트입니다.
 /*
+* [Render Pass]
+* 1. ShadowMap Pass                  -> ShadowMap
+* 2. Scene HDR Color Pass            -> SceneHDR
+* 3. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
+* 4. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
+* 5. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
+* 6. LDR PostProcess Pass            -> LDR (final)
+* 
+* [PostProcess]
 *   - 노출
     - Color Adjustments (채도, 대비, Hue Shift, Tint)
     - Bloom
