@@ -248,6 +248,6 @@ struct alignas(16) BloomCB
     int     padding; 
     
     int     srcMip = 0;                      // SampleLevel용 mip 인덱스
-    Vector2 srcTexelSize = { 0.0f, 0.0f };   // (1/srcW, 1/srcH) : 현재 입력 텍스처 기준
+    Vector2 srcTexelSize = { 0.0f, 0.0f };   // 패스에서 읽고 있는 mip 레벨의 텍스처 해상도를 기준으로 한 texel size
     int     padding2;
 };
