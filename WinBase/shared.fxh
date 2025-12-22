@@ -29,6 +29,8 @@
 // Texture2D IBL_SpecularEnvMap : register(t10);
 // Texture2D IBL_BRDF_LUT : register(t11);
 // Texture2D sceneHDR : register(t12);
+// Texture2D bloomA : register(t13);
+// Texture2D bloomB : register(t14);
 
 // [ SamplerState ]
 // SamplerState samLinear : register(s0)

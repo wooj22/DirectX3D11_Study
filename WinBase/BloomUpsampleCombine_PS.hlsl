@@ -1,6 +1,30 @@
+/*
+    [ Bloom Upsample Combine Pixel Shader ]
+    
+    Bloom 처리 3단계.
+    mipN(가장 작은 해상도, 넓은 퍼짐)부터 mip0(큰 해상도, 날카로운 코어)로 올라오며 
+    업샘플하고 가산 합성하여 최종 Bloom 텍스처를 만든다.
+*/
+
 #include <shared.fxh>
+
+Texture2D bloomBig : register(t13);   // big mip 체인 (누적)
+Texture2D bloomSmall : register(t14); // small mip 체인 (업샘플 소스)
+SamplerState samLinearClamp : register(s2);
+
 
 float4 main(PS_FullScreen_Input input) : SV_TARGET
 {
-    return float4(1,1,1,1);
+    float2 uv = input.uv;
+
+    float3 big = bloomBig.SampleLevel(samLinearClamp, uv, srcMip).rgb;
+    float3 small = bloomSmall.SampleLevel(samLinearClamp, uv, srcMip + 1).rgb; // bilinear 업샘플
+
+    // scatter
+    float w = lerp(0.5, 1.0, saturate(bloom_scatter));
+
+    // combine (합산)
+    float3 combined = big + small * w;
+    
+    return float4(combined, 1);
 }
