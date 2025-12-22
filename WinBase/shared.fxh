@@ -124,9 +124,10 @@ cbuffer PostProcessCB : register(b7)
     bool   useColorAdjustments;
     bool   useWhiteBalance;
     bool   useLGG;
-    bool useVignette;
+    bool   useVignette;
     bool   useFilmGrain;
-    float3 padding0;
+    bool   useBloom;
+    float2 padding0;
     
     // Color Adjustments (대비, 채도, Hue Shift, Tint)
     float  contrast;

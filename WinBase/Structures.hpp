@@ -174,7 +174,8 @@ struct alignas(16) PostProcessCB
     UINT useLGG = 0;
     UINT useVignette = 0;
     UINT useFilmGrain = 0;
-    Vector3 padding0;
+    UINT useBloom = 0;
+    Vector2 padding0;
 
     // Color Adjustments (대비, 채도, Hue Shift, Tint)
     float   contrast = 1;            

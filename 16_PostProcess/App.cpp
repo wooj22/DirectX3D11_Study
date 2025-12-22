@@ -245,6 +245,7 @@ void App::HDRRender()
     D3D::postprocessCBData.useLGG = useLGG ? 1 : 0;
     D3D::postprocessCBData.useVignette = useVignette ? 1 : 0;
     D3D::postprocessCBData.useFilmGrain = useFilmGrain ? 1 : 0;
+    D3D::postprocessCBData.useBloom = useBloom ? 1 : 0;
 
     D3D::postprocessCBData.useWhiteBalance = useWhiteBalance ? 1 : 0;
     D3D::postprocessCBData.useHueShift = useHueShift ? 1 : 0;
@@ -523,6 +524,17 @@ void App::RenderGUI()
     ImGui::Checkbox("use ColorTint", &useColorTint);
     ImGui::ColorEdit3("Color Tint", &D3D::postprocessCBData.colorTint.x);
     ImGui::SliderFloat("Strength", &D3D::postprocessCBData.colorTint_strength, 0, 1.0f);
+    ImGui::EndDisabled();
+
+    ImGui::Text("");
+    ImGui::Text("[Bloom]");
+    ImGui::Checkbox("Enable Bloom", &useBloom);
+    ImGui::BeginDisabled(!useBloom);
+    ImGui::SliderFloat("Threshold", &D3D::bloomCBData.bloom_threshold, 0.0f, 5.0f, "%.2f");
+    ImGui::SliderFloat("Clamp", &D3D::bloomCBData.bloom_clamp, 0.0f, 20.0f, "%.2f");
+    ImGui::SliderFloat("Scatter", &D3D::bloomCBData.bloom_scatter, 0.0f, 1.0f, "%.2f");
+    ImGui::SliderFloat("Bloom Intensity", &D3D::bloomCBData.bloom_intensity, 0.0f, 2.0f, "%.2f");
+    ImGui::ColorEdit3("Bloom Tint", (float*)&D3D::bloomCBData.bloom_tint, ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
     ImGui::EndDisabled();
 
     ImGui::Text("");
