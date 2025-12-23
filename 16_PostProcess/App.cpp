@@ -374,6 +374,9 @@ void App::BloomProcess()
     D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
     D3D::deviceContext->PSSetShaderResources(14, 1, nullSRV);
 
+    ID3D11RenderTargetView* nullRTVs[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT] = {};
+    D3D::deviceContext->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, nullRTVs, nullptr);
+
 
     // 1. Prefilter Pass ------------------------------------
     //  - HDR을 샘플링하여 BloomA의 mip0에 처리할 픽셀만 기록
@@ -382,13 +385,13 @@ void App::BloomProcess()
         // View Port
         D3D::SetViewportForMip(D3D::bloomW, D3D::bloomH, 0);
 
-        // input : sceneHDR
-        D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
-        D3D::deviceContext->PSSetShaderResources(12, 1, D3D::sceneHDRSRV.GetAddressOf());
-
         // output : A.mip0
         D3D::deviceContext->OMSetRenderTargets(1, D3D::bloomARTVs[0].GetAddressOf(), nullptr);
         D3D::deviceContext->ClearRenderTargetView(D3D::bloomARTVs[0].Get(), clearColor);
+
+        // input : sceneHDR
+        D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
+        D3D::deviceContext->PSSetShaderResources(12, 1, D3D::sceneHDRSRV.GetAddressOf());
 
         // CB
         UINT w0, h0;
@@ -413,6 +416,9 @@ void App::BloomProcess()
     {
         for (int i = 1; i < D3D::bloomMipCount; ++i)
         {
+            // RTV UnBind
+            D3D::deviceContext->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, nullRTVs, nullptr);
+
             // View Port
             D3D::SetViewportForMip(D3D::bloomW, D3D::bloomH, i);
 
@@ -420,14 +426,14 @@ void App::BloomProcess()
             // i 홀수 : A(SRV) -> B(RTV)
             // i 짝수 : B(SRV) -> A(RTV)
             bool AtoB = (i % 2 != 0) ? true : false;
+  
+            // input : A or B mip(i-1)
             ID3D11ShaderResourceView* bloomSRV = AtoB ? D3D::bloomASRV.Get() : D3D::bloomBSRV.Get();
-            ID3D11RenderTargetView* bloomRTV = AtoB ? D3D::bloomBRTVs[i].Get() : D3D::bloomARTVs[i].Get();
-
-            // input
             D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
             D3D::deviceContext->PSSetShaderResources(13, 1, &bloomSRV);
 
-            // output
+            // output : A or B mip(i)
+            ID3D11RenderTargetView* bloomRTV = AtoB ? D3D::bloomBRTVs[i].Get() : D3D::bloomARTVs[i].Get();
             D3D::deviceContext->OMSetRenderTargets(1, &bloomRTV, nullptr);
             D3D::deviceContext->ClearRenderTargetView(bloomRTV, clearColor);
 
@@ -450,71 +456,67 @@ void App::BloomProcess()
     // 3. UpSample Combine Pass -----------------------------
     //  - mipN에서 mip0으로 올라오며 업샘플 + 가산합성하여 최종 블룸 이미지를 도출한다.
     //  - DownSample 결과의 시작 누적(accum)은 last mip이 들어있는 텍스처에서 시작한다.
-    //  - BloomA - big, small 샘플 후 가산 -> BloomB RTV에 기록 (ping-pong)
+    //  - BloomN1 - big, small 샘플 후 가산 -> BloomN2 RTV에 기록 (ping-pong)
     //  - Bloom mip(i, i+1) read -> Bloom mip(i)  write
     {
-        const int lastMipLevel = (int)D3D::bloomMipCount - 1;
-
-        // accum(누적 결과) : 마지막으로 가산합성한 mip이 있는 texture 추적
-        // Ping Pong
-        // mip0 : A
-        // i 홀수 : A(SRV) -> B(RTV)
-        // i 짝수 : B(SRV) -> A(RTV)
-        bool accumOnB = (lastMipLevel == 0) ? false : ((lastMipLevel % 2) != 0);
+        // LastMip은 bloomMipCount-1이 홀수면 B, 짝수면 A에 있음 (downpass에서 핑퐁했기 때문에)
+        // accumOnB은 LastMip에서 시작하는 각 패스마다의 누적 위치 플래그
+        int lastMipLevel = (int)D3D::bloomMipCount - 1;
+        bool accumOnB = (lastMipLevel % 2) != 0;
 
         for (int i = lastMipLevel - 1; i >= 0; --i)
         {
+            // RTV UnBind
+            D3D::deviceContext->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, nullRTVs, nullptr);
+
             // View Port
             D3D::SetViewportForMip(D3D::bloomW, D3D::bloomH, i);
 
-            // bloom SRV hazard 방지 
+            // input : A or B mip(i, i+1)
             D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
             D3D::deviceContext->PSSetShaderResources(14, 1, nullSRV);
 
-            // Ping Pong
-            ID3D11ShaderResourceView* bigSRV = nullptr;         // mip i : 가산합살시킬 base가 있는 SRV
-            ID3D11ShaderResourceView* smallSRV = nullptr;       // mip i+1 : 읽어서 업샘플할 누적(accum) SRV
-            ID3D11RenderTargetView* outRTV = nullptr;           // mip i : bigSRV + smallSRV output RTV
+            ID3D11ShaderResourceView* bigSRV = nullptr;     // mip i : base
+            ID3D11ShaderResourceView* smallSRV = nullptr;   // mip i+1 : 누적 accum
 
-            // big SRV
-            if (i == 0) bigSRV = D3D::bloomASRV.Get();
-            else bigSRV = (i % 2 != 0) ? D3D::bloomBSRV.Get() : D3D::bloomASRV.Get();
-
-            // small SRV
+            // TODO :: bigSRV, smallSRV
+            if (i == 0) bigSRV = D3D::bloomASRV.Get();      // prefilter 결과는 A.mip0
+            else        bigSRV = ((i % 2) != 0) ? D3D::bloomBSRV.Get() : D3D::bloomASRV.Get();
             smallSRV = accumOnB ? D3D::bloomBSRV.Get() : D3D::bloomASRV.Get();
 
-            // out RTV
-            const bool outOnB = !accumOnB;
-            outRTV = outOnB ? D3D::bloomBRTVs[i].Get() : D3D::bloomARTVs[i].Get();
-
-            // Render Target (output)
-            D3D::deviceContext->OMSetRenderTargets(1, &outRTV, nullptr);
-            D3D::deviceContext->ClearRenderTargetView(outRTV, clearColor);
-
-            // SRV (input)
             D3D::deviceContext->PSSetShaderResources(13, 1, &bigSRV);
             D3D::deviceContext->PSSetShaderResources(14, 1, &smallSRV);
 
-            // CB update
+            // output : A or B mip(i)
+            ID3D11RenderTargetView* outRTV = nullptr;        // mip i : bigSRV + smallSRV output RTV
+            const bool outOnB = !accumOnB;
+            outRTV = outOnB ? D3D::bloomBRTVs[i].Get() : D3D::bloomARTVs[i].Get();
+            
+            D3D::deviceContext->OMSetRenderTargets(1, &outRTV, nullptr);
+            D3D::deviceContext->ClearRenderTargetView(outRTV, clearColor);
+
+            // CB
             UINT wi, hi;
             D3D::GetMipSize(D3D::bloomW, D3D::bloomH, (UINT)i, wi, hi);
             D3D::bloomCBData.srcTexelSize = DirectX::XMFLOAT2(1.0f / (float)wi, 1.0f / (float)hi);
             D3D::bloomCBData.srcMip = (float)i;
             D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
 
-            // Shader
-            D3D::deviceContext->PSSetShader(D3D::BloomUpsampleCombine_PS.Get(), NULL, 0);
-
             // Draw Call
+            D3D::deviceContext->PSSetShader(D3D::BloomUpsampleCombine_PS.Get(), NULL, 0);
             D3D::deviceContext.Get()->Draw(3, 0);
 
-            // bloom SRV hazard 방지 
+            // cleanup
             D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
             D3D::deviceContext->PSSetShaderResources(14, 1, nullSRV);
 
-            // 다음 단계에서 누적(accum)은 outOnB 쪽 텍스처에 존재
+            // 누적 위치 갱신
             accumOnB = outOnB;
         }
+
+        // 최종 mip0 누적 결과는 accumOnB가 가리키는 텍스처의 mip0에 있음
+        finalBloomSRV = accumOnB ? D3D::bloomBSRV.Get() : D3D::bloomASRV.Get();
+        (void)finalBloomSRV;
     }
 }
 
@@ -524,14 +526,19 @@ void App::BloomProcess()
 // HDR SRV를 샘플링해 색을 계산하고, 그 결과를 BackBuffer에 기록하는 단계
 void App::PostProcess()
 {
+    // clear
+    ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+    D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
+    D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
+    D3D::deviceContext->PSSetShaderResources(14, 1, nullSRV);
+
+    ID3D11RenderTargetView* nullRTVs[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT] = {};
+    D3D::deviceContext->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, nullRTVs, nullptr);
+
     // view port
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
 
-    // SRV hazard 방지
-    ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-    D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
-
-    // OM 
+    // RTV
     D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), nullptr);
     D3D::deviceContext->ClearRenderTargetView(D3D::renderTargetView.Get(), clearColor);
 
