@@ -23,8 +23,10 @@ D3D11_VIEWPORT D3D::viewport_shadowMap = {};
 
 ComPtr<ID3D11Texture2D>           D3D::hdrTexture = nullptr;
 ComPtr<ID3D11RenderTargetView>    D3D::hdrRTV = nullptr;   
-ComPtr<ID3D11ShaderResourceView>  D3D::hdrSRV = nullptr;   
+ComPtr<ID3D11ShaderResourceView>  D3D::sceneHDRSRV = nullptr;   
 
+UINT D3D::bloomW = 0;
+UINT D3D::bloomH = 0;
 ComPtr<ID3D11Texture2D>           D3D::bloomATexture = nullptr;
 ComPtr<ID3D11Texture2D>           D3D::bloomBTexture = nullptr;
 ComPtr<ID3D11ShaderResourceView>  D3D::bloomASRV = nullptr;
@@ -200,7 +202,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
         srvDesc.Texture2D.MipLevels = 1;
         srvDesc.Texture2D.MostDetailedMip = 0;
-        hr = device->CreateShaderResourceView(hdrTexture.Get(), &srvDesc, hdrSRV.GetAddressOf());
+        hr = device->CreateShaderResourceView(hdrTexture.Get(), &srvDesc, sceneHDRSRV.GetAddressOf());
         if(FAILED(hr)) { OutputDebugStringA("FAILED Create HDR SRV"); }
     }
 
@@ -260,8 +262,8 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
     // create Bloom SRV, RTVs
     {
         // half-res
-        const UINT bloomW = std::max<UINT>(1, screenWidth / 2);
-        const UINT bloomH = std::max<UINT>(1, screenHeight / 2);
+        bloomW = std::max<UINT>(1, screenWidth / 2);
+        bloomH = std::max<UINT>(1, screenHeight / 2);
 
         // Mip Count
         UINT w = bloomW;
@@ -690,6 +692,16 @@ bool D3D::CreateConstantBuffer()
         constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         constBuffer_Desc.CPUAccessFlags = 0;
         HR_T(device->CreateBuffer(&constBuffer_Desc, nullptr, &screenFxBuffer));
+    }
+
+    // 10. Bloom CB
+    {
+        D3D11_BUFFER_DESC constBuffer_Desc = {};
+        constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
+        constBuffer_Desc.ByteWidth = sizeof(BloomCB);
+        constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        constBuffer_Desc.CPUAccessFlags = 0;
+        HR_T(device->CreateBuffer(&constBuffer_Desc, nullptr, &bloomBuffer));
     }
 
     return true;

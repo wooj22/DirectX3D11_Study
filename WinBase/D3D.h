@@ -43,7 +43,7 @@ public:
     // HDR
     static ComPtr<ID3D11Texture2D>           hdrTexture;
     static ComPtr<ID3D11RenderTargetView>    hdrRTV;         // HDR RTV
-    static ComPtr<ID3D11ShaderResourceView>  hdrSRV;         // HDR SRV
+    static ComPtr<ID3D11ShaderResourceView>  sceneHDRSRV;         // HDR SRV
 
     // Shadow
     static ComPtr<ID3D11Texture2D>           shadowMap;
@@ -52,6 +52,8 @@ public:
     static ComPtr<ID3D11SamplerState>        shadowSamplerState;    // clmap
 
     // Bloom
+    static UINT bloomW;
+    static UINT bloomH;
     static ComPtr<ID3D11Texture2D>           bloomATexture;
     static ComPtr<ID3D11Texture2D>           bloomBTexture;
     static ComPtr<ID3D11ShaderResourceView>  bloomASRV;

@@ -352,7 +352,7 @@ void App::PostProcessing()
     // Shaders
     D3D::deviceContext->VSSetShader(D3D::FullScreen_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PostProcess_PS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShaderResources(12, 1, D3D::hdrSRV.GetAddressOf());
+    D3D::deviceContext->PSSetShaderResources(12, 1, D3D::sceneHDRSRV.GetAddressOf());
 
     // Render
     D3D::deviceContext.Get()->Draw(3, 0);

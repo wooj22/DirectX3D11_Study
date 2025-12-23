@@ -194,6 +194,7 @@ void App::StageSetting()
     D3D::deviceContext->PSSetConstantBuffers(6, 1, D3D::debugBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(7, 1, D3D::postprocessBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(8, 1, D3D::screenFxBuffer.GetAddressOf());
+    D3D::deviceContext->PSSetConstantBuffers(9, 1, D3D::bloomBuffer.GetAddressOf());
 
     // CB Update
     D3D::transformCBData.view = XMMatrixTranspose(view);
@@ -240,6 +241,7 @@ void App::StageSetting()
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::postprocessBuffer.Get(), 0, nullptr, &D3D::postprocessCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::screenFxBuffer.Get(), 0, nullptr, &D3D::screenFxCBData, 0, 0);
+    D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
 }
 
 // [ Gaometry + Lighting + Shadow Pass ]
@@ -351,15 +353,169 @@ void App::SceneHDRRender()
     girl->Render();
     enemy->Render();
 
-    // SRV hazard 방지
+    // shadowmap SRV hazard 방지
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
     D3D::deviceContext->PSSetShaderResources(6, 1, nullSRV);
 }
 
+
 // [ BloomProcess Pass ]
+// Prefilter -> DownSample+Blur -> UpSample+Combine
 void App::BloomProcess()
 {
+    // Full Screen VS setup
+    D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    D3D::deviceContext->IASetInputLayout(nullptr);
+    D3D::deviceContext->VSSetShader(D3D::FullScreen_VS.Get(), NULL, 0);
 
+    // clear
+    ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+    D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
+    D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
+    D3D::deviceContext->PSSetShaderResources(14, 1, nullSRV);
+
+
+    // 1. Prefilter Pass ------------------------------------
+    //  - HDR을 샘플링하여 BloomA의 mip0에 처리할 픽셀만 기록
+    //  - sceneHDR read -> mip0 write
+    {
+        // View Port
+        D3D::SetViewportForMip(D3D::bloomW, D3D::bloomH, 0);
+
+        // input : sceneHDR
+        D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
+        D3D::deviceContext->PSSetShaderResources(12, 1, D3D::sceneHDRSRV.GetAddressOf());
+
+        // output : A.mip0
+        D3D::deviceContext->OMSetRenderTargets(1, D3D::bloomARTVs[0].GetAddressOf(), nullptr);
+        D3D::deviceContext->ClearRenderTargetView(D3D::bloomARTVs[0].Get(), clearColor);
+
+        // CB
+        UINT w0, h0;
+        D3D::GetMipSize(D3D::bloomW, D3D::bloomH, 0, w0, h0);
+        D3D::bloomCBData.srcMip = 0;
+        D3D::bloomCBData.srcTexelSize = DirectX::XMFLOAT2(1.0f / (float)w0, 1.0f / (float)h0);
+        D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
+
+        // Draw Call
+        D3D::deviceContext->PSSetShader(D3D::BloomPrefilter_PS.Get(), NULL, 0);
+        D3D::deviceContext.Get()->Draw(3, 0);
+
+        // cleanup
+        D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
+    }
+    
+
+    // 2. DownSample Blur Pass ------------------------------
+    //  - BloomA mip0을 시작으로 Mip Chain 형성 + 블러 처리한다.
+    //  - BloomA와 BloomB를 SRV와 RTV로 ping-pong하며 read & write 교대
+    //  - mip(i-1) read -> mip(i) write
+    {
+        for (int i = 1; i < D3D::bloomMipCount; ++i)
+        {
+            // View Port
+            D3D::SetViewportForMip(D3D::bloomW, D3D::bloomH, i);
+
+            // Ping Pong
+            // i 홀수 : A(SRV) -> B(RTV)
+            // i 짝수 : B(SRV) -> A(RTV)
+            bool AtoB = (i % 2 != 0) ? true : false;
+            ID3D11ShaderResourceView* bloomSRV = AtoB ? D3D::bloomASRV.Get() : D3D::bloomBSRV.Get();
+            ID3D11RenderTargetView* bloomRTV = AtoB ? D3D::bloomBRTVs[i].Get() : D3D::bloomARTVs[i].Get();
+
+            // input
+            D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
+            D3D::deviceContext->PSSetShaderResources(13, 1, &bloomSRV);
+
+            // output
+            D3D::deviceContext->OMSetRenderTargets(1, &bloomRTV, nullptr);
+            D3D::deviceContext->ClearRenderTargetView(bloomRTV, clearColor);
+
+            // CB
+            UINT sw, sh;
+            D3D::GetMipSize(D3D::bloomW, D3D::bloomH, i - 1, sw, sh);
+            D3D::bloomCBData.srcTexelSize = DirectX::XMFLOAT2(1.0f / (float)sw, 1.0f / (float)sh);
+            D3D::bloomCBData.srcMip = (float)(i - 1);
+            D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
+
+            // Draw Call
+            D3D::deviceContext->PSSetShader(D3D::BloomDownsampleBlur_PS.Get(), NULL, 0);
+            D3D::deviceContext.Get()->Draw(3, 0);
+
+            // cleanup
+            D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
+        }
+    }
+
+    // 3. UpSample Combine Pass -----------------------------
+    //  - mipN에서 mip0으로 올라오며 업샘플 + 가산합성하여 최종 블룸 이미지를 도출한다.
+    //  - DownSample 결과의 시작 누적(accum)은 last mip이 들어있는 텍스처에서 시작한다.
+    //  - BloomA - big, small 샘플 후 가산 -> BloomB RTV에 기록 (ping-pong)
+    //  - Bloom mip(i, i+1) read -> Bloom mip(i)  write
+    {
+        const int lastMipLevel = (int)D3D::bloomMipCount - 1;
+
+        // accum(누적 결과) : 마지막으로 가산합성한 mip이 있는 texture 추적
+        // Ping Pong
+        // mip0 : A
+        // i 홀수 : A(SRV) -> B(RTV)
+        // i 짝수 : B(SRV) -> A(RTV)
+        bool accumOnB = (lastMipLevel == 0) ? false : ((lastMipLevel % 2) != 0);
+
+        for (int i = lastMipLevel - 1; i >= 0; --i)
+        {
+            // View Port
+            D3D::SetViewportForMip(D3D::bloomW, D3D::bloomH, i);
+
+            // bloom SRV hazard 방지 
+            D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
+            D3D::deviceContext->PSSetShaderResources(14, 1, nullSRV);
+
+            // Ping Pong
+            ID3D11ShaderResourceView* bigSRV = nullptr;         // mip i : 가산합살시킬 base가 있는 SRV
+            ID3D11ShaderResourceView* smallSRV = nullptr;       // mip i+1 : 읽어서 업샘플할 누적(accum) SRV
+            ID3D11RenderTargetView* outRTV = nullptr;           // mip i : bigSRV + smallSRV output RTV
+
+            // big SRV
+            if (i == 0) bigSRV = D3D::bloomASRV.Get();
+            else bigSRV = (i % 2 != 0) ? D3D::bloomBSRV.Get() : D3D::bloomASRV.Get();
+
+            // small SRV
+            smallSRV = accumOnB ? D3D::bloomBSRV.Get() : D3D::bloomASRV.Get();
+
+            // out RTV
+            const bool outOnB = !accumOnB;
+            outRTV = outOnB ? D3D::bloomBRTVs[i].Get() : D3D::bloomARTVs[i].Get();
+
+            // Render Target (output)
+            D3D::deviceContext->OMSetRenderTargets(1, &outRTV, nullptr);
+            D3D::deviceContext->ClearRenderTargetView(outRTV, clearColor);
+
+            // SRV (input)
+            D3D::deviceContext->PSSetShaderResources(13, 1, &bigSRV);
+            D3D::deviceContext->PSSetShaderResources(14, 1, &smallSRV);
+
+            // CB update
+            UINT wi, hi;
+            D3D::GetMipSize(D3D::bloomW, D3D::bloomH, (UINT)i, wi, hi);
+            D3D::bloomCBData.srcTexelSize = DirectX::XMFLOAT2(1.0f / (float)wi, 1.0f / (float)hi);
+            D3D::bloomCBData.srcMip = (float)i;
+            D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
+
+            // Shader
+            D3D::deviceContext->PSSetShader(D3D::BloomUpsampleCombine_PS.Get(), NULL, 0);
+
+            // Draw Call
+            D3D::deviceContext.Get()->Draw(3, 0);
+
+            // bloom SRV hazard 방지 
+            D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
+            D3D::deviceContext->PSSetShaderResources(14, 1, nullSRV);
+
+            // 다음 단계에서 누적(accum)은 outOnB 쪽 텍스처에 존재
+            accumOnB = outOnB;
+        }
+    }
 }
 
 // [ PostProcess Pass ]
@@ -386,7 +542,7 @@ void App::PostProcess()
     // Shaders
     D3D::deviceContext->VSSetShader(D3D::FullScreen_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PostProcess_PS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShaderResources(12, 1, D3D::hdrSRV.GetAddressOf());
+    D3D::deviceContext->PSSetShaderResources(12, 1, D3D::sceneHDRSRV.GetAddressOf());
 
     // Render
     D3D::deviceContext.Get()->Draw(3, 0);
