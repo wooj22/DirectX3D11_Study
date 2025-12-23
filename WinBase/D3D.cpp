@@ -703,3 +703,38 @@ void D3D::UnInit()
 	swapChain.Reset();
 	device.Reset();
 }
+
+
+void D3D::GetMipSize(UINT baseW, UINT baseH, UINT mip, UINT& outW, UINT& outH)
+{
+    outW = std::max<UINT>(1, baseW >> mip);     // baseW / 2^mip
+    outH = std::max<UINT>(1, baseH >> mip);     // baseH / 2^mip
+}
+
+void D3D::GetMipTexelSize(UINT baseW, UINT baseH, UINT mip, float& outTx, float& outTy)
+{
+    UINT w, h;
+    GetMipSize(baseW, baseH, mip, w, h);
+    outTx = 1.0f / (float)w;
+    outTy = 1.0f / (float)h;
+}
+
+void D3D::SetViewport(UINT width, UINT height)
+{
+    D3D11_VIEWPORT vp{};
+    vp.TopLeftX = 0.0f;
+    vp.TopLeftY = 0.0f;
+    vp.Width = (float)std::max<UINT>(1, width);
+    vp.Height = (float)std::max<UINT>(1, height);
+    vp.MinDepth = 0.0f;
+    vp.MaxDepth = 1.0f;
+
+    deviceContext->RSSetViewports(1, &vp);
+}
+
+void D3D::SetViewportForMip(UINT baseW, UINT baseH, UINT mip)
+{
+    UINT w, h;
+    GetMipSize(baseW, baseH, mip, w, h);
+    SetViewport(w, h);
+}

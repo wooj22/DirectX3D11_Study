@@ -155,9 +155,13 @@ void App::OnUpdate()
 
 void App::OnRender()
 {
+    // Stage Setting
+    StageSetting();         // binding + CB udpate
+        
     // Render
-    HDRRender();          // Gaometry + Lighting + Shadow
-    PostProcessing();     // ToneMapping + Exposure +ColorGrading (TODO :: Bloom, Vignette, Film Grain)
+    SceneHDRRender();       // Gaometry + Lighting + Shadow
+    BloomProcess();         // Bloom
+    PostProcess();          // ToneMapping + PostProcess + ScreenFx
 
     // Debug Draw
     FrustumDebugDraw(view, projection, view, projection, Colors::FloralWhite);
@@ -170,19 +174,10 @@ void App::OnRender()
     D3D::swapChain->Present(1, 0);
 }
 
-// [ Gaometry + Lighting + Shadow Pass ]
-void App::HDRRender()
+// Stage Setting + CB update
+void App::StageSetting()
 {
-    // Clear
-    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::hdrRTV.GetAddressOf(), D3D::depthStencilView.Get());
-    D3D::deviceContext->ClearRenderTargetView(D3D::hdrRTV.Get(), clearColor);
-
-    // death buffer clear
-    D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-
-    // --------------------- Stage Setting -----------------------
+    // Stage Setting
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
     D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
@@ -200,25 +195,7 @@ void App::HDRRender()
     D3D::deviceContext->PSSetConstantBuffers(7, 1, D3D::postprocessBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(8, 1, D3D::screenFxBuffer.GetAddressOf());
 
-    // Skybox Render  --------------------------------
-    switch (currentSkybox)
-    {
-    case 0:
-        skybox1.Render(view, projection);
-        break;
-    case 1:
-        skybox2.Render(view, projection);
-        break;
-    case 2:
-        skybox3.Render(view, projection);
-        break;
-    case 3:
-        skybox4.Render(view, projection);
-        break;
-    }
-
-
-    // Buffer Data Update -----------------------------------
+    // CB Update
     D3D::transformCBData.view = XMMatrixTranspose(view);
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::transformCBData.shadowView = XMMatrixTranspose(lightView);
@@ -263,9 +240,40 @@ void App::HDRRender()
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::postprocessBuffer.Get(), 0, nullptr, &D3D::postprocessCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::screenFxBuffer.Get(), 0, nullptr, &D3D::screenFxCBData, 0, 0);
+}
 
+// [ Gaometry + Lighting + Shadow Pass ]
+void App::SceneHDRRender()
+{
+    // Clear
+    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::hdrRTV.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->ClearRenderTargetView(D3D::hdrRTV.Get(), clearColor);
 
-    // 1. Depth Only Pass -------------------------------------
+    // death buffer clear
+    D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+    // Skybox Render  --------------------------------
+    switch (currentSkybox)
+    {
+    case 0:
+        skybox1.Render(view, projection);
+        break;
+    case 1:
+        skybox2.Render(view, projection);
+        break;
+    case 2:
+        skybox3.Render(view, projection);
+        break;
+    case 3:
+        skybox4.Render(view, projection);
+        break;
+    }
+
+    // Skyboc에서 view 행렬에 transform을 제거해서 다시 udpate
+    D3D::transformCBData.view = XMMatrixTranspose(view);
+
+    // 1. ShadowMap Pass  -------------------------------------
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_shadowMap);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(0, nullptr, D3D::shadowDSV.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
@@ -291,7 +299,7 @@ void App::HDRRender()
     enemy->Render();
 
 
-    // 2. PBR Mesh Render Pass -------------------------------------
+    // 2. Scene HDR Color Pass -------------------------------------
     // Static, Rigid Model
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(1, D3D::hdrRTV.GetAddressOf(), D3D::depthStencilView.Get());
@@ -348,11 +356,17 @@ void App::HDRRender()
     D3D::deviceContext->PSSetShaderResources(6, 1, nullSRV);
 }
 
-// [ PostProcessing Pass ]
-// ToneMapping + Exposure + ColorGrading (TODO :: Bloom, Vignette, Film Grain)
+// [ BloomProcess Pass ]
+void App::BloomProcess()
+{
+
+}
+
+// [ PostProcess Pass ]
+// ToneMapping(LDR) + PostProcess
 // Tone Mapping 패스는 화면을 덮는 FullScreen 사각형을 그리면서,
 // HDR SRV를 샘플링해 색을 계산하고, 그 결과를 BackBuffer에 기록하는 단계
-void App::PostProcessing()
+void App::PostProcess()
 {
     // view port
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);

@@ -4,6 +4,9 @@
     Bloom 처리 3단계.
     mipN(가장 작은 해상도, 넓은 퍼짐)부터 mip0(큰 해상도, 날카로운 코어)로 올라오며 
     업샘플하고 가산 합성하여 최종 Bloom 텍스처를 만든다.
+    
+    - Input : BloomA mipN
+    - Output : BloomFinal  (BloomA mip0 또는 BloomB mip0)
 */
 
 #include <shared.fxh>

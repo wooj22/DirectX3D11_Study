@@ -3,6 +3,9 @@
     
     Bloom 처리 1단계.
     sceneHDR 텍스처에서 Bloom처리할 밝은 부분을 추출한다.
+    
+    - Input : sceneHDR
+    - Output : BloomA mip0
 */
 
 #include <shared.fxh>

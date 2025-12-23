@@ -122,5 +122,19 @@ public:
     static bool CreateShader();
     static bool CreateConstantBuffer();
 	static void UnInit();
+
+
+    // Bloom Utils -------------------------
+    // mip 해상도 구하기 (baseW/baseH는 bloom base 해상도)
+    static void GetMipSize(UINT baseW, UINT baseH, UINT mip, UINT& outW, UINT& outH);
+
+    // mip 기준 texel size 구하기
+    static void GetMipTexelSize(UINT baseW, UINT baseH, UINT mip, float& outTx, float& outTy);
+
+    // viewport 설정
+    static void SetViewport(UINT width, UINT height);
+
+    // bloom mip용 viewport 설정
+    static void SetViewportForMip(UINT baseW, UINT baseH, UINT mip);
 };
 
