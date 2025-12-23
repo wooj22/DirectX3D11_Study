@@ -27,13 +27,21 @@ ComPtr<ID3D11ShaderResourceView>  D3D::sceneHDRSRV = nullptr;
 
 UINT D3D::bloomW = 0;
 UINT D3D::bloomH = 0;
+UINT D3D::bloomMipCount = 1;
 ComPtr<ID3D11Texture2D>           D3D::bloomATexture = nullptr;
 ComPtr<ID3D11Texture2D>           D3D::bloomBTexture = nullptr;
 ComPtr<ID3D11ShaderResourceView>  D3D::bloomASRV = nullptr;
 ComPtr<ID3D11ShaderResourceView>  D3D::bloomBSRV = nullptr;
 std::vector<ComPtr<ID3D11RenderTargetView>> D3D::bloomARTVs;
 std::vector<ComPtr<ID3D11RenderTargetView>> D3D::bloomBRTVs;
-UINT D3D::bloomMipCount = 1;
+
+ComPtr<ID3D11Texture2D>           D3D::accumATexture = nullptr;
+ComPtr<ID3D11Texture2D>           D3D::accumBTexture = nullptr;
+ComPtr<ID3D11ShaderResourceView>  D3D::accumASRV = nullptr;
+ComPtr<ID3D11ShaderResourceView>  D3D::accumBSRV = nullptr;
+std::vector<ComPtr<ID3D11RenderTargetView>> D3D::accumARTVs;
+std::vector<ComPtr<ID3D11RenderTargetView>> D3D::accumBRTVs;
+
 
 ComPtr<ID3D11Texture2D>           D3D::shadowMap = nullptr;
 ComPtr<ID3D11DepthStencilView>    D3D::shadowDSV = nullptr;
@@ -298,6 +306,12 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         hr = device->CreateTexture2D(&td, nullptr, bloomBTexture.GetAddressOf());
         if (FAILED(hr)) return false;
 
+        hr = device->CreateTexture2D(&td, nullptr, accumATexture.GetAddressOf());
+        if (FAILED(hr)) return false;
+
+        hr = device->CreateTexture2D(&td, nullptr, accumBTexture.GetAddressOf());
+        if (FAILED(hr)) return false;
+
         // SRV
         D3D11_SHADER_RESOURCE_VIEW_DESC sd{};
         sd.Format = DXGI_FORMAT_R11G11B10_FLOAT;
@@ -311,9 +325,18 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         hr = device->CreateShaderResourceView(bloomBTexture.Get(), &sd, bloomBSRV.GetAddressOf());
         if (FAILED(hr)) return false;
 
+        hr = device->CreateShaderResourceView(accumATexture.Get(), &sd, accumASRV.GetAddressOf());
+        if (FAILED(hr)) return false;
+
+        hr = device->CreateShaderResourceView(accumBTexture.Get(), &sd, accumBSRV.GetAddressOf());
+        if (FAILED(hr)) return false;
+
         // RTV
-        bloomARTVs.resize(bloomMipCount);
-        bloomBRTVs.resize(bloomMipCount);
+        bloomARTVs.clear(); bloomBRTVs.clear();
+        accumARTVs.clear(); accumBRTVs.clear();
+
+        bloomARTVs.resize(bloomMipCount);  bloomBRTVs.resize(bloomMipCount);
+        accumARTVs.resize(bloomMipCount);  accumBRTVs.resize(bloomMipCount);
 
         for (UINT mip = 0; mip < bloomMipCount; ++mip)
         {
@@ -326,6 +349,12 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
             if (FAILED(hr)) return false;
 
             hr = device->CreateRenderTargetView(bloomBTexture.Get(), &rd, bloomBRTVs[mip].GetAddressOf());
+            if (FAILED(hr)) return false;
+
+            hr = device->CreateRenderTargetView(accumATexture.Get(), &rd, accumARTVs[mip].GetAddressOf());
+            if (FAILED(hr)) return false;
+
+            hr = device->CreateRenderTargetView(accumBTexture.Get(), &rd, accumBRTVs[mip].GetAddressOf());
             if (FAILED(hr)) return false;
         }
     }

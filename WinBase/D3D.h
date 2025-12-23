@@ -42,7 +42,7 @@ public:
 
     // HDR
     static ComPtr<ID3D11Texture2D>           hdrTexture;
-    static ComPtr<ID3D11RenderTargetView>    hdrRTV;         // HDR RTV
+    static ComPtr<ID3D11RenderTargetView>    hdrRTV;              // HDR RTV
     static ComPtr<ID3D11ShaderResourceView>  sceneHDRSRV;         // HDR SRV
 
     // Shadow
@@ -54,13 +54,20 @@ public:
     // Bloom
     static UINT bloomW;
     static UINT bloomH;
+    static UINT bloomMipCount;
     static ComPtr<ID3D11Texture2D>           bloomATexture;
     static ComPtr<ID3D11Texture2D>           bloomBTexture;
     static ComPtr<ID3D11ShaderResourceView>  bloomASRV;
     static ComPtr<ID3D11ShaderResourceView>  bloomBSRV;
     static std::vector<ComPtr<ID3D11RenderTargetView>> bloomARTVs;
     static std::vector<ComPtr<ID3D11RenderTargetView>> bloomBRTVs;
-    static UINT bloomMipCount;
+
+    static ComPtr<ID3D11Texture2D>           accumATexture;
+    static ComPtr<ID3D11Texture2D>           accumBTexture;
+    static ComPtr<ID3D11ShaderResourceView>  accumASRV;
+    static ComPtr<ID3D11ShaderResourceView>  accumBSRV;
+    static std::vector<ComPtr<ID3D11RenderTargetView>> accumARTVs;
+    static std::vector<ComPtr<ID3D11RenderTargetView>> accumBRTVs;
 
     // ¿É¼Ç
 	static ComPtr<ID3D11DepthStencilState>   wirteoffDSS;              // write off

@@ -10,8 +10,8 @@
     - mip0(가장 큰 해상도) : 선명하고 작은 퍼짐
     - mipN(가장 작은 해상도) : 넓고 흐린 퍼짐
 
-    - Input : BloomA,B mip0
-    - Output : BloomA mipN
+    - Input : Bloom mip(i-1)
+    - Output : Bloom mip(i)
 */
 
 #include <shared.fxh>
