@@ -456,44 +456,49 @@ void App::BloomProcess()
     // 3. UpSample Combine Pass -----------------------------
     //  - mipN에서 mip0으로 올라오며 업샘플 + 가산합성하여 최종 블룸 이미지를 도출한다.
     //  - DownSample 결과의 시작 누적(accum)은 last mip이 들어있는 텍스처에서 시작한다.
-    //  - BloomN1 - big, small 샘플 후 가산 -> BloomN2 RTV에 기록 (ping-pong)
-    //  - Bloom mip(i, i+1) read -> Bloom mip(i)  write
+    //  - BloomA, BloomB : read only
+    //  - AccumA, AccumB : small(accum) read, out write
+    //  - mip(i, i+1) read -> mip(i)  write
     {
         // LastMip은 bloomMipCount-1이 홀수면 B, 짝수면 A에 있음 (downpass에서 핑퐁했기 때문에)
-        // accumOnB은 LastMip에서 시작하는 각 패스마다의 누적 위치 플래그
         int lastMipLevel = (int)D3D::bloomMipCount - 1;
-        bool accumOnB = (lastMipLevel % 2) != 0;
+        bool lastMipOnBloomB = (lastMipLevel % 2) != 0;
+
+        // 첫 루프에서는 accum에 아직 누적 텍스처가 없으므로, bloom에서 big과 small 가져온다.
+        bool accumOnB = false;  // bloomA를 small로 시작 (2개를 한번에 합할거라 순서 상관 x)
 
         for (int i = lastMipLevel - 1; i >= 0; --i)
         {
-            // RTV UnBind
+            // cleanup
             D3D::deviceContext->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, nullRTVs, nullptr);
+            D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
+            D3D::deviceContext->PSSetShaderResources(14, 1, nullSRV);
 
             // View Port
             D3D::SetViewportForMip(D3D::bloomW, D3D::bloomH, i);
 
-            // input : A or B mip(i, i+1)
-            D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
-            D3D::deviceContext->PSSetShaderResources(14, 1, nullSRV);
+            // 1) Big SRV : 더 큰 해상도의 mip이 있는 SRV
+            ID3D11ShaderResourceView* bigSRV = nullptr;
+            if (i == 0) bigSRV = D3D::bloomASRV.Get();      // prefilter 단계에서 mip0은 BloomA에 저장함
+            else bigSRV = ((i % 2) != 0) ? D3D::bloomBSRV.Get() : D3D::bloomASRV.Get();
 
-            ID3D11ShaderResourceView* bigSRV = nullptr;     // mip i : base
-            ID3D11ShaderResourceView* smallSRV = nullptr;   // mip i+1 : 누적 accum
+            // 2) Small SRV : 가산 누적된 mip이 있는 SRV (업샘플 소스)
+            // 첫 루프에서는 accum에 아직 가산한 누적 텍스처가 없으므로, small = Bloom A or B의 last mip
+            // 다음부터는 small = AccumA or AccumB의 mip(i+1)
+            ID3D11ShaderResourceView* smallSRV = nullptr;
+            if (i == lastMipLevel - 1)
+                smallSRV = lastMipOnBloomB ? D3D::bloomBSRV.Get() : D3D::bloomASRV.Get();
+            else
+                smallSRV = accumOnB ? D3D::accumBSRV.Get() : D3D::accumASRV.Get();
 
-            // TODO :: bigSRV, smallSRV
-            if (i == 0) bigSRV = D3D::bloomASRV.Get();      // prefilter 결과는 A.mip0
-            else        bigSRV = ((i % 2) != 0) ? D3D::bloomBSRV.Get() : D3D::bloomASRV.Get();
-            smallSRV = accumOnB ? D3D::bloomBSRV.Get() : D3D::bloomASRV.Get();
+            // 3) out RTV : 현재 패스에서 기록할 texture. (smallSRV와 겹치면 안됨!)
+            const bool outOnB = !accumOnB;
+            ID3D11RenderTargetView* outRTV = outOnB ? D3D::accumBRTVs[i].Get() : D3D::accumARTVs[i].Get();
 
+            // SRV, RTV Bind
             D3D::deviceContext->PSSetShaderResources(13, 1, &bigSRV);
             D3D::deviceContext->PSSetShaderResources(14, 1, &smallSRV);
-
-            // output : A or B mip(i)
-            ID3D11RenderTargetView* outRTV = nullptr;        // mip i : bigSRV + smallSRV output RTV
-            const bool outOnB = !accumOnB;
-            outRTV = outOnB ? D3D::bloomBRTVs[i].Get() : D3D::bloomARTVs[i].Get();
-            
             D3D::deviceContext->OMSetRenderTargets(1, &outRTV, nullptr);
-            D3D::deviceContext->ClearRenderTargetView(outRTV, clearColor);
 
             // CB
             UINT wi, hi;
@@ -504,7 +509,7 @@ void App::BloomProcess()
 
             // Draw Call
             D3D::deviceContext->PSSetShader(D3D::BloomUpsampleCombine_PS.Get(), NULL, 0);
-            D3D::deviceContext.Get()->Draw(3, 0);
+            D3D::deviceContext->Draw(3, 0);
 
             // cleanup
             D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
@@ -514,9 +519,9 @@ void App::BloomProcess()
             accumOnB = outOnB;
         }
 
-        // 최종 mip0 누적 결과는 accumOnB가 가리키는 텍스처의 mip0에 있음
-        finalBloomSRV = accumOnB ? D3D::bloomBSRV.Get() : D3D::bloomASRV.Get();
-        (void)finalBloomSRV;
+        // Final Bloom Texture
+        // accumOnB가 가리키는 Accum 텍스처의 mip0 -> PostProcess에 활용
+        finalBloomSRV = accumOnB ? D3D::accumBSRV.Get() : D3D::accumASRV.Get();
     }
 }
 
@@ -530,7 +535,6 @@ void App::PostProcess()
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
     D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
     D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
-    D3D::deviceContext->PSSetShaderResources(14, 1, nullSRV);
 
     ID3D11RenderTargetView* nullRTVs[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT] = {};
     D3D::deviceContext->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, nullRTVs, nullptr);
@@ -550,6 +554,7 @@ void App::PostProcess()
     D3D::deviceContext->VSSetShader(D3D::FullScreen_VS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PostProcess_PS.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(12, 1, D3D::sceneHDRSRV.GetAddressOf());
+    D3D::deviceContext->PSSetShaderResources(13, 1, &finalBloomSRV);
 
     // Render
     D3D::deviceContext.Get()->Draw(3, 0);

@@ -16,6 +16,7 @@
 #include <PostFxCommon.fxh>
 
 Texture2D sceneHDR : register(t12);
+Texture2D bloomFinal : register(t13);
 SamplerState samplerLinear : register(s0);
 
 
@@ -34,6 +35,13 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     // Exposure
     float exposureScale = pow(2.0, exposure);
     hdr *= exposureScale;
+    
+    // Bloom
+    if (useBloom)
+    {
+        float3 bloom = bloomFinal.Sample(samplerLinear, uv).rgb;
+        hdr += bloom * bloom_intensity;
+    }
 
     // tone Mapping
     float3 mapped = ACESFilm(hdr);

@@ -59,7 +59,6 @@ using namespace DirectX::SimpleMath;
 class App : public WinApp
 {
 private:
-    // bloom test -> D3D로 옮겨라
     ID3D11ShaderResourceView* finalBloomSRV = nullptr;
 
     // skybox
