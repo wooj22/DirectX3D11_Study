@@ -57,6 +57,8 @@ void AssetManager::LoadStaticModelAsset(StaticModel* model, string filePath)
     // asset이 없을 경우 생성
     ModelLoader::LoadStaticMesh(model, filePath);
     asset_staticmodel[filePath] = model->model_data;
+
+    OutputDebugStringA("Load Static Model\n");
 }
 
 
@@ -81,6 +83,8 @@ void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
     // asset이 없을 경우 생성
     ModelLoader::LoadRigidMesh(model, filePath);
     asset_rigidmodel[filePath] = model->model_data;
+
+    OutputDebugStringA("Load Rigid Model\n");
 }
 
 
@@ -104,12 +108,7 @@ void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
 
     // asset이 없을 경우 생성
     ModelLoader::LoadSkeletalMesh(model, filePath);
-
-    // 디버그 출력
-    for (auto& subMesh : model->model_data->subMeshes)
-    {
-        DebugPrintSkeletalVertex(subMesh);
-    }
-    OutputDebugStringA(">>> LoadSkeletalModelAsset CALLED\n");
     asset_skeletalmodel[filePath] = model->model_data;
+
+    OutputDebugStringA("Load Skeletal Model\n");
 }

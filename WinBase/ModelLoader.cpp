@@ -473,7 +473,7 @@ void ModelLoader::ProcessMaterial(aiMaterial* aiMaterial, const aiScene* scene, 
     string directory = "../Resource/";
 
     // file name save
-    // diffuse
+    // diffuse / albedo / base color
     if (aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &filepath) == AI_SUCCESS)
     {
         std::string filename = fs::path(filepath.C_Str()).filename().string();
