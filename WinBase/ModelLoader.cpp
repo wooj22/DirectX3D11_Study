@@ -524,6 +524,7 @@ void ModelLoader::ProcessMaterial(aiMaterial* aiMaterial, const aiScene* scene, 
 
         material->roughness_filename = fs::path(filepath.C_Str()).filename().wstring();
         material->textureFlags |= TEX_ROUGHNESS;
+        material->roughnessFromShininess = false;
     }
 
     // roughness (PBR) - legucy에서 aiTextureType_SHININESS로 오는 경우가 있음.
