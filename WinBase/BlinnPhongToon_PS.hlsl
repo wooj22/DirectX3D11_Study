@@ -40,7 +40,7 @@ float4 main(PS_INPUT input) : SV_TARGET
 
     
     // ambient
-    float3 ambient = indirectIntensity * ambientHighlight * lightColor.rgb;
+    float3 ambient = indirectIntensity * ambientFactor * lightColor.rgb;
 
     
     // diffuse (toon shading)
@@ -54,7 +54,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     if (useDiffuse)
         diffuse_color = diffuseMap.Sample(samLinear, input.texCoord).rgb;
-    float3 diffuse = directIntensity * diffuseHighlight * diffuse_color * diff * lightColor.rgb;
+    float3 diffuse = directIntensity * diffuseFactor * diffuse_color * diff * lightColor.rgb;
 
     
     // specular (toon shading)
@@ -68,7 +68,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     if (useSpecular)
         specular_color = specularMap.Sample(samLinear, input.texCoord).rgb;
-    float3 specular = directIntensity * specularHighlight * 0.5 * specular_color * spec * lightColor.rgb;
+    float3 specular = directIntensity * specularFactor * 0.5 * specular_color * spec * lightColor.rgb;
 
     
     // emissive

@@ -73,21 +73,21 @@ float4 main(PS_INPUT input) : SV_TARGET
 
     
     // ambient
-    float3 ambient = indirectIntensity * ambientHighlight * lightColor.rgb;
+    float3 ambient = indirectIntensity * ambientFactor * lightColor.rgb;
 
     
     // diffuse
     if (useDiffuse)
         diffuse_color = diffuseMap.Sample(samLinear, input.texCoord).rgb;
     float diff = max(dot(N, L), 0.0f);
-    float3 diffuse = directIntensity * diffuseHighlight * diffuse_color * diff * lightColor.rgb;
+    float3 diffuse = directIntensity * diffuseFactor * diffuse_color * diff * lightColor.rgb;
 
     
     // specular
     if (useSpecular)
         specular_color = specularMap.Sample(samLinear, input.texCoord).rgb;
     float spec = pow(max(dot(N, H), 0.0f), shininess);
-    float3 specular = directIntensity * specularHighlight * specular_color * spec * lightColor.rgb;
+    float3 specular = directIntensity * specularFactor * specular_color * spec * lightColor.rgb;
 
     
     // emissive

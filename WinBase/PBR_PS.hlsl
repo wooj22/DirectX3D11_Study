@@ -41,7 +41,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     // --- [Default] ----------------------------------
     // color
     float3 base_color = float3(1.0f, 1.0f, 1.0f);
-    float3 emissive_color = float3(0.0f, 0.0f, 0.0f);
+    float3 emissive = float3(0.0f, 0.0f, 0.0f);
     float metallic = 0.0f;
     float roughness = 0.0f;
     float alpha = 1.0f;
@@ -99,7 +99,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     // emission
     if (useEmissive)
-        emissive_color = emissiveMap.Sample(samLinear, input.texCoord).rgb;
+        emissive = emissiveMap.Sample(samLinear, input.texCoord).rgb;
     
     // metallic
     if (useMetallic)
@@ -117,15 +117,19 @@ float4 main(PS_INPUT input) : SV_TARGET
         discard;
     
     // --- [Override] ----------------------------------
+    if (useBaseColorOverride)
+        base_color = baseColorOverride;
+    if (useEmissiveOverride)
+        emissive = emissiveOverride;
     if (useMetallicOverride)
         metallic = metallicOverride;
     if (useRoughnessOverride)
         roughness = roughnessOverride;
-    if (useBaseColorOverride)
-        base_color = baseColorOverride;
+    
     roughness = max(roughness, 0.04);
     
-    // --- [Facotr] -----------------------------------
+    // --- [Factor] -----------------------------------
+    emissive *= emissiveFactor;
     metallic *= metallicFactor;
     float rf = max(roughnessFactor, 0.04);
     roughness *= rf;
@@ -195,8 +199,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     
     // --- [Final Color]  ----------------------------------
-    float3 finalColor = (DirectColor * shadowFactor) + IndirectColor + emissive_color;
-    
+    float3 finalColor = (DirectColor * shadowFactor) + IndirectColor + emissive;
+
      // LDR 단독패스일 때만 감마보정
     if (useDefaultGamma && !isHDR)
         finalColor = LinearToSRGB(finalColor);

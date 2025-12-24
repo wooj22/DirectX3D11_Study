@@ -82,6 +82,9 @@ struct alignas(16) TransformCB
     Matrix projection;
     Matrix shadowView;       // ±¤¿ø view
     Matrix shadowProjection; // ±¤¿ø projection
+
+    Vector3 cameraPos;
+    int padding;
 };
 
 // LightingCB -> b1
@@ -90,29 +93,47 @@ struct alignas(16) LightingCB
     Vector4 lightDirection;
     Vector4 lightColor;
 
-    float directIntensity;            // blinpong, PBR
-    float indirectIntensity;          // blinpong, PBR
+    float directIntensity;   
+    float indirectIntensity; 
 
-    float ambientHighlight;       // blinpong  // TODO :: debug CB·Î ¿Å±â±â
-    float diffuseHighlight;       // blinpong
-    float specularHighlight;      // blinpong
-    float shininess;              // blinpong
-    Vector2 padding;
-
-    Vector3 cameraPos;
-    float padding2;
+    UINT useIBL = 0;
+    int padding;
 };
 
 // MaterialCB -> b2
 struct alignas(16) MaterialCB
 {
+    // use texture
     UINT useDiffuse;
     UINT useNormal;
     UINT useSpecular;
     UINT useEmissive;
     UINT useMetallic;
     UINT useRoughness;
-    Vector2 padding;
+    Vector2 padding1;
+
+    // BlinPong
+    float ambientFactor;       
+    float diffuseFactor;       
+    float specularFactor;      
+    float shininess;           
+
+    // PBR Factor
+    float emissiveFactor = 1.0f;
+    float metallicFactor = 1.0f;
+    float roughnessFactor = 1.0f;
+    float padding2;
+
+    // PBR override
+    UINT useBaseColorOverride = 0;
+    UINT useEmissiveOverride = 0;
+    UINT useMetallicOverride = 0;
+    UINT useRoughnessOverride = 0;
+
+    Vector3 baseColorOverride = { 1,1,1 };
+    float metallicOverride = 1.0f;
+    Vector3 emissiveOverride = { 1,1,1 };
+    float roughnessOverride = 1.0f;
 };
 
 // OffsetMatrix -> b3
@@ -142,21 +163,7 @@ struct alignas(16) OutLineCB
 // Debug Constant Buffer -> b6
 struct alignas(16) DebugCB
 {
-    // factor
-    float metallicFactor = 1.0f;
-    float roughnessFactor = 1.0f;
-
-    // override
-    float metallicOverride = 1.0f;
-    float roughnessOverride = 1.0f;
-    UINT useMetallicOverride = 0;
-    UINT useRoughnessOverride = 0;
-
-    UINT useBaseColorOverride = 0;
-    UINT useIBL = 0;
-
-    Vector3 baseColorOverride = { 1,1,1 };
-    float padding2;
+    
 };
 
 // PostProcess CB

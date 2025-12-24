@@ -50,8 +50,11 @@ cbuffer TransformCB : register(b0)
     matrix world;
     matrix view;
     matrix projection;
-    matrix shadowView;       // ±¤¿ø view
-    matrix shadowProjection; // ±¤¿ø projection
+    matrix shadowView;       
+    matrix shadowProjection; 
+    
+    float3 cameraPos;
+    int padding1;
 }
 
 cbuffer LightingCB : register(b1)
@@ -59,28 +62,46 @@ cbuffer LightingCB : register(b1)
     float4 lightDirection;
     float4 lightColor;
     
-    float directIntensity; // blinpong, PBR
-    float indirectIntensity; // blinpong, PBR
+    float directIntensity;   
+    float indirectIntensity; 
    
-    float ambientHighlight;         // blinpong
-    float diffuseHighlight;         // blinpong
-    float specularHighlight;        // blinpong
-    float shininess;                // blinpong
-    float2 padding1;
-    
-    float3 cameraPos;
-    float padding2;
+    bool useIBL;
+    int padding2;
 }
 
 cbuffer MaterialCB : register(b2)
 {
+    // use texture
     bool useDiffuse;
     bool useNormal;
     bool useSpecular;
     bool useEmissive;
     bool useMetallic;
     bool useRoughness;
-    float2 padding;
+    float2 padding3;
+    
+    // BlinPong
+    float ambientFactor;
+    float diffuseFactor;
+    float specularFactor;
+    float shininess;
+    
+    // PBR Factor
+    float emissiveFactor;
+    float metallicFactor;
+    float roughnessFactor;
+    float padding4;
+
+    // PBR override
+    bool useBaseColorOverride;
+    bool useEmissiveOverride;
+    bool useMetallicOverride;
+    bool useRoughnessOverride;
+
+    float3 baseColorOverride;
+    float metallicOverride;
+    float3 emissiveOverride;
+    float roughnessOverride;
 }
 
 cbuffer OffsetMatrixCB : register(b3)
@@ -101,18 +122,7 @@ cbuffer OutLineCB : register(b5)
 
 cbuffer DebugCB : register(b6)
 {
-    float metallicFactor;
-    float roughnessFactor;
-    float metallicOverride;
-    float roughnessOverride;
     
-    bool useMetallicOverride;
-    bool useRoughnessOverride;
-    
-    bool useBaseColorOverride ;
-    bool useIBL;
-    float3 baseColorOverride;
-    float padding3;
 }
 
 cbuffer PostProcessCB : register(b7)
@@ -141,18 +151,18 @@ cbuffer PostProcessCB : register(b7)
     bool   useTint;
     float3 colorTint;
     float  colorTint_strength;
-    float3 padding4;
+    float3 padding6;
     
     // White Balance (¿Âµµ, »öÁ¶)
     float temperature;
     float tint;
-    float2 padding5;
+    float2 padding7;
     
     // Lift / Gamma / Gain
     bool useLift;
     bool useGamma;
     bool useGain;
-    float padding6;
+    float padding8;
     
     float3 lift;
     float  lift_strength;
@@ -168,13 +178,13 @@ cbuffer PostProcessCB : register(b7)
     float  vignette_smoothness;
     float2 vignetteCenter;
     float3 vignetteColor;
-    int    padding7;
+    int    padding9;
     
     // FilmGrain
     float grain_intensity;
     float grain_response;
     float grain_scale;
-    int   padding8;
+    int   padding10;
 };
 
 cbuffer ScreenFxCB : register(b8)
@@ -202,11 +212,11 @@ cbuffer BloomCB : register(b9)
     float bloom_clamp;
 
     float3 bloom_tint;
-    int padding9;
+    int padding11;
     
     int srcMip;
     float2 srcTexelSize;
-    int padding10;
+    int padding12;
 }
 
 
