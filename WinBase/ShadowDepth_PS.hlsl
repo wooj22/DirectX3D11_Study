@@ -10,12 +10,11 @@ Texture2D diffuseMap : register(t0);
 SamplerState samLinear : register(s0);
 
 
-float4 main(PS_INPUT input) : SV_TARGET
+void main(PS_INPUT input) 
 {
     float alpha = 1.0f;
     if (useDiffuse)
         alpha = diffuseMap.Sample(samLinear, input.texCoord).a;
     
     clip(alpha - 0.5f);
-    return 0;
 }

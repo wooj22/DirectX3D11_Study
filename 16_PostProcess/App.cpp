@@ -284,7 +284,7 @@ void App::SceneHDRRender()
     // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Static_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::ShadowDepth_PS.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::ShadowDepth_PS.Get(), NULL, 0);    // alpha discard
     tree->Render();
     zelda->Render();
     character->Render();
