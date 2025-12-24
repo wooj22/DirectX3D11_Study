@@ -149,6 +149,7 @@ void RigidModel::Render()
         D3D::materialCBData.useEmissive = (model_data->materials[i].textureFlags & TEX_EMISSIVE) != 0;
         D3D::materialCBData.useMetallic = (model_data->materials[i].textureFlags & TEX_METALLIC) != 0;
         D3D::materialCBData.useRoughness = (model_data->materials[i].textureFlags & TEX_ROUGHNESS) != 0;
+        D3D::materialCBData.roughnessFromShininess = model_data->materials[i].roughnessFromShininess;
 
         // constant buffer
         D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);

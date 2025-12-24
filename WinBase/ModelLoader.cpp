@@ -469,6 +469,9 @@ void ModelLoader::SaveEmbeddedTextureIfExists(const aiScene* scene, const string
 // Material
 void ModelLoader::ProcessMaterial(aiMaterial* aiMaterial, const aiScene* scene, Material* material)
 {
+    // texture debug
+    DebugMaterialTextures(aiMaterial);
+
     aiString filepath;
     std::string directory(material->directory.begin(), material->directory.end());
 
@@ -514,13 +517,25 @@ void ModelLoader::ProcessMaterial(aiMaterial* aiMaterial, const aiScene* scene, 
     }
 
     // roughness (PBR)
-    if (aiMaterial->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &filepath) == AI_SUCCESS)
+    if (aiMaterial->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &filepath) == AI_SUCCESS )
     {
         std::string filename = fs::path(filepath.C_Str()).filename().string();
         SaveEmbeddedTextureIfExists(scene, directory, filename);
 
         material->roughness_filename = fs::path(filepath.C_Str()).filename().wstring();
         material->textureFlags |= TEX_ROUGHNESS;
+    }
+
+    // roughness (PBR) - legucy에서 aiTextureType_SHININESS로 오는 경우가 있음.
+    // roughness = 1 - roughness; 반전 처리 필요.
+    if (aiMaterial->GetTexture(aiTextureType_SHININESS, 0, &filepath) == AI_SUCCESS)
+    {
+        std::string filename = fs::path(filepath.C_Str()).filename().string();
+        SaveEmbeddedTextureIfExists(scene, directory, filename);
+
+        material->roughness_filename = fs::path(filepath.C_Str()).filename().wstring();
+        material->textureFlags |= TEX_ROUGHNESS;
+        material->roughnessFromShininess = true;
     }
 
     // metallic (PBR)
@@ -532,4 +547,67 @@ void ModelLoader::ProcessMaterial(aiMaterial* aiMaterial, const aiScene* scene, 
         material->metallic_filename = fs::path(filepath.C_Str()).filename().wstring();
         material->textureFlags |= TEX_METALLIC;
     }
+}
+
+
+// material texture debug
+const wchar_t* ModelLoader::TextureTypeToString(aiTextureType type)
+{
+    switch (type)
+    {
+    case aiTextureType_NONE:              return L"NONE";
+    case aiTextureType_DIFFUSE:           return L"DIFFUSE";
+    case aiTextureType_SPECULAR:          return L"SPECULAR";
+    case aiTextureType_AMBIENT:            return L"AMBIENT";
+    case aiTextureType_EMISSIVE:           return L"EMISSIVE";
+    case aiTextureType_HEIGHT:             return L"HEIGHT";
+    case aiTextureType_NORMALS:            return L"NORMALS";
+    case aiTextureType_SHININESS:           return L"SHININESS";
+    case aiTextureType_OPACITY:             return L"OPACITY";
+    case aiTextureType_DISPLACEMENT:        return L"DISPLACEMENT";
+    case aiTextureType_LIGHTMAP:            return L"LIGHTMAP";
+    case aiTextureType_REFLECTION:          return L"REFLECTION";
+
+        // PBR
+    case aiTextureType_BASE_COLOR:          return L"BASE_COLOR";
+    case aiTextureType_NORMAL_CAMERA:       return L"NORMAL_CAMERA";
+    case aiTextureType_EMISSION_COLOR:      return L"EMISSION_COLOR";
+    case aiTextureType_METALNESS:           return L"METALNESS";
+    case aiTextureType_DIFFUSE_ROUGHNESS:   return L"DIFFUSE_ROUGHNESS";
+    case aiTextureType_AMBIENT_OCCLUSION:   return L"AMBIENT_OCCLUSION";
+
+    default:                                return L"UNKNOWN";
+    }
+}
+
+void ModelLoader::DebugMaterialTextures(aiMaterial* aiMaterial)
+{
+    OutputDebugStringW(L"\n=== Material Texture Debug ===\n");
+
+    for (int type = aiTextureType_NONE; type <= aiTextureType_AMBIENT_OCCLUSION; ++type)
+    {
+        aiTextureType texType = static_cast<aiTextureType>(type);
+        unsigned int count = aiMaterial->GetTextureCount(texType);
+
+        if (count > 0)
+        {
+            wchar_t buffer[256];
+            swprintf_s(buffer, L"  [%s] : %u texture(s)\n",
+                TextureTypeToString(texType), count);
+            OutputDebugStringW(buffer);
+
+            for (unsigned int i = 0; i < count; ++i)
+            {
+                aiString path;
+                if (aiMaterial->GetTexture(texType, i, &path) == AI_SUCCESS)
+                {
+                    wchar_t pathBuffer[512];
+                    swprintf_s(pathBuffer, L"      %u : %S\n", i, path.C_Str());
+                    OutputDebugStringW(pathBuffer);
+                }
+            }
+        }
+    }
+
+    OutputDebugStringW(L"==============================\n");
 }

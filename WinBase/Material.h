@@ -26,11 +26,9 @@ enum TextureFlags
 class Material
 {
 public:
-    // directory path
     wstring directory = L"../Resource/";
-
-    // texture flag
-    UINT textureFlags = 0;
+    UINT    textureFlags = 0;               // Has Texture Bit Flag
+    bool    roughnessFromShininess;         // PBR roughness가 aiTextureType_SHININESS 텍스처로 들어오는 경우
 
     // file path
     wstring diffuse_filename = L"";         // 블린퐁(diffuse), PBR(albedo)

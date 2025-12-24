@@ -110,7 +110,9 @@ struct alignas(16) MaterialCB
     UINT useEmissive;
     UINT useMetallic;
     UINT useRoughness;
-    Vector2 padding1;
+
+    UINT roughnessFromShininess; // roughness가 aiTextureType_SHININESS로 들어오는 경우
+    int  padding1;
 
     // BlinPong
     float ambientFactor;       

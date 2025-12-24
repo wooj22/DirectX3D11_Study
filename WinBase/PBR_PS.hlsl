@@ -107,8 +107,12 @@ float4 main(PS_INPUT input) : SV_TARGET
 
     // roughness
     if (useRoughness)
+    {
         roughness = roughnessMap.Sample(samLinear, input.texCoord).r;
-    
+        if (roughnessFromShininess)
+            roughness = 1 - roughness;
+    }
+
     // alpha
     if (useDiffuse)
         alpha = diffuseMap.Sample(samLinear, input.texCoord).a;

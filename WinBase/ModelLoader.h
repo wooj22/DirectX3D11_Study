@@ -52,5 +52,10 @@ private:
 
     static void SaveEmbeddedTextureIfExists(const aiScene* scene, const string& directory, const string& filename);
     static void ProcessMaterial(aiMaterial* aiMaterial, const aiScene* scene, Material* material);
+
+    // material texture debug
+    static const wchar_t* TextureTypeToString(aiTextureType type);
+    static void DebugMaterialTextures(aiMaterial* aiMaterial);
+
 };
 

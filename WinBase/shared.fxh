@@ -78,7 +78,9 @@ cbuffer MaterialCB : register(b2)
     bool useEmissive;
     bool useMetallic;
     bool useRoughness;
-    float2 padding3;
+    
+    bool roughnessFromShininess;
+    float padding3;
     
     // BlinPong
     float ambientFactor;
