@@ -338,9 +338,7 @@ void App::SceneHDRRender()
     floor->Render();
     tree->Render();
     zelda->Render();
-    //D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 0);
     character->Render();
-    //D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
@@ -638,7 +636,6 @@ void App::RenderGUI()
     ImGui::SliderFloat("Metallic", &D3D::materialCBData.metallicOverride, 0.0f, 1.0f);
     ImGui::Checkbox("Roughness Override", &useRoughnessOverride);
     ImGui::SliderFloat("Roughness", &D3D::materialCBData.roughnessOverride, 0.0f, 1.0f);
-    
 
     ImGui::Text("");
     ImGui::Text("[Transform]");

@@ -470,7 +470,7 @@ void ModelLoader::SaveEmbeddedTextureIfExists(const aiScene* scene, const string
 void ModelLoader::ProcessMaterial(aiMaterial* aiMaterial, const aiScene* scene, Material* material)
 {
     aiString filepath;
-    string directory = "../Resource/";
+    std::string directory(material->directory.begin(), material->directory.end());
 
     // file name save
     // diffuse / albedo / base color
