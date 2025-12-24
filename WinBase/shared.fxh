@@ -38,6 +38,9 @@
 // SamplerState samLinearClamp : register(s2);
 
 
+#ifndef Shared
+#define Shared
+
 // ------------------
 //  Constant Buffer
 // ------------------
@@ -266,6 +269,6 @@ struct PS_FullScreen_Input
     float2 uv : TEXCOORD;
 };
 
-
+#endif
 
 

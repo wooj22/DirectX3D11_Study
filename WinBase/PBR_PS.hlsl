@@ -14,6 +14,7 @@
     - Shadow Mapping Support
 */
 
+#include <shared.fxh>
 #include <PBR_Common.fxh>
 
 // --- Texture Bind Slot ------------------

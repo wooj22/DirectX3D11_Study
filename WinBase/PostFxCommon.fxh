@@ -1,5 +1,7 @@
-#include <PBR_Common.fxh>
+#include <shared.fxh>
 
+#ifndef POSTFxCommon
+#define POSTFxCommon
 
 // ----------------------------------------
 // [ Random -> Noise -> FBM ->Domain Warping ]
@@ -317,3 +319,5 @@ float3 ACESFilm(float3 x)
     float e = 0.14f;
     return saturate(x * (a * x + b) / (x * (c * x + d) + e));
 }
+
+#endif

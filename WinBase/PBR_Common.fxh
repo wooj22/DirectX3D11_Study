@@ -1,5 +1,8 @@
 #include <shared.fxh>
 
+#ifndef PBRCommon
+#define PBRCommon
+
 // --- Cook -Torrance BRDF Functions ------
 static const float PI = 3.141592f;
 static const float EPSILON = 0.00001f;
@@ -43,3 +46,6 @@ float3 LinearToSRGB(float3 c)
 {
     return pow(c, 1.0 / defalutGamma);
 }
+
+
+#endif

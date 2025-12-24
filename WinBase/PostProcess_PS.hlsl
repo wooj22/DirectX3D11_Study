@@ -13,6 +13,8 @@
 // [Screen Space Effect]
 // 물결, 필름그레인, 플라즈마 효과
 
+#include <shared.fxh>
+#include <PBR_Common.fxh>
 #include <PostFxCommon.fxh>
 
 Texture2D sceneHDR : register(t12);
