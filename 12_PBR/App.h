@@ -56,12 +56,8 @@ private:
     DirectionalLight light;
 
     // PBR debug
-    float metallicFactor = 1.0f;
-    float roughnessFactor = 1.0f;
-    Vector3 baseColorOverride = { 1,1,1 };
-    float metallicOverride = 0.5f;
-    float roughnessOverride = 0.5f;
     bool useBaseColorOverride = 0;
+    bool useEmissiveOverride = 0;
     bool useMetallicOverride = 0;
     bool useRoughnessOverride = 0;
 

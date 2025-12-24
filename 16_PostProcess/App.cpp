@@ -628,7 +628,7 @@ void App::RenderGUI()
     ImGui::Text("[Material]");
     ImGui::SliderFloat("Metallic Factor", &D3D::materialCBData.metallicFactor, 0.0f, 1.0f);
     ImGui::SliderFloat("Roughness Factor", &D3D::materialCBData.roughnessFactor, 0.0f, 1.0f);
-    ImGui::SliderFloat("Emissve Factor", &D3D::materialCBData.emissiveFactor, 0.0f, 10.0f);
+    ImGui::SliderFloat("Emissve Factor", &D3D::materialCBData.emissiveFactor, 0.0f, 3.0f);
 
     ImGui::Checkbox("BaseColor Override", &useBaseColorOverride);
     ImGui::ColorEdit3("BaseColor", &D3D::materialCBData.baseColorOverride.x);

@@ -100,12 +100,8 @@ private:
     float shadowFar = 5000.0f;
 
     // PBR debug
-    float metallicFactor = 1.0f;
-    float roughnessFactor = 1.0f;
-    Vector3 baseColorOverride = { 1,1,1 };
-    float metallicOverride = 1.0f;
-    float roughnessOverride = 0.0f;
     bool useBaseColorOverride = 0;
+    bool useEmissiveOverride = 0;
     bool useMetallicOverride = 0;
     bool useRoughnessOverride = 0;
 

@@ -87,7 +87,7 @@ bool App::OnInit()
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 
     // debug settup
-    D3D::debugCBData.useIBL = 1;
+    D3D::lightingCBData.useIBL = 1;
     D3D::postprocessCBData.isHDR = 1;
     D3D::postprocessCBData.contrast = 1.0;
     D3D::postprocessCBData.saturation = 1.0;
@@ -223,22 +223,18 @@ void App::HDRRender()
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::transformCBData.shadowView = XMMatrixTranspose(lightView);
     D3D::transformCBData.shadowProjection = XMMatrixTranspose(lightProjection);
+    D3D::transformCBData.cameraPos = camera.position;
 
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;
     D3D::lightingCBData.directIntensity = light.directIntensity;
     D3D::lightingCBData.indirectIntensity = light.indirectIntensity;
-    D3D::lightingCBData.cameraPos = camera.position;
+    D3D::lightingCBData.useIBL = useIBL ? 1 : 0;
 
-    D3D::debugCBData.metallicFactor = metallicFactor;
-    D3D::debugCBData.roughnessFactor = roughnessFactor;
-    D3D::debugCBData.baseColorOverride = baseColorOverride;
-    D3D::debugCBData.metallicOverride = metallicOverride;
-    D3D::debugCBData.roughnessOverride = roughnessOverride;
-    D3D::debugCBData.useBaseColorOverride = useBaseColorOverride ? 1 : 0;
-    D3D::debugCBData.useMetallicOverride = useMetallicOverride ? 1 : 0;
-    D3D::debugCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
-    D3D::debugCBData.useIBL = useIBL ? 1 : 0;
+    D3D::materialCBData.useBaseColorOverride = useBaseColorOverride ? 1 : 0;
+    D3D::materialCBData.useEmissiveOverride = useEmissiveOverride ? 1 : 0;
+    D3D::materialCBData.useMetallicOverride = useMetallicOverride ? 1 : 0;
+    D3D::materialCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
 
     D3D::postprocessCBData.useDefaultGamma = usedefalutGamma ? 1 : 0;
     D3D::postprocessCBData.useColorTint = useColorTint ? 1 : 0;
@@ -437,15 +433,18 @@ void App::RenderGUI()
 
     ImGui::Text("");
     ImGui::Text("[Material]");
-    ImGui::SliderFloat("Metallic Factor", &metallicFactor, 0.0f, 1.0f);
-    ImGui::SliderFloat("Roughness Factor", &roughnessFactor, 0.0f, 1.0f);
-    ImGui::Checkbox("BaseColor Override", &useBaseColorOverride);
-    ImGui::ColorEdit3("BaseColor", &baseColorOverride.x);
+    ImGui::SliderFloat("Metallic Factor", &D3D::materialCBData.metallicFactor, 0.0f, 1.0f);
+    ImGui::SliderFloat("Roughness Factor", &D3D::materialCBData.roughnessFactor, 0.0f, 1.0f);
+    ImGui::SliderFloat("Emissve Factor", &D3D::materialCBData.emissiveFactor, 0.0f, 3.0f);
 
+    ImGui::Checkbox("BaseColor Override", &useBaseColorOverride);
+    ImGui::ColorEdit3("BaseColor", &D3D::materialCBData.baseColorOverride.x);
+    ImGui::Checkbox("Emissve Override", &useEmissiveOverride);
+    ImGui::ColorEdit3("Emissve", &D3D::materialCBData.emissiveOverride.x);
     ImGui::Checkbox("Metallic Override", &useMetallicOverride);
-    ImGui::SliderFloat("Metallic", &metallicOverride, 0.0f, 1.0f);
+    ImGui::SliderFloat("Metallic", &D3D::materialCBData.metallicOverride, 0.0f, 1.0f);
     ImGui::Checkbox("Roughness Override", &useRoughnessOverride);
-    ImGui::SliderFloat("Roughness", &roughnessOverride, 0.0f, 1.0f);
+    ImGui::SliderFloat("Roughness", &D3D::materialCBData.roughnessOverride, 0.0f, 1.0f);
 
     ImGui::Text("");
     ImGui::Text("[Transform]");

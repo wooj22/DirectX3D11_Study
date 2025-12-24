@@ -134,15 +134,18 @@ void App::OnRender()
     // buffer data
     D3D::transformCBData.view = XMMatrixTranspose(view);
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
+    D3D::transformCBData.cameraPos = camera.position;
+
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;
     D3D::lightingCBData.indirectIntensity = light.indirectIntensity;
     D3D::lightingCBData.directIntensity = light.directIntensity;
-    D3D::lightingCBData.ambientHighlight = ambientHighlight;
-    D3D::lightingCBData.diffuseHighlight = diffuseHighlight;
-    D3D::lightingCBData.specularHighlight = specularHighlight;
-    D3D::lightingCBData.shininess = shininess;
-    D3D::lightingCBData.cameraPos = camera.position;
+
+    D3D::materialCBData.ambientFactor = ambientHighlight;
+    D3D::materialCBData.diffuseFactor = diffuseHighlight;
+    D3D::materialCBData.specularFactor = specularHighlight;
+    D3D::materialCBData.shininess = shininess;
+    
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::outlineBuffer.Get(), 0, nullptr, &D3D::outlineCBData, 0, 0);
 
