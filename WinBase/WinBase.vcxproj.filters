@@ -275,10 +275,10 @@
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_DeferredLighting.hlsl">
-      <Filter>98. Shaders</Filter>
+      <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_Gbuffer.hlsl">
-      <Filter>98. Shaders</Filter>
+      <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

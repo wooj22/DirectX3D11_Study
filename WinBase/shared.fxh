@@ -30,7 +30,11 @@
 // Texture2D IBL_BRDF_LUT        : register(t11);
 // Texture2D sceneHDR            : register(t12);
 // Texture2D bloomA              : register(t13);
-// Texture2D bloomB              : register(t14);
+// Texture2D positionTex         : register(t14);
+// Texture2D albedoTex           : register(t15);
+// Texture2D normalTex           : register(t16);
+// Texture2D metalRoughTex       : register(t17);
+// Texture2D emissiveTex         : register(t18);
 
 // [ SamplerState ]
 // SamplerState samLinear           : register(s0);
@@ -292,6 +296,23 @@ struct PS_Output
     float4 Material   : SV_Target3;
     float4 Emissive   : SV_Target4;
 };
+
+
+
+
+// Deferred Rendering Normal Gbuffer 
+float3 DecodeNormal(float3 enc)
+{
+    // enc is in [0,1], decode to [-1,1]
+    return normalize(enc * 2.0f - 1.0f);
+}
+
+float3 EncodeNormal(float3 n)
+{
+    // n is in [-1,1], encode to [0,1]
+    return n * 0.5f + 0.5f;
+}
+
 
 #endif
 

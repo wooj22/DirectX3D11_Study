@@ -154,9 +154,9 @@ float4 main(PS_INPUT input) : SV_TARGET
     // --- [Direct Light]  ----------------------------------
     // Specular BRDF (Cook-Torrance)
     float3 F0 = lerp(float3(0.04f, 0.04f, 0.04f), base_color, metallic);
-    float D = D_NDFGGXTR(N, H, roughness); // 미세면 정렬정도
-    float3 F = F_Schlick(H, V, F0); // 프레넬 반사율
-    float G = G_Smith(N, V, L, roughness); // shadowing & masking
+    float D = D_NDFGGXTR(N, H, roughness);  // 미세면 정렬정도
+    float3 F = F_Schlick(H, V, F0);         // 프레넬 반사율
+    float G = G_Smith(N, V, L, roughness);  // shadowing & masking
     
     float denom = 4.0f * max(NdotL, 0.001) * max(NdotV, 0.001);
     float3 SpecularBRDF = (D * F * G) / denom;
