@@ -15,11 +15,11 @@
 // BloomCB          -> b9
 
 // [ Texture ]
-// Texture2D diffuseMap          : register(t0)
-// Texture2D normalMap           : register(t1)
-// Texture2D specularMap         : register(t2)
-// Texture2D emissiveMap         : register(t3)
-// TextureCube skyboxTexture     : register(t4)
+// Texture2D diffuseMap          : register(t0);
+// Texture2D normalMap           : register(t1);
+// Texture2D specularMap         : register(t2);
+// Texture2D emissiveMap         : register(t3);
+// TextureCube skyboxTexture     : register(t4);
 // Texture2D diffuseRamp         : register(t4);
 // Texture2D specualrRamp        : register(t5);
 // Texture2D shadowMap           : register(t6);
@@ -33,7 +33,7 @@
 // Texture2D bloomB              : register(t14);
 
 // [ SamplerState ]
-// SamplerState samLinear           : register(s0)
+// SamplerState samLinear           : register(s0);
 // SamplerComparisonState samShadow : register(s1);
 // SamplerState samLinearClamp      : register(s2);
 
@@ -279,6 +279,18 @@ struct PS_FullScreen_Input
 {
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
+};
+
+// ------------------------------------
+//  PS Output (Deferred Rendering)
+// ------------------------------------
+struct PS_Output
+{
+    float4 WorldPos   : SV_Target0;
+    float4 Base_color : SV_Target1;
+    float4 Normal     : SV_Target2;
+    float4 Material   : SV_Target3;
+    float4 Emissive   : SV_Target4;
 };
 
 #endif
