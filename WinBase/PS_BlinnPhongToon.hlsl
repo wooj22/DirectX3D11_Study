@@ -13,6 +13,7 @@
 
 #include <shared.fxh>
 
+// --- Texture Bind Slot ------------------
 Texture2D diffuseMap : register(t0);
 Texture2D normalMap : register(t1);
 Texture2D specularMap : register(t2);
@@ -21,7 +22,9 @@ Texture2D emissiveMap : register(t3);
 Texture2D diffuseRamp : register(t4);
 Texture2D specualrRamp : register(t5);
 
+// --- Sampler Bind Slot ------------------
 SamplerState samLinear : register(s0);
+
 
 float4 main(PS_INPUT input) : SV_TARGET
 {

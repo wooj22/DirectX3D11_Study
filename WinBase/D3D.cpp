@@ -91,6 +91,8 @@ ComPtr<ID3D11PixelShader>         D3D::PS_ShadowDepth = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::PS_BloomPrefilter = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::PS_BloomDownsampleBlur = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::PS_BloomUpsampleCombine = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_Gbuffer = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_DeferredLighting = nullptr;
                      
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_Vertex = nullptr;
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_BoneWeightVertex = nullptr;
@@ -615,7 +617,7 @@ bool D3D::CreateShader()
             vertexShaderBuffer->GetBufferSize(), NULL, &VS_FullScreen));
         SAFE_RELEASE(vertexShaderBuffer);
     }
-  
+
 
     //---------------------------
     // BlinnPhong PS
@@ -707,6 +709,26 @@ bool D3D::CreateShader()
         HR_T(CompileShaderFromFile(L"../WinBase/PS_BloomUpsampleCombine.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
             pixelShaderBuffer->GetBufferSize(), NULL, &PS_BloomUpsampleCombine));
+        SAFE_RELEASE(pixelShaderBuffer);
+    }
+
+    //---------------------------
+    // Gbuffer PS
+    {
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_Gbuffer.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_Gbuffer));
+        SAFE_RELEASE(pixelShaderBuffer);
+    }
+
+    //---------------------------
+    // DeferredLighting PS
+    {
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_DeferredLighting.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_DeferredLighting));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 

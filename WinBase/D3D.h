@@ -117,6 +117,8 @@ public:
     static ComPtr<ID3D11PixelShader> PS_BloomPrefilter;
     static ComPtr<ID3D11PixelShader> PS_BloomDownsampleBlur;
     static ComPtr<ID3D11PixelShader> PS_BloomUpsampleCombine;
+    static ComPtr<ID3D11PixelShader> PS_Gbuffer;
+    static ComPtr<ID3D11PixelShader> PS_DeferredLighting;
 
     // InputLayout
     static ComPtr<ID3D11InputLayout> inputLayout_Vertex;

@@ -1,9 +1,13 @@
-#include <PBR_Common.fxh>
-
 // Unlit, Diffuse Texture PixelShader
 
+#include <PBR_Common.fxh>
+
+// --- Texture Bind Slot ------------------
 TextureCube skyboxTexture : register(t4);
+
+// --- Sampler Bind Slot ------------------
 SamplerState samplerLinear : register(s0);
+
 
 float4 main(PS_Skybox_INPUT input) : SV_TARGET
 {

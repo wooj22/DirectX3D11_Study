@@ -17,8 +17,11 @@
 #include <PBR_Common.fxh>
 #include <PostFxCommon.fxh>
 
+// --- Texture Bind Slot ------------------
 Texture2D sceneHDR : register(t12);
 Texture2D bloomFinal : register(t13);
+
+// --- Sampler Bind Slot ------------------
 SamplerState samplerLinear : register(s0);
 
 

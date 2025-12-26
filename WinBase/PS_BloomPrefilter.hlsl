@@ -10,7 +10,10 @@
 
 #include <shared.fxh>
 
+// --- Texture Bind Slot ------------------
 Texture2D sceneHDR : register(t12);
+
+// --- Sampler Bind Slot ------------------
 SamplerState samLinearClamp : register(s2);
 
 

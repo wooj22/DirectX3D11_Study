@@ -1,6 +1,6 @@
-#include <shared.fxh>
-
 // OutLine Pixel Shader
+
+#include <shared.fxh>
 
 float4 main(PS_OutLine_INPUT input) : SV_TARGET
 {

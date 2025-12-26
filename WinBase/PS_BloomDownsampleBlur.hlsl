@@ -12,11 +12,14 @@
 
     - Input : Bloom mip(i-1)
     - Output : Bloom mip(i)
-*/
+*/ 
 
 #include <shared.fxh>
 
+// --- Texture Bind Slot ------------------
 Texture2D bloomSrc : register(t13); //  C++에서 A 또는 B를 바인딩 (ping-pong)
+
+// --- Sampler Bind Slot ------------------
 SamplerState samLinearClamp : register(s2);
 
 

@@ -11,8 +11,11 @@
 
 #include <shared.fxh>
 
+// --- Texture Bind Slot ------------------
 Texture2D bloomBig : register(t13);     // big 해상도 mip 체인 (base)
 Texture2D bloomSmall : register(t14);   // small 해상도 mip 체인 (업샘플 소스)
+
+// --- Sampler Bind Slot ------------------
 SamplerState samLinearClamp : register(s2);
 
 
