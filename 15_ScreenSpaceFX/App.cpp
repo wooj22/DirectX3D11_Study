@@ -258,8 +258,8 @@ void App::HDRRender()
 
     // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Static_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::ShadowDepth_PS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_ShadowDepth.Get(), NULL, 0);
     tree->Render();
     zelda->Render();
     character->Render();
@@ -271,7 +271,7 @@ void App::HDRRender()
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Skinned_VS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
     girl->Render();
     enemy->Render();
 
@@ -282,8 +282,8 @@ void App::HDRRender()
     D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PBR_PS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_PBR.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     switch (currentSkybox)
     {
@@ -323,7 +323,7 @@ void App::HDRRender()
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     girl->Render();
     enemy->Render();
@@ -355,8 +355,8 @@ void App::PostProcessing()
     D3D::deviceContext->IASetInputLayout(nullptr);
 
     // Shaders
-    D3D::deviceContext->VSSetShader(D3D::FullScreen_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PostProcess_PS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_PostProcess.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(12, 1, D3D::sceneHDRSRV.GetAddressOf());
 
     // Render

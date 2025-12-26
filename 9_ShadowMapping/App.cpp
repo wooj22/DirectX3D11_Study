@@ -144,13 +144,13 @@ void App::OnRender()
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-    D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Skinned_VS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(nullptr, nullptr, 0);
     warrior->Render();
     character->Render();
 
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Static_VS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
     zelda->Render();
     boxHuman->Render();
     plane->Render();
@@ -161,14 +161,14 @@ void App::OnRender()
     D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::BlinnPhong_PS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_BlinnPhong.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     warrior->Render();
     character->Render();
 
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     zelda->Render();
     boxHuman->Render();

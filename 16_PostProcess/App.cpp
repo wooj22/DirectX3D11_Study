@@ -279,8 +279,8 @@ void App::SceneHDRRender()
 
     // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Static_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::ShadowDepth_PS.Get(), NULL, 0);    // alpha discard
+    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_ShadowDepth.Get(), NULL, 0);    // alpha discard
     tree->Render();
     zelda->Render();
     character->Render();
@@ -292,7 +292,7 @@ void App::SceneHDRRender()
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Skinned_VS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
     girl->Render();
     enemy->Render();
 
@@ -303,8 +303,8 @@ void App::SceneHDRRender()
     D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PBR_PS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_PBR.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     switch (currentSkybox)
     {
@@ -342,7 +342,7 @@ void App::SceneHDRRender()
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     girl->Render();
     enemy->Render();
@@ -360,7 +360,7 @@ void App::BloomProcess()
     // Full Screen VS setup
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D::deviceContext->IASetInputLayout(nullptr);
-    D3D::deviceContext->VSSetShader(D3D::FullScreen_VS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
 
     // clear
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
@@ -395,7 +395,7 @@ void App::BloomProcess()
         D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
 
         // Draw Call
-        D3D::deviceContext->PSSetShader(D3D::BloomPrefilter_PS.Get(), NULL, 0);
+        D3D::deviceContext->PSSetShader(D3D::PS_BloomPrefilter.Get(), NULL, 0);
         D3D::deviceContext.Get()->Draw(3, 0);
 
         // cleanup
@@ -439,7 +439,7 @@ void App::BloomProcess()
             D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
 
             // Draw Call
-            D3D::deviceContext->PSSetShader(D3D::BloomDownsampleBlur_PS.Get(), NULL, 0);
+            D3D::deviceContext->PSSetShader(D3D::PS_BloomDownsampleBlur.Get(), NULL, 0);
             D3D::deviceContext.Get()->Draw(3, 0);
 
             // cleanup
@@ -502,7 +502,7 @@ void App::BloomProcess()
             D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
 
             // Draw Call
-            D3D::deviceContext->PSSetShader(D3D::BloomUpsampleCombine_PS.Get(), NULL, 0);
+            D3D::deviceContext->PSSetShader(D3D::PS_BloomUpsampleCombine.Get(), NULL, 0);
             D3D::deviceContext->Draw(3, 0);
 
             // cleanup
@@ -545,8 +545,8 @@ void App::PostProcess()
     D3D::deviceContext->IASetInputLayout(nullptr);
 
     // Shaders
-    D3D::deviceContext->VSSetShader(D3D::FullScreen_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PostProcess_PS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_PostProcess.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(12, 1, D3D::sceneHDRSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(13, 1, &finalBloomSRV);
 

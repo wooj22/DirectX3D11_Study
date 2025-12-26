@@ -73,24 +73,24 @@ ComPtr<ID3D11SamplerState>        D3D::linearSamplerState = nullptr;
 ComPtr<ID3D11SamplerState>        D3D::linearClamSamplerState = nullptr;
 ComPtr<ID3D11BlendState>          D3D::alphaBlendState = nullptr;
                                   
-ComPtr<ID3D11VertexShader>        D3D::BaseLit_Static_VS = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::BaseLit_Skinned_VS = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::Skybox_VS = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::Skinned_OutLine_VS = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::ShadowDepth_Skinned_VS = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::ShadowDepth_Static_VS = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::FullScreen_VS = nullptr;
+ComPtr<ID3D11VertexShader>        D3D::VS_BaseLit_Static = nullptr;
+ComPtr<ID3D11VertexShader>        D3D::VS_BaseLit_Skinned = nullptr;
+ComPtr<ID3D11VertexShader>        D3D::VS_Skybox = nullptr;
+ComPtr<ID3D11VertexShader>        D3D::VS_Skinned_OutLine = nullptr;
+ComPtr<ID3D11VertexShader>        D3D::VS_ShadowDepth_Skinned = nullptr;
+ComPtr<ID3D11VertexShader>        D3D::VS_ShadowDepth_Static = nullptr;
+ComPtr<ID3D11VertexShader>        D3D::VS_FullScreen = nullptr;
 
-ComPtr<ID3D11PixelShader>         D3D::BlinnPhong_PS = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PBR_PS = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::BlinnPhongToon_PS = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::Skybox_PS = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::OutLine_PS = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PostProcess_PS = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::ShadowDepth_PS = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::BloomPrefilter_PS = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::BloomDownsampleBlur_PS = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::BloomUpsampleCombine_PS = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_BlinnPhong = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_PBR = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_BlinnPhongToon = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_Skybox = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_OutLine = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_PostProcess = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_ShadowDepth = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_BloomPrefilter = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_BloomDownsampleBlur = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_BloomUpsampleCombine = nullptr;
                      
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_Vertex = nullptr;
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_BoneWeightVertex = nullptr;
@@ -521,18 +521,18 @@ bool D3D::CreateShader()
         };
 
         ID3D10Blob* vertexShaderBuffer = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/Skybox_VS.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_Skybox.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
         HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
             vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_Skybox));
 
         // VS
-        device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &Skybox_VS);
+        device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &VS_Skybox);
         vertexShaderBuffer->Release();
 
         // PS
         ID3D10Blob* pixelShaderBuffer = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/Skybox_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
-        HR_T(device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &Skybox_PS));
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_Skybox.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &PS_Skybox));
     }
 
     //---------------------------
@@ -549,20 +549,20 @@ bool D3D::CreateShader()
         };
 
         ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
-        HR_T(CompileShaderFromFile(L"../WinBase/BaseLit_Static_VS.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_BaseLit_Static.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
         HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
             vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_Vertex));
 
         // VS
         HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-            vertexShaderBuffer->GetBufferSize(), NULL, &BaseLit_Static_VS));
+            vertexShaderBuffer->GetBufferSize(), NULL, &VS_BaseLit_Static));
         SAFE_RELEASE(vertexShaderBuffer);
 
         // ShadowDepth_VS
         ID3D10Blob* vertexShaderBuffer2 = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/ShadowDepth_Static_VS.hlsl", "main", "vs_5_0", &vertexShaderBuffer2));
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_ShadowDepth_Static.hlsl", "main", "vs_5_0", &vertexShaderBuffer2));
         HR_T(device->CreateVertexShader(vertexShaderBuffer2->GetBufferPointer(),
-            vertexShaderBuffer2->GetBufferSize(), NULL, &ShadowDepth_Static_VS));
+            vertexShaderBuffer2->GetBufferSize(), NULL, &VS_ShadowDepth_Static));
         SAFE_RELEASE(vertexShaderBuffer2);
     }
 
@@ -582,27 +582,27 @@ bool D3D::CreateShader()
         };
 
         ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
-        HR_T(CompileShaderFromFile(L"../WinBase/BaseLit_Skinned_VS.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_BaseLit_Skinned.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
         HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
             vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_BoneWeightVertex));
 
         // VS
         HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-            vertexShaderBuffer->GetBufferSize(), NULL, &BaseLit_Skinned_VS));
+            vertexShaderBuffer->GetBufferSize(), NULL, &VS_BaseLit_Skinned));
         SAFE_RELEASE(vertexShaderBuffer);
 
         // Skinned OutLine VS
         ID3D10Blob* vertexShaderBuffer2 = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/Skinned_OutLine_VS.hlsl", "main", "vs_5_0", &vertexShaderBuffer2));
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_Skinned_OutLine.hlsl", "main", "vs_5_0", &vertexShaderBuffer2));
         HR_T(device->CreateVertexShader(vertexShaderBuffer2->GetBufferPointer(),
-            vertexShaderBuffer2->GetBufferSize(), NULL, &Skinned_OutLine_VS));
+            vertexShaderBuffer2->GetBufferSize(), NULL, &VS_Skinned_OutLine));
         SAFE_RELEASE(vertexShaderBuffer2);
 
         // ShadowDepth_VS
         ID3D10Blob* vertexShaderBuffer3 = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/ShadowDepth_Skinned_VS.hlsl", "main", "vs_5_0", &vertexShaderBuffer3));
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_ShadowDepth_Skinned.hlsl", "main", "vs_5_0", &vertexShaderBuffer3));
         HR_T(device->CreateVertexShader(vertexShaderBuffer3->GetBufferPointer(),
-            vertexShaderBuffer3->GetBufferSize(), NULL, &ShadowDepth_Skinned_VS));
+            vertexShaderBuffer3->GetBufferSize(), NULL, &VS_ShadowDepth_Skinned));
         SAFE_RELEASE(vertexShaderBuffer3);
     }
 
@@ -610,9 +610,9 @@ bool D3D::CreateShader()
     // Full Screen VS
     {
         ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
-        HR_T(CompileShaderFromFile(L"../WinBase/Fullscreen_VS.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_Fullscreen.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
         HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-            vertexShaderBuffer->GetBufferSize(), NULL, &FullScreen_VS));
+            vertexShaderBuffer->GetBufferSize(), NULL, &VS_FullScreen));
         SAFE_RELEASE(vertexShaderBuffer);
     }
   
@@ -621,9 +621,9 @@ bool D3D::CreateShader()
     // BlinnPhong PS
     {
         ID3D10Blob* pixelShaderBuffer = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/BlinnPhong_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_BlinnPhong.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-            pixelShaderBuffer->GetBufferSize(), NULL, &BlinnPhong_PS));
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_BlinnPhong));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 
@@ -632,9 +632,9 @@ bool D3D::CreateShader()
     // PBR (+IBL) PS
     {
         ID3D10Blob* pixelShaderBuffer = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/PBR_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_PBR.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-            pixelShaderBuffer->GetBufferSize(), NULL, &PBR_PS));
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_PBR));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 
@@ -643,9 +643,9 @@ bool D3D::CreateShader()
     // BlinnPhong Toon PS
     {
         ID3D10Blob* pixelShaderBuffer = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/BlinnPhongToon_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_BlinnPhongToon.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-            pixelShaderBuffer->GetBufferSize(), NULL, &BlinnPhongToon_PS));
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_BlinnPhongToon));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 
@@ -654,9 +654,9 @@ bool D3D::CreateShader()
     // OutLine PS
     {
         ID3D10Blob* pixelShaderBuffer = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/OutLine_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_OutLine.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-            pixelShaderBuffer->GetBufferSize(), NULL, &OutLine_PS));
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_OutLine));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 
@@ -664,9 +664,9 @@ bool D3D::CreateShader()
     // PostProcess PS
     {
         ID3D10Blob* pixelShaderBuffer = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/PostProcess_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_PostProcess.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-            pixelShaderBuffer->GetBufferSize(), NULL, &PostProcess_PS));
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_PostProcess));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 
@@ -674,9 +674,9 @@ bool D3D::CreateShader()
     // ShadowDepth PS
     {
         ID3D10Blob* pixelShaderBuffer = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/ShadowDepth_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_ShadowDepth.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-            pixelShaderBuffer->GetBufferSize(), NULL, &ShadowDepth_PS));
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_ShadowDepth));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 
@@ -684,9 +684,9 @@ bool D3D::CreateShader()
     // BloomPrefilter PS
     {
         ID3D10Blob* pixelShaderBuffer = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/BloomPrefilter_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_BloomPrefilter.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-            pixelShaderBuffer->GetBufferSize(), NULL, &BloomPrefilter_PS));
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_BloomPrefilter));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 
@@ -694,9 +694,9 @@ bool D3D::CreateShader()
     // BloomDownsampleBlur PS
     {
         ID3D10Blob* pixelShaderBuffer = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/BloomDownsampleBlur_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_BloomDownsampleBlur.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-            pixelShaderBuffer->GetBufferSize(), NULL, &BloomDownsampleBlur_PS));
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_BloomDownsampleBlur));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 
@@ -704,9 +704,9 @@ bool D3D::CreateShader()
     // BloomUpsampleCombine PS
     {
         ID3D10Blob* pixelShaderBuffer = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/BloomUpsampleCombine_PS.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_BloomUpsampleCombine.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
         HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-            pixelShaderBuffer->GetBufferSize(), NULL, &BloomUpsampleCombine_PS));
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_BloomUpsampleCombine));
         SAFE_RELEASE(pixelShaderBuffer);
     }
 

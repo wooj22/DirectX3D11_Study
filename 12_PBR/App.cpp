@@ -159,7 +159,7 @@ void App::OnRender()
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Static_VS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(nullptr, NULL, 0);
 
     zelda->Render();
@@ -167,7 +167,7 @@ void App::OnRender()
 
     // skeletal model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::ShadowDepth_Skinned_VS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
     girl->Render();
     enemy->Render();
 
@@ -179,8 +179,8 @@ void App::OnRender()
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     //D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PBR_PS.Get(), NULL, 0); 
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_PBR.Get(), NULL, 0); 
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     floor->Render();
     zelda->Render();
@@ -188,7 +188,7 @@ void App::OnRender()
 
     // skeletal model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     girl->Render();
     enemy->Render();

@@ -116,28 +116,28 @@ void App::OnRender()
 
     // [Model 1]
     // outline render
-    D3D::deviceContext->VSSetShader(D3D::Skinned_OutLine_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::OutLine_PS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_Skinned_OutLine.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_OutLine.Get(), NULL, 0);
     D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
     warrior->Render();
     D3D::deviceContext->RSSetState(nullptr);
 
     // model render
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::BlinnPhongToon_PS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_BlinnPhongToon.Get(), NULL, 0);
     warrior->Render();
 
     // [Model 2]
     // outline render
-    D3D::deviceContext->VSSetShader(D3D::Skinned_OutLine_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::OutLine_PS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_Skinned_OutLine.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_OutLine.Get(), NULL, 0);
     D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
     character->Render();
     D3D::deviceContext->RSSetState(nullptr);
 
     // model render
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::BlinnPhongToon_PS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_BlinnPhongToon.Get(), NULL, 0);
     character->Render();
 
     // GUI

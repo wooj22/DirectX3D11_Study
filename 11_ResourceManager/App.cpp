@@ -156,8 +156,8 @@ void App::OnRender()
 
     // [Model Render]
     // outline render
-    D3D::deviceContext->VSSetShader(D3D::Skinned_OutLine_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::OutLine_PS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_Skinned_OutLine.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_OutLine.Get(), NULL, 0);
     D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
     for (auto& m : skeletals)
     {
@@ -166,8 +166,8 @@ void App::OnRender()
     D3D::deviceContext->RSSetState(nullptr);
 
     // model render
-    D3D::deviceContext->VSSetShader(D3D::BaseLit_Skinned_VS.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::BlinnPhongToon_PS.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_BlinnPhongToon.Get(), NULL, 0);
     for (auto& m : skeletals)
     {
         m->Render();

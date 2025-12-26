@@ -98,25 +98,25 @@ public:
 	static ComPtr<ID3D11BlendState>          alphaBlendState;          // alpha
 
     // Vertex Shader
-    static ComPtr<ID3D11VertexShader> BaseLit_Static_VS;
-    static ComPtr<ID3D11VertexShader> BaseLit_Skinned_VS;
-    static ComPtr<ID3D11VertexShader> Skybox_VS;
-    static ComPtr<ID3D11VertexShader> Skinned_OutLine_VS;
-    static ComPtr<ID3D11VertexShader> ShadowDepth_Skinned_VS;
-    static ComPtr<ID3D11VertexShader> ShadowDepth_Static_VS;
-    static ComPtr<ID3D11VertexShader> FullScreen_VS;
+    static ComPtr<ID3D11VertexShader> VS_BaseLit_Static;
+    static ComPtr<ID3D11VertexShader> VS_BaseLit_Skinned;
+    static ComPtr<ID3D11VertexShader> VS_Skybox;
+    static ComPtr<ID3D11VertexShader> VS_Skinned_OutLine;
+    static ComPtr<ID3D11VertexShader> VS_ShadowDepth_Skinned;
+    static ComPtr<ID3D11VertexShader> VS_ShadowDepth_Static;
+    static ComPtr<ID3D11VertexShader> VS_FullScreen;
 
     // Pixel Shader
-    static ComPtr<ID3D11PixelShader> BlinnPhong_PS;
-    static ComPtr<ID3D11PixelShader> PBR_PS;
-    static ComPtr<ID3D11PixelShader> BlinnPhongToon_PS;
-    static ComPtr<ID3D11PixelShader> Skybox_PS;
-    static ComPtr<ID3D11PixelShader> OutLine_PS;
-    static ComPtr<ID3D11PixelShader> PostProcess_PS;
-    static ComPtr<ID3D11PixelShader> ShadowDepth_PS;
-    static ComPtr<ID3D11PixelShader> BloomPrefilter_PS;
-    static ComPtr<ID3D11PixelShader> BloomDownsampleBlur_PS;
-    static ComPtr<ID3D11PixelShader> BloomUpsampleCombine_PS;
+    static ComPtr<ID3D11PixelShader> PS_BlinnPhong;
+    static ComPtr<ID3D11PixelShader> PS_PBR;
+    static ComPtr<ID3D11PixelShader> PS_BlinnPhongToon;
+    static ComPtr<ID3D11PixelShader> PS_Skybox;
+    static ComPtr<ID3D11PixelShader> PS_OutLine;
+    static ComPtr<ID3D11PixelShader> PS_PostProcess;
+    static ComPtr<ID3D11PixelShader> PS_ShadowDepth;
+    static ComPtr<ID3D11PixelShader> PS_BloomPrefilter;
+    static ComPtr<ID3D11PixelShader> PS_BloomDownsampleBlur;
+    static ComPtr<ID3D11PixelShader> PS_BloomUpsampleCombine;
 
     // InputLayout
     static ComPtr<ID3D11InputLayout> inputLayout_Vertex;

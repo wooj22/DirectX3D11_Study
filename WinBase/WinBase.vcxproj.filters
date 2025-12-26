@@ -223,55 +223,55 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Skybox_PS.hlsl">
+    <FxCompile Include="PS_Skybox.hlsl">
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
-    <FxCompile Include="Skybox_VS.hlsl">
+    <FxCompile Include="VS_Skybox.hlsl">
       <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
-    <FxCompile Include="BlinnPhongToon_PS.hlsl">
+    <FxCompile Include="PS_BlinnPhongToon.hlsl">
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
-    <FxCompile Include="BaseLit_Skinned_VS.hlsl">
+    <FxCompile Include="VS_BaseLit_Skinned.hlsl">
       <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
-    <FxCompile Include="BaseLit_Static_VS.hlsl">
+    <FxCompile Include="VS_BaseLit_Static.hlsl">
       <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
-    <FxCompile Include="OutLine_PS.hlsl">
+    <FxCompile Include="PS_OutLine.hlsl">
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
-    <FxCompile Include="Skinned_OutLine_VS.hlsl">
+    <FxCompile Include="VS_Skinned_OutLine.hlsl">
       <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
-    <FxCompile Include="ShadowDepth_Skinned_VS.hlsl">
+    <FxCompile Include="VS_ShadowDepth_Skinned.hlsl">
       <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
-    <FxCompile Include="BlinnPhong_PS.hlsl">
+    <FxCompile Include="PS_BlinnPhong.hlsl">
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
-    <FxCompile Include="ShadowDepth_Static_VS.hlsl">
+    <FxCompile Include="VS_ShadowDepth_Static.hlsl">
       <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
-    <FxCompile Include="Fullscreen_VS.hlsl">
+    <FxCompile Include="VS_Fullscreen.hlsl">
       <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
-    <FxCompile Include="PostProcess_PS.hlsl">
+    <FxCompile Include="PS_PostProcess.hlsl">
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
-    <FxCompile Include="ShadowDepth_PS.hlsl">
+    <FxCompile Include="PS_ShadowDepth.hlsl">
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
-    <FxCompile Include="PBR_PS.hlsl">
+    <FxCompile Include="PS_PBR.hlsl">
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
-    <FxCompile Include="BloomUpsampleCombine_PS.hlsl">
+    <FxCompile Include="PS_BloomUpsampleCombine.hlsl">
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
-    <FxCompile Include="BloomDownsampleBlur_PS.hlsl">
+    <FxCompile Include="PS_BloomDownsampleBlur.hlsl">
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
-    <FxCompile Include="BloomPrefilter_PS.hlsl">
+    <FxCompile Include="PS_BloomPrefilter.hlsl">
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
   </ItemGroup>
