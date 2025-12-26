@@ -1,7 +1,15 @@
-#include <shared.fxh>
+/*
+    [ BlinnPhong Pixel Shader ] 
+    * Forward Rendering *
+    - Texture Map Support
+        - Diffuse Map
+        - Specular Map
+        - Normal Map
+        - Emissive Map
+    - Shadow Mapping Support
+*/
 
-// BlinnPhong Pixel Shader
-// ShadowMapping (현재 연계 가능한 VS : BaseLit_Skinned_VS, BaseLit_Static_VS)
+#include <shared.fxh>
 
 Texture2D diffuseMap : register(t0);
 Texture2D normalMap : register(t1);

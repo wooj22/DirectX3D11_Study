@@ -16,5 +16,5 @@ void main(PS_INPUT input)
     if (useDiffuse)
         alpha = diffuseMap.Sample(samLinear, input.texCoord).a;
     
-    clip(alpha - 0.5f);
+    clip(alpha - 0.5f);     // discard나 clip이 있다면 Early z test 진행 x
 }

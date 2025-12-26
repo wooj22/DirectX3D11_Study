@@ -3,39 +3,39 @@
 //  ¹ÙÀÎµù ½½·Ô
 // ------------------
 // [ Constant Buffer ]
-// TransformCB -> b0
-// LightingCB -> b1
-// MaterialCB -> b2
-// OffsetMatrixCB -> b3
-// PoseMatrixCB -> b4
-// OutLineCB -> b5
-// DebugCB -> b6
-// PostProcessCB -> b7
-// ScreenFxCB -> b8
-// BloomCB -> b9
+// TransformCB      -> b0
+// LightingCB       -> b1
+// MaterialCB       -> b2
+// OffsetMatrixCB   -> b3
+// PoseMatrixCB     -> b4
+// OutLineCB        -> b5
+// DebugCB          -> b6
+// PostProcessCB    -> b7
+// ScreenFxCB       -> b8
+// BloomCB          -> b9
 
 // [ Texture ]
-// Texture2D diffuseMap : register(t0)
-// Texture2D normalMap : register(t1)
-// Texture2D specularMap : register(t2)
-// Texture2D emissiveMap : register(t3)
-// TextureCube skyboxTexture : register(t4)
-// Texture2D diffuseRamp : register(t4);
-// Texture2D specualrRamp : register(t5);
-// Texture2D shadowMap : register(t6);
-// Texture2D metallicMap : register(t7);
-// Texture2D roughnessMap : register(t8);
-// Texture2D IBL_IrradianceMap : register(t9);
-// Texture2D IBL_SpecularEnvMap : register(t10);
-// Texture2D IBL_BRDF_LUT : register(t11);
-// Texture2D sceneHDR : register(t12);
-// Texture2D bloomA : register(t13);
-// Texture2D bloomB : register(t14);
+// Texture2D diffuseMap          : register(t0)
+// Texture2D normalMap           : register(t1)
+// Texture2D specularMap         : register(t2)
+// Texture2D emissiveMap         : register(t3)
+// TextureCube skyboxTexture     : register(t4)
+// Texture2D diffuseRamp         : register(t4);
+// Texture2D specualrRamp        : register(t5);
+// Texture2D shadowMap           : register(t6);
+// Texture2D metallicMap         : register(t7);
+// Texture2D roughnessMap        : register(t8);
+// Texture2D IBL_IrradianceMap   : register(t9);
+// Texture2D IBL_SpecularEnvMap  : register(t10);
+// Texture2D IBL_BRDF_LUT        : register(t11);
+// Texture2D sceneHDR            : register(t12);
+// Texture2D bloomA              : register(t13);
+// Texture2D bloomB              : register(t14);
 
 // [ SamplerState ]
-// SamplerState samLinear : register(s0)
+// SamplerState samLinear           : register(s0)
 // SamplerComparisonState samShadow : register(s1);
-// SamplerState samLinearClamp : register(s2);
+// SamplerState samLinearClamp      : register(s2);
 
 
 #ifndef Shared

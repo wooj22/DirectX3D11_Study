@@ -1,5 +1,6 @@
 /*
-    [ PBR Pixel Shader ]
+    [ PBR Pixel Shader ] 
+    * Forward Rendering *
     - Direct BRDF(Cook-Torrance)
     - Indirect IBL(BRDF)
     - Texture Map Support

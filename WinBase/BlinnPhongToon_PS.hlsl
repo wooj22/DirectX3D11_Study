@@ -1,7 +1,17 @@
-#include <shared.fxh>
+/*
+    [ BlinnPhong Toon  Shading Pixel Shader ] 
+    * Forward Rendering *
+    - Texture Map Support
+        - Diffuse Map
+        - Specular Map
+        - Normal Map
+        - Emissive Map
+    - Toon Shading
+        - Level, Ramp Texture
+    - Shadow Mapping Support
+*/
 
-// BlinnPhong, Toon Shading Pixel Shader
-// Diffuse¿Í Specualr¸¦ Å÷½¦ÀÌµù ÇÕ´Ï´Ù (Level, RampTexuture)
+#include <shared.fxh>
 
 Texture2D diffuseMap : register(t0);
 Texture2D normalMap : register(t1);

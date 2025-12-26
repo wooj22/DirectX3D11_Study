@@ -39,6 +39,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "15_ScreenSpaceFX", "15_Scre
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "16_PostProcess", "16_PostProcess\16_PostProcess.vcxproj", "{7253D895-E5DD-4149-B353-9B1D05E71B03}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17_DeferredRendering", "17_DeferredRendering\17_DeferredRendering.vcxproj", "{462CC1DB-9797-48C1-95B1-DDA1C1156D4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -191,6 +193,14 @@ Global
 		{7253D895-E5DD-4149-B353-9B1D05E71B03}.Release|x64.Build.0 = Release|x64
 		{7253D895-E5DD-4149-B353-9B1D05E71B03}.Release|x86.ActiveCfg = Release|Win32
 		{7253D895-E5DD-4149-B353-9B1D05E71B03}.Release|x86.Build.0 = Release|Win32
+		{462CC1DB-9797-48C1-95B1-DDA1C1156D4E}.Debug|x64.ActiveCfg = Debug|x64
+		{462CC1DB-9797-48C1-95B1-DDA1C1156D4E}.Debug|x64.Build.0 = Debug|x64
+		{462CC1DB-9797-48C1-95B1-DDA1C1156D4E}.Debug|x86.ActiveCfg = Debug|Win32
+		{462CC1DB-9797-48C1-95B1-DDA1C1156D4E}.Debug|x86.Build.0 = Debug|Win32
+		{462CC1DB-9797-48C1-95B1-DDA1C1156D4E}.Release|x64.ActiveCfg = Release|x64
+		{462CC1DB-9797-48C1-95B1-DDA1C1156D4E}.Release|x64.Build.0 = Release|x64
+		{462CC1DB-9797-48C1-95B1-DDA1C1156D4E}.Release|x86.ActiveCfg = Release|Win32
+		{462CC1DB-9797-48C1-95B1-DDA1C1156D4E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
