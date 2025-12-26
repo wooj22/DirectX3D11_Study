@@ -34,6 +34,7 @@ public:
 	static ComPtr<ID3D11DeviceContext>       deviceContext;
 	static ComPtr<IDXGISwapChain>		     swapChain;
 	static ComPtr<ID3D11RenderTargetView>    renderTargetView;      // LDR (final)
+    static ComPtr<ID3D11Texture2D>           depthStencilTexture;
 	static ComPtr<ID3D11DepthStencilView>    depthStencilView;
 
     // viewport
@@ -41,29 +42,49 @@ public:
     static D3D11_VIEWPORT viewport_shadowMap;
 
     // HDR
-    static ComPtr<ID3D11Texture2D>           hdrTexture;
-    static ComPtr<ID3D11RenderTargetView>    hdrRTV;              // HDR RTV
-    static ComPtr<ID3D11ShaderResourceView>  sceneHDRSRV;         // HDR SRV
+    static ComPtr<ID3D11Texture2D>           sceneHDRTex;
+    static ComPtr<ID3D11RenderTargetView>    sceneHDRRTV;          // HDR RTV
+    static ComPtr<ID3D11ShaderResourceView>  sceneHDRSRV;          // HDR SRV
 
     // Shadow
     static ComPtr<ID3D11Texture2D>           shadowMap;
     static ComPtr<ID3D11DepthStencilView>    shadowDSV;
-    static ComPtr<ID3D11ShaderResourceView>  shadowSRV;             // ShadowMap Texture
-    static ComPtr<ID3D11SamplerState>        shadowSamplerState;    // clmap
+    static ComPtr<ID3D11ShaderResourceView>  shadowSRV;            // ShadowMap Texture
+    static ComPtr<ID3D11SamplerState>        shadowSamplerState;   // clmap
+
+    // Deferred - G-buffer (write: RTV, read: SRV)
+    static ComPtr<ID3D11Texture2D>           positionTex;
+    static ComPtr<ID3D11Texture2D>           albedoTex;
+    static ComPtr<ID3D11Texture2D>           normalTex;
+    static ComPtr<ID3D11Texture2D>           metalRoughTex;
+    static ComPtr<ID3D11Texture2D>           emissiveTex;
+
+    static ComPtr<ID3D11RenderTargetView>    positionRTV;
+    static ComPtr<ID3D11RenderTargetView>    albedoRTV;
+    static ComPtr<ID3D11RenderTargetView>    normalRTV;
+    static ComPtr<ID3D11RenderTargetView>    metalRoughRTV;
+    static ComPtr<ID3D11RenderTargetView>    emissiveRTV;
+
+    static ComPtr<ID3D11ShaderResourceView>  positionSRV;
+    static ComPtr<ID3D11ShaderResourceView>  albedoSRV;
+    static ComPtr<ID3D11ShaderResourceView>  normalSRV;
+    static ComPtr<ID3D11ShaderResourceView>  metalRoughSRV;
+    static ComPtr<ID3D11ShaderResourceView>  emissiveSRV;
+    static ComPtr<ID3D11ShaderResourceView>  depthSRV;
 
     // Bloom
     static UINT bloomW;
     static UINT bloomH;
     static UINT bloomMipCount;
-    static ComPtr<ID3D11Texture2D>           bloomATexture;
-    static ComPtr<ID3D11Texture2D>           bloomBTexture;
+    static ComPtr<ID3D11Texture2D>           bloomATex;
+    static ComPtr<ID3D11Texture2D>           bloomBTex;
     static ComPtr<ID3D11ShaderResourceView>  bloomASRV;
     static ComPtr<ID3D11ShaderResourceView>  bloomBSRV;
     static std::vector<ComPtr<ID3D11RenderTargetView>> bloomARTVs;
     static std::vector<ComPtr<ID3D11RenderTargetView>> bloomBRTVs;
 
-    static ComPtr<ID3D11Texture2D>           accumATexture;
-    static ComPtr<ID3D11Texture2D>           accumBTexture;
+    static ComPtr<ID3D11Texture2D>           accumATex;
+    static ComPtr<ID3D11Texture2D>           accumBTex;
     static ComPtr<ID3D11ShaderResourceView>  accumASRV;
     static ComPtr<ID3D11ShaderResourceView>  accumBSRV;
     static std::vector<ComPtr<ID3D11RenderTargetView>> accumARTVs;
@@ -128,10 +149,20 @@ public:
 
     //--------------------------------
 	static bool Init(HWND& hWnd, int screenWidth, int screenHeight);
-    static bool CreateShader();
-    static bool CreateConstantBuffer();
 	static void UnInit();
 
+private:
+        static bool CreateHDRResource(int screenWidth, int screenHeight);
+        static bool CreateShadowMapResource();
+        static bool CreateDeferredResource(int screenWidth, int screenHeight);
+        static bool CreateBloomResource(int screenWidth, int screenHeight);
+        static bool CreateShader();
+        static bool CreateConstantBuffer();
+
+public:
+    // Texture, RTV, SRV Create Utils
+    static bool CreateRTTex_RTV_SRV(int w, int h, DXGI_FORMAT fomat,
+        ID3D11Texture2D** outTex, ID3D11RenderTargetView** outRTV, ID3D11ShaderResourceView** outSRV);
 
     // Bloom Utils -------------------------
     // mip 해상도 구하기 (baseW/baseH는 bloom base 해상도)

@@ -175,8 +175,8 @@ void App::HDRRender()
 {
     // Clear
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::hdrRTV.GetAddressOf(), D3D::depthStencilView.Get());
-    D3D::deviceContext->ClearRenderTargetView(D3D::hdrRTV.Get(), clearColor);
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->ClearRenderTargetView(D3D::sceneHDRRTV.Get(), clearColor);
 
     // death buffer clear
     D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -279,7 +279,7 @@ void App::HDRRender()
     // 2. PBR Mesh Render Pass -------------------------------------
     // Static, Rigid Model
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::hdrRTV.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::BaseLit_Static_VS.Get(), NULL, 0);

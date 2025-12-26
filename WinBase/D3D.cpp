@@ -16,37 +16,56 @@ ComPtr<ID3D11Device>		      D3D::device = nullptr;
 ComPtr<ID3D11DeviceContext>       D3D::deviceContext = nullptr;
 ComPtr<IDXGISwapChain>		      D3D::swapChain = nullptr;
 ComPtr<ID3D11RenderTargetView>    D3D::renderTargetView = nullptr;
+ComPtr<ID3D11Texture2D>           D3D::depthStencilTexture = nullptr;
 ComPtr<ID3D11DepthStencilView>    D3D::depthStencilView = nullptr;
 
 D3D11_VIEWPORT D3D::viewport_screen = {};
 D3D11_VIEWPORT D3D::viewport_shadowMap = {};
 
-ComPtr<ID3D11Texture2D>           D3D::hdrTexture = nullptr;
-ComPtr<ID3D11RenderTargetView>    D3D::hdrRTV = nullptr;   
-ComPtr<ID3D11ShaderResourceView>  D3D::sceneHDRSRV = nullptr;   
-
-UINT D3D::bloomW = 0;
-UINT D3D::bloomH = 0;
-UINT D3D::bloomMipCount = 1;
-ComPtr<ID3D11Texture2D>           D3D::bloomATexture = nullptr;
-ComPtr<ID3D11Texture2D>           D3D::bloomBTexture = nullptr;
-ComPtr<ID3D11ShaderResourceView>  D3D::bloomASRV = nullptr;
-ComPtr<ID3D11ShaderResourceView>  D3D::bloomBSRV = nullptr;
-std::vector<ComPtr<ID3D11RenderTargetView>> D3D::bloomARTVs;
-std::vector<ComPtr<ID3D11RenderTargetView>> D3D::bloomBRTVs;
-
-ComPtr<ID3D11Texture2D>           D3D::accumATexture = nullptr;
-ComPtr<ID3D11Texture2D>           D3D::accumBTexture = nullptr;
-ComPtr<ID3D11ShaderResourceView>  D3D::accumASRV = nullptr;
-ComPtr<ID3D11ShaderResourceView>  D3D::accumBSRV = nullptr;
-std::vector<ComPtr<ID3D11RenderTargetView>> D3D::accumARTVs;
-std::vector<ComPtr<ID3D11RenderTargetView>> D3D::accumBRTVs;
-
+ComPtr<ID3D11Texture2D>           D3D::sceneHDRTex = nullptr;
+ComPtr<ID3D11RenderTargetView>    D3D::sceneHDRRTV = nullptr;
+ComPtr<ID3D11ShaderResourceView>  D3D::sceneHDRSRV = nullptr;
 
 ComPtr<ID3D11Texture2D>           D3D::shadowMap = nullptr;
 ComPtr<ID3D11DepthStencilView>    D3D::shadowDSV = nullptr;
 ComPtr<ID3D11ShaderResourceView>  D3D::shadowSRV = nullptr;
 ComPtr<ID3D11SamplerState>        D3D::shadowSamplerState = nullptr;
+
+ComPtr<ID3D11Texture2D>            D3D::positionTex = nullptr;
+ComPtr<ID3D11Texture2D>            D3D::albedoTex = nullptr;
+ComPtr<ID3D11Texture2D>            D3D::normalTex = nullptr;
+ComPtr<ID3D11Texture2D>            D3D::metalRoughTex = nullptr;
+ComPtr<ID3D11Texture2D>            D3D::emissiveTex = nullptr;
+
+ComPtr<ID3D11RenderTargetView>     D3D::positionRTV = nullptr;
+ComPtr<ID3D11RenderTargetView>     D3D::albedoRTV = nullptr;
+ComPtr<ID3D11RenderTargetView>     D3D::normalRTV = nullptr;
+ComPtr<ID3D11RenderTargetView>     D3D::metalRoughRTV = nullptr;
+ComPtr<ID3D11RenderTargetView>     D3D::emissiveRTV = nullptr;
+
+ComPtr<ID3D11ShaderResourceView>   D3D::positionSRV = nullptr;
+ComPtr<ID3D11ShaderResourceView>   D3D::albedoSRV = nullptr;
+ComPtr<ID3D11ShaderResourceView>   D3D::normalSRV = nullptr;
+ComPtr<ID3D11ShaderResourceView>   D3D::metalRoughSRV = nullptr;
+ComPtr<ID3D11ShaderResourceView>   D3D::emissiveSRV = nullptr;
+ComPtr<ID3D11ShaderResourceView>   D3D::depthSRV = nullptr;
+
+UINT D3D::bloomW = 0;
+UINT D3D::bloomH = 0;
+UINT D3D::bloomMipCount = 1;
+ComPtr<ID3D11Texture2D>           D3D::bloomATex = nullptr;
+ComPtr<ID3D11Texture2D>           D3D::bloomBTex = nullptr;
+ComPtr<ID3D11ShaderResourceView>  D3D::bloomASRV = nullptr;
+ComPtr<ID3D11ShaderResourceView>  D3D::bloomBSRV = nullptr;
+std::vector<ComPtr<ID3D11RenderTargetView>> D3D::bloomARTVs;
+std::vector<ComPtr<ID3D11RenderTargetView>> D3D::bloomBRTVs;
+
+ComPtr<ID3D11Texture2D>           D3D::accumATex = nullptr;
+ComPtr<ID3D11Texture2D>           D3D::accumBTex = nullptr;
+ComPtr<ID3D11ShaderResourceView>  D3D::accumASRV = nullptr;
+ComPtr<ID3D11ShaderResourceView>  D3D::accumBSRV = nullptr;
+std::vector<ComPtr<ID3D11RenderTargetView>> D3D::accumARTVs;
+std::vector<ComPtr<ID3D11RenderTargetView>> D3D::accumBRTVs;
 
 ComPtr<ID3D11DepthStencilState>   D3D::wirteoffDSS = nullptr;
 ComPtr<ID3D11RasterizerState>     D3D::cullfrontRS = nullptr;
@@ -102,6 +121,7 @@ BloomCB            D3D::bloomCBData;
 
 bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 {
+    // 필수 D3D 객체 초기화
 	// swap chain setup struct
 	DXGI_SWAP_CHAIN_DESC swapDesc = {};
 	swapDesc.BufferCount = 1;
@@ -170,194 +190,13 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
 
-	ComPtr<ID3D11Texture2D> pTextureDepthStencil;
-	HR_T(device->CreateTexture2D(&descDepth, nullptr, pTextureDepthStencil.GetAddressOf()));
+	HR_T(device->CreateTexture2D(&descDepth, nullptr, depthStencilTexture.GetAddressOf()));
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
 	descDSV.Format = descDepth.Format;
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSV.Texture2D.MipSlice = 0;
-	HR_T(device->CreateDepthStencilView(pTextureDepthStencil.Get(), &descDSV, depthStencilView.GetAddressOf()));
-
-
-    // create HDR RTV, SRV
-    {
-        // texture
-        D3D11_TEXTURE2D_DESC texDesc = {};
-        texDesc.Width = screenWidth;
-        texDesc.Height = screenHeight;
-        texDesc.MipLevels = 1;
-        texDesc.ArraySize = 1;
-        texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;       // HDR 포멧
-        texDesc.SampleDesc.Count = 1;
-        texDesc.Usage = D3D11_USAGE_DEFAULT;
-        texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-
-        HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, hdrTexture.GetAddressOf());
-        if (FAILED(hr)) { OutputDebugStringA("FAILED Create HDR Texture"); }
-
-        // RTV
-        D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-        rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;       // HDR 포멧
-        rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-        rtvDesc.Texture2D.MipSlice = 0;
-        hr = device->CreateRenderTargetView(hdrTexture.Get(), &rtvDesc, hdrRTV.GetAddressOf());
-        if (FAILED(hr)) { OutputDebugStringA("FAILED Create HDR RTV"); }
-
-        // SRV
-        D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-        srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;       // HDR 포멧
-        srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Texture2D.MipLevels = 1;
-        srvDesc.Texture2D.MostDetailedMip = 0;
-        hr = device->CreateShaderResourceView(hdrTexture.Get(), &srvDesc, sceneHDRSRV.GetAddressOf());
-        if(FAILED(hr)) { OutputDebugStringA("FAILED Create HDR SRV"); }
-    }
-
-    // create shadowDSV, shadowSRV
-    {
-        // viewport
-        viewport_shadowMap = {};
-        viewport_shadowMap.TopLeftX = 0;
-        viewport_shadowMap.TopLeftY = 0;
-        viewport_shadowMap.Width = (float)8192;
-        viewport_shadowMap.Height = (float)8192;
-        viewport_shadowMap.MinDepth = 0.0f;
-        viewport_shadowMap.MaxDepth = 1.0f;
-
-        // texture2D
-        D3D11_TEXTURE2D_DESC texDesc = {};
-        texDesc.Width = 8192;
-        texDesc.Height = 8192;
-        texDesc.MipLevels = 1;
-        texDesc.ArraySize = 1;
-        texDesc.Format = DXGI_FORMAT_R32_TYPELESS;        // DSV와 SRV가 TYPELESS 텍스처 공유
-        texDesc.Usage = D3D11_USAGE_DEFAULT;
-        texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL |    // 깊이값 기록 용도
-                            D3D11_BIND_SHADER_RESOURCE;   // 셰이더에서 텍스처 슬롯에 설정할 용도
-        texDesc.SampleDesc.Count = 1;
-        texDesc.SampleDesc.Quality = 0;
-
-        
-        HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, shadowMap.GetAddressOf());
-        if (FAILED(hr)) { OutputDebugStringA("FAILED Create ShadowMapTexture"); }
-
-        // DSV
-        D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-        dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-        dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-        hr = device->CreateDepthStencilView(shadowMap.Get(), &dsvDesc, shadowDSV.GetAddressOf());
-        if (FAILED(hr)) { OutputDebugStringA("FAILED Create Shadow Depth Stencil View"); }
-
-        // SRV
-        D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-        srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-        srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Texture2D.MipLevels = 1;
-        hr = device->CreateShaderResourceView(shadowMap.Get(), &srvDesc, shadowSRV.GetAddressOf());
-        if (FAILED(hr)) { OutputDebugStringA("FAILED Create Shadow Shader Resource View"); }
-
-        // Sampler State
-        D3D11_SAMPLER_DESC sampDesc = {};
-        sampDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
-        sampDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-        sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-        sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-        sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-        HR_T(device->CreateSamplerState(&sampDesc, shadowSamplerState.GetAddressOf()));
-    }
-
-    // create Bloom SRV, RTVs
-    {
-        // half-res
-        bloomW = std::max<UINT>(1, screenWidth / 2);
-        bloomH = std::max<UINT>(1, screenHeight / 2);
-
-        // Mip Count
-        UINT w = bloomW;
-        UINT h = bloomH;
-        bloomMipCount = 1;
-        while (w > 1 && h > 1)
-        {
-            w = std::max<UINT>(1, w >> 1);
-            h = std::max<UINT>(1, h >> 1);
-            ++bloomMipCount;
-            if (bloomMipCount >= 6) break;
-        }
-
-        // Texture
-        D3D11_TEXTURE2D_DESC td{};
-        td.Width = bloomW;
-        td.Height = bloomH;
-        td.MipLevels = bloomMipCount;
-        td.ArraySize = 1;
-        td.Format = DXGI_FORMAT_R11G11B10_FLOAT;
-        td.SampleDesc.Count = 1;
-        td.SampleDesc.Quality = 0;
-        td.Usage = D3D11_USAGE_DEFAULT;
-        td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-        td.CPUAccessFlags = 0;
-        td.MiscFlags = 0;
-
-        HRESULT hr = S_OK;
-        hr = device->CreateTexture2D(&td, nullptr, bloomATexture.GetAddressOf());
-        if (FAILED(hr)) return false;
-
-        hr = device->CreateTexture2D(&td, nullptr, bloomBTexture.GetAddressOf());
-        if (FAILED(hr)) return false;
-
-        hr = device->CreateTexture2D(&td, nullptr, accumATexture.GetAddressOf());
-        if (FAILED(hr)) return false;
-
-        hr = device->CreateTexture2D(&td, nullptr, accumBTexture.GetAddressOf());
-        if (FAILED(hr)) return false;
-
-        // SRV
-        D3D11_SHADER_RESOURCE_VIEW_DESC sd{};
-        sd.Format = DXGI_FORMAT_R11G11B10_FLOAT;
-        sd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        sd.Texture2D.MostDetailedMip = 0;
-        sd.Texture2D.MipLevels = bloomMipCount;
-
-        hr = device->CreateShaderResourceView(bloomATexture.Get(), &sd, bloomASRV.GetAddressOf());
-        if (FAILED(hr)) return false;
-
-        hr = device->CreateShaderResourceView(bloomBTexture.Get(), &sd, bloomBSRV.GetAddressOf());
-        if (FAILED(hr)) return false;
-
-        hr = device->CreateShaderResourceView(accumATexture.Get(), &sd, accumASRV.GetAddressOf());
-        if (FAILED(hr)) return false;
-
-        hr = device->CreateShaderResourceView(accumBTexture.Get(), &sd, accumBSRV.GetAddressOf());
-        if (FAILED(hr)) return false;
-
-        // RTV
-        bloomARTVs.clear(); bloomBRTVs.clear();
-        accumARTVs.clear(); accumBRTVs.clear();
-
-        bloomARTVs.resize(bloomMipCount);  bloomBRTVs.resize(bloomMipCount);
-        accumARTVs.resize(bloomMipCount);  accumBRTVs.resize(bloomMipCount);
-
-        for (UINT mip = 0; mip < bloomMipCount; ++mip)
-        {
-            D3D11_RENDER_TARGET_VIEW_DESC rd{};
-            rd.Format = DXGI_FORMAT_R11G11B10_FLOAT;
-            rd.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-            rd.Texture2D.MipSlice = mip;
-
-            hr = device->CreateRenderTargetView(bloomATexture.Get(), &rd, bloomARTVs[mip].GetAddressOf());
-            if (FAILED(hr)) return false;
-
-            hr = device->CreateRenderTargetView(bloomBTexture.Get(), &rd, bloomBRTVs[mip].GetAddressOf());
-            if (FAILED(hr)) return false;
-
-            hr = device->CreateRenderTargetView(accumATexture.Get(), &rd, accumARTVs[mip].GetAddressOf());
-            if (FAILED(hr)) return false;
-
-            hr = device->CreateRenderTargetView(accumBTexture.Get(), &rd, accumBRTVs[mip].GetAddressOf());
-            if (FAILED(hr)) return false;
-        }
-    }
+	HR_T(device->CreateDepthStencilView(depthStencilTexture.Get(), &descDSV, depthStencilView.GetAddressOf()));
 
 	// create depth stencil state (alpha, skybox)
     {
@@ -421,10 +260,253 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         D3D::device->CreateBlendState(&blendDesc, alphaBlendState.GetAddressOf());
     }
 
+    if (!CreateHDRResource(screenWidth, screenHeight)) return false;
+    if (!CreateShadowMapResource()) return false;
+    if (!CreateDeferredResource(screenWidth, screenHeight)) return false;
+    if (!CreateBloomResource(screenWidth, screenHeight)) return false;
     if (!CreateShader()) return false;
     if (!CreateConstantBuffer()) return false;
 
 	return true;
+}
+
+bool D3D::CreateHDRResource(int screenWidth, int screenHeight)
+{
+    // create HDR RTV, SRV
+    // texture
+    D3D11_TEXTURE2D_DESC texDesc = {};
+    texDesc.Width = screenWidth;
+    texDesc.Height = screenHeight;
+    texDesc.MipLevels = 1;
+    texDesc.ArraySize = 1;
+    texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;       // HDR 포멧
+    texDesc.SampleDesc.Count = 1;
+    texDesc.Usage = D3D11_USAGE_DEFAULT;
+    texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+    HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, sceneHDRTex.GetAddressOf());
+    if (FAILED(hr)) { OutputDebugStringA("FAILED Create HDR Texture"); }
+
+    // RTV
+    D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+    rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;       // HDR 포멧
+    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    rtvDesc.Texture2D.MipSlice = 0;
+    hr = device->CreateRenderTargetView(sceneHDRTex.Get(), &rtvDesc, sceneHDRRTV.GetAddressOf());
+    if (FAILED(hr)) { OutputDebugStringA("FAILED Create HDR RTV"); }
+
+    // SRV
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;       // HDR 포멧
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MipLevels = 1;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    hr = device->CreateShaderResourceView(sceneHDRTex.Get(), &srvDesc, sceneHDRSRV.GetAddressOf());
+    if (FAILED(hr)) { OutputDebugStringA("FAILED Create HDR SRV"); }
+
+    return true;
+}
+
+bool D3D::CreateShadowMapResource()
+{
+    // create shadowDSV, shadowSRV
+    // viewport
+    viewport_shadowMap = {};
+    viewport_shadowMap.TopLeftX = 0;
+    viewport_shadowMap.TopLeftY = 0;
+    viewport_shadowMap.Width = (float)8192;
+    viewport_shadowMap.Height = (float)8192;
+    viewport_shadowMap.MinDepth = 0.0f;
+    viewport_shadowMap.MaxDepth = 1.0f;
+
+    // texture2D
+    D3D11_TEXTURE2D_DESC texDesc = {};
+    texDesc.Width = 8192;
+    texDesc.Height = 8192;
+    texDesc.MipLevels = 1;
+    texDesc.ArraySize = 1;
+    texDesc.Format = DXGI_FORMAT_R32_TYPELESS;        // DSV와 SRV가 TYPELESS 텍스처 공유
+    texDesc.Usage = D3D11_USAGE_DEFAULT;
+    texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL |    // 깊이값 기록 용도
+        D3D11_BIND_SHADER_RESOURCE;   // 셰이더에서 텍스처 슬롯에 설정할 용도
+    texDesc.SampleDesc.Count = 1;
+    texDesc.SampleDesc.Quality = 0;
+
+    HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, shadowMap.GetAddressOf());
+    if (FAILED(hr)) { OutputDebugStringA("FAILED Create ShadowMapTexture"); }
+
+    // DSV
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    hr = device->CreateDepthStencilView(shadowMap.Get(), &dsvDesc, shadowDSV.GetAddressOf());
+    if (FAILED(hr)) { OutputDebugStringA("FAILED Create Shadow Depth Stencil View"); }
+
+    // SRV
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MipLevels = 1;
+    hr = device->CreateShaderResourceView(shadowMap.Get(), &srvDesc, shadowSRV.GetAddressOf());
+    if (FAILED(hr)) { OutputDebugStringA("FAILED Create Shadow Shader Resource View"); }
+
+    // Sampler State
+    D3D11_SAMPLER_DESC sampDesc = {};
+    sampDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    HR_T(device->CreateSamplerState(&sampDesc, shadowSamplerState.GetAddressOf()));
+
+    return true;
+}
+
+bool D3D::CreateDeferredResource(int screenWidth, int screenHeight)
+{
+    const DXGI_FORMAT POSITION_FMT = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    const DXGI_FORMAT ALBEDO_FMT = DXGI_FORMAT_R8G8B8A8_UNORM;
+    const DXGI_FORMAT NORMAL_FMT = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    const DXGI_FORMAT METALROUGH_FMT = DXGI_FORMAT_R8G8B8A8_UNORM;
+    const DXGI_FORMAT EMISSIVE_FMT = DXGI_FORMAT_R16G16B16A16_FLOAT;
+
+    // Position
+    // TODO :: Position Gbuffer 만들지 말고 DSV 쓰기
+    if (!CreateRTTex_RTV_SRV(screenWidth, screenHeight,
+        POSITION_FMT,
+        positionTex.GetAddressOf(),
+        positionRTV.GetAddressOf(),
+        positionSRV.GetAddressOf()))
+        return false;
+
+    // Albedo
+    if (!CreateRTTex_RTV_SRV(screenWidth, screenHeight,
+        ALBEDO_FMT,
+        albedoTex.GetAddressOf(),
+        albedoRTV.GetAddressOf(),
+        albedoSRV.GetAddressOf()))
+        return false;
+
+    // Normal
+    if (!CreateRTTex_RTV_SRV( screenWidth, screenHeight,
+        NORMAL_FMT,
+        normalTex.GetAddressOf(),
+        normalRTV.GetAddressOf(),
+        normalSRV.GetAddressOf()))
+        return false;
+
+    // Metal/Rough
+    if (!CreateRTTex_RTV_SRV(screenWidth, screenHeight,
+        METALROUGH_FMT,
+        metalRoughTex.GetAddressOf(),
+        metalRoughRTV.GetAddressOf(),
+        metalRoughSRV.GetAddressOf()))
+        return false;
+
+    // Emissive
+    if (!CreateRTTex_RTV_SRV(screenWidth, screenHeight,
+        EMISSIVE_FMT,
+        emissiveTex.GetAddressOf(),
+        emissiveRTV.GetAddressOf(),
+        emissiveSRV.GetAddressOf()))
+        return false;
+
+    return true;
+}
+
+bool D3D::CreateBloomResource(int screenWidth, int screenHeight)
+{
+    // create Bloom SRV, RTVs
+   // half-res
+    bloomW = std::max<UINT>(1, screenWidth / 2);
+    bloomH = std::max<UINT>(1, screenHeight / 2);
+
+    // Mip Count
+    UINT w = bloomW;
+    UINT h = bloomH;
+    bloomMipCount = 1;
+    while (w > 1 && h > 1)
+    {
+        w = std::max<UINT>(1, w >> 1);
+        h = std::max<UINT>(1, h >> 1);
+        ++bloomMipCount;
+        if (bloomMipCount >= 6) break;
+    }
+
+    // Texture
+    D3D11_TEXTURE2D_DESC td{};
+    td.Width = bloomW;
+    td.Height = bloomH;
+    td.MipLevels = bloomMipCount;
+    td.ArraySize = 1;
+    td.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+    td.SampleDesc.Count = 1;
+    td.SampleDesc.Quality = 0;
+    td.Usage = D3D11_USAGE_DEFAULT;
+    td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    td.CPUAccessFlags = 0;
+    td.MiscFlags = 0;
+
+    HRESULT hr = S_OK;
+    hr = device->CreateTexture2D(&td, nullptr, bloomATex.GetAddressOf());
+    if (FAILED(hr)) return false;
+
+    hr = device->CreateTexture2D(&td, nullptr, bloomBTex.GetAddressOf());
+    if (FAILED(hr)) return false;
+
+    hr = device->CreateTexture2D(&td, nullptr, accumATex.GetAddressOf());
+    if (FAILED(hr)) return false;
+
+    hr = device->CreateTexture2D(&td, nullptr, accumBTex.GetAddressOf());
+    if (FAILED(hr)) return false;
+
+    // SRV
+    D3D11_SHADER_RESOURCE_VIEW_DESC sd{};
+    sd.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+    sd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    sd.Texture2D.MostDetailedMip = 0;
+    sd.Texture2D.MipLevels = bloomMipCount;
+
+    hr = device->CreateShaderResourceView(bloomATex.Get(), &sd, bloomASRV.GetAddressOf());
+    if (FAILED(hr)) return false;
+
+    hr = device->CreateShaderResourceView(bloomBTex.Get(), &sd, bloomBSRV.GetAddressOf());
+    if (FAILED(hr)) return false;
+
+    hr = device->CreateShaderResourceView(accumATex.Get(), &sd, accumASRV.GetAddressOf());
+    if (FAILED(hr)) return false;
+
+    hr = device->CreateShaderResourceView(accumBTex.Get(), &sd, accumBSRV.GetAddressOf());
+    if (FAILED(hr)) return false;
+
+    // RTV
+    bloomARTVs.clear(); bloomBRTVs.clear();
+    accumARTVs.clear(); accumBRTVs.clear();
+
+    bloomARTVs.resize(bloomMipCount);  bloomBRTVs.resize(bloomMipCount);
+    accumARTVs.resize(bloomMipCount);  accumBRTVs.resize(bloomMipCount);
+
+    for (UINT mip = 0; mip < bloomMipCount; ++mip)
+    {
+        D3D11_RENDER_TARGET_VIEW_DESC rd{};
+        rd.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+        rd.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        rd.Texture2D.MipSlice = mip;
+
+        hr = device->CreateRenderTargetView(bloomATex.Get(), &rd, bloomARTVs[mip].GetAddressOf());
+        if (FAILED(hr)) return false;
+
+        hr = device->CreateRenderTargetView(bloomBTex.Get(), &rd, bloomBRTVs[mip].GetAddressOf());
+        if (FAILED(hr)) return false;
+
+        hr = device->CreateRenderTargetView(accumATex.Get(), &rd, accumARTVs[mip].GetAddressOf());
+        if (FAILED(hr)) return false;
+
+        hr = device->CreateRenderTargetView(accumBTex.Get(), &rd, accumBRTVs[mip].GetAddressOf());
+        if (FAILED(hr)) return false;
+    }
+
+    return true;
 }
 
 bool D3D::CreateShader()
@@ -745,6 +827,33 @@ void D3D::UnInit()
 	device.Reset();
 }
 
+bool D3D::CreateRTTex_RTV_SRV(int w, int h, DXGI_FORMAT fomat,
+    ID3D11Texture2D** outTex, ID3D11RenderTargetView** outRTV, ID3D11ShaderResourceView** outSRV)
+{
+    D3D11_TEXTURE2D_DESC td = {};
+    td.Width = w;
+    td.Height = h;
+    td.MipLevels = 1;
+    td.ArraySize = 1;
+    td.Format = fomat;
+    td.SampleDesc.Count = 1;
+    td.SampleDesc.Quality = 0;
+    td.Usage = D3D11_USAGE_DEFAULT;
+    td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    td.CPUAccessFlags = 0;
+    td.MiscFlags = 0;
+
+    HRESULT hr = device->CreateTexture2D(&td, nullptr, outTex);
+    if (FAILED(hr)) return false;
+
+    hr = device->CreateRenderTargetView(*outTex, nullptr, outRTV);
+    if (FAILED(hr)) return false;
+
+    hr = device->CreateShaderResourceView(*outTex, nullptr, outSRV);
+    if (FAILED(hr)) return false;
+
+    return true;
+}
 
 void D3D::GetMipSize(UINT baseW, UINT baseH, UINT mip, UINT& outW, UINT& outH)
 {
