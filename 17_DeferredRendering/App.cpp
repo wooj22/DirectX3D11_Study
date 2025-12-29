@@ -316,9 +316,10 @@ void App::GeometryPass()
 
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
     D3D::deviceContext->OMSetRenderTargets(5, gbuffers, D3D::depthStencilView.Get());
+    float alphaClear[4] = { 0,0,0,0 };
     for (int i = 0; i < 5; i++)
     {
-        D3D::deviceContext->ClearRenderTargetView(gbuffers[i], clearColor);
+        D3D::deviceContext->ClearRenderTargetView(gbuffers[i], alphaClear);
     }
 
     // DSV

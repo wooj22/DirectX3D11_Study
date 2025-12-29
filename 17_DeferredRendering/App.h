@@ -154,7 +154,7 @@ private:
     UINT sampleMask = 0xffffffff;
 
     // clear color
-    float clearColor[4] = { 0.2, 0.2, 0.2, 1.0f };
+    float clearColor[4] = { 0,0,0,1 };
 
     // draw debug
     unique_ptr<CommonStates> m_states;
