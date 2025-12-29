@@ -847,6 +847,40 @@ void App::RenderGUI()
     ImGui::SliderFloat("Grain Intensity", &D3D::screenFxCBData.grainIntensity, 0.0f, 0.15f);
     ImGui::End();
 
+    // G-Buffer
+    ImGui::Begin("[G-Buffer]");
+    const ImVec2 size(screenWidth/10, screenHeight/10);
+
+    if (ImGui::BeginTable("GBufferTable", 2,
+        ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit))
+    {
+        auto Cell = [&](const char* label, ID3D11ShaderResourceView* srv)
+            {
+                ImGui::TableNextColumn();
+                ImGui::TextUnformatted(label);
+
+                if (srv)
+                    ImGui::Image((ImTextureID)srv, size);
+                else
+                    ImGui::Dummy(size);
+            };
+
+        // Row 1
+        Cell("Position", D3D::positionSRV.Get());
+        Cell("Albedo", D3D::albedoSRV.Get());
+
+        // Row 2
+        Cell("Normal", D3D::normalSRV.Get());
+        Cell("Metal/Rough", D3D::metalRoughSRV.Get());
+
+        // Row 3
+        Cell("Emissive", D3D::emissiveSRV.Get());
+        Cell("Depth", D3D::depthSRV.Get());
+
+        ImGui::EndTable();
+    }
+    ImGui::End();
+
     // Memory
     ImGui::Begin("[Memory Debugger]");
     ImGui::Text("[T] Trim");
