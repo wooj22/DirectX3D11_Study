@@ -17,6 +17,8 @@ Texture2D shadowMap : register(t6);
 TextureCube IBL_IrradianceMap : register(t9);
 TextureCube IBL_SpecularEnvMap : register(t10);
 Texture2D IBL_BRDF_LUT : register(t11);
+
+// Gbuffer Textures
 Texture2D positionTex : register(t14);
 Texture2D albedoTex : register(t15);
 Texture2D normalTex : register(t16);

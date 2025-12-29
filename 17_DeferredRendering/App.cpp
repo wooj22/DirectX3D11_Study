@@ -158,9 +158,17 @@ void App::OnRender()
     // Stage Setting
     StageSetting();         // binding + CB udpate
 
+    // Clear
+    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->ClearRenderTargetView(D3D::sceneHDRRTV.Get(), clearColor);
+
     // Render
-    SceneHDRRender();       // Gaometry + Lighting + Shadow
-    BloomProcess();         // Bloom
+    SkyBoxRender();         // Skybox
+    ShadowMapPass();        // Shadow Map
+    GeometryPass();         // G-Buffer
+    LightingPass();         // Shadow + Lighting
+    BloomProcess();         // Bloom Prefilter -> DownSample -> UpSample
     PostProcess();          // ToneMapping + PostProcess + ScreenFx
 
     // Debug Draw
@@ -240,14 +248,8 @@ void App::StageSetting()
     D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
 }
 
-// [ Gaometry + Lighting + Shadow Pass ]
-void App::SceneHDRRender()
+void App::SkyBoxRender()
 {
-    // Clear
-    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
-    D3D::deviceContext->ClearRenderTargetView(D3D::sceneHDRRTV.Get(), clearColor);
-
     // death buffer clear
     D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
@@ -267,11 +269,15 @@ void App::SceneHDRRender()
         skybox4.Render(view, projection);
         break;
     }
+}
 
+// [ Shadow Map Pass ]
+void App::ShadowMapPass()
+{
     // Skyboc에서 view 행렬에 transform을 제거해서 다시 udpate
     D3D::transformCBData.view = XMMatrixTranspose(view);
 
-    // 1. ShadowMap Pass  -------------------------------------
+    // Stage Setting
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_shadowMap);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(0, nullptr, D3D::shadowDSV.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
@@ -295,9 +301,12 @@ void App::SceneHDRRender()
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
     girl->Render();
     enemy->Render();
+}
 
-
-    // 2. Scene HDR Color Pass -------------------------------------
+// [ Geometry Pass ]
+void App::GeometryPass()
+{
+    // Stage Setting
     // Static, Rigid Model
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
@@ -352,6 +361,11 @@ void App::SceneHDRRender()
     D3D::deviceContext->PSSetShaderResources(6, 1, nullSRV);
 }
 
+// [ Lighting Pass ]
+void App::LightingPass()
+{
+
+}
 
 // [ BloomProcess Pass ]
 // Prefilter -> DownSample+Blur -> UpSample+Combine
@@ -710,9 +724,9 @@ void App::RenderGUI()
     ImGui::Checkbox("Enable Bloom", &useBloom);
     ImGui::BeginDisabled(!useBloom);
     ImGui::SliderFloat("Threshold", &D3D::bloomCBData.bloom_threshold, 0.0f, 5.0f, "%.2f");
+    ImGui::SliderFloat("Bloom Intensity", &D3D::bloomCBData.bloom_intensity, 0.0f, 10.0f, "%.2f");
     ImGui::SliderFloat("Clamp", &D3D::bloomCBData.bloom_clamp, 0.0f, 20.0f, "%.2f");
     ImGui::SliderFloat("Scatter", &D3D::bloomCBData.bloom_scatter, 0.0f, 1.0f, "%.2f");
-    ImGui::SliderFloat("Bloom Intensity", &D3D::bloomCBData.bloom_intensity, 0.0f, 10.0f, "%.2f");
     ImGui::ColorEdit3("Bloom Tint", (float*)&D3D::bloomCBData.bloom_tint, ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
     ImGui::EndDisabled();
 

@@ -31,15 +31,17 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 
-// PostProcess 테스트 프로젝트입니다.
+// Deferred Rendering 프로젝트입니다.
+// Geometry Pass와 Lighting Pass를 분리하여 최종 가시 픽셀에 대해서만 라이팅을 계산합니다.
 /*
 * [Render Pass]
 *   1. ShadowMap Pass                  -> ShadowMap
-*   2. Scene HDR Color Pass            -> SceneHDR
-*   3. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
-*   4. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
-*   5. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
-*   6. LDR PostProcess Pass            -> LDR (final)
+*   2. Geometry Pass                   -> G-buffer (Position, Albedo, Normal, MetalRough, Emissive)
+*   3. Lighting Pass                   -> Scene HDR Color Pass (Deferred Lighting)
+*   4. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
+*   5. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
+*   6. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
+*   7. LDR PostProcess Pass            -> LDR (final)
 *
 * [PostProcess]
 *   - 노출
@@ -55,6 +57,7 @@ using namespace DirectX::SimpleMath;
     Bloom Downsample Blur Pass  : (mipCount - 1) 회
     Bloom Upsample Combine Pass : (mipCount - 1) 회
 */
+
 
 class App : public WinApp
 {
@@ -170,7 +173,10 @@ public:
     virtual void OnRender() override;
 
     void StageSetting();
-    void SceneHDRRender();
+    void SkyBoxRender();
+    void ShadowMapPass();
+    void GeometryPass();
+    void LightingPass();
     void BloomProcess();
     void PostProcess();
 

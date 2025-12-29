@@ -3,7 +3,8 @@
     * Deferred Rendering *
     
     MTR을 활용하여 라이팅 연산에 필요한 정보들을 Gbuffer에 기록
-    TODO :: position 기록 삭제
+    TODO :: position 기록 삭제 -> 대신 Depth Buffer 활용
+            why? 대역폭 감소
 */
 
 #include <shared.fxh>
