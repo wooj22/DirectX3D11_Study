@@ -97,7 +97,7 @@ void SkyBox::Render(Matrix& view, Matrix& projection)
 
     // Rasterizer, DepthStencilState ¼³Á¤
     D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());     
-    D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 1);
+    D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 0);
 
     // Draw
     D3D::deviceContext->DrawIndexed(indexCount, 0, 0);

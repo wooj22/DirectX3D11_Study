@@ -15,6 +15,7 @@
 ComPtr<ID3D11Device>		      D3D::device = nullptr;
 ComPtr<ID3D11DeviceContext>       D3D::deviceContext = nullptr;
 ComPtr<IDXGISwapChain>		      D3D::swapChain = nullptr;
+ComPtr<ID3D11Texture2D>           D3D::backbufferTex = nullptr;
 ComPtr<ID3D11RenderTargetView>    D3D::renderTargetView = nullptr;
 ComPtr<ID3D11Texture2D>           D3D::depthStencilTexture = nullptr;
 ComPtr<ID3D11DepthStencilView>    D3D::depthStencilView = nullptr;
@@ -160,10 +161,8 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 		&deviceContext));
 
 	// create RTV					
-	ID3D11Texture2D* pBackBufferTexture = nullptr;
-	HR_T(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture));					// backbuffer get
-	HR_T(device->CreateRenderTargetView(pBackBufferTexture, NULL, renderTargetView.GetAddressOf()));	    // RTV create
-	SAFE_RELEASE(pBackBufferTexture);															            // RTV에서 backbuffer texture 참조중 (메모리 관리)
+	HR_T(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)backbufferTex.GetAddressOf()));			// backbuffer get
+	HR_T(device->CreateRenderTargetView(backbufferTex.Get(), NULL, renderTargetView.GetAddressOf()));	    // RTV create														            // RTV에서 backbuffer texture 참조중 (메모리 관리)
 
 	ID3D11RenderTargetView* rtv = renderTargetView.Get();
 	deviceContext->OMSetRenderTargets(1, &rtv, nullptr);	// render targetview  binding

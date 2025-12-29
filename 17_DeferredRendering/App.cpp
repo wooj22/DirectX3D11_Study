@@ -158,11 +158,6 @@ void App::OnRender()
     // Stage Setting
     StageSetting();         // binding + CB udpate
 
-    // Clear
-    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
-    D3D::deviceContext->ClearRenderTargetView(D3D::sceneHDRRTV.Get(), clearColor);
-
     // Render
     SkyBoxRender();         // Skybox
     ShadowMapPass();        // Shadow Map
@@ -250,7 +245,9 @@ void App::StageSetting()
 
 void App::SkyBoxRender()
 {
-    // death buffer clear
+    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->ClearRenderTargetView(D3D::sceneHDRRTV.Get(), clearColor);
     D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     // Skybox Render  --------------------------------
@@ -278,7 +275,7 @@ void App::ShadowMapPass()
     D3D::transformCBData.view = XMMatrixTranspose(view);
 
     // Stage Setting
-    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_shadowMap);	// viewport binding
+    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_shadowMap);
     D3D::deviceContext->OMSetRenderTargets(0, nullptr, D3D::shadowDSV.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -304,17 +301,80 @@ void App::ShadowMapPass()
 }
 
 // [ Geometry Pass ]
+// G-Buffer에 라이팅에 필요한 정보 기록 (albedo, normal, metallic/roughness, emissive, position)
 void App::GeometryPass()
 {
-    // Stage Setting
-    // Static, Rigid Model
-    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
+    // View Port + RTV
+    ID3D11RenderTargetView* gbuffers[] =
+    {
+        D3D::positionRTV.Get(),
+        D3D::albedoRTV.Get(),
+        D3D::normalRTV.Get(),
+        D3D::metalRoughRTV.Get(),
+        D3D::emissiveRTV.Get()
+    };
+
+    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
+    D3D::deviceContext->OMSetRenderTargets(5, gbuffers, D3D::depthStencilView.Get());
+    for (int i = 0; i < 5; i++)
+    {
+        D3D::deviceContext->ClearRenderTargetView(gbuffers[i], clearColor);
+    }
+
+    // DSV
+    D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
+    
+    // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PS_PBR.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_Gbuffer.Get(), NULL, 0);
+    
+    for (int i = 0; i < 10; i++)
+    {
+        spheres[i]->Render();
+        torus[i]->Render();
+    }
+    floor->Render();
+    tree->Render();
+    zelda->Render();
+    character->Render();
+
+    // Skeletal Model
+    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
+    girl->Render();
+    enemy->Render();
+
+    // RTV - SRV hazard 방지
+    D3D::deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+}
+
+// [ Lighting Pass ]
+// Full Screen Quad를 그리며 G-Buffer를 샘플링하여 라이팅 계산
+void App::LightingPass()
+{
+    // View Port + RTV
+    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), nullptr);
+    D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
+
+    // IA
+    D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    D3D::deviceContext->IASetInputLayout(nullptr);
+
+    // Shaders
+    D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_DeferredLighting.Get(), NULL, 0);
+
+    // Resource
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
+    D3D::deviceContext->PSSetShaderResources(14, 1, D3D::positionSRV.GetAddressOf());
+    D3D::deviceContext->PSSetShaderResources(15, 1, D3D::albedoSRV.GetAddressOf());
+    D3D::deviceContext->PSSetShaderResources(16, 1, D3D::normalSRV.GetAddressOf());
+    D3D::deviceContext->PSSetShaderResources(17, 1, D3D::metalRoughSRV.GetAddressOf());
+    D3D::deviceContext->PSSetShaderResources(18, 1, D3D::emissiveSRV.GetAddressOf());
+
     switch (currentSkybox)
     {
     case 0:
@@ -339,32 +399,25 @@ void App::GeometryPass()
         break;
     }
 
-    for (int i = 0; i < 10; i++)
-    {
-        spheres[i]->Render();
-        torus[i]->Render();
-    }
-    floor->Render();
-    tree->Render();
-    zelda->Render();
-    character->Render();
+    // Sampler
+    D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
+    D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
+    D3D::deviceContext->PSSetSamplers(2, 1, D3D::linearClamSamplerState.GetAddressOf());
 
-    // Skeletal Model
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
-    girl->Render();
-    enemy->Render();
+    // Draw Call
+    D3D::deviceContext.Get()->Draw(3, 0);
 
-    // shadowmap SRV hazard 방지
+    // RTV - SRV hazard 방지
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-    D3D::deviceContext->PSSetShaderResources(6, 1, nullSRV);
-}
-
-// [ Lighting Pass ]
-void App::LightingPass()
-{
-
+    D3D::deviceContext->PSSetShaderResources(6, 1, nullSRV);   // shadow
+    D3D::deviceContext->PSSetShaderResources(9, 1, nullSRV);   // IBL irradiance
+    D3D::deviceContext->PSSetShaderResources(10, 1, nullSRV);  // IBL spec
+    D3D::deviceContext->PSSetShaderResources(11, 1, nullSRV);  // BRDF LUT
+    D3D::deviceContext->PSSetShaderResources(14, 1, nullSRV);  // pos
+    D3D::deviceContext->PSSetShaderResources(15, 1, nullSRV);  // albedo
+    D3D::deviceContext->PSSetShaderResources(16, 1, nullSRV);  // normal
+    D3D::deviceContext->PSSetShaderResources(17, 1, nullSRV);  // metalRough
+    D3D::deviceContext->PSSetShaderResources(18, 1, nullSRV);  // emissive
 }
 
 // [ BloomProcess Pass ]
@@ -564,7 +617,7 @@ void App::PostProcess()
     D3D::deviceContext->PSSetShaderResources(12, 1, D3D::sceneHDRSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(13, 1, &finalBloomSRV);
 
-    // Render
+    // Draw Call
     D3D::deviceContext.Get()->Draw(3, 0);
 
     // SRV hazard 방지

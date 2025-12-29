@@ -33,6 +33,7 @@ public:
 	static ComPtr<ID3D11Device>		         device;
 	static ComPtr<ID3D11DeviceContext>       deviceContext;
 	static ComPtr<IDXGISwapChain>		     swapChain;
+    static ComPtr<ID3D11Texture2D>           backbufferTex;
 	static ComPtr<ID3D11RenderTargetView>    renderTargetView;      // LDR (final)
     static ComPtr<ID3D11Texture2D>           depthStencilTexture;
 	static ComPtr<ID3D11DepthStencilView>    depthStencilView;

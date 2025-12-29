@@ -13,7 +13,6 @@
 Texture2D diffuseMap : register(t0);
 Texture2D normalMap : register(t1);
 Texture2D emissiveMap : register(t3);
-Texture2D shadowMap : register(t6);
 Texture2D metallicMap : register(t7);
 Texture2D roughnessMap : register(t8);
 
