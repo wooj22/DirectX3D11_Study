@@ -19,11 +19,12 @@ TextureCube IBL_SpecularEnvMap : register(t10);
 Texture2D IBL_BRDF_LUT : register(t11);
 
 // Gbuffer Textures
-Texture2D positionTex : register(t14);
+//Texture2D positionTex : register(t14);
 Texture2D albedoTex : register(t15);
 Texture2D normalTex : register(t16);
 Texture2D metalRoughTex : register(t17);
 Texture2D emissiveTex : register(t18);
+Texture2D depthTex : register(t19);
 
 
 // --- Sampler Bind Slot ------------------
@@ -34,11 +35,23 @@ SamplerState samLinearClamp : register(s2);
 
 
 float4 main(PS_FullScreen_Input input) : SV_TARGET
-{
+{   
+    // --- [ World Position ]  ----------------------------------
+    float depth = depthTex.Sample(samLinearClamp, input.uv).r;
+    float4 ndc;
+    ndc.x = input.uv.x * 2.0f - 1.0f;
+    ndc.y = (1.0f - input.uv.y) * 2.0f - 1.0f;
+    ndc.z = depth;
+    ndc.w = 1.0f;
+    
+    float4 worldH = mul(ndc, inverseProjection);
+    
+    float w = worldH.w;
+    float3 worldPos = worldH.xyz / w;
+
+    
     // --- [ Read Gbuffer ]  ----------------------------------
     float2 samUV = input.uv;
-    
-    float3 worldPos   = positionTex.Sample(samLinearClamp, samUV).rgb;
     
     float4 base_sample = albedoTex.Sample(samLinearClamp, samUV);
     float3 base_color  = base_sample.rgb;

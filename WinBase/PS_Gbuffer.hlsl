@@ -99,11 +99,12 @@ PS_Output main(PS_INPUT input) : SV_TARGET
 
     // ---[ Write G-Buffer ]----------------------------------
 
-    output.WorldPos   = float4(input.worldPos, 1.0f);
+    //output.WorldPos   = float4(input.worldPos, 1.0f);         // Position대신 Depth Buffer 사용
     output.Base_color = float4(base_color, alpha);
     output.Normal     = float4(EncodeNormal(normal), 1.0f);     // -1,0,1 => 0,1
     output.Material   = float4(metallic, roughness, 1.0f, 1.0f);
     output.Emissive   = float4(emissive, 1.0f);
+    
 
     return output;
 }

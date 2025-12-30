@@ -205,6 +205,8 @@ void App::StageSetting()
     D3D::transformCBData.shadowView = XMMatrixTranspose(lightView);
     D3D::transformCBData.shadowProjection = XMMatrixTranspose(lightProjection);
     D3D::transformCBData.cameraPos = camera.position;
+    XMMATRIX invVP = XMMatrixInverse(nullptr, view * projection);
+    D3D::transformCBData.inverseProjection = XMMatrixTranspose(invVP);
 
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;
@@ -245,6 +247,7 @@ void App::StageSetting()
 
 void App::SkyBoxRender()
 {
+    // RTV, DSV
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
     D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->ClearRenderTargetView(D3D::sceneHDRRTV.Get(), clearColor);
@@ -274,10 +277,10 @@ void App::ShadowMapPass()
     // Skyboc에서 view 행렬에 transform을 제거해서 다시 udpate
     D3D::transformCBData.view = XMMatrixTranspose(view);
 
-    // Stage Setting
+    // RTV, DSV
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_shadowMap);
     D3D::deviceContext->OMSetRenderTargets(0, nullptr, D3D::shadowDSV.Get());
-    D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
+    D3D::deviceContext->OMSetDepthStencilState(D3D::defualtDSS.Get(), 0);
     D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     // Static, Rigid Model
@@ -304,10 +307,9 @@ void App::ShadowMapPass()
 // G-Buffer에 라이팅에 필요한 정보 기록 (albedo, normal, metallic/roughness, emissive, position)
 void App::GeometryPass()
 {
-    // View Port + RTV
+    // RTV, DSV
     ID3D11RenderTargetView* gbuffers[] =
     {
-        D3D::positionRTV.Get(),
         D3D::albedoRTV.Get(),
         D3D::normalRTV.Get(),
         D3D::metalRoughRTV.Get(),
@@ -315,17 +317,15 @@ void App::GeometryPass()
     };
 
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
-    D3D::deviceContext->OMSetRenderTargets(5, gbuffers, D3D::depthStencilView.Get());
+    D3D::deviceContext->OMSetRenderTargets(4, gbuffers, D3D::depthStencilView.Get());
+    D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+    D3D::deviceContext->OMSetDepthStencilState(D3D::defualtDSS.Get(), 0);
     float alphaClear[4] = { 0,0,0,0 };
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 4; i++)
     {
         D3D::deviceContext->ClearRenderTargetView(gbuffers[i], alphaClear);
     }
 
-    // DSV
-    D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-    D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
-    
     // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
@@ -355,10 +355,10 @@ void App::GeometryPass()
 // Full Screen Quad를 그리며 G-Buffer를 샘플링하여 라이팅 계산
 void App::LightingPass()
 {
-    // View Port + RTV
+    // RTV, DSV
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
     D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), nullptr);
-    D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
+    D3D::deviceContext->OMSetDepthStencilState(D3D::disableDSS.Get(), 0);
 
     // IA
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -370,11 +370,11 @@ void App::LightingPass()
 
     // Resource
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
-    D3D::deviceContext->PSSetShaderResources(14, 1, D3D::positionSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(15, 1, D3D::albedoSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(16, 1, D3D::normalSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(17, 1, D3D::metalRoughSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(18, 1, D3D::emissiveSRV.GetAddressOf());
+    D3D::deviceContext->PSSetShaderResources(19, 1, D3D::depthSRV.GetAddressOf());
 
     switch (currentSkybox)
     {
@@ -414,11 +414,11 @@ void App::LightingPass()
     D3D::deviceContext->PSSetShaderResources(9, 1, nullSRV);   // IBL irradiance
     D3D::deviceContext->PSSetShaderResources(10, 1, nullSRV);  // IBL spec
     D3D::deviceContext->PSSetShaderResources(11, 1, nullSRV);  // BRDF LUT
-    D3D::deviceContext->PSSetShaderResources(14, 1, nullSRV);  // pos
     D3D::deviceContext->PSSetShaderResources(15, 1, nullSRV);  // albedo
     D3D::deviceContext->PSSetShaderResources(16, 1, nullSRV);  // normal
     D3D::deviceContext->PSSetShaderResources(17, 1, nullSRV);  // metalRough
     D3D::deviceContext->PSSetShaderResources(18, 1, nullSRV);  // emissive
+    D3D::deviceContext->PSSetShaderResources(19, 1, nullSRV);  // depth
 }
 
 // [ BloomProcess Pass ]
@@ -879,6 +879,8 @@ void App::RenderGUI()
 
         ImGui::EndTable();
     }
+
+
     ImGui::End();
 
     // Memory

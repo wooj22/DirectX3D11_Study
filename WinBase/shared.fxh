@@ -30,11 +30,12 @@
 // Texture2D IBL_BRDF_LUT        : register(t11);
 // Texture2D sceneHDR            : register(t12);
 // Texture2D bloomA              : register(t13);
-// Texture2D positionTex         : register(t14);
+// Texture2D positionTex         : register(t14);       // 사용 x (대역폭 문제로 Depth Buffer 사용)
 // Texture2D albedoTex           : register(t15);
 // Texture2D normalTex           : register(t16);
 // Texture2D metalRoughTex       : register(t17);
 // Texture2D emissiveTex         : register(t18);
+// Texture2D depthTex            : register(t19);
 
 // [ SamplerState ]
 // SamplerState samLinear           : register(s0);
@@ -59,6 +60,8 @@ cbuffer TransformCB : register(b0)
     
     float3 cameraPos;
     int padding1;
+    
+    matrix inverseProjection;
 }
 
 cbuffer LightingCB : register(b1)
@@ -290,11 +293,11 @@ struct PS_FullScreen_Input
 // ------------------------------------
 struct PS_Output
 {
-    float4 WorldPos   : SV_Target0;
-    float4 Base_color : SV_Target1;
-    float4 Normal     : SV_Target2;
-    float4 Material   : SV_Target3;
-    float4 Emissive   : SV_Target4;
+    //float4 WorldPos   : SV_Target0;       // Position 대신 Depth Buffer 사용
+    float4 Base_color : SV_Target0;
+    float4 Normal     : SV_Target1;
+    float4 Material   : SV_Target2;
+    float4 Emissive   : SV_Target3;
 };
 
 

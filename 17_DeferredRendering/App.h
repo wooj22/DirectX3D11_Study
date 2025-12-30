@@ -36,26 +36,25 @@ using namespace DirectX::SimpleMath;
 /*
 * [Render Pass]
 *   1. ShadowMap Pass                  -> ShadowMap
-*   2. Geometry Pass                   -> G-buffer (Position, Albedo, Normal, MetalRough, Emissive)
+*   2. Geometry Pass                   -> G-buffer (Albedo, Normal, MetalRough, Emissive)
 *   3. Lighting Pass                   -> Scene HDR Color Pass (Deferred Lighting)
 *   4. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
 *   5. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
 *   6. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
 *   7. LDR PostProcess Pass            -> LDR (final)
 *
-* [PostProcess]
-*   - 노출
-    - Color Adjustments (채도, 대비, Hue Shift, Tint)
-    - Bloom
-    - Film Grain
-    - Vignette
-    - Lift, Gamma, Gain
-    - White Balance (온도, 색조)
-
-  [Bloom Pass]
-    Bloom Prefilter Pass        : 1회
-    Bloom Downsample Blur Pass  : (mipCount - 1) 회
-    Bloom Upsample Combine Pass : (mipCount - 1) 회
+* [G-buffer]
+*   RT0 : Albedo (RGBA)
+*   RT1 : Normal (RGB)
+*   RT2 : Metallic (R), Roughness (G)
+*   RT3 : Emissive (RGB)
+*   -> Position은 대역폭 절약을 위해 G-buffer에 저장하지 않고,
+*      Geometry Pass에서 사용한 뎁스 버퍼를 이용해 Position을 복원해 사용합니다.
+* 
+*  TODO :: SkyBox 라이팅 패스 이후에 적용
+*          상용엔진들은 Skybox를 보통 라이팅 패스 이후에 비어있는 픽셀에 적용한다고 함.
+*          지금은 Skybox를 먼저 그리고, 지오메트리 패스의 RTV를 투명하게 클리어하여
+*          알파블렌딩으로 라이팅 패스에서 합성하는 방식을 사용중 -> 에바임
 */
 
 

@@ -92,7 +92,9 @@ public:
     static std::vector<ComPtr<ID3D11RenderTargetView>> accumBRTVs;
 
     // ¿É¼Ç
+    static ComPtr<ID3D11DepthStencilState>   defualtDSS;               // test + write
 	static ComPtr<ID3D11DepthStencilState>   wirteoffDSS;              // write off
+    static ComPtr<ID3D11DepthStencilState>   disableDSS;               // test + write off
     static ComPtr<ID3D11RasterizerState>     cullfrontRS;              // cullmode = front
 	static ComPtr<ID3D11SamplerState>	     linearSamplerState;       // linear    
 	static ComPtr<ID3D11SamplerState>	     linearClamSamplerState;   // linear + clamp    
@@ -155,12 +157,12 @@ public:
 	static void UnInit();
 
 private:
-        static bool CreateHDRResource(int screenWidth, int screenHeight);
-        static bool CreateShadowMapResource();
-        static bool CreateDeferredResource(int screenWidth, int screenHeight);
-        static bool CreateBloomResource(int screenWidth, int screenHeight);
-        static bool CreateShader();
-        static bool CreateConstantBuffer();
+    static bool CreateHDRResource(int screenWidth, int screenHeight);
+    static bool CreateShadowMapResource();
+    static bool CreateDeferredResource(int screenWidth, int screenHeight);
+    static bool CreateBloomResource(int screenWidth, int screenHeight);
+    static bool CreateShader();
+    static bool CreateConstantBuffer();
 
 public:
     // Texture, RTV, SRV Create Utils

@@ -68,7 +68,9 @@ ComPtr<ID3D11ShaderResourceView>  D3D::accumBSRV = nullptr;
 std::vector<ComPtr<ID3D11RenderTargetView>> D3D::accumARTVs;
 std::vector<ComPtr<ID3D11RenderTargetView>> D3D::accumBRTVs;
 
+ComPtr<ID3D11DepthStencilState>   D3D::defualtDSS = nullptr;
 ComPtr<ID3D11DepthStencilState>   D3D::wirteoffDSS = nullptr;
+ComPtr<ID3D11DepthStencilState>   D3D::disableDSS = nullptr;
 ComPtr<ID3D11RasterizerState>     D3D::cullfrontRS = nullptr;
 ComPtr<ID3D11SamplerState>        D3D::linearSamplerState = nullptr;
 ComPtr<ID3D11SamplerState>        D3D::linearClamSamplerState = nullptr;
@@ -167,39 +169,66 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 	ID3D11RenderTargetView* rtv = renderTargetView.Get();
 	deviceContext->OMSetRenderTargets(1, &rtv, nullptr);	// render targetview  binding
 
-	// viewport
-	viewport_screen = {};
-	viewport_screen.TopLeftX = 0;
-	viewport_screen.TopLeftY = 0;
-	viewport_screen.Width = (float)screenWidth;
-	viewport_screen.Height = (float)screenHeight;
-	viewport_screen.MinDepth = 0.0f;
-	viewport_screen.MaxDepth = 1.0f;
-	deviceContext->RSSetViewports(1, &viewport_screen);	// viewport binding
-
 	// create depth stencil view 
-	D3D11_TEXTURE2D_DESC descDepth = {};
-	descDepth.Width = screenWidth;
-	descDepth.Height = screenHeight;
-	descDepth.MipLevels = 1;
-	descDepth.ArraySize = 1;
-	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.SampleDesc.Count = 1;
-	descDepth.SampleDesc.Quality = 0;
-	descDepth.Usage = D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	descDepth.CPUAccessFlags = 0;
-	descDepth.MiscFlags = 0;
+    {
+        D3D11_TEXTURE2D_DESC descDepth = {};
+        descDepth.Width = screenWidth;
+        descDepth.Height = screenHeight;
+        descDepth.MipLevels = 1;
+        descDepth.ArraySize = 1;
+        descDepth.Format = DXGI_FORMAT_R24G8_TYPELESS;
+        descDepth.SampleDesc.Count = 1;
+        descDepth.SampleDesc.Quality = 0;
+        descDepth.Usage = D3D11_USAGE_DEFAULT;
+        descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+        descDepth.CPUAccessFlags = 0;
+        descDepth.MiscFlags = 0;
 
-	HR_T(device->CreateTexture2D(&descDepth, nullptr, depthStencilTexture.GetAddressOf()));
+        HR_T(device->CreateTexture2D(&descDepth, nullptr, depthStencilTexture.GetAddressOf()));
 
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
-	descDSV.Format = descDepth.Format;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture2D.MipSlice = 0;
-	HR_T(device->CreateDepthStencilView(depthStencilTexture.Get(), &descDSV, depthStencilView.GetAddressOf()));
+        D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+        descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+        descDSV.Texture2D.MipSlice = 0;
+        HR_T(device->CreateDepthStencilView(depthStencilTexture.Get(), &descDSV, depthStencilView.GetAddressOf()));
+    }
 
-	// create depth stencil state (alpha, skybox)
+    // depth stencil SRV
+    {
+        D3D11_SHADER_RESOURCE_VIEW_DESC descSRV = {};
+        descSRV.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+        descSRV.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        descSRV.Texture2D.MostDetailedMip = 0;
+        descSRV.Texture2D.MipLevels = 1;
+
+        HR_T(device->CreateShaderResourceView(depthStencilTexture.Get(), &descSRV, depthSRV.GetAddressOf()));
+    }
+
+
+    // viewport
+    {
+        viewport_screen = {};
+        viewport_screen.TopLeftX = 0;
+        viewport_screen.TopLeftY = 0;
+        viewport_screen.Width = (float)screenWidth;
+        viewport_screen.Height = (float)screenHeight;
+        viewport_screen.MinDepth = 0.0f;
+        viewport_screen.MaxDepth = 1.0f;
+        deviceContext->RSSetViewports(1, &viewport_screen);	// viewport binding
+    }
+
+    // create depth stencil state (defualt)
+    {
+        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+        dsDesc.DepthEnable = TRUE;                              // 깊이 테스트 o  
+        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;     // 버퍼 기록 o
+        dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+        dsDesc.StencilEnable = FALSE;
+
+        HR_T(device->CreateDepthStencilState(&dsDesc, defualtDSS.GetAddressOf()));
+    }
+
+	// create depth stencil state (write off)
     {
         D3D11_DEPTH_STENCIL_DESC dsDesc = {};
         dsDesc.DepthEnable = TRUE;                              // 깊이 테스트 o  
@@ -208,6 +237,17 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         dsDesc.StencilEnable = FALSE;
 
         HR_T(device->CreateDepthStencilState(&dsDesc, wirteoffDSS.GetAddressOf()));
+    }
+
+    // create depth stencil state (test, write off)
+    {
+        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+        dsDesc.DepthEnable = FALSE;                              // 깊이 테스트 x
+        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;     // 버퍼 기록 x
+        dsDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+        dsDesc.StencilEnable = FALSE;
+
+        HR_T(device->CreateDepthStencilState(&dsDesc, disableDSS.GetAddressOf()));
     }
 
     // create rasterizer state (skybox 큐브의 안쪽이 그려지도록 cull mode front)
