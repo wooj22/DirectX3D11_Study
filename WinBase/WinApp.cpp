@@ -144,6 +144,14 @@ bool WinApp::Init()
 	SIZE clientSize = { screenWidth, screenHeight };
 	RECT clientRect = { 0, 0, clientSize.cx, clientSize.cy };
 
+    // adjust window size
+    // 클라이언트 영역이 (screenWidth x screenHeight)이 되도록 
+    // 테두리, 타이틀바까지 포함한 윈도우 전체 크기 계산
+    RECT rc = { 0, 0, screenWidth, screenHeight };
+    DWORD style = WS_OVERLAPPEDWINDOW;
+    DWORD exStyle = 0;
+    AdjustWindowRectEx(&rc, style, FALSE, exStyle);
+
 	// window create
 	hWnd = CreateWindowEx(
 		0,
@@ -152,8 +160,8 @@ bool WinApp::Init()
 		WS_OVERLAPPEDWINDOW,		// WS_POPUP/ WS_OVERLAPPEDWINDOW
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		clientRect.right - clientRect.left,
-		clientRect.bottom - clientRect.top,
+        rc.right - rc.left,
+        rc.bottom - rc.top,
 		NULL,
 		NULL,
 		hInstance,
@@ -227,6 +235,7 @@ void WinApp::Update()
 {
 	time.Update();
 	input.Update();
+	camera.Update();
 	camera.Update();
 	OnUpdate();
 }
