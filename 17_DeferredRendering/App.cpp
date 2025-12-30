@@ -159,10 +159,10 @@ void App::OnRender()
     StageSetting();         // binding + CB udpate
 
     // Render
-    SkyBoxRender();         // Skybox
     ShadowMapPass();        // Shadow Map
     GeometryPass();         // G-Buffer
     LightingPass();         // Shadow + Lighting
+    SkyBoxRender();         // Skybox
     BloomProcess();         // Bloom Prefilter -> DownSample -> UpSample
     PostProcess();          // ToneMapping + PostProcess + ScreenFx
 
@@ -185,7 +185,6 @@ void App::StageSetting()
     D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
     D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
     D3D::deviceContext->PSSetSamplers(2, 1, D3D::linearClamSamplerState.GetAddressOf());
-    D3D::deviceContext->OMSetBlendState(D3D::alphaBlendState.Get(), blendFactor, sampleMask);
 
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
@@ -245,32 +244,6 @@ void App::StageSetting()
     D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
 }
 
-void App::SkyBoxRender()
-{
-    // RTV, DSV
-    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
-    D3D::deviceContext->ClearRenderTargetView(D3D::sceneHDRRTV.Get(), clearColor);
-    D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-    // Skybox Render  --------------------------------
-    switch (currentSkybox)
-    {
-    case 0:
-        skybox1.Render(view, projection);
-        break;
-    case 1:
-        skybox2.Render(view, projection);
-        break;
-    case 2:
-        skybox3.Render(view, projection);
-        break;
-    case 3:
-        skybox4.Render(view, projection);
-        break;
-    }
-}
-
 // [ Shadow Map Pass ]
 void App::ShadowMapPass()
 {
@@ -320,10 +293,10 @@ void App::GeometryPass()
     D3D::deviceContext->OMSetRenderTargets(4, gbuffers, D3D::depthStencilView.Get());
     D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
     D3D::deviceContext->OMSetDepthStencilState(D3D::defualtDSS.Get(), 0);
-    float alphaClear[4] = { 0,0,0,0 };
+
     for (int i = 0; i < 4; i++)
     {
-        D3D::deviceContext->ClearRenderTargetView(gbuffers[i], alphaClear);
+        D3D::deviceContext->ClearRenderTargetView(gbuffers[i], clearColor);
     }
 
     // Static, Rigid Model
@@ -358,6 +331,7 @@ void App::LightingPass()
     // RTV, DSV
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
     D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), nullptr);
+    D3D::deviceContext->ClearRenderTargetView(D3D::sceneHDRRTV.Get(), clearColor);
     D3D::deviceContext->OMSetDepthStencilState(D3D::disableDSS.Get(), 0);
 
     // IA
@@ -419,6 +393,32 @@ void App::LightingPass()
     D3D::deviceContext->PSSetShaderResources(17, 1, nullSRV);  // metalRough
     D3D::deviceContext->PSSetShaderResources(18, 1, nullSRV);  // emissive
     D3D::deviceContext->PSSetShaderResources(19, 1, nullSRV);  // depth
+}
+
+
+void App::SkyBoxRender()
+{
+    // RTV, DSV
+    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 0);
+
+    // Skybox Render  --------------------------------
+    switch (currentSkybox)
+    {
+    case 0:
+        skybox1.Render(view, projection);
+        break;
+    case 1:
+        skybox2.Render(view, projection);
+        break;
+    case 2:
+        skybox3.Render(view, projection);
+        break;
+    case 3:
+        skybox4.Render(view, projection);
+        break;
+    }
 }
 
 // [ BloomProcess Pass ]

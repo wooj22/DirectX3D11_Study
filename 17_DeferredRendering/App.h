@@ -34,7 +34,7 @@ using namespace DirectX::SimpleMath;
 // Deferred Rendering 프로젝트입니다.
 // Geometry Pass와 Lighting Pass를 분리하여 최종 가시 픽셀에 대해서만 라이팅을 계산합니다.
 /*
-* [Render Pass]
+* [ Render Pass ]
 *   1. ShadowMap Pass                  -> ShadowMap
 *   2. Geometry Pass                   -> G-buffer (Albedo, Normal, MetalRough, Emissive)
 *   3. Lighting Pass                   -> Scene HDR Color Pass (Deferred Lighting)
@@ -43,18 +43,25 @@ using namespace DirectX::SimpleMath;
 *   6. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
 *   7. LDR PostProcess Pass            -> LDR (final)
 *
-* [G-buffer]
-*   RT0 : Albedo (RGBA)
+* [ G-buffer ]
+*   RT0 : Albedo (RGB)
 *   RT1 : Normal (RGB)
 *   RT2 : Metallic (R), Roughness (G)
 *   RT3 : Emissive (RGB)
-*   -> Position은 대역폭 절약을 위해 G-buffer에 저장하지 않고,
+*   ★ Position은 대역폭 절약을 위해 G-buffer에 저장하지 않고,
 *      Geometry Pass에서 사용한 뎁스 버퍼를 이용해 Position을 복원해 사용합니다.
 * 
-*  TODO :: SkyBox 라이팅 패스 이후에 적용
-*          상용엔진들은 Skybox를 보통 라이팅 패스 이후에 비어있는 픽셀에 적용한다고 함.
-*          지금은 Skybox를 먼저 그리고, 지오메트리 패스의 RTV를 투명하게 클리어하여
-*          알파블렌딩으로 라이팅 패스에서 합성하는 방식을 사용중 -> 에바임
+* [ Skybox ]
+*   Deferred Rendering에서는 Skybox를 Lighting Pass 이후에 렌더링 합니다.
+*   - Forward : Skybox를 먼저 그리고(Depth 1) 이후 지오메트리 렌더링
+*   - Deferred : 라이팅 패스에서 sceneHDR을 계산한 후, Skybox(depth 1)을 그리며
+                 지오메트리 패스에서 기록된 Depth에 Depth Test를 진행하여 
+                 아무것도 그려지지 않은 픽셀에만 Skybox가 렌더링 됩니다.
+* 
+* [ Alpha Blending ]
+*   Deferred Rendering에서는 최종 가시 픽셀만 연산을 하므로
+*   알파 블렌딩이 필요한 오브젝트를 처리하기 어렵다. 
+    -> 때문에 해당 프로젝트에서는 알파 블렌딩 State를 사용하지 않는다.
 */
 
 
@@ -147,10 +154,6 @@ private:
 
     // IBL debug
     bool useIBL = 1;
-
-    // alpha
-    float blendFactor[4] = { 0,0,0,0 };
-    UINT sampleMask = 0xffffffff;
 
     // clear color
     float clearColor[4] = { 0,0,0,1 };

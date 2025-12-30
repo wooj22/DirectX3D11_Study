@@ -2,6 +2,7 @@
     [ PBR Lighting Pass Pixel Shader ] 
     * Deferred Rendering *
 
+    Full Screen Quad를 그리며, G-buffer에 기록된 정보를 활용하여
     최종 가시 픽셀에 대해서만 라이팅 연산을 진행합니다.
 
     - Direct BRDF(Cook-Torrance)
@@ -38,6 +39,10 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
 {   
     // --- [ World Position ]  ----------------------------------
     float depth = depthTex.Sample(samLinearClamp, input.uv).r;
+
+    if (depth >= 0.999999f)
+        return 0;    // 배경 픽셀 스킵
+    
     float4 ndc;
     ndc.x = input.uv.x * 2.0f - 1.0f;
     ndc.y = (1.0f - input.uv.y) * 2.0f - 1.0f;
