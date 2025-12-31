@@ -73,15 +73,37 @@ bool App::OnInit()
     enemy->SetPosition({ 250,0,20 });
 
     // light
-    D3D::lightingCBData.indirectIntensity = 0.2f;
-    D3D::lightingCBData.useIBL = 1;
+    {
+        D3D::lightingCBData.indirectIntensity = 0.2f;
+        D3D::lightingCBData.useIBL = 1;
 
-    Light directionalLight(LightType::Directional);
-    directionalLight.direction = { 0,-0.5, 1 };
-    directionalLight.color = { 1.0f, 0.9608f, 0.8980f };
-    directionalLight.intensity = 2.0f;
-    lights.push_back(directionalLight);
-    lights.push_back(directionalLight);
+        Light directionalLight(LightType::Directional);
+        directionalLight.direction = { 0,-0.5, 1 };
+        directionalLight.color = { 1.0f, 0.9608f, 0.8980f };
+        directionalLight.intensity = 2.0f;
+        lights.push_back(directionalLight);
+        directionalLight.intensity = 0.0f;
+        lights.push_back(directionalLight);     // debug용
+        lights.push_back(directionalLight);     // debug용
+        
+
+        Light pointLight(LightType::Point);
+        pointLight.position = { 0,0,0 };
+        pointLight.color = { 1.0f, 0.0f, 0.0f };
+        pointLight.intensity = 500.0f;
+        pointLight.range = 500.0f;
+        lights.push_back(pointLight);
+
+        Light spotLight(LightType::Spot);
+        spotLight.position = { 0,50,-100 };
+        spotLight.direction = { 0,-0.5, 1 };
+        spotLight.color = { 0.0f, 0.0f, 1.0f };
+        spotLight.intensity = 800.0f;
+        spotLight.range = 800.0f;
+        spotLight.innerAngle = 15.0f;
+        spotLight.outerAngle = 30.0f;
+        lights.push_back(spotLight);
+    }
 
     // view maxtrix
     camera.position = { 0, 80, -300 };
@@ -395,17 +417,17 @@ void App::LightingPass()
         D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
 
         // Light Volume 렌더링 (TODO)
-        if(light.type == LightType::Point)
+        if (light.type == LightType::Directional)
         {
             D3D::deviceContext.Get()->Draw(3, 0);
+        }
+        else if(light.type == LightType::Point)
+        {
+            //D3D::deviceContext.Get()->Draw(3, 0);
         }
         else if (light.type == LightType::Spot)
         {
-            D3D::deviceContext.Get()->Draw(3, 0);
-        }
-        else if (light.type == LightType::Directional)
-        {
-            D3D::deviceContext.Get()->Draw(3, 0);
+            //D3D::deviceContext.Get()->Draw(3, 0);
         }
     }
 
@@ -713,214 +735,321 @@ void App::RenderGUI()
     ImGui::NewFrame();
 
     // Light
-    ImGui::Begin("[Light]");
-    ImGui::Text("Current Light Count : %zu", lights.size());
-    ImGui::SliderFloat3("Direction", &lights[0].direction.x, -1.0f, 1.0f, "%.2f");
-    ImGui::ColorEdit3("Color", &lights[0].color.x);
-    ImGui::SliderFloat("Direct Intensity", &lights[0].intensity, 0.0f, 10.0f);
-    ImGui::SliderFloat("Indirect Intensity", &D3D::lightingCBData.indirectIntensity, 0.0f, 10.0f);
-    ImGui::End();
-
-    // Model Inspector
-    ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
-    ImGui::Text("[Material]");
-    ImGui::SliderFloat("Metallic Factor", &D3D::materialCBData.metallicFactor, 0.0f, 1.0f);
-    ImGui::SliderFloat("Roughness Factor", &D3D::materialCBData.roughnessFactor, 0.0f, 1.0f);
-    ImGui::SliderFloat("Emissve Factor", &D3D::materialCBData.emissiveFactor, 0.0f, 3.0f);
-
-    ImGui::Checkbox("BaseColor Override", &useBaseColorOverride);
-    ImGui::ColorEdit3("BaseColor", &D3D::materialCBData.baseColorOverride.x);
-    ImGui::Checkbox("Emissve Override", &useEmissiveOverride);
-    ImGui::ColorEdit3("Emissve", &D3D::materialCBData.emissiveOverride.x);
-    ImGui::Checkbox("Metallic Override", &useMetallicOverride);
-    ImGui::SliderFloat("Metallic", &D3D::materialCBData.metallicOverride, 0.0f, 1.0f);
-    ImGui::Checkbox("Roughness Override", &useRoughnessOverride);
-    ImGui::SliderFloat("Roughness", &D3D::materialCBData.roughnessOverride, 0.0f, 1.0f);
-
-    ImGui::Text("");
-    ImGui::Text("[Transform]");
-    ImGui::InputFloat3("position", &character->position.x);
-    ImGui::SliderAngle("Pitch", &character->rotation.x, 0.0f, 360.0f);
-    ImGui::SliderAngle("Yaw", &character->rotation.y, 0.0f, 360.0f);
-    ImGui::SliderAngle("Roll", &character->rotation.z, 0.0f, 360.0f);
-    ImGui::InputFloat3("scale", &character->scale.x);
-    ImGui::End();
-
-    // Camera
-    ImGui::Begin("[Camera]");
-    ImGui::SliderFloat("Near", &camera.Near, 0.01f, 10000.0f);
-    ImGui::SliderFloat("Far", &camera.Far, 0.01f, 10000.0f);
-
-    ImGui::SliderFloat("FOV", &fovDeg, 20.0f, 90.0f);
-
-    camera.FovY = XMConvertToRadians(fovDeg);
-    camera.FovY = std::clamp(camera.FovY, 0.3f, 1.7f);
-    ImGui::InputFloat("Move Speec", &camera.moveSpeed, 0.0f, 0.0f, "%.3f");
-    ImGui::End();
-
-    // Shadow
-    ImGui::Begin("[Shadow]");
-    ImGui::Text("[Shadow Frustum]");
-    ImGui::SliderFloat("Near", &shadowNear, 0.01f, 10000.0f);
-    ImGui::SliderFloat("Far", &shadowFar, 0.01f, 10000.0f);
-    ImGui::InputFloat("Width", &shadowWidth);
-    ImGui::InputFloat("Height", &shadowHeight);
-
-    ImGui::Text("");
-    ImGui::Text("[Shadow Light Pos]");
-    ImGui::SliderFloat("lookPointDist", &lookPointDist, 1.f, 5000.0f);
-    ImGui::SliderFloat("shadowLightDist", &shadowLightDist, 1.f, 5000.0f);
-    ImGui::End();
-
-    // IBL
-    ImGui::Begin("[IBL]");
-    ImGui::Checkbox("use IBL", &useIBL);
-
-    ImGui::Text("");
-    ImGui::Text("[Skybox]");
-    ImGui::Combo("Skybox Mode", &currentSkybox, skyboxes, IM_ARRAYSIZE(skyboxes));
-    ImGui::End();
-
-    // PostProcess
-    ImGui::Begin("[PostProcess]");
-    ImGui::Text("Gamma (Linear->SRGB)");
-    ImGui::Checkbox("use defalutGamma", &usedefalutGamma);
-    ImGui::BeginDisabled(!usedefalutGamma);
-    ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.defaultGamma, 0.f, 5.0f);
-    ImGui::EndDisabled();
-
-    ImGui::Text("");
-    ImGui::Text("[Color Adjustments]");
-    ImGui::Checkbox("Enable Color Adjustments", &useColorAdjustments);
-    ImGui::BeginDisabled(!useColorAdjustments);
-    ImGui::SliderFloat("Exposure", &D3D::postprocessCBData.exposure, -5.f, 5.0f);
-    ImGui::SliderFloat("Contrast", &D3D::postprocessCBData.contrast, 0.5f, 2.0f);
-    ImGui::SliderFloat("Saturation", &D3D::postprocessCBData.saturation, 0.5f, 2.0f);
-
-    ImGui::Checkbox("use HueShift", &useHueShift);
-    ImGui::SliderAngle("HueShift", &D3D::postprocessCBData.hueShift, -180.0f, 180.0f);
-
-    ImGui::Checkbox("use ColorTint", &useColorTint);
-    ImGui::ColorEdit3("Color Tint", &D3D::postprocessCBData.colorTint.x);
-    ImGui::SliderFloat("Strength", &D3D::postprocessCBData.colorTint_strength, 0, 1.0f);
-    ImGui::EndDisabled();
-
-    ImGui::Text("");
-    ImGui::Text("[Bloom]");
-    ImGui::Checkbox("Enable Bloom", &useBloom);
-    ImGui::BeginDisabled(!useBloom);
-    ImGui::SliderFloat("Threshold", &D3D::bloomCBData.bloom_threshold, 0.0f, 5.0f, "%.2f");
-    ImGui::SliderFloat("Bloom Intensity", &D3D::bloomCBData.bloom_intensity, 0.0f, 10.0f, "%.2f");
-    ImGui::SliderFloat("Clamp", &D3D::bloomCBData.bloom_clamp, 0.0f, 20.0f, "%.2f");
-    ImGui::SliderFloat("Scatter", &D3D::bloomCBData.bloom_scatter, 0.0f, 1.0f, "%.2f");
-    ImGui::ColorEdit3("Bloom Tint", (float*)&D3D::bloomCBData.bloom_tint, ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
-    ImGui::EndDisabled();
-
-    ImGui::Text("");
-    ImGui::Text("[White Balance]");
-    ImGui::Checkbox("Enable White Balance", &useWhiteBalance);
-    ImGui::BeginDisabled(!useWhiteBalance);
-    ImGui::SliderFloat("Temperature", &D3D::postprocessCBData.temperature, -1.f, 1.0f);
-    ImGui::SliderFloat("Tint", &D3D::postprocessCBData.tint, -1.f, 1.0f);
-    ImGui::EndDisabled();
-
-    ImGui::Text("");
-    ImGui::Text("[Lift / Gamma / Gain]");
-    ImGui::Checkbox("Enable LGG", &useLGG);
-    ImGui::BeginDisabled(!useLGG);
-    ImGui::Checkbox("use Lift", &useLift);
-    ImGui::SliderFloat3("Lift RGB", &D3D::postprocessCBData.lift.x, -1.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Lift Strength", &D3D::postprocessCBData.lift_strength, 0.0f, 1.0f, "%.3f");
-    ImGui::Checkbox("use Gamma", &useGamma);
-    ImGui::SliderFloat3("Gamma RGB", &D3D::postprocessCBData.gamma.x, -1.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Gamma Strength", &D3D::postprocessCBData.gamma_strength, 0.0f, 1.0f, "%.3f");
-    ImGui::Checkbox("use Gain", &useGain);
-    ImGui::SliderFloat3("Gain RGB", &D3D::postprocessCBData.gain.x, -1.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Gain Strength", &D3D::postprocessCBData.gain_strength, 0.0f, 1.0f, "%.3f");
-    ImGui::EndDisabled();
-
-    ImGui::Text("");
-    ImGui::Text("[Vignette]");
-    ImGui::Checkbox("Enable Vignette", &useVignette);
-    ImGui::BeginDisabled(!useVignette);
-    ImGui::SliderFloat("Vignette Intensity", &D3D::postprocessCBData.vignette_intensity, 0.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Smoothness", &D3D::postprocessCBData.vignette_smoothness, 0.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat2("Center", &D3D::postprocessCBData.vignetteCenter.x, 0.0f, 1.0f, "%.3f");
-    ImGui::ColorEdit3("Vignette Color", &D3D::postprocessCBData.vignetteColor.x);
-    ImGui::EndDisabled();
-
-    ImGui::Text("");
-    ImGui::Text("[Film Grain]");
-    ImGui::Checkbox("Enable FilmGrain", &useFilmGrain);
-    ImGui::BeginDisabled(!useFilmGrain);
-    ImGui::SliderFloat("FilmGrain Intensity", &D3D::postprocessCBData.grain_intensity, 0.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Response", &D3D::postprocessCBData.grain_response, 0.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("GrainScale", &D3D::postprocessCBData.grain_scale, 0.0f, 5.0f, "%.2f");
-    ImGui::EndDisabled();
-    ImGui::End();
-
-    // Screen Space Effect
-    ImGui::Begin("[Screen Effect]");
-    ImGui::Text("Enable");
-    ImGui::Checkbox("useRipple", &enableRipple);
-    ImGui::Checkbox("usePlasmaOverlay", &enablePlasmaOverlay);
-    ImGui::Checkbox("useFilmGrain", &enableFilmGrain);
-
-    ImGui::Text("Pattern / Noise");
-    ImGui::SliderFloat("Cell Scale", &D3D::screenFxCBData.cellScale, 0.1f, 10.0f);
-    ImGui::SliderFloat("Random Intensity", &D3D::screenFxCBData.randomIntensity, 1000.0f, 60000.0f);
-    ImGui::SliderFloat("Warp Strength", &D3D::screenFxCBData.warpStrength, 0.0f, 3.0f);
-    ImGui::SliderFloat("distortion Strength", &D3D::screenFxCBData.distortionStrength, 0.002f, 0.008f);
-
-    ImGui::Text("Plasma Overlay");
-    ImGui::SliderFloat("Plasma Intensity", &D3D::screenFxCBData.plasmaIntensity, 0.0f, 1.5f);
-
-    ImGui::Text("Film Grain");
-    ImGui::SliderFloat("Grain Intensity", &D3D::screenFxCBData.grainIntensity, 0.0f, 0.15f);
-    ImGui::End();
-
-    // G-Buffer
-    ImGui::Begin("[G-Buffer]");
-    const ImVec2 size(screenWidth / 10, screenHeight / 10);
-
-    if (ImGui::BeginTable("GBufferTable", 2,
-        ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit))
     {
-        auto Cell = [&](const char* label, ID3D11ShaderResourceView* srv)
+        ImGui::Begin("[Light]");
+        auto GetCountForType = [&](LightType type) -> size_t
             {
-                ImGui::TableNextColumn();
-                ImGui::TextUnformatted(label);
-
-                if (srv)
-                    ImGui::Image((ImTextureID)srv, size);
-                else
-                    ImGui::Dummy(size);
+                size_t c = 0;
+                for (auto& l : lights) if (l.type == type) c++;
+                return c;
             };
 
-        // Row 1
-        Cell("Position", D3D::positionSRV.Get());
-        Cell("Albedo", D3D::albedoSRV.Get());
+        const size_t dirCount = GetCountForType(LightType::Directional);
+        const size_t pointCount = GetCountForType(LightType::Point);
+        const size_t spotCount = GetCountForType(LightType::Spot);
+        
+        ImGui::Text("Directional Count : %zu", dirCount);
+        ImGui::Text("Point Count       : %zu", pointCount);
+        ImGui::Text("Spot Count        : %zu", spotCount);
 
-        // Row 2
-        Cell("Normal", D3D::normalSRV.Get());
-        Cell("Metal/Rough", D3D::metalRoughSRV.Get());
+        if(lights.empty())
+        {
+            ImGui::Text("No Lights Available");
+            ImGui::End();
+            return;
+        }
 
-        // Row 3
-        Cell("Emissive", D3D::emissiveSRV.Get());
-        Cell("Depth", D3D::depthSRV.Get());
+        // --- selection state (static: keep selection across frames) ---
+        static int uiType = 0;          // 0:Dir, 1:Point, 2:Spot
+        static int uiIndexInType = 0;   // index inside the selected type list
 
-        ImGui::EndTable();
+        const char* typeLabels[] = { "Directional", "Point", "Spot" };
+        ImGui::Text("Select");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(150.0f);
+        ImGui::Combo("##LightType", &uiType, typeLabels, IM_ARRAYSIZE(typeLabels));
+
+        LightType selectedType = LightType::Directional;
+        if (uiType == 1) selectedType = LightType::Point;
+        else if (uiType == 2) selectedType = LightType::Spot;
+
+        // --- build index map for selected type ---
+        std::vector<int> indices;
+        indices.reserve(lights.size());
+        for (int i = 0; i < (int)lights.size(); ++i)
+            if (lights[i].type == selectedType)
+                indices.push_back(i);
+
+        if (indices.empty())
+        {
+            ImGui::TextDisabled("No lights of selected type.");
+            ImGui::End();
+            return;
+        }
+
+        // clamp selection if counts changed
+        if (uiIndexInType < 0) uiIndexInType = 0;
+        if (uiIndexInType >= (int)indices.size()) uiIndexInType = (int)indices.size() - 1;
+
+        // pick current light (global index)
+        int curLightIndex = indices[uiIndexInType];
+        Light& cur = lights[curLightIndex];
+
+        // --- select which light within this type ---
+        ImGui::SetNextItemWidth(250.0f);
+        ImGui::SliderInt("Current Light", &uiIndexInType, 0, (int)indices.size() - 1);
+
+        ImGui::Text("Global Index : %d", curLightIndex);
+        ImGui::Separator();
+
+        // --- common props ---
+        ImGui::ColorEdit3("Color", &cur.color.x);
+        ImGui::SliderFloat("Intensity", &cur.intensity, 0.0f, 10.0f);
+
+        // --- per-type props ---
+        if (cur.type == LightType::Directional)
+        {
+            ImGui::SliderFloat3("Direction", &cur.direction.x, -1.0f, 1.0f, "%.2f");
+            // 보통 direction normalize는 셰이더/CPU 중 한 쪽에서 보장해주는 게 좋음
+        }
+        else if (cur.type == LightType::Point)
+        {
+            ImGui::SliderFloat3("Position", &cur.position.x, -50.0f, 50.0f, "%.2f");
+            ImGui::SliderFloat("Range", &cur.range, 0.1f, 200.0f, "%.2f");
+        }
+        else if (cur.type == LightType::Spot)
+        {
+            ImGui::SliderFloat3("Position", &cur.position.x, -50.0f, 50.0f, "%.2f");
+            ImGui::SliderFloat3("Direction", &cur.direction.x, -1.0f, 1.0f, "%.2f");
+            ImGui::SliderFloat("Range", &cur.range, 0.1f, 200.0f, "%.2f");
+
+            // 각도를 degree로 쓰는 경우
+            ImGui::SliderFloat("Inner Angle", &cur.innerAngle, 0.0f, 89.0f, "%.1f deg");
+            ImGui::SliderFloat("Outer Angle", &cur.outerAngle, 0.0f, 89.0f, "%.1f deg");
+
+            // 안전장치: inner <= outer
+            if (cur.innerAngle > cur.outerAngle)
+                cur.innerAngle = cur.outerAngle;
+        }
+
+        ImGui::Separator();
+        ImGui::End();
     }
 
+    // Model
+    {
+        ImGui::Begin("Model", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+        ImGui::Text("[Material]");
+        ImGui::SliderFloat("Metallic Factor", &D3D::materialCBData.metallicFactor, 0.0f, 1.0f);
+        ImGui::SliderFloat("Roughness Factor", &D3D::materialCBData.roughnessFactor, 0.0f, 1.0f);
+        ImGui::SliderFloat("Emissve Factor", &D3D::materialCBData.emissiveFactor, 0.0f, 3.0f);
 
-    ImGui::End();
+        ImGui::Checkbox("BaseColor Override", &useBaseColorOverride);
+        ImGui::ColorEdit3("BaseColor", &D3D::materialCBData.baseColorOverride.x);
+        ImGui::Checkbox("Emissve Override", &useEmissiveOverride);
+        ImGui::ColorEdit3("Emissve", &D3D::materialCBData.emissiveOverride.x);
+        ImGui::Checkbox("Metallic Override", &useMetallicOverride);
+        ImGui::SliderFloat("Metallic", &D3D::materialCBData.metallicOverride, 0.0f, 1.0f);
+        ImGui::Checkbox("Roughness Override", &useRoughnessOverride);
+        ImGui::SliderFloat("Roughness", &D3D::materialCBData.roughnessOverride, 0.0f, 1.0f);
+
+        ImGui::Text("");
+        ImGui::Text("[Transform]");
+        ImGui::InputFloat3("position", &character->position.x);
+        ImGui::SliderAngle("Pitch", &character->rotation.x, 0.0f, 360.0f);
+        ImGui::SliderAngle("Yaw", &character->rotation.y, 0.0f, 360.0f);
+        ImGui::SliderAngle("Roll", &character->rotation.z, 0.0f, 360.0f);
+        ImGui::InputFloat3("scale", &character->scale.x);
+        ImGui::End();
+    }
+
+    // Camera
+    {
+        ImGui::Begin("[Camera]");
+        ImGui::SliderFloat("Near", &camera.Near, 0.01f, 10000.0f);
+        ImGui::SliderFloat("Far", &camera.Far, 0.01f, 10000.0f);
+
+        ImGui::SliderFloat("FOV", &fovDeg, 20.0f, 90.0f);
+
+        camera.FovY = XMConvertToRadians(fovDeg);
+        camera.FovY = std::clamp(camera.FovY, 0.3f, 1.7f);
+        ImGui::InputFloat("Move Speec", &camera.moveSpeed, 0.0f, 0.0f, "%.3f");
+        ImGui::End();
+    }
+
+    // Shadow
+    {
+        ImGui::Begin("[Shadow]");
+        ImGui::Text("[Shadow Frustum]");
+        ImGui::SliderFloat("Near", &shadowNear, 0.01f, 10000.0f);
+        ImGui::SliderFloat("Far", &shadowFar, 0.01f, 10000.0f);
+        ImGui::InputFloat("Width", &shadowWidth);
+        ImGui::InputFloat("Height", &shadowHeight);
+
+        ImGui::Text("");
+        ImGui::Text("[Shadow Light Pos]");
+        ImGui::SliderFloat("lookPointDist", &lookPointDist, 1.f, 5000.0f);
+        ImGui::SliderFloat("shadowLightDist", &shadowLightDist, 1.f, 5000.0f);
+        ImGui::End();
+    }
+
+    // IBL
+    {
+        ImGui::Begin("[IBL]");
+        ImGui::Checkbox("use IBL", &useIBL);
+        ImGui::SliderFloat("Indirect Intensity", &D3D::lightingCBData.indirectIntensity, 0.0f, 10.0f);
+
+        ImGui::Text("");
+        ImGui::Text("[Skybox]");
+        ImGui::Combo("Skybox Mode", &currentSkybox, skyboxes, IM_ARRAYSIZE(skyboxes));
+        ImGui::End();
+    }
+
+    // PostProcess
+    {
+        ImGui::Begin("[PostProcess]");
+        ImGui::Text("Gamma (Linear->SRGB)");
+        ImGui::Checkbox("use defalutGamma", &usedefalutGamma);
+        ImGui::BeginDisabled(!usedefalutGamma);
+        ImGui::SliderFloat("Gamma", &D3D::postprocessCBData.defaultGamma, 0.f, 5.0f);
+        ImGui::EndDisabled();
+
+        ImGui::Text("");
+        ImGui::Text("[Color Adjustments]");
+        ImGui::Checkbox("Enable Color Adjustments", &useColorAdjustments);
+        ImGui::BeginDisabled(!useColorAdjustments);
+        ImGui::SliderFloat("Exposure", &D3D::postprocessCBData.exposure, -5.f, 5.0f);
+        ImGui::SliderFloat("Contrast", &D3D::postprocessCBData.contrast, 0.5f, 2.0f);
+        ImGui::SliderFloat("Saturation", &D3D::postprocessCBData.saturation, 0.5f, 2.0f);
+
+        ImGui::Checkbox("use HueShift", &useHueShift);
+        ImGui::SliderAngle("HueShift", &D3D::postprocessCBData.hueShift, -180.0f, 180.0f);
+
+        ImGui::Checkbox("use ColorTint", &useColorTint);
+        ImGui::ColorEdit3("Color Tint", &D3D::postprocessCBData.colorTint.x);
+        ImGui::SliderFloat("Strength", &D3D::postprocessCBData.colorTint_strength, 0, 1.0f);
+        ImGui::EndDisabled();
+
+        ImGui::Text("");
+        ImGui::Text("[Bloom]");
+        ImGui::Checkbox("Enable Bloom", &useBloom);
+        ImGui::BeginDisabled(!useBloom);
+        ImGui::SliderFloat("Threshold", &D3D::bloomCBData.bloom_threshold, 0.0f, 5.0f, "%.2f");
+        ImGui::SliderFloat("Bloom Intensity", &D3D::bloomCBData.bloom_intensity, 0.0f, 10.0f, "%.2f");
+        ImGui::SliderFloat("Clamp", &D3D::bloomCBData.bloom_clamp, 0.0f, 20.0f, "%.2f");
+        ImGui::SliderFloat("Scatter", &D3D::bloomCBData.bloom_scatter, 0.0f, 1.0f, "%.2f");
+        ImGui::ColorEdit3("Bloom Tint", (float*)&D3D::bloomCBData.bloom_tint, ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+        ImGui::EndDisabled();
+
+        ImGui::Text("");
+        ImGui::Text("[White Balance]");
+        ImGui::Checkbox("Enable White Balance", &useWhiteBalance);
+        ImGui::BeginDisabled(!useWhiteBalance);
+        ImGui::SliderFloat("Temperature", &D3D::postprocessCBData.temperature, -1.f, 1.0f);
+        ImGui::SliderFloat("Tint", &D3D::postprocessCBData.tint, -1.f, 1.0f);
+        ImGui::EndDisabled();
+
+        ImGui::Text("");
+        ImGui::Text("[Lift / Gamma / Gain]");
+        ImGui::Checkbox("Enable LGG", &useLGG);
+        ImGui::BeginDisabled(!useLGG);
+        ImGui::Checkbox("use Lift", &useLift);
+        ImGui::SliderFloat3("Lift RGB", &D3D::postprocessCBData.lift.x, -1.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Lift Strength", &D3D::postprocessCBData.lift_strength, 0.0f, 1.0f, "%.3f");
+        ImGui::Checkbox("use Gamma", &useGamma);
+        ImGui::SliderFloat3("Gamma RGB", &D3D::postprocessCBData.gamma.x, -1.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Gamma Strength", &D3D::postprocessCBData.gamma_strength, 0.0f, 1.0f, "%.3f");
+        ImGui::Checkbox("use Gain", &useGain);
+        ImGui::SliderFloat3("Gain RGB", &D3D::postprocessCBData.gain.x, -1.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Gain Strength", &D3D::postprocessCBData.gain_strength, 0.0f, 1.0f, "%.3f");
+        ImGui::EndDisabled();
+
+        ImGui::Text("");
+        ImGui::Text("[Vignette]");
+        ImGui::Checkbox("Enable Vignette", &useVignette);
+        ImGui::BeginDisabled(!useVignette);
+        ImGui::SliderFloat("Vignette Intensity", &D3D::postprocessCBData.vignette_intensity, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Smoothness", &D3D::postprocessCBData.vignette_smoothness, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat2("Center", &D3D::postprocessCBData.vignetteCenter.x, 0.0f, 1.0f, "%.3f");
+        ImGui::ColorEdit3("Vignette Color", &D3D::postprocessCBData.vignetteColor.x);
+        ImGui::EndDisabled();
+
+        ImGui::Text("");
+        ImGui::Text("[Film Grain]");
+        ImGui::Checkbox("Enable FilmGrain", &useFilmGrain);
+        ImGui::BeginDisabled(!useFilmGrain);
+        ImGui::SliderFloat("FilmGrain Intensity", &D3D::postprocessCBData.grain_intensity, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Response", &D3D::postprocessCBData.grain_response, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("GrainScale", &D3D::postprocessCBData.grain_scale, 0.0f, 5.0f, "%.2f");
+        ImGui::EndDisabled();
+        ImGui::End();
+    }
+
+    // Screen Space Effect
+    {
+        ImGui::Begin("[Screen Effect]");
+        ImGui::Text("Enable");
+        ImGui::Checkbox("useRipple", &enableRipple);
+        ImGui::Checkbox("usePlasmaOverlay", &enablePlasmaOverlay);
+        ImGui::Checkbox("useFilmGrain", &enableFilmGrain);
+
+        ImGui::Text("Pattern / Noise");
+        ImGui::SliderFloat("Cell Scale", &D3D::screenFxCBData.cellScale, 0.1f, 10.0f);
+        ImGui::SliderFloat("Random Intensity", &D3D::screenFxCBData.randomIntensity, 1000.0f, 60000.0f);
+        ImGui::SliderFloat("Warp Strength", &D3D::screenFxCBData.warpStrength, 0.0f, 3.0f);
+        ImGui::SliderFloat("distortion Strength", &D3D::screenFxCBData.distortionStrength, 0.002f, 0.008f);
+
+        ImGui::Text("Plasma Overlay");
+        ImGui::SliderFloat("Plasma Intensity", &D3D::screenFxCBData.plasmaIntensity, 0.0f, 1.5f);
+
+        ImGui::Text("Film Grain");
+        ImGui::SliderFloat("Grain Intensity", &D3D::screenFxCBData.grainIntensity, 0.0f, 0.15f);
+        ImGui::End();
+    }
+
+    // G-Buffer
+    {
+        ImGui::Begin("[G-Buffer]");
+        const ImVec2 size(screenWidth / 10, screenHeight / 10);
+
+        if (ImGui::BeginTable("GBufferTable", 2,
+            ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit))
+        {
+            auto Cell = [&](const char* label, ID3D11ShaderResourceView* srv)
+                {
+                    ImGui::TableNextColumn();
+                    ImGui::TextUnformatted(label);
+
+                    if (srv)
+                        ImGui::Image((ImTextureID)srv, size);
+                    else
+                        ImGui::Dummy(size);
+                };
+
+            // Row 1
+            Cell("Position", D3D::positionSRV.Get());
+            Cell("Albedo", D3D::albedoSRV.Get());
+
+            // Row 2
+            Cell("Normal", D3D::normalSRV.Get());
+            Cell("Metal/Rough", D3D::metalRoughSRV.Get());
+
+            // Row 3
+            Cell("Emissive", D3D::emissiveSRV.Get());
+            Cell("Depth", D3D::depthSRV.Get());
+
+            ImGui::EndTable();
+        }
+        ImGui::End();
+    }
 
     // Memory
-    ImGui::Begin("[Memory Debugger]");
-    ImGui::Text("[T] Trim");
-    ImGui::Text("%ls", memory_debugger.GetMemoryUsageWstring().c_str());
-    ImGui::End();
-
+    {
+        ImGui::Begin("[Memory Debugger]");
+        ImGui::Text("[T] Trim");
+        ImGui::Text("%ls", memory_debugger.GetMemoryUsageWstring().c_str());
+        ImGui::End();
+    }
 
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
