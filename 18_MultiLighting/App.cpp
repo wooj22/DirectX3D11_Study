@@ -423,11 +423,11 @@ void App::LightingPass()
         }
         else if(light.type == LightType::Point)
         {
-            //D3D::deviceContext.Get()->Draw(3, 0);
+            D3D::deviceContext.Get()->Draw(3, 0);
         }
         else if (light.type == LightType::Spot)
         {
-            //D3D::deviceContext.Get()->Draw(3, 0);
+            D3D::deviceContext.Get()->Draw(3, 0);
         }
     }
 
@@ -804,24 +804,23 @@ void App::RenderGUI()
 
         // --- common props ---
         ImGui::ColorEdit3("Color", &cur.color.x);
-        ImGui::SliderFloat("Intensity", &cur.intensity, 0.0f, 10.0f);
+        ImGui::InputFloat("Intensity", &cur.intensity, 0.0f, 1000.0f, "%.2f");
 
         // --- per-type props ---
         if (cur.type == LightType::Directional)
         {
-            ImGui::SliderFloat3("Direction", &cur.direction.x, -1.0f, 1.0f, "%.2f");
-            // 보통 direction normalize는 셰이더/CPU 중 한 쪽에서 보장해주는 게 좋음
+            ImGui::InputFloat3("Direction", &cur.direction.x);
         }
         else if (cur.type == LightType::Point)
         {
-            ImGui::SliderFloat3("Position", &cur.position.x, -50.0f, 50.0f, "%.2f");
-            ImGui::SliderFloat("Range", &cur.range, 0.1f, 200.0f, "%.2f");
+            ImGui::SliderFloat3("Position", &cur.position.x, -500.0f, 500.0f, "%.2f");
+            ImGui::SliderFloat("Range", &cur.range, 0.1f, 500.0f, "%.2f");
         }
         else if (cur.type == LightType::Spot)
         {
-            ImGui::SliderFloat3("Position", &cur.position.x, -50.0f, 50.0f, "%.2f");
-            ImGui::SliderFloat3("Direction", &cur.direction.x, -1.0f, 1.0f, "%.2f");
-            ImGui::SliderFloat("Range", &cur.range, 0.1f, 200.0f, "%.2f");
+            ImGui::SliderFloat3("Position", &cur.position.x, -500.0f, 500.0f, "%.2f");
+            ImGui::InputFloat3("Direction", &cur.direction.x);
+            ImGui::SliderFloat("Range", &cur.range, 0.1f, 500.0f, "%.2f");
 
             // 각도를 degree로 쓰는 경우
             ImGui::SliderFloat("Inner Angle", &cur.innerAngle, 0.0f, 89.0f, "%.1f deg");
