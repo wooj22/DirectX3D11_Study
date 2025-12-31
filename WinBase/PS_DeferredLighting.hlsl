@@ -76,8 +76,8 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     // --- [ ShadowMapping ] ------------------------------------
     float shadowFactor = 1.0f;
     
-    // Directional Light에만 그림자 맵핑 적용
-    if (lightType == 0) 
+    // SumLight는 하나만 있음
+    if (isSunLight) 
     {
         float4 posShadow = mul(float4(worldPos, 1), shadowView);
         posShadow = mul(posShadow, shadowProjection);

@@ -93,6 +93,9 @@ struct alignas(16) TransformCB
 struct alignas(16) LightingCB
 {
     int     lightType;         // 0: Directional, 1: Point, 2: Spot
+    Vector3 padding;
+
+    UINT    isSunLight = 0;    // Directional Light가 태양광인지 여부 (그림자 처리)
     Vector3 lightColor;
 
     float   directIntensity;

@@ -78,13 +78,14 @@ bool App::OnInit()
         D3D::lightingCBData.useIBL = 1;
 
         Light directionalLight(LightType::Directional);
-        directionalLight.direction = { 0,-0.5, 1 };
+        directionalLight.direction = { -0.3f,-0.5, 1 };
         directionalLight.color = { 1.0f, 0.9608f, 0.8980f };
-        directionalLight.intensity = 2.0f;
+        directionalLight.intensity = 1.0f;
         lights.push_back(directionalLight);
-        directionalLight.intensity = 0.0f;
-        lights.push_back(directionalLight);     // debug용
-        lights.push_back(directionalLight);     // debug용
+
+        directionalLight.direction = { 0.3f,-0.5, 1 };
+        directionalLight.SetSunLight(true);
+        lights.push_back(directionalLight);
         
 
         Light pointLight(LightType::Point);
@@ -165,8 +166,17 @@ void App::OnUpdate()
     camera.GetViewMatrix(view);
 
     // light update
+    Vector3 lightDir;
+    for(auto & light : lights)
+    {
+        if (light.isSunLight)
+        {
+            lightDir = light.direction;     // sunlight는 하나밖에 없음
+            break;
+        }
+    }
     Vector3 sceneCenter = camera.position + camera.GetForward() * lookPointDist;
-    Vector3 lightPos = sceneCenter - lights[0].direction * shadowLightDist;
+    Vector3 lightPos = sceneCenter - lightDir * shadowLightDist;
     lightView = XMMatrixLookAtLH(lightPos, sceneCenter, Vector3::Up);
     lightProjection = XMMatrixOrthographicLH(shadowWidth, shadowHeight, shadowNear, shadowFar);
 
@@ -406,6 +416,7 @@ void App::LightingPass()
     for (Light& light : lights)
     {
         D3D::lightingCBData.lightType = static_cast<int>(light.type);
+        D3D::lightingCBData.isSunLight = light.isSunLight;
         D3D::lightingCBData.lightColor = light.color;
         D3D::lightingCBData.directIntensity = light.intensity;
         D3D::lightingCBData.lightDirection = light.direction;
@@ -809,7 +820,7 @@ void App::RenderGUI()
         // --- per-type props ---
         if (cur.type == LightType::Directional)
         {
-            ImGui::InputFloat3("Direction", &cur.direction.x);
+            ImGui::SliderFloat3("Direction", &cur.direction.x, -1.0f, 1.0f, "%.2f");
         }
         else if (cur.type == LightType::Point)
         {
@@ -819,7 +830,7 @@ void App::RenderGUI()
         else if (cur.type == LightType::Spot)
         {
             ImGui::SliderFloat3("Position", &cur.position.x, -500.0f, 500.0f, "%.2f");
-            ImGui::InputFloat3("Direction", &cur.direction.x);
+            ImGui::SliderFloat3("Direction", &cur.direction.x, -1.0f, 1.0f, "%.2f");
             ImGui::SliderFloat("Range", &cur.range, 0.1f, 500.0f, "%.2f");
 
             // 각도를 degree로 쓰는 경우

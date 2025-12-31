@@ -67,6 +67,9 @@ cbuffer TransformCB : register(b0)
 cbuffer LightingCB : register(b1)
 {
     int    lightType;
+    float3 padding;
+    
+    bool   isSunLight;
     float3 lightColor;
     
     float  directIntensity;
