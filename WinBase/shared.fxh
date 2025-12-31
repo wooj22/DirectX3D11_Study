@@ -66,14 +66,20 @@ cbuffer TransformCB : register(b0)
 
 cbuffer LightingCB : register(b1)
 {
-    float4 lightDirection;
-    float4 lightColor;
+    int    lightType;
+    float3 lightColor;
     
-    float directIntensity;   
-    float indirectIntensity; 
-   
-    bool useIBL;
-    int padding2;
+    float  directIntensity;
+    float3 lightDirection;
+    
+    float3 lightPos;
+    float  lightRange;
+    
+    float  innerAngle;
+    float  outerAngle;
+    
+    float  indirectIntensity;
+    bool   useIBL;
 }
 
 cbuffer MaterialCB : register(b2)

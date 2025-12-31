@@ -92,14 +92,20 @@ struct alignas(16) TransformCB
 // LightingCB -> b1
 struct alignas(16) LightingCB
 {
-    Vector4 lightDirection;
-    Vector4 lightColor;
+    int     lightType;         // 0: Directional, 1: Point, 2: Spot
+    Vector3 lightColor;
 
-    float directIntensity;   
-    float indirectIntensity; 
+    float   directIntensity;
+    Vector3 lightDirection;    
+    
+    Vector3 lightPos;         
+    float   lightRange;       
 
-    UINT useIBL = 0;
-    int padding;
+    float innerAngle;         
+    float outerAngle;         
+
+    float indirectIntensity;
+    UINT  useIBL = 0;
 };
 
 // MaterialCB -> b2

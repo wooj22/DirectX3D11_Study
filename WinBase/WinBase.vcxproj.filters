@@ -159,6 +159,9 @@
     <ClInclude Include="Structures.hpp">
       <Filter>02. Model</Filter>
     </ClInclude>
+    <ClInclude Include="Light.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApp.cpp">

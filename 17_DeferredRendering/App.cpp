@@ -74,7 +74,7 @@ bool App::OnInit()
 
     // light
     light.direction = { 0,-0.5,1 };
-    light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
+    light.color = { 1.0f, 0.9608f, 0.8980f};
     light.directIntensity = 2.0f;
     light.indirectIntensity = 0.2f;
 

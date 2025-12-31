@@ -73,10 +73,14 @@ bool App::OnInit()
     enemy->SetPosition({ 250,0,20 });
 
     // light
-    light.direction = { 0,-0.5,1 };
-    light.color = { 1.0f, 0.9608f, 0.8980f, 1.0f };
-    light.directIntensity = 2.0f;
-    light.indirectIntensity = 0.2f;
+    D3D::lightingCBData.indirectIntensity = 0.2f;
+    D3D::lightingCBData.useIBL = 1;
+
+    Light directionalLight(LightType::Directional);
+    directionalLight.direction = { 0,-0.5, 1 };
+    directionalLight.color = { 1.0f, 0.9608f, 0.8980f };
+    directionalLight.intensity = 2.0f;
+    lights.push_back(directionalLight);
 
     // view maxtrix
     camera.position = { 0, 80, -300 };
@@ -139,7 +143,7 @@ void App::OnUpdate()
 
     // light update
     Vector3 sceneCenter = camera.position + camera.GetForward() * lookPointDist;
-    Vector3 lightPos = sceneCenter - light.direction * shadowLightDist;
+    Vector3 lightPos = sceneCenter - lights[0].direction * shadowLightDist;
     lightView = XMMatrixLookAtLH(lightPos, sceneCenter, Vector3::Up);
     lightProjection = XMMatrixOrthographicLH(shadowWidth, shadowHeight, shadowNear, shadowFar);
 
@@ -207,10 +211,9 @@ void App::StageSetting()
     XMMATRIX invVP = XMMatrixInverse(nullptr, view * projection);
     D3D::transformCBData.inverseProjection = XMMatrixTranspose(invVP);
 
-    D3D::lightingCBData.lightDirection = light.direction;
-    D3D::lightingCBData.lightColor = light.color;
-    D3D::lightingCBData.directIntensity = light.directIntensity;
-    D3D::lightingCBData.indirectIntensity = light.indirectIntensity;
+    D3D::lightingCBData.lightDirection = lights[0].direction;
+    D3D::lightingCBData.lightColor = lights[0].color;
+    D3D::lightingCBData.directIntensity = lights[0].intensity;
     D3D::lightingCBData.useIBL = useIBL ? 1 : 0;
 
     D3D::materialCBData.useBaseColorOverride = useBaseColorOverride ? 1 : 0;
@@ -685,10 +688,10 @@ void App::RenderGUI()
     // Inspector
     ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
     ImGui::Text("[Light]");
-    ImGui::SliderFloat3("Direction", &light.direction.x, -1.0f, 1.0f, "%.2f");
-    ImGui::ColorEdit3("Color", &light.color.x);
-    ImGui::SliderFloat("Direct Intensity", &light.directIntensity, 0.0f, 10.0f);
-    ImGui::SliderFloat("Indirect Intensity", &light.indirectIntensity, 0.0f, 10.0f);
+    ImGui::SliderFloat3("Direction", &lights[0].direction.x, -1.0f, 1.0f, "%.2f");
+    ImGui::ColorEdit3("Color", &lights[0].color.x);
+    ImGui::SliderFloat("Direct Intensity", &lights[0].intensity, 0.0f, 10.0f);
+    ImGui::SliderFloat("Indirect Intensity", &D3D::lightingCBData.indirectIntensity, 0.0f, 10.0f);
 
     ImGui::Text("");
     ImGui::Text("[Material]");

@@ -136,6 +136,7 @@
     <ClInclude Include="DirectionalLight.hpp" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Light.hpp" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MemoryDebugger.h" />
     <ClInclude Include="ModelLoader.h" />

@@ -6,7 +6,7 @@
 #include "../WinBase/RigidModel.h"
 #include "../WinBase/SkeletalModel.h"
 #include "../WinBase/Material.h"
-#include "../WinBase/DirectionalLight.hpp"
+#include "../WinBase/Light.hpp"
 #include "../WinBase/SkyBox.h"
 #include "../WinBase/MemoryDebugger.h"
 #include "../WinBase/DebugDraw.h"
@@ -33,6 +33,8 @@ using namespace DirectX::SimpleMath;
 
 // 다중 라이트 처리 프로젝트입니다.
 // Directional, Point, Spot 라이트를 Deferred Rendering 방식으로 처리합니다.
+// 01~17 프로젝트는 DirectionalLight.hpp를 사용하여 하나의 DirectioanlLight를 처리했지만,
+// 이번 프로젝트에서는 Light.hpp를 사용하여 여러 라이트를 하나의 데이터타입으로 처리하고있습니다.
 /*
 * [ Render Pass ]
 *   1. ShadowMap Pass                  -> ShadowMap
@@ -83,7 +85,7 @@ private:
     ID3D11ShaderResourceView* IBL_BRDF_LUT4 = nullptr;
 
     // light
-    DirectionalLight light;
+    vector<Light> lights;
 
     // models
     vector<StaticModel*> spheres;
