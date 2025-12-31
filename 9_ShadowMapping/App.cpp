@@ -128,6 +128,7 @@ void App::OnRender()
     D3D::lightingCBData.lightColor = light.color;
     D3D::lightingCBData.indirectIntensity = light.indirectIntensity;
     D3D::lightingCBData.directIntensity = light.directIntensity;
+    D3D::lightingCBData.isSunLight = true;
 
     D3D::materialCBData.ambientFactor = ambientHighlight;
     D3D::materialCBData.diffuseFactor = diffuseHighlight;

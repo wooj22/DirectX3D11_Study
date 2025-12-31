@@ -139,6 +139,7 @@ void App::OnRender()
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;
     D3D::lightingCBData.directIntensity = light.directIntensity;
+    D3D::lightingCBData.isSunLight = true;
 
     D3D::materialCBData.useBaseColorOverride = useBaseColorOverride ? 1 : 0;
     D3D::materialCBData.useEmissiveOverride = useEmissiveOverride ? 1 : 0;

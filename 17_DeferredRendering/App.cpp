@@ -212,6 +212,7 @@ void App::StageSetting()
     D3D::lightingCBData.directIntensity = light.directIntensity;
     D3D::lightingCBData.indirectIntensity = light.indirectIntensity;
     D3D::lightingCBData.useIBL = useIBL ? 1 : 0;
+    D3D::lightingCBData.isSunLight = true;
 
     D3D::materialCBData.useBaseColorOverride = useBaseColorOverride ? 1 : 0;
     D3D::materialCBData.useEmissiveOverride = useEmissiveOverride ? 1 : 0;
