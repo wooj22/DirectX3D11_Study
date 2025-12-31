@@ -99,6 +99,7 @@ public:
 	static ComPtr<ID3D11SamplerState>	     linearSamplerState;       // linear    
 	static ComPtr<ID3D11SamplerState>	     linearClamSamplerState;   // linear + clamp    
 	static ComPtr<ID3D11BlendState>          alphaBlendState;          // alpha
+    static ComPtr<ID3D11BlendState>          additiveBlendState;       // additive (multiple light)
 
     // Vertex Shader
     static ComPtr<ID3D11VertexShader> VS_BaseLit_Static;

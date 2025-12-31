@@ -5,7 +5,7 @@
 #include <Directxtk/DDSTextureLoader.h>
 #include "../WinBase/Camera.h"
 #include "../WinBase/AssetManager.h"
-
+#include <iostream>
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -80,6 +80,7 @@ bool App::OnInit()
     directionalLight.direction = { 0,-0.5, 1 };
     directionalLight.color = { 1.0f, 0.9608f, 0.8980f };
     directionalLight.intensity = 2.0f;
+    lights.push_back(directionalLight);
     lights.push_back(directionalLight);
 
     // view maxtrix
@@ -211,11 +212,6 @@ void App::StageSetting()
     XMMATRIX invVP = XMMatrixInverse(nullptr, view * projection);
     D3D::transformCBData.inverseProjection = XMMatrixTranspose(invVP);
 
-    D3D::lightingCBData.lightDirection = lights[0].direction;
-    D3D::lightingCBData.lightColor = lights[0].color;
-    D3D::lightingCBData.directIntensity = lights[0].intensity;
-    D3D::lightingCBData.useIBL = useIBL ? 1 : 0;
-
     D3D::materialCBData.useBaseColorOverride = useBaseColorOverride ? 1 : 0;
     D3D::materialCBData.useEmissiveOverride = useEmissiveOverride ? 1 : 0;
     D3D::materialCBData.useMetallicOverride = useMetallicOverride ? 1 : 0;
@@ -240,7 +236,6 @@ void App::StageSetting()
     D3D::screenFxCBData.enablePlasmaOverlay = enablePlasmaOverlay == 1 ? 1 : 0;
     D3D::screenFxCBData.enableFilmGrain = enableFilmGrain == 1 ? 1 : 0;
 
-    D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::postprocessBuffer.Get(), 0, nullptr, &D3D::postprocessCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::screenFxBuffer.Get(), 0, nullptr, &D3D::screenFxCBData, 0, 0);
@@ -341,6 +336,9 @@ void App::LightingPass()
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D::deviceContext->IASetInputLayout(nullptr);
 
+    // Blend State
+    D3D::deviceContext->OMSetBlendState(D3D::additiveBlendState.Get(), nullptr, 0xffffffff);
+
     // Shaders
     D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_DeferredLighting.Get(), NULL, 0);
@@ -382,8 +380,34 @@ void App::LightingPass()
     D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
     D3D::deviceContext->PSSetSamplers(2, 1, D3D::linearClamSamplerState.GetAddressOf());
 
-    // Draw Call
-    D3D::deviceContext.Get()->Draw(3, 0);
+    // Light CB update & Draw Call
+    for (Light& light : lights)
+    {
+        D3D::lightingCBData.lightType = static_cast<int>(light.type);
+        D3D::lightingCBData.lightColor = light.color;
+        D3D::lightingCBData.directIntensity = light.intensity;
+        D3D::lightingCBData.lightDirection = light.direction;
+        D3D::lightingCBData.lightPos = light.position;
+        D3D::lightingCBData.lightRange = light.range;
+        D3D::lightingCBData.innerAngle = light.innerAngle;
+        D3D::lightingCBData.outerAngle = light.outerAngle;
+        D3D::lightingCBData.useIBL = useIBL ? 1 : 0;
+        D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
+
+        // Light Volume ·»´õ¸µ (TODO)
+        if(light.type == LightType::Point)
+        {
+            D3D::deviceContext.Get()->Draw(3, 0);
+        }
+        else if (light.type == LightType::Spot)
+        {
+            D3D::deviceContext.Get()->Draw(3, 0);
+        }
+        else if (light.type == LightType::Directional)
+        {
+            D3D::deviceContext.Get()->Draw(3, 0);
+        }
+    }
 
     // RTV - SRV hazard ¹æÁö
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
@@ -396,6 +420,9 @@ void App::LightingPass()
     D3D::deviceContext->PSSetShaderResources(17, 1, nullSRV);  // metalRough
     D3D::deviceContext->PSSetShaderResources(18, 1, nullSRV);  // emissive
     D3D::deviceContext->PSSetShaderResources(19, 1, nullSRV);  // depth
+
+    // Blend State reset
+    D3D::deviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 }
 
 
@@ -685,15 +712,17 @@ void App::RenderGUI()
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    // Inspector
-    ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
-    ImGui::Text("[Light]");
+    // Light
+    ImGui::Begin("[Light]");
+    ImGui::Text("Current Light Count : %zu", lights.size());
     ImGui::SliderFloat3("Direction", &lights[0].direction.x, -1.0f, 1.0f, "%.2f");
     ImGui::ColorEdit3("Color", &lights[0].color.x);
     ImGui::SliderFloat("Direct Intensity", &lights[0].intensity, 0.0f, 10.0f);
     ImGui::SliderFloat("Indirect Intensity", &D3D::lightingCBData.indirectIntensity, 0.0f, 10.0f);
+    ImGui::End();
 
-    ImGui::Text("");
+    // Model Inspector
+    ImGui::Begin("Inspertor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
     ImGui::Text("[Material]");
     ImGui::SliderFloat("Metallic Factor", &D3D::materialCBData.metallicFactor, 0.0f, 1.0f);
     ImGui::SliderFloat("Roughness Factor", &D3D::materialCBData.roughnessFactor, 0.0f, 1.0f);

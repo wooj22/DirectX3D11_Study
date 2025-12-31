@@ -75,6 +75,7 @@ ComPtr<ID3D11RasterizerState>     D3D::cullfrontRS = nullptr;
 ComPtr<ID3D11SamplerState>        D3D::linearSamplerState = nullptr;
 ComPtr<ID3D11SamplerState>        D3D::linearClamSamplerState = nullptr;
 ComPtr<ID3D11BlendState>          D3D::alphaBlendState = nullptr;
+ComPtr<ID3D11BlendState>          D3D::additiveBlendState = nullptr;
                                   
 ComPtr<ID3D11VertexShader>        D3D::VS_BaseLit_Static = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::VS_BaseLit_Skinned = nullptr;
@@ -299,6 +300,20 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
         blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
         D3D::device->CreateBlendState(&blendDesc, alphaBlendState.GetAddressOf());
+    }
+
+    // create blend state
+    {
+        D3D11_BLEND_DESC blendDesc = {};
+        blendDesc.RenderTarget[0].BlendEnable = TRUE;
+        blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+        blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+        blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+        blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+        blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+        blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+        blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+        D3D::device->CreateBlendState(&blendDesc, additiveBlendState.GetAddressOf());
     }
 
     if (!CreateHDRResource(screenWidth, screenHeight)) return false;
