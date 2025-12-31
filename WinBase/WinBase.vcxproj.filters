@@ -283,6 +283,9 @@
     <FxCompile Include="PS_Gbuffer.hlsl">
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
+    <FxCompile Include="VS_LightVolume.hlsl">
+      <Filter>98. Shaders\VertexShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shared.fxh">

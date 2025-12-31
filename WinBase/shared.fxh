@@ -261,7 +261,7 @@ struct VS_Weight_INPUT
     float4 boneWeights : BONE_WEIGHTS;
 };
 
-struct VS_Skybox_INPUT
+struct VS_Position_INPUT
 {
     float3 position : POSITION;
 };
@@ -295,6 +295,11 @@ struct PS_FullScreen_Input
 {
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
+};
+
+struct PS_LightVolume_INPUT
+{
+    float4 position : SV_POSITION;
 };
 
 // ------------------------------------

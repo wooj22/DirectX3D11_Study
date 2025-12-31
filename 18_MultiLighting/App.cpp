@@ -99,13 +99,13 @@ bool App::OnInit()
         }
 
         Light spotLight(LightType::Spot);
-        spotLight.position = { -650, 50, 0 };
+        spotLight.position = { -650, 100, 0 };
         spotLight.direction = { 0,-1, 0 };
         spotLight.color = { 0.0f, 0.0f, 1.0f };
         spotLight.intensity = 1000.0f;
         spotLight.range = 1000.0f;
-        spotLight.innerAngle = 30.0f;
-        spotLight.outerAngle = 40.0f;
+        spotLight.innerAngle = 10.0f;
+        spotLight.outerAngle = 20.0f;
         for (int i = 0; i < 3; i++)
         {
             spotLight.position.x += 300;
@@ -439,17 +439,20 @@ void App::LightingPass()
         D3D::lightingCBData.useIBL = useIBL ? 1 : 0;
         D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
 
-        // Light Volume ·»´õ¸µ (TODO)
+        // Light Volume ·»´õ¸µ
         if (light.type == LightType::Directional)
         {
+            // Full Screen Quad
             D3D::deviceContext.Get()->Draw(3, 0);
         }
         else if(light.type == LightType::Point)
         {
+            // Sphere
             D3D::deviceContext.Get()->Draw(3, 0);
         }
         else if (light.type == LightType::Spot)
         {
+            // Cone
             D3D::deviceContext.Get()->Draw(3, 0);
         }
     }

@@ -87,7 +87,7 @@ void SkyBox::Render(Matrix& view, Matrix& projection)
     // 렌더 파이프라인 바인딩
     D3D::deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
     D3D::deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Skybox.Get());
+    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Position.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_Skybox.Get(), nullptr, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_Skybox.Get(), nullptr, 0);
     D3D::deviceContext->PSSetShaderResources(4, 1, &skyboxTRV);

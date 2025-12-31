@@ -84,6 +84,7 @@ ComPtr<ID3D11VertexShader>        D3D::VS_Skinned_OutLine = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::VS_ShadowDepth_Skinned = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::VS_ShadowDepth_Static = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::VS_FullScreen = nullptr;
+ComPtr<ID3D11VertexShader>        D3D::VS_LightVolume = nullptr;
 
 ComPtr<ID3D11PixelShader>         D3D::PS_BlinnPhong = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::PS_PBR = nullptr;
@@ -100,7 +101,7 @@ ComPtr<ID3D11PixelShader>         D3D::PS_DeferredLighting = nullptr;
                      
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_Vertex = nullptr;
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_BoneWeightVertex = nullptr;
-ComPtr<ID3D11InputLayout>         D3D::inputLayout_Skybox = nullptr;
+ComPtr<ID3D11InputLayout>         D3D::inputLayout_Position = nullptr;
 
 ComPtr<ID3D11Buffer>              D3D::transformBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::lightingBuffer = nullptr;
@@ -579,7 +580,7 @@ bool D3D::CreateShader()
         ID3D10Blob* vertexShaderBuffer = nullptr;
         HR_T(CompileShaderFromFile(L"../WinBase/VS_Skybox.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
         HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
-            vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_Skybox));
+            vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_Position));
 
         // VS
         device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &VS_Skybox);
@@ -669,6 +670,16 @@ bool D3D::CreateShader()
         HR_T(CompileShaderFromFile(L"../WinBase/VS_Fullscreen.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
         HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
             vertexShaderBuffer->GetBufferSize(), NULL, &VS_FullScreen));
+        SAFE_RELEASE(vertexShaderBuffer);
+    }
+
+    //---------------------------
+    // LightVolume_VS
+    {
+        ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_LightVolume.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
+            vertexShaderBuffer->GetBufferSize(), NULL, &VS_LightVolume));
         SAFE_RELEASE(vertexShaderBuffer);
     }
 
