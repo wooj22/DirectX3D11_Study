@@ -76,7 +76,7 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     // --- [ ShadowMapping ] ------------------------------------
     float shadowFactor = 1.0f;
     
-    // SumLight는 하나만 있음
+    // 하나의 SunLight에 대해서만 Shadow
     if (isSunLight) 
     {
         float4 posShadow = mul(float4(worldPos, 1), shadowView);
@@ -115,7 +115,6 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     
     // --- [Vector / Attenuation]  ------------------------------------------
     float3 L = 0;
-    float3 V = normalize(cameraPos - worldPos);
     float attenuation = 1.0f;
     float spotFactor = 1.0f;
     
@@ -123,77 +122,93 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     if (lightType == 0) 
     {
         L = normalize(-lightDirection);
-        attenuation = 1.0f;
-        spotFactor = 1.0f;
     }
     // Point Light
     else if (lightType == 1) 
     {
-        float3 toLight = lightPos - worldPos; // surface -> light
-        float dist = length(toLight);
+        // defualt
+        attenuation = 0.0f;
+        L = 0.0f;
+        
+        // values
+        float3 toLight = lightPos - worldPos;
+        float distSq = dot(toLight, toLight);
+        float rangeSq = lightRange * lightRange;   
 
-        // range 밖은 영향 0
-        if (dist >= lightRange || lightRange <= 0.0001f)
+        // 범위
+        if (lightRange > 1e-4f && distSq < rangeSq)
         {
-            attenuation = 0.0f;
-            spotFactor = 0.0f;
+            float dist = sqrt(distSq);
+            L = toLight / max(dist, 1e-4f);
+
+            // Range Falloff (fade)
+            float x = distSq / max(rangeSq, 1e-4f);
+            float smooth = saturate(1.0f - x);
+            smooth *= smooth;
+
+            // 물리적 거리 감쇠
+            float invSq = 1.0f / max(distSq, 1e-4f);
+
+            // 최종 감쇠
+            attenuation = smooth * invSq;
         }
-
-        L = toLight / max(dist, 1e-4f);
-
-        // 감쇠
-        float rangeAtt = saturate(1.0f - dist / lightRange);
-        rangeAtt *= rangeAtt;
-        float invSq = 1.0f / max(dist * dist, 1e-4f);
-        attenuation = rangeAtt * invSq;
-
-        spotFactor = 1.0f;
     }
     // Spot Light
     else if(lightType == 2)
     {
-        float3 toLight = lightPos - worldPos; // surface -> light
-        float dist = length(toLight);
+        // defualt
+        attenuation = 0.0f;
+        spotFactor  = 0.0f;
+        L           = 0.0f;
+        
+        // values
+        float3 toLight = lightPos - worldPos;
+        float distSq = dot(toLight, toLight);
+        float range = lightRange;
+        float rangeSq = range * range;
 
-        if (dist >= lightRange || lightRange <= 0.0001f)
-            return float4(0, 0, 0, 0);
-
-        L = toLight / max(dist, 1e-4f);
-
-        // 거리 감쇠
-        float rangeAtt = saturate(1.0f - dist / lightRange);
-        rangeAtt *= rangeAtt;
-        float invSq = 1.0f / max(dist * dist, 1e-4f);
-        attenuation = rangeAtt * invSq;
-
-        // 스팟 콘 감쇠 (inner~outer 부드럽게)
-        // lightDirection이 "빛이 나가는 방향"이라고 가정하면:
-        // spotlight forward = normalize(lightDirection)
-        float3 spotDir = normalize(lightDirection);
-
-        // 라이트 위치에서 픽셀을 바라보는 방향(light -> surface)
-        float3 lightToSurfaceDir = normalize(worldPos - lightPos);
-
-        // spotDir(라이트 forward) 와 lightToSurfaceDir의 각도 코사인
-        float cosTheta = dot(spotDir, lightToSurfaceDir);
-
-        // innerAngle/outerAngle이 degree라면 radians() 필요
-        float cosInner = cos(radians(innerAngle));
-        float cosOuter = cos(radians(outerAngle));
-
-        // outer가 inner보다 커야 정상(외각이 더 넓음) => cosOuter <= cosInner
-        // smoothstep(x0,x1,v): x0~x1 구간을 0~1로 부드럽게
-        spotFactor = smoothstep(cosOuter, cosInner, cosTheta);
-
-        // 콘 밖이면 영향 0
-        if (spotFactor <= 0.0001f)
+        // 범위
+        if (range > 1e-4f && distSq < rangeSq)
         {
-            attenuation = 0.0f;
-            spotFactor = 0.0f;
+            float dist = sqrt(distSq);
+            L = toLight / max(dist, 1e-4f);
+            
+            // 거리 감쇠
+            float x = distSq / max(rangeSq, 1e-4f); 
+            float smoothRange = saturate(1.0f - x);
+            smoothRange *= smoothRange;
+
+            float invSq = 1.0f / max(distSq, 1e-4f);
+            float rangeAttenuation = smoothRange * invSq;
+            
+            // Spot Cone 감쇠
+            float3 spotDir = normalize(lightDirection);
+            float cosTheta = dot(spotDir, -L);
+            float cosInner = cos(radians(innerAngle));  // input은 degree 기준
+            float cosOuter = cos(radians(outerAngle));
+
+            // 뒤집힘 방지
+            float lo = min(cosOuter, cosInner);
+            float hi = max(cosOuter, cosInner);
+
+            float cone = smoothstep(lo, hi, cosTheta);
+            cone = pow(cone, 4.0f);
+            
+            // 최종
+            spotFactor = cone;
+            float inv = 1.0f / max(dist, 1e-4f); // 1/d
+            attenuation = smoothRange * inv * cone;
+            
+             // 콘 밖이면 사실상 0
+            if (spotFactor <= 1e-4f)
+            {
+                attenuation = 0.0f;
+                spotFactor = 0.0f;
+            }
         }
     }
-    
-    // half vector, dot products
+
+    float3 V = normalize(cameraPos - worldPos);
     float3 H = normalize(L + V);
     float NdotL = max(dot(N, L), 0.0f);
     float NdotV = max(dot(N, V), 0.0f);

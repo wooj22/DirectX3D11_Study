@@ -74,36 +74,43 @@ bool App::OnInit()
 
     // light
     {
-        D3D::lightingCBData.indirectIntensity = 0.2f;
+        D3D::lightingCBData.indirectIntensity = 0.005f;
         D3D::lightingCBData.useIBL = 1;
 
         Light directionalLight(LightType::Directional);
         directionalLight.direction = { -0.3f,-0.5, 1 };
         directionalLight.color = { 1.0f, 0.9608f, 0.8980f };
-        directionalLight.intensity = 1.0f;
+        directionalLight.intensity = 0.1f;
         lights.push_back(directionalLight);
 
         directionalLight.direction = { 0.3f,-0.5, 1 };
         directionalLight.SetSunLight(true);
         lights.push_back(directionalLight);
-        
 
         Light pointLight(LightType::Point);
-        pointLight.position = { 0,0,0 };
+        pointLight.position = { -500,10,0 };
         pointLight.color = { 1.0f, 0.0f, 0.0f };
-        pointLight.intensity = 500.0f;
+        pointLight.intensity = 1000.0f;
         pointLight.range = 500.0f;
-        lights.push_back(pointLight);
+        for (int i = 0; i < 3; i++)
+        {
+            pointLight.position.x += 300;
+            lights.push_back(pointLight);
+        }
 
         Light spotLight(LightType::Spot);
-        spotLight.position = { 0,50,-100 };
-        spotLight.direction = { 0,-0.5, 1 };
+        spotLight.position = { -650, 50, 0 };
+        spotLight.direction = { 0,-1, 0 };
         spotLight.color = { 0.0f, 0.0f, 1.0f };
-        spotLight.intensity = 800.0f;
-        spotLight.range = 800.0f;
-        spotLight.innerAngle = 15.0f;
-        spotLight.outerAngle = 30.0f;
-        lights.push_back(spotLight);
+        spotLight.intensity = 1000.0f;
+        spotLight.range = 1000.0f;
+        spotLight.innerAngle = 30.0f;
+        spotLight.outerAngle = 40.0f;
+        for (int i = 0; i < 3; i++)
+        {
+            spotLight.position.x += 300;
+            lights.push_back(spotLight);
+        }
     }
 
     // view maxtrix
@@ -115,6 +122,11 @@ bool App::OnInit()
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 
     // debug settup
+    useBaseColorOverride = 1;
+    useMetallicOverride = 1;
+    useRoughnessOverride = 1;
+    D3D::materialCBData.metallicOverride = 0.0f;
+    D3D::materialCBData.roughnessOverride = 1.0f;
     D3D::lightingCBData.useIBL = 1;
     D3D::postprocessCBData.isHDR = 1;
     D3D::postprocessCBData.contrast = 1.0;
@@ -833,11 +845,11 @@ void App::RenderGUI()
             ImGui::SliderFloat3("Direction", &cur.direction.x, -1.0f, 1.0f, "%.2f");
             ImGui::SliderFloat("Range", &cur.range, 0.1f, 500.0f, "%.2f");
 
-            // 각도를 degree로 쓰는 경우
+            // degree
             ImGui::SliderFloat("Inner Angle", &cur.innerAngle, 0.0f, 89.0f, "%.1f deg");
             ImGui::SliderFloat("Outer Angle", &cur.outerAngle, 0.0f, 89.0f, "%.1f deg");
 
-            // 안전장치: inner <= outer
+            // inner <= outer
             if (cur.innerAngle > cur.outerAngle)
                 cur.innerAngle = cur.outerAngle;
         }
