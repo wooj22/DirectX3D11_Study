@@ -237,7 +237,7 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     
     // --- [Indirect Light]  ----------------------------------
     float3 IndirectColor = { 0, 0, 0 };
-    if (useIBL)
+    if (useIBL && isSunLight)
     {
         // Diffuse Term --------------------------
         // Irradiance - diffuse BRDF ÀûºÐ°ª
