@@ -62,6 +62,8 @@ cbuffer TransformCB : register(b0)
     int padding1;
     
     matrix inverseProjection;
+    float2 screenSize;
+    float2 padding2;
 }
 
 cbuffer LightingCB : register(b1)

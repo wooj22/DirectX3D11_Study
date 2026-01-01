@@ -84,9 +84,11 @@ struct alignas(16) TransformCB
     Matrix shadowProjection; // ±¤¿ø projection
 
     Vector3 cameraPos;
-    int padding;
+    int padding1;
 
     Matrix inverseProjection;   // Deferred È­¸é ÁÂÇ¥ -> view ÁÂÇ¥ º¯È¯¿ë
+    Vector2 screenSize;
+    Vector2 padding2;
 };
 
 // LightingCB -> b1
