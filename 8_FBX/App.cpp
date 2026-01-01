@@ -121,7 +121,7 @@ void App::OnRender()
 
 	// 투명 모델
 	// 만약 모델이 여러개 있다면 Back to Front 순서 렌더 (카메라에서 먼 것부터 렌더링되도록 정렬하여 렌더링)
-    D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 0);
+    D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
     D3D::deviceContext->IASetInputLayout(inputLayout);
     D3D::deviceContext->VSSetShader(VS_Basic, NULL, 0);
 

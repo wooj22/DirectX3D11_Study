@@ -91,13 +91,21 @@ public:
     static std::vector<ComPtr<ID3D11RenderTargetView>> accumARTVs;
     static std::vector<ComPtr<ID3D11RenderTargetView>> accumBRTVs;
 
-    // ¿É¼Ç
-    static ComPtr<ID3D11DepthStencilState>   defualtDSS;               // test + write
-	static ComPtr<ID3D11DepthStencilState>   wirteoffDSS;              // write off
-    static ComPtr<ID3D11DepthStencilState>   disableDSS;               // test + write off
+    // DSS
+    static ComPtr<ID3D11DepthStencilState>   defualtDSS;                 // depth test on + write on
+	static ComPtr<ID3D11DepthStencilState>   depthTestOnlyDSS;           // depth test only
+    static ComPtr<ID3D11DepthStencilState>   depthTestStencilWriteDSS;   // depth test only / stencil write on (stencil test ALWAYS)
+    static ComPtr<ID3D11DepthStencilState>   stencilTestOnlyDSS;         // stencil test only
+    static ComPtr<ID3D11DepthStencilState>   disableDSS;                 // all disable
+
+    // RS
     static ComPtr<ID3D11RasterizerState>     cullfrontRS;              // cullmode = front
+
+    // Sampler State
 	static ComPtr<ID3D11SamplerState>	     linearSamplerState;       // linear    
 	static ComPtr<ID3D11SamplerState>	     linearClamSamplerState;   // linear + clamp    
+
+    // Blend State
 	static ComPtr<ID3D11BlendState>          alphaBlendState;          // alpha
     static ComPtr<ID3D11BlendState>          additiveBlendState;       // additive (multiple light)
 
@@ -163,6 +171,7 @@ private:
     static bool CreateShadowMapResource();
     static bool CreateDeferredResource(int screenWidth, int screenHeight);
     static bool CreateBloomResource(int screenWidth, int screenHeight);
+    static bool CresateStates();
     static bool CreateShader();
     static bool CreateConstantBuffer();
 

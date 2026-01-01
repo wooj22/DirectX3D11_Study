@@ -175,7 +175,7 @@ void App::OnRender()
     boxHuman->Render();
     plane->Render();
 
-    D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 0);
+    D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
     tree->Render();
 
     // 다음 shadowpass에서 SRV를 DSV로 다시 쓰기 위해 연결 해제

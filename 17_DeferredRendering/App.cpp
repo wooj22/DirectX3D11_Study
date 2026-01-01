@@ -402,7 +402,7 @@ void App::SkyBoxRender()
     // RTV, DSV
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
     D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
-    D3D::deviceContext->OMSetDepthStencilState(D3D::wirteoffDSS.Get(), 0);
+    D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
 
     // Skybox Render  --------------------------------
     switch (currentSkybox)
