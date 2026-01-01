@@ -34,9 +34,10 @@ public:
 	static ComPtr<ID3D11DeviceContext>       deviceContext;
 	static ComPtr<IDXGISwapChain>		     swapChain;
     static ComPtr<ID3D11Texture2D>           backbufferTex;
-	static ComPtr<ID3D11RenderTargetView>    renderTargetView;      // LDR (final)
+	static ComPtr<ID3D11RenderTargetView>    renderTargetView;          // LDR (final)
     static ComPtr<ID3D11Texture2D>           depthStencilTexture;
 	static ComPtr<ID3D11DepthStencilView>    depthStencilView;
+    static ComPtr<ID3D11DepthStencilView>    depthStencilReadOnlyView;  // 다중라이팅 안하면 필수 아님
 
     // viewport
     static D3D11_VIEWPORT viewport_screen;

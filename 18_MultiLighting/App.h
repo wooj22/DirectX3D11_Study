@@ -6,7 +6,7 @@
 #include "../WinBase/RigidModel.h"
 #include "../WinBase/SkeletalModel.h"
 #include "../WinBase/Material.h"
-#include "../WinBase/Light.hpp"
+//#include "../WinBase/Light.hpp"
 #include "../WinBase/LightVolumeMesh.h"
 #include "../WinBase/SkyBox.h"
 #include "../WinBase/MemoryDebugger.h"

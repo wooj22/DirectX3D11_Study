@@ -75,7 +75,7 @@ bool App::OnInit()
 
     // light
     {
-        D3D::lightingCBData.indirectIntensity = 0.005f;
+        D3D::lightingCBData.indirectIntensity = 0.2f;
         D3D::lightingCBData.useIBL = 1;
 
         Light directionalLight(LightType::Directional);
@@ -92,7 +92,7 @@ bool App::OnInit()
         pointLight.position = { -500,10,0 };
         pointLight.color = { 1.0f, 0.0f, 0.0f };
         pointLight.intensity = 1000.0f;
-        pointLight.range = 500.0f;
+        pointLight.range = 50.0f;
         for (int i = 0; i < 3; i++)
         {
             pointLight.position.x += 300;
@@ -104,7 +104,7 @@ bool App::OnInit()
         spotLight.direction = { 0,-1, 0 };
         spotLight.color = { 0.0f, 0.0f, 1.0f };
         spotLight.intensity = 1000.0f;
-        spotLight.range = 1000.0f;
+        spotLight.range = 200.0f;
         spotLight.innerAngle = 10.0f;
         spotLight.outerAngle = 20.0f;
         for (int i = 0; i < 3; i++)
@@ -261,6 +261,7 @@ void App::StageSetting()
     D3D::transformCBData.cameraPos = camera.position;
     XMMATRIX invVP = XMMatrixInverse(nullptr, view * projection);
     D3D::transformCBData.inverseProjection = XMMatrixTranspose(invVP);
+    D3D::transformCBData.screenSize = { (float)screenWidth,(float)screenHeight };
 
     D3D::materialCBData.useBaseColorOverride = useBaseColorOverride ? 1 : 0;
     D3D::materialCBData.useEmissiveOverride = useEmissiveOverride ? 1 : 0;
@@ -395,12 +396,12 @@ void App::StencilPass()
     {
         if (light.type == LightType::Point)
         {
-            sphereVolume.UpdateWolrd(light.position, light.range);
+            sphereVolume.UpdateWolrd(light);
             sphereVolume.Draw();
         }
         else if (light.type == LightType::Spot)
         {
-            coneVolume.UpdateWolrd(light.position, light.range);
+            coneVolume.UpdateWolrd(light);
             coneVolume.Draw();
         }
     }
@@ -417,7 +418,7 @@ void App::LightingPass()
 {
     // RTV, DSV
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilReadOnlyView.Get());
     D3D::deviceContext->ClearRenderTargetView(D3D::sceneHDRRTV.Get(), clearColor);
     
     // Blend State
@@ -498,18 +499,18 @@ void App::LightingPass()
         {
             // Stencil Test on
             D3D::deviceContext->OMSetDepthStencilState(D3D::stencilTestOnlyDSS.Get(), stencilRef);
-            
+
             // Light Volume
             if (light.type == LightType::Point)
             {
                 // Sphere
-                sphereVolume.UpdateWolrd(light.position, light.range);
+                sphereVolume.UpdateWolrd(light);
                 sphereVolume.Draw();
             }
             else if (light.type == LightType::Spot)
             {
                 // Cone
-                coneVolume.UpdateWolrd(light.position, light.range);
+                coneVolume.UpdateWolrd(light);
                 coneVolume.Draw();
             }
         }

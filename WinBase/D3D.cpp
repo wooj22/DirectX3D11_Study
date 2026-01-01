@@ -19,6 +19,7 @@ ComPtr<ID3D11Texture2D>           D3D::backbufferTex = nullptr;
 ComPtr<ID3D11RenderTargetView>    D3D::renderTargetView = nullptr;
 ComPtr<ID3D11Texture2D>           D3D::depthStencilTexture = nullptr;
 ComPtr<ID3D11DepthStencilView>    D3D::depthStencilView = nullptr;
+ComPtr<ID3D11DepthStencilView>    D3D::depthStencilReadOnlyView = nullptr;
 
 D3D11_VIEWPORT D3D::viewport_screen = {};
 D3D11_VIEWPORT D3D::viewport_shadowMap = {};
@@ -175,6 +176,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 
 	// create depth stencil view 
     {
+        // texture
         D3D11_TEXTURE2D_DESC descDepth = {};
         descDepth.Width = screenWidth;
         descDepth.Height = screenHeight;
@@ -190,11 +192,18 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 
         HR_T(device->CreateTexture2D(&descDepth, nullptr, depthStencilTexture.GetAddressOf()));
 
+        // write DSV
         D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
         descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // D24 : Depth, S8 : Stencil
         descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
         descDSV.Texture2D.MipSlice = 0;
+        descDSV.Flags = 0;
         HR_T(device->CreateDepthStencilView(depthStencilTexture.Get(), &descDSV, depthStencilView.GetAddressOf()));
+    
+        // read only DSV
+        D3D11_DEPTH_STENCIL_VIEW_DESC dsvRODesc = descDSV;
+        dsvRODesc.Flags = D3D11_DSV_READ_ONLY_DEPTH | D3D11_DSV_READ_ONLY_STENCIL;
+        HR_T(device->CreateDepthStencilView(depthStencilTexture.Get(), &dsvRODesc, depthStencilReadOnlyView.GetAddressOf()));
     }
 
     // depth stencil SRV
