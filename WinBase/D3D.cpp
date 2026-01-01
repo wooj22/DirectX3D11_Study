@@ -180,7 +180,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         descDepth.Height = screenHeight;
         descDepth.MipLevels = 1;
         descDepth.ArraySize = 1;
-        descDepth.Format = DXGI_FORMAT_R24G8_TYPELESS;
+        descDepth.Format = DXGI_FORMAT_R24G8_TYPELESS;     
         descDepth.SampleDesc.Count = 1;
         descDepth.SampleDesc.Quality = 0;
         descDepth.Usage = D3D11_USAGE_DEFAULT;
@@ -191,7 +191,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         HR_T(device->CreateTexture2D(&descDepth, nullptr, depthStencilTexture.GetAddressOf()));
 
         D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
-        descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // D24 : Depth, S8 : Stencil
         descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
         descDSV.Texture2D.MipSlice = 0;
         HR_T(device->CreateDepthStencilView(depthStencilTexture.Get(), &descDSV, depthStencilView.GetAddressOf()));

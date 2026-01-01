@@ -215,6 +215,7 @@ void App::OnRender()
     // Render
     ShadowMapPass();        // Shadow Map
     GeometryPass();         // G-Buffer
+    StencilPass();          // Light Volume Stencil
     LightingPass();         // Shadow + Lighting
     SkyBoxRender();         // Skybox
     BloomProcess();         // Bloom Prefilter -> DownSample -> UpSample
@@ -371,25 +372,61 @@ void App::GeometryPass()
     D3D::deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
+// [ Stencil Pass ]
+//  Lighting Volume을 그리며 Stencil Buffer에 라이팅 연산 영역 마크
+//  라이팅 연산 영역이란 ? : 라이팅 볼륨 안의 픽셀중 G-Buffer의 깊이값보다 가까운 픽셀
+//  RTV는 바인딩 하지 않고 Stecnil Buffer만 사용한다.
+void App::StencilPass()
+{
+    // RTV, DSV
+    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
+    D3D::deviceContext->OMSetRenderTargets(0, nullptr, D3D::depthStencilView.Get());
+    D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(),
+        D3D11_CLEAR_STENCIL, 1.0f, 0);  // Stencil만 0으로 초기화
+    const UINT stencilRef = 1;          // Stencil Reference Value
+    D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestStencilWriteDSS.Get(), stencilRef);
+
+    // Shader
+    D3D::deviceContext->VSSetShader(nullptr, nullptr, 0);   // lighting volume 안에서 setting함
+    D3D::deviceContext->PSSetShader(nullptr, nullptr, 0);   // PS x
+
+    // Light Volume Draw Call
+    for (Light& light : lights)
+    {
+        if (light.type == LightType::Point)
+        {
+            sphereVolume.UpdateWolrd(light.position, light.range);
+            sphereVolume.Draw();
+        }
+        else if (light.type == LightType::Spot)
+        {
+            coneVolume.UpdateWolrd(light.position, light.range);
+            coneVolume.Draw();
+        }
+    }
+
+    // DSS 복구
+    D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
+}
+
 // [ Lighting Pass ]
-// Full Screen Quad를 그리며 G-Buffer를 샘플링하여 라이팅 계산
+//  G-Buffer를 샘플링하여 라이팅 계산
+//  Directional : Full Screen Quad
+//  Point, Spot : Light Volume + ★Stencil Test★
 void App::LightingPass()
 {
     // RTV, DSV
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), nullptr);
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->ClearRenderTargetView(D3D::sceneHDRRTV.Get(), clearColor);
-    D3D::deviceContext->OMSetDepthStencilState(D3D::disableDSS.Get(), 0);
-
-    // IA
-    D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    D3D::deviceContext->IASetInputLayout(nullptr);
-
+    
     // Blend State
     D3D::deviceContext->OMSetBlendState(D3D::additiveBlendState.Get(), nullptr, 0xffffffff);
 
-    // Shaders
-    D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
+    // IA
+    D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    // Shader
     D3D::deviceContext->PSSetShader(D3D::PS_DeferredLighting.Get(), NULL, 0);
 
     // Resource
@@ -444,23 +481,37 @@ void App::LightingPass()
         D3D::lightingCBData.useIBL = useIBL ? 1 : 0;
         D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
 
+        const UINT stencilRef = 1;
+
         // Light Volume 렌더링
         if (light.type == LightType::Directional)
         {
+            // Stencil Test off
+            D3D::deviceContext->OMSetDepthStencilState(D3D::disableDSS.Get(), 0);
+            
             // Full Screen Quad
+            D3D::deviceContext->IASetInputLayout(nullptr);
+            D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
             D3D::deviceContext.Get()->Draw(3, 0);
         }
-        else if(light.type == LightType::Point)
+        else
         {
-            // Sphere
-            sphereVolume.UpdateWolrd(light.position, light.range);
-            sphereVolume.Draw();
-        }
-        else if (light.type == LightType::Spot)
-        {
-            // Cone
-            coneVolume.UpdateWolrd(light.position, light.range);
-            coneVolume.Draw();
+            // Stencil Test on
+            D3D::deviceContext->OMSetDepthStencilState(D3D::stencilTestOnlyDSS.Get(), stencilRef);
+            
+            // Light Volume
+            if (light.type == LightType::Point)
+            {
+                // Sphere
+                sphereVolume.UpdateWolrd(light.position, light.range);
+                sphereVolume.Draw();
+            }
+            else if (light.type == LightType::Spot)
+            {
+                // Cone
+                coneVolume.UpdateWolrd(light.position, light.range);
+                coneVolume.Draw();
+            }
         }
     }
 
@@ -478,6 +529,9 @@ void App::LightingPass()
 
     // Blend State reset
     D3D::deviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+
+    // DSS 복구
+    D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
 }
 
 

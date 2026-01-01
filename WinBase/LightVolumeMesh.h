@@ -41,7 +41,6 @@ public:
     void Draw() const
     {
         // cb upate
-        D3D::transformCBData.model = XMMatrixTranspose(Matrix::Identity);
         D3D::transformCBData.world = XMMatrixTranspose(world);
         D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 

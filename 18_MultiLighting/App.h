@@ -40,11 +40,12 @@ using namespace DirectX::SimpleMath;
 * [ Render Pass ]
 *   1. ShadowMap Pass                  -> ShadowMap
 *   2. Geometry Pass                   -> G-buffer (Albedo, Normal, MetalRough, Emissive)
-*   3. Lighting Pass                   -> Scene HDR Color Pass (Deferred Lighting)
-*   4. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
-*   5. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
-*   6. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
-*   7. LDR PostProcess Pass            -> LDR (final)
+*   3. Stencil Pass
+*   4. Lighting Pass                   -> Scene HDR Color Pass (Deferred Lighting)
+*   5. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
+*   6. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
+*   7. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
+*   8. LDR PostProcess Pass            -> LDR (final)
 *
 * [ G-buffer ]
 *   RT0 : Albedo (RGB)
@@ -53,7 +54,9 @@ using namespace DirectX::SimpleMath;
 *   RT3 : Emissive (RGB)
 *   ★ Position은 대역폭 절약을 위해 G-buffer에 저장하지 않고,
 *      Geometry Pass에서 사용한 뎁스 버퍼를 이용해 Position을 복원해 사용합니다.
-
+* 
+* [ Light Volume ]
+* 
 */
 
 
@@ -174,6 +177,7 @@ public:
     void SkyBoxRender();
     void ShadowMapPass();
     void GeometryPass();
+    void StencilPass();
     void LightingPass();
     void BloomProcess();
     void PostProcess();

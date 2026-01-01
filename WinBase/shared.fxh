@@ -297,11 +297,6 @@ struct PS_FullScreen_Input
     float2 uv : TEXCOORD;
 };
 
-struct PS_LightVolume_INPUT
-{
-    float4 position : SV_POSITION;
-};
-
 // ------------------------------------
 //  PS Output (Deferred Rendering)
 // ------------------------------------
