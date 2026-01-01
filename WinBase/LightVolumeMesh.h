@@ -2,6 +2,7 @@
 #define NOMINMAX
 #include "Structures.hpp"
 #include "D3D.h"
+#include "Light.hpp"
 #include <DirectXMath.h>
 #include <directxtk/simplemath.h>
 #include <d3d11.h>
@@ -21,6 +22,7 @@ using Microsoft::WRL::ComPtr;
 class LightVolumeMesh
 {
 public:
+    int type;   // 0 : sphere, 1 : cone (юс╫ц)
     ComPtr<ID3D11Buffer> vertexBuffer;
     ComPtr<ID3D11Buffer> indexBuffer;
     UINT indexCount = 0;
@@ -30,12 +32,37 @@ public:
     Matrix world = Matrix::Identity;
 
 public:
-    void UpdateWolrd(const Vector3& lightPos, float lightRange)
+    void UpdateWolrd(Light& light)
     {
-        // world update
-        Matrix S = Matrix::CreateScale(lightRange);
-        Matrix T = Matrix::CreateTranslation(lightPos);
-        world = S * T;
+        if (type == 0)
+        {
+            Matrix S = Matrix::CreateScale(light.range);
+            Matrix T = Matrix::CreateTranslation(light.position);
+            world = S * T;
+        }
+        else if (type == 1)
+        {
+            float height = light.range;
+            float outerRad = DirectX::XMConvertToRadians(light.outerAngle);
+            float radius = height * tanf(outerRad);
+            Matrix S = Matrix::CreateScale(radius, radius, height);
+
+            Vector3 coneForward(0, 0, 1);
+
+            Vector3 dir = light.direction;
+            dir.Normalize();
+
+            Vector3 axis = coneForward.Cross(dir);
+            float angle = acosf(coneForward.Dot(dir));
+
+            Matrix R = axis.LengthSquared() < 0.0001f
+                ? Matrix::Identity
+                : Matrix::CreateFromAxisAngle(axis, angle);
+
+            Matrix T = Matrix::CreateTranslation(light.position);
+
+            world = S * R * T;
+        }
     }
 
     void Draw() const

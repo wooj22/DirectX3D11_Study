@@ -26,6 +26,7 @@ LightVolumeMesh CreateLightVolumeSphere(ID3D11Device* device, int slices, int st
 
     LightVolumeMesh mesh;
     CreateVBIB(device, verts, indices, mesh);
+    mesh.type = 0;
     return mesh;
 }
 
@@ -37,6 +38,7 @@ LightVolumeMesh CreateLightVolumeCone(ID3D11Device* device, int slices, bool cap
 
     LightVolumeMesh mesh;
     CreateVBIB(device, verts, indices, mesh);
+    mesh.type = 1;
     return mesh;
 }
 
