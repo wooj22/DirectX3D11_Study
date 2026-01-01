@@ -13,7 +13,7 @@ using Microsoft::WRL::ComPtr;
 
 // Vertex Structure
 // vertexbuffer, input layout, vertex shader ¿¬°á
-struct Skybox_Vertex
+struct Position_Vertex
 {
 	Vector3 position;
 };

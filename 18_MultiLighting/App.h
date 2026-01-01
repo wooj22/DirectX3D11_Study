@@ -7,6 +7,7 @@
 #include "../WinBase/SkeletalModel.h"
 #include "../WinBase/Material.h"
 #include "../WinBase/Light.hpp"
+#include "../WinBase/LightVolumeMesh.h"
 #include "../WinBase/SkyBox.h"
 #include "../WinBase/MemoryDebugger.h"
 #include "../WinBase/DebugDraw.h"
@@ -86,6 +87,10 @@ private:
 
     // light
     vector<Light> lights;
+
+    // light volume model
+    LightVolumeMesh sphereVolume;
+    LightVolumeMesh coneVolume;
 
     // models
     vector<StaticModel*> spheres;

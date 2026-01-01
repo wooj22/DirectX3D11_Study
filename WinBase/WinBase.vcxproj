@@ -137,6 +137,7 @@
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Light.hpp" />
+    <ClInclude Include="LightVolumeMesh.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MemoryDebugger.h" />
     <ClInclude Include="ModelLoader.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="LightVolumeMesh.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MemoryDebugger.cpp" />
     <ClCompile Include="ModelLoader.cpp" />

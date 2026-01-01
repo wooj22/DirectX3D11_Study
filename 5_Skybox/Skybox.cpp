@@ -5,7 +5,7 @@
 void Skybox::InitRenderPipeLine()
 {
     // Vertex Buffer, Index Buffer
-    Skybox_Vertex vertices[] =
+    Position_Vertex vertices[] =
     {
         Vector3(- 1.0f,  1.0f, -1.0f), 
         Vector3(1.0f,  1.0f, -1.0f), 
@@ -36,7 +36,7 @@ void Skybox::InitRenderPipeLine()
     D3D11_SUBRESOURCE_DATA vbData = {};
     vbData.pSysMem = vertices;
     D3DBase::device->CreateBuffer(&vbDesc, &vbData, &vertexBuffer);
-    vertexBufferStride = sizeof(Skybox_Vertex);
+    vertexBufferStride = sizeof(Position_Vertex);
     vertexBufferOffset = 0;
 
     D3D11_BUFFER_DESC ibDesc = {};

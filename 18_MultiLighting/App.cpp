@@ -1,14 +1,15 @@
 #include "App.h"
 #include "../WinBase/D3D.h"
 #include "../WinBase/Helper.h"
-#include <d3dcompiler.h>
-#include <Directxtk/DDSTextureLoader.h>
 #include "../WinBase/Camera.h"
 #include "../WinBase/AssetManager.h"
+#include <d3dcompiler.h>
+#include <Directxtk/DDSTextureLoader.h>
 #include <iostream>
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
+#pragma comment(lib,"dxgi.lib")
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib, "dxguid.lib") 
 using namespace DirectX;
@@ -113,6 +114,10 @@ bool App::OnInit()
         }
     }
 
+    // light volume
+    sphereVolume = CreateLightVolumeSphere(D3D::device.Get(), 24, 16);
+    coneVolume = CreateLightVolumeCone(D3D::device.Get(), 24, false);
+
     // view maxtrix
     camera.position = { 0, 80, -300 };
     camera.moveSpeed = 300.f;
@@ -176,7 +181,7 @@ void App::OnUpdate()
     girl->Update();
     enemy->Update();
     camera.GetViewMatrix(view);
-
+    
     // light update
     Vector3 lightDir;
     for(auto & light : lights)
@@ -448,12 +453,14 @@ void App::LightingPass()
         else if(light.type == LightType::Point)
         {
             // Sphere
-            D3D::deviceContext.Get()->Draw(3, 0);
+            sphereVolume.UpdateWolrd(light.position, light.range);
+            sphereVolume.Draw();
         }
         else if (light.type == LightType::Spot)
         {
             // Cone
-            D3D::deviceContext.Get()->Draw(3, 0);
+            coneVolume.UpdateWolrd(light.position, light.range);
+            coneVolume.Draw();
         }
     }
 

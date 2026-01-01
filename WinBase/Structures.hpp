@@ -32,8 +32,8 @@ struct Vertex
     }
 };
 
-// SkyBox
-struct Skybox_Vertex
+// Only Position
+struct Position_Vertex
 {
     Vector3 position;
 };

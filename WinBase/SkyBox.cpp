@@ -7,7 +7,7 @@ using namespace DirectX;
 void SkyBox::InitRenderPipeLine(const std::wstring& filePath)
 {
     // Vertex Buffer, Index Buffer
-    Skybox_Vertex vertices[] =
+    Position_Vertex vertices[] =
     {
         { Vector3(-1.0f,  1.0f, -1.0f) }, // 0
         { Vector3(1.0f,  1.0f, -1.0f) }, // 1
@@ -39,7 +39,7 @@ void SkyBox::InitRenderPipeLine(const std::wstring& filePath)
     D3D11_SUBRESOURCE_DATA vbData = {};
     vbData.pSysMem = vertices;
     D3D::device->CreateBuffer(&vbDesc, &vbData, &vertexBuffer);
-    vertexBufferStride = sizeof(Skybox_Vertex);
+    vertexBufferStride = sizeof(Position_Vertex);
     vertexBufferOffset = 0;
 
     D3D11_BUFFER_DESC ibDesc = {};

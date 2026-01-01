@@ -19,21 +19,6 @@
     <Filter Include="07. Camera">
       <UniqueIdentifier>{11c18ae4-18bd-4566-a39a-41a45d6172d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Model">
-      <UniqueIdentifier>{f1cb7515-c4aa-4ac9-8b1a-f494df7da15a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Model\Rigid">
-      <UniqueIdentifier>{43e79195-24f0-4d25-992e-53212af59d2a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Model\Skeletal">
-      <UniqueIdentifier>{37853e5b-dc6e-43e4-9da1-6017a16cf5bd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Model\Static">
-      <UniqueIdentifier>{844abf15-9e6c-4cbe-9080-4d0c99ef4cb7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Model\MeshAsset">
-      <UniqueIdentifier>{746bad31-e215-44ad-84a2-ab71a17f3d54}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. Skeleton">
       <UniqueIdentifier>{f9d34f9f-4ca7-4769-ba04-b25e10c55954}</UniqueIdentifier>
     </Filter>
@@ -79,6 +64,24 @@
     <Filter Include="10. Debugger\DebugDraw">
       <UniqueIdentifier>{c65398b7-7f36-4c83-a57b-5a1fc3ca0578}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. Mesh">
+      <UniqueIdentifier>{f1cb7515-c4aa-4ac9-8b1a-f494df7da15a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Mesh\Rigid">
+      <UniqueIdentifier>{43e79195-24f0-4d25-992e-53212af59d2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Mesh\Skeletal">
+      <UniqueIdentifier>{37853e5b-dc6e-43e4-9da1-6017a16cf5bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Mesh\Static">
+      <UniqueIdentifier>{844abf15-9e6c-4cbe-9080-4d0c99ef4cb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Mesh\MeshAsset">
+      <UniqueIdentifier>{746bad31-e215-44ad-84a2-ab71a17f3d54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Mesh\LightVolumeMesh">
+      <UniqueIdentifier>{d7390ccd-3139-4c00-9746-dbc1085498ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinApp.h">
@@ -103,10 +106,10 @@
       <Filter>99. Module</Filter>
     </ClInclude>
     <ClInclude Include="StaticSubMesh.h">
-      <Filter>02. Model\Static</Filter>
+      <Filter>02. Mesh\Static</Filter>
     </ClInclude>
     <ClInclude Include="StaticModel.h">
-      <Filter>02. Model\Static</Filter>
+      <Filter>02. Mesh\Static</Filter>
     </ClInclude>
     <ClInclude Include="Skeleton.hpp">
       <Filter>03. Skeleton</Filter>
@@ -118,31 +121,31 @@
       <Filter>06. Light</Filter>
     </ClInclude>
     <ClInclude Include="RigidModel.h">
-      <Filter>02. Model\Rigid</Filter>
+      <Filter>02. Mesh\Rigid</Filter>
     </ClInclude>
     <ClInclude Include="RigidSubMesh.h">
-      <Filter>02. Model\Rigid</Filter>
+      <Filter>02. Mesh\Rigid</Filter>
     </ClInclude>
     <ClInclude Include="AnimationClip.h">
       <Filter>05. Animation</Filter>
     </ClInclude>
     <ClInclude Include="SkeletalModel.h">
-      <Filter>02. Model\Skeletal</Filter>
+      <Filter>02. Mesh\Skeletal</Filter>
     </ClInclude>
     <ClInclude Include="SkeletalSubMesh.h">
-      <Filter>02. Model\Skeletal</Filter>
+      <Filter>02. Mesh\Skeletal</Filter>
     </ClInclude>
     <ClInclude Include="SkyBox.h">
       <Filter>08. SkyBox</Filter>
     </ClInclude>
     <ClInclude Include="RigidModelAsset.hpp">
-      <Filter>02. Model\MeshAsset</Filter>
+      <Filter>02. Mesh\MeshAsset</Filter>
     </ClInclude>
     <ClInclude Include="SkeletalModelAsset.hpp">
-      <Filter>02. Model\MeshAsset</Filter>
+      <Filter>02. Mesh\MeshAsset</Filter>
     </ClInclude>
     <ClInclude Include="StaticModelAsset.hpp">
-      <Filter>02. Model\MeshAsset</Filter>
+      <Filter>02. Mesh\MeshAsset</Filter>
     </ClInclude>
     <ClInclude Include="AssetManager.h">
       <Filter>09. Resource Manager\AssetManager</Filter>
@@ -157,10 +160,13 @@
       <Filter>10. Debugger\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="Structures.hpp">
-      <Filter>02. Model</Filter>
+      <Filter>02. Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Light.hpp">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="LightVolumeMesh.h">
+      <Filter>02. Mesh\LightVolumeMesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -186,28 +192,28 @@
       <Filter>99. Module</Filter>
     </ClCompile>
     <ClCompile Include="StaticModel.cpp">
-      <Filter>02. Model\Static</Filter>
+      <Filter>02. Mesh\Static</Filter>
     </ClCompile>
     <ClCompile Include="StaticSubMesh.cpp">
-      <Filter>02. Model\Static</Filter>
+      <Filter>02. Mesh\Static</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>04. Material</Filter>
     </ClCompile>
     <ClCompile Include="RigidModel.cpp">
-      <Filter>02. Model\Rigid</Filter>
+      <Filter>02. Mesh\Rigid</Filter>
     </ClCompile>
     <ClCompile Include="RigidSubMesh.cpp">
-      <Filter>02. Model\Rigid</Filter>
+      <Filter>02. Mesh\Rigid</Filter>
     </ClCompile>
     <ClCompile Include="AnimationClip.cpp">
       <Filter>05. Animation</Filter>
     </ClCompile>
     <ClCompile Include="SkeletalModel.cpp">
-      <Filter>02. Model\Skeletal</Filter>
+      <Filter>02. Mesh\Skeletal</Filter>
     </ClCompile>
     <ClCompile Include="SkeletalSubMesh.cpp">
-      <Filter>02. Model\Skeletal</Filter>
+      <Filter>02. Mesh\Skeletal</Filter>
     </ClCompile>
     <ClCompile Include="SkyBox.cpp">
       <Filter>08. SkyBox</Filter>
@@ -223,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="DebugDraw.cpp">
       <Filter>10. Debugger\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="LightVolumeMesh.cpp">
+      <Filter>02. Mesh\LightVolumeMesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
