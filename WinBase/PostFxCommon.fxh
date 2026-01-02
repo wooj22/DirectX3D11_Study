@@ -158,7 +158,7 @@ float3 ApplyFilmGrain(float2 uv, float3 color)
     weight = pow(saturate(weight), 0.75);
 
     // pixel ÁÂÇ¥ ±â¹Ý
-    float2 screenTexelSize = screenSize / 2;
+    float2 screenTexelSize = 1 /screenSize;
     float2 pixel = uv / max(screenTexelSize, 1e-8.xx);
     float2 p = pixel * max(grain_scale, 1e-3);
 
