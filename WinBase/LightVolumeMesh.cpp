@@ -57,20 +57,20 @@ void LightVolumeMesh::Draw(Light& light, Camera& camera) const
     D3D::transformCBData.world = XMMatrixTranspose(world);
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
-    // RS
-    // 원래 outside는 cullBack인데, mesh가 뒤집혀있는듯?
+    // RS - 원래 outside는 cullBack인데, mesh가 뒤집혀있는듯?
     D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
 
-    // pipeline set
+    // IA
     UINT offset = 0;
-    ID3D11Buffer* vbRaw = vertexBuffer.Get();
-    D3D::deviceContext.Get()->IASetVertexBuffers(0, 1, &vbRaw, &stride, &offset);
-    D3D::deviceContext.Get()->IASetIndexBuffer(indexBuffer.Get(), indexFormat, 0);
     D3D::deviceContext.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    D3D::deviceContext.Get()->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+    D3D::deviceContext.Get()->IASetIndexBuffer(indexBuffer.Get(), indexFormat, 0);
     D3D::deviceContext.Get()->IASetInputLayout(D3D::inputLayout_Position.Get());
+
+    // VS
     D3D::deviceContext.Get()->VSSetShader(D3D::VS_LightVolume.Get(), nullptr, 0);
 
-    // draw call
+    // Draw Call
     D3D::deviceContext.Get()->DrawIndexed(indexCount, 0, 0);
 
     // 복구

@@ -23,8 +23,9 @@ enum class LightVolumeType;
 
     - Stencil Pass를 통해 라이팅 연산 후보 픽셀을 마킹하고
     - Lighting Pass에서 Stencil Test를 통해 해당 픽셀들에 대해서만 라이팅을 계산한다.
-    - 카메라가 볼륨 밖에 있을때는 RS = cullfront, 
-      카메라가 볼륨 안에 있을때는 RS = cullBack(defulat)를 사용한다.
+    - Lighting Volume Rendering은 카메라가 볼륨 외부에 있는 경우에만 호출된다.
+      * Inside : Stencil Test off + FullScreenPass
+      * Outside : Stencil Test on + CullBack + Lighting Volume Pass
 */
 
 class LightVolumeMesh
