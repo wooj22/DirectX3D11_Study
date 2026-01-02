@@ -11,6 +11,7 @@ using namespace DirectX::SimpleMath;
 using Microsoft::WRL::ComPtr;
 
 struct Light;
+class Camera;
 struct Position_Vertex;
 enum class LightVolumeType;
 
@@ -19,8 +20,11 @@ enum class LightVolumeType;
 
     Deferred Rendering의 멀티 라이트 처리(Point, Spot)시에
     라이팅 연산 영역을 필터링 하기 위해 사용하는 Mesh
+
     - Stencil Pass를 통해 라이팅 연산 후보 픽셀을 마킹하고
     - Lighting Pass에서 Stencil Test를 통해 해당 픽셀들에 대해서만 라이팅을 계산한다.
+    - 카메라가 볼륨 밖에 있을때는 RS = cullfront, 
+      카메라가 볼륨 안에 있을때는 RS = cullBack(defulat)를 사용한다.
 */
 
 class LightVolumeMesh
@@ -42,7 +46,12 @@ public:
 public:
     LightVolumeMesh();
     void UpdateWolrd(Light& light);
-    void Draw() const;
+    void Draw(Light& light, Camera& camera) const;
+
+private:
+    bool IsInsidePointLight(const Vector3& camPos, const Vector3& lightPos, float radius) const;
+    bool IsInsideSpotLight(const Vector3& camPos, const Vector3& lightPos,
+        const Vector3& lightDirNormalized, float range, float outerAngleRadians) const;
 };
 
 // 외부 Create Functions

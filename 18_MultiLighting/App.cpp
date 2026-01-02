@@ -391,9 +391,6 @@ void App::StencilPass()
     const UINT stencilRef = 1;          // Stencil Reference Value
     D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestStencilWriteDSS.Get(), stencilRef);
 
-    // RS (임시)
-    D3D::deviceContext.Get()->RSSetState(D3D::cullNoneRS.Get());
-
     // Shader
     D3D::deviceContext->VSSetShader(nullptr, nullptr, 0);   // lighting volume 안에서 setting함
     D3D::deviceContext->PSSetShader(nullptr, nullptr, 0);   // PS x
@@ -404,18 +401,17 @@ void App::StencilPass()
         if (light.type == LightType::Point)
         {
             sphereVolume->UpdateWolrd(light);
-            sphereVolume->Draw();
+            sphereVolume->Draw(light, camera);
         }
         else if (light.type == LightType::Spot)
         {
             coneVolume->UpdateWolrd(light);
-            coneVolume->Draw();
+            coneVolume->Draw(light, camera);
         }
     }
 
     // 복구
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
-    D3D::deviceContext->RSSetState(nullptr);
 }
 
 // [ Lighting Pass ]
@@ -508,21 +504,18 @@ void App::LightingPass()
             // Stencil Test on
             D3D::deviceContext->OMSetDepthStencilState(D3D::stencilTestOnlyDSS.Get(), stencilRef);
 
-            // RS (임시)
-            D3D::deviceContext.Get()->RSSetState(D3D::cullNoneRS.Get());
-
             // Light Volume
             if (light.type == LightType::Point)
             {
                 // Sphere
                 sphereVolume->UpdateWolrd(light);
-                sphereVolume->Draw();
+                sphereVolume->Draw(light, camera);
             }
             else if (light.type == LightType::Spot)
             {
                 // Cone
                 coneVolume->UpdateWolrd(light);
-                coneVolume->Draw();
+                coneVolume->Draw(light, camera);
             }
         }
     }
@@ -544,7 +537,6 @@ void App::LightingPass()
 
     // 복구
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
-    D3D::deviceContext->RSSetState(nullptr);
 }
 
 

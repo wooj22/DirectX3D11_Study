@@ -1,6 +1,7 @@
 #include "LightVolumeMesh.h"
 #include "Light.hpp"
 #include "Structures.hpp"
+#include "Camera.h"
 #include "D3D.h"
 
 #include <vector>
@@ -50,11 +51,30 @@ void LightVolumeMesh::UpdateWolrd(Light& light)
     }
 }
 
-void LightVolumeMesh::Draw() const
+void LightVolumeMesh::Draw(Light& light, Camera& camera) const
 {
     // cb upate
     D3D::transformCBData.world = XMMatrixTranspose(world);
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
+
+    // RS (카메라가 밖이라면 CullFront, 안이라면 CullBack)
+    if (volumeType == LightVolumeType::Sphere)
+    {
+        if (IsInsidePointLight(camera.position, light.position, light.range))
+            D3D::deviceContext.Get()->RSSetState(nullptr);
+        else
+            D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
+    }
+    else if (volumeType == LightVolumeType::Cone)
+    {
+        if (IsInsideSpotLight(camera.position, light.position, light.direction, light.range, light.outerAngle))
+            D3D::deviceContext.Get()->RSSetState(nullptr);
+        else
+            D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
+    }
+    
+    // RS(임시) 위에꺼 좀 이상한데 z-fail 문제인지 몰겟
+    D3D::deviceContext.Get()->RSSetState(D3D::cullNoneRS.Get());
 
     // pipeline set
     UINT offset = 0;
@@ -67,7 +87,48 @@ void LightVolumeMesh::Draw() const
 
     // draw call
     D3D::deviceContext.Get()->DrawIndexed(indexCount, 0, 0);
+
+    // 복구
+    D3D::deviceContext->RSSetState(nullptr);
 }
+
+bool LightVolumeMesh::IsInsidePointLight(const Vector3& camPos, const Vector3& lightPos, float radius) const
+{
+    float dx = camPos.x - lightPos.x;
+    float dy = camPos.y - lightPos.y;
+    float dz = camPos.z - lightPos.z;
+    float dist2 = dx * dx + dy * dy + dz * dz;
+    return dist2 <= radius * radius;
+}
+
+bool LightVolumeMesh::IsInsideSpotLight(const Vector3& camPos, const Vector3& lightPos,
+    const Vector3& lightDirNormalized,  float range, float outerAngleRadians) const
+{
+    // v = P->C
+    float vx = camPos.x - lightPos.x;
+    float vy = camPos.y - lightPos.y;
+    float vz = camPos.z - lightPos.z;
+
+    // 1) range 체크 (유한 콘)
+    float dist2 = vx * vx + vy * vy + vz * vz;
+    if (dist2 > range * range) return false;
+
+    // 2) 콘 각 체크: cos(theta) >= cos(outer)
+    float dist = sqrtf(dist2);
+    // dist==0이면 라이트 원점이므로 inside 취급
+    if (dist < 1e-6f) return true;
+
+    float invDist = 1.0f / dist;
+    float nx = vx * invDist;
+    float ny = vy * invDist;
+    float nz = vz * invDist;
+
+    float cosTheta = nx * lightDirNormalized.x + ny * lightDirNormalized.y + nz * lightDirNormalized.z;
+    float cosOuter = cosf(outerAngleRadians);
+
+    return cosTheta >= cosOuter;
+}
+
 
 // Helper..
 static void CreateBuffer(ID3D11Device* device, const std::vector<Position_Vertex>& verts,

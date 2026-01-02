@@ -74,7 +74,6 @@ using namespace DirectX::SimpleMath;
 *   RT3 : Emissive (RGB)
 *   ★ Position은 대역폭 절약을 위해 G-buffer에 저장하지 않고,
 *      Geometry Pass에서 사용한 뎁스 버퍼를 이용해 Position을 복원해 사용합니다.
-* 
 */
 
 
