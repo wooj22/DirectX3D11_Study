@@ -45,27 +45,34 @@ using namespace DirectX::SimpleMath;
 *   7. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
 *   8. LDR PostProcess Pass            -> LDR (final)
 * 
+* 
 * [ Multi Lighting ]
 *  - Directional, Point, Spot 라이트를 모두 처리합니다.
 *  - Shaodw와 IBL은 sunLight로 설정된 하나의 directional에 대해서만 처리합니다.
 *  - Lighting Volume Rendering을 활용하여 관련없는 픽셀에 대한 PS 실행을 최소화합니다.
 *  - Additive Blending을 통해 라이트별로 실행한 결과를 RTV에 누적합니다.
 *
+* 
 * [ Light Volume ]
 *   - Directioanl : Full Screen Quad
 *   - Point : Light Volume (Sphere)
 *   - Spot : Light volume (Cone)
 *   
 *   라이트 볼륨 렌더링을 위해 Stencil Pass가 추가됩니다.
-*   Stencil Pass : Depth test On + Stencil write On 
-                   => 라이트 볼륨을 그리며, 깊이테스트를 통해 표면이 있는 픽셀에만 Stencil을 write
-*   Lighting Pass : Depth test off + Stencil test on + wrtie off
-*                  => Stencil Test를 통해 Stencil Pass에서 표시한 픽셀들에 대해서만
-*                     Pixel Shader를 실행합니다.
+*    1) Stencil Pass : Depth test On + Stencil write On 
+                       => 라이트 볼륨을 그리며, 깊이테스트를 통해 표면이 있는 픽셀에만 Stencil을 write
+*    2) Lighting Pass : Depth test off + Stencil test on + wrtie off
+*                      => Stencil Test를 통해 Stencil Pass에서 표시한 픽셀들에 대해서만
+*                         Pixel Shader를 실행합니다.
+* 
+* [ Light Volume Z-Fail ]
+* 
+* 
 * 
 * [ Light Volume Culling ]
 *  - 카메라가 볼륨 밖이면 : CullFront (앞면 버리고 뒷면만 남김)
 *  - 카메라가 볼륨 안이면 : CullBack (뒷면 버리고 앞면만 남김)
+
 
 * [ G-buffer ]
 *   RT0 : Albedo (RGB)

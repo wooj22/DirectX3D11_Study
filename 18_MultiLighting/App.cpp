@@ -357,8 +357,6 @@ void App::LightingPass()
         D3D::lightingCBData.useIBL = useIBL ? 1 : 0;
         D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
 
-        const UINT stencilRef = 1;
-
         // Light Volume ·»´õ¸µ
         if (light.type == LightType::Directional)
         {
@@ -372,21 +370,51 @@ void App::LightingPass()
         }
         else
         {
-            // Stencil Test on
-            D3D::deviceContext->OMSetDepthStencilState(D3D::stencilTestOnlyDSS.Get(), stencilRef);
-
             // Light Volume
             if (light.type == LightType::Point)
             {
-                // Sphere
-                sphereVolume->UpdateWolrd(light);
-                sphereVolume->Draw(light, camera);
+                if (sphereVolume->IsInsidePointLight(camera.position, light.position, light.range))
+                {
+                    // Stencil Test off
+                    D3D::deviceContext->OMSetDepthStencilState(D3D::disableDSS.Get(), 0);
+
+                    // Full Screen Quad
+                    D3D::deviceContext->IASetInputLayout(nullptr);
+                    D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
+                    D3D::deviceContext.Get()->Draw(3, 0);
+                }
+                else
+                {
+                    // Stencil Test on
+                    D3D::deviceContext->OMSetDepthStencilState(D3D::stencilTestOnlyDSS.Get(), 1);
+
+                    // Light Volum
+                    sphereVolume->UpdateWolrd(light);
+                    sphereVolume->Draw(light, camera);
+                } 
             }
             else if (light.type == LightType::Spot)
             {
-                // Cone
-                coneVolume->UpdateWolrd(light);
-                coneVolume->Draw(light, camera);
+                if (sphereVolume->IsInsideSpotLight(camera.position, light.position, 
+                    light.direction, light.range, light.outerAngle))
+                {
+                    // Stencil Test off
+                    D3D::deviceContext->OMSetDepthStencilState(D3D::disableDSS.Get(), 0);
+
+                    // Full Screen Quad
+                    D3D::deviceContext->IASetInputLayout(nullptr);
+                    D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
+                    D3D::deviceContext.Get()->Draw(3, 0);
+                }
+                else
+                {
+                    // Stencil Test on
+                    D3D::deviceContext->OMSetDepthStencilState(D3D::stencilTestOnlyDSS.Get(), 1);
+
+                    // Light Volum
+                    coneVolume->UpdateWolrd(light);
+                    coneVolume->Draw(light, camera);
+                }
             }
         }
     }

@@ -57,24 +57,9 @@ void LightVolumeMesh::Draw(Light& light, Camera& camera) const
     D3D::transformCBData.world = XMMatrixTranspose(world);
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
-    // RS (카메라가 밖이라면 CullFront, 안이라면 CullBack)
-    if (volumeType == LightVolumeType::Sphere)
-    {
-        if (IsInsidePointLight(camera.position, light.position, light.range))
-            D3D::deviceContext.Get()->RSSetState(nullptr);
-        else
-            D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
-    }
-    else if (volumeType == LightVolumeType::Cone)
-    {
-        if (IsInsideSpotLight(camera.position, light.position, light.direction, light.range, light.outerAngle))
-            D3D::deviceContext.Get()->RSSetState(nullptr);
-        else
-            D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
-    }
-    
-    // TODO :: RS(임시) 위에꺼 좀 이상한데 z-fail 문제인지 몰겟
-    D3D::deviceContext.Get()->RSSetState(D3D::cullNoneRS.Get());
+    // RS
+    // 원래 outside는 cullBack인데, mesh가 뒤집혀있는듯?
+    D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
 
     // pipeline set
     UINT offset = 0;
@@ -240,8 +225,8 @@ static void BuildUnitSphere(int slices, int stacks,
     for (int slice = 0; slice < slices; ++slice)
     {
         outIndices.push_back(top);
-        outIndices.push_back(base + slice + 1);
         outIndices.push_back(base + slice);
+        outIndices.push_back(base + slice + 1);
     }
 
     // Middle
@@ -267,8 +252,8 @@ static void BuildUnitSphere(int slices, int stacks,
     for (int slice = 0; slice < slices; ++slice)
     {
         outIndices.push_back(bottom);
-        outIndices.push_back(lastRing + slice);
         outIndices.push_back(lastRing + slice + 1);
+        outIndices.push_back(lastRing + slice);
     }
 }
 

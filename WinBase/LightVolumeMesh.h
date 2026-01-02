@@ -48,7 +48,6 @@ public:
     void UpdateWolrd(Light& light);
     void Draw(Light& light, Camera& camera) const;
 
-private:
     bool IsInsidePointLight(const Vector3& camPos, const Vector3& lightPos, float radius) const;
     bool IsInsideSpotLight(const Vector3& camPos, const Vector3& lightPos,
         const Vector3& lightDirNormalized, float range, float outerAngleRadians) const;
