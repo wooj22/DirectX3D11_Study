@@ -44,7 +44,7 @@ bool App::OnInit()
     {
         auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/sphere.fbx");
         spheres.push_back(model);
-        spheres[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 1000 });
+        spheres[i]->SetPosition({ -900 + i * 200.0f, 40.0f, 1000 });
         spheres[i]->SetScale({ 0.85,0.85,0.85 });
     }
 
@@ -52,7 +52,7 @@ bool App::OnInit()
     {
         auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/Torus.fbx");
         torus.push_back(model);
-        torus[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 500 });
+        torus[i]->SetPosition({ -900 + i * 200.0f, 40.0f, 500 });
         torus[i]->SetScale({ 0.7,0.7,0.7 });
     }
 
@@ -72,7 +72,8 @@ bool App::OnInit()
     light.indirectIntensity = 0.2f;
 
     // view maxtrix
-    camera.position = { 0, 80, -300 };
+    camera.position = { 0, 80, 1500 };
+    camera.rotation = { 0, 35, 0 };
     camera.moveSpeed = 300.f;
     camera.GetViewMatrix(view);
 
@@ -82,8 +83,14 @@ bool App::OnInit()
     // debug settup
     D3D::lightingCBData.useIBL = 1;
     D3D::postprocessCBData.isHDR = 1;
-    D3D::postprocessCBData.contrast = 1.0;
-    D3D::postprocessCBData.saturation = 1.0;
+    D3D::postprocessCBData.exposure = -1.5;
+    D3D::postprocessCBData.contrast = 1.03;
+    D3D::postprocessCBData.saturation = 1.1;
+    D3D::postprocessCBData.colorTint = {1,0.9,0.9};
+    D3D::postprocessCBData.gain = {0.3,0.1,0};
+    D3D::postprocessCBData.gain_strength = 1;
+    D3D::bloomCBData.bloom_intensity = 1.6;
+    D3D::bloomCBData.bloom_threshold = 0.7;
     D3D::screenFxCBData.enableWaterDistortion = 1;
 
     // memory debugger
@@ -157,8 +164,8 @@ void App::OnRender()
     PostProcess();          // ToneMapping + PostProcess + ScreenFx
 
     // Debug Draw
-    FrustumDebugDraw(view, projection, view, projection, Colors::FloralWhite);
-    FrustumDebugDraw(lightView, lightProjection, view, projection, Colors::GreenYellow);
+    //FrustumDebugDraw(view, projection, view, projection, Colors::FloralWhite);
+    //FrustumDebugDraw(lightView, lightProjection, view, projection, Colors::GreenYellow);
 
     // GUI
     RenderGUI();

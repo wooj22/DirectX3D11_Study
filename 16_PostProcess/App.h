@@ -124,18 +124,18 @@ private:
     bool usedefalutGamma = 1;
 
     // PostProcess
-    bool useColorAdjustments = 0;
+    bool useColorAdjustments = 1;
     bool useWhiteBalance = 0;
-    bool useLGG = 0;
-    bool useVignette = 0;
+    bool useLGG = 1;
+    bool useVignette = 1;
     bool useFilmGrain = 0;
-    bool useBloom = 0;
+    bool useBloom = 1;
 
     bool useHueShift = 0;
-    bool useColorTint = 0;
+    bool useColorTint = 1;
     bool useLift = 0;
     bool useGamma = 0;
-    bool useGain = 0;
+    bool useGain = 1;
 
     // Screen Space Effect
     bool enableRipple;
