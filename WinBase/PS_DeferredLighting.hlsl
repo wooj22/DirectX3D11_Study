@@ -126,6 +126,10 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     // Point Light
     else if (lightType == 1) 
     {
+        // debug
+        if (lightVolumeON)
+            return float4(1, 1, 1, 1);
+        
         // defualt
         attenuation = 0.0f;
         L = 0.0f;
@@ -156,6 +160,10 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     // Spot Light
     else if(lightType == 2)
     {
+        // debug
+        if (lightVolumeON)
+            return float4(1, 1, 1, 1);
+        
         // defualt
         attenuation = 0.0f;
         spotFactor  = 0.0f;

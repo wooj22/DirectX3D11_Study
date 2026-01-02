@@ -142,7 +142,8 @@ cbuffer OutLineCB : register(b5)
 
 cbuffer DebugCB : register(b6)
 {
-    
+    bool lightVolumeON;
+    float3 padding0;
 }
 
 cbuffer PostProcessCB : register(b7)
@@ -160,7 +161,7 @@ cbuffer PostProcessCB : register(b7)
     bool   useVignette;
     bool   useFilmGrain;
     bool   useBloom;
-    float2 padding0;
+    float2 padding01;
     
     // Color Adjustments (대비, 채도, Hue Shift, Tint)
     float  contrast;

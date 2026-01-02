@@ -165,7 +165,11 @@ private:
     bool enableDither;
 
     // IBL debug
-    bool useIBL = 1;
+    bool useIBL = true;
+
+    // draw Debug
+    bool frustumON = false;
+    bool lightVolumeON = false;
 
     // clear color
     float clearColor[4] = { 0,0,0,1 };

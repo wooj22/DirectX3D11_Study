@@ -178,7 +178,8 @@ struct alignas(16) OutLineCB
 // Debug Constant Buffer -> b6
 struct alignas(16) DebugCB
 {
-    
+    UINT lightVolumeON;
+    Vector3 padding;
 };
 
 // PostProcess CB

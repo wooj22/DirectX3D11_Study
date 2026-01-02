@@ -159,14 +159,14 @@
     <ClInclude Include="DebugDraw.h">
       <Filter>10. Debugger\DebugDraw</Filter>
     </ClInclude>
-    <ClInclude Include="Structures.hpp">
-      <Filter>02. Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="Light.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="LightVolumeMesh.h">
       <Filter>02. Mesh\LightVolumeMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures.hpp">
+      <Filter>01. D3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

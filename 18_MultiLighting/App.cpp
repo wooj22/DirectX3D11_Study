@@ -221,8 +221,11 @@ void App::OnRender()
     PostProcess();          // ToneMapping + PostProcess + ScreenFx
 
     // Debug Draw
-    FrustumDebugDraw(view, projection, view, projection, Colors::FloralWhite);
-    FrustumDebugDraw(lightView, lightProjection, view, projection, Colors::GreenYellow);
+    if (frustumON)
+    {
+        //FrustumDebugDraw(view, projection, view, projection, Colors::FloralWhite);
+        FrustumDebugDraw(lightView, lightProjection, view, projection, Colors::GreenYellow);
+    }
 
     // GUI
     RenderGUI();
@@ -266,6 +269,8 @@ void App::StageSetting()
     D3D::materialCBData.useEmissiveOverride = useEmissiveOverride ? 1 : 0;
     D3D::materialCBData.useMetallicOverride = useMetallicOverride ? 1 : 0;
     D3D::materialCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
+
+    D3D::debugCBData.lightVolumeON = lightVolumeON ? 1 : 0;
 
     D3D::postprocessCBData.useDefaultGamma = usedefalutGamma ? 1 : 0;
     D3D::postprocessCBData.useColorAdjustments = useColorAdjustments ? 1 : 0;
@@ -846,6 +851,8 @@ void App::RenderGUI()
             return;
         }
 
+        ImGui::Checkbox("LightVolume Debug ON", &lightVolumeON);
+
         // --- selection state (static: keep selection across frames) ---
         static int uiType = 0;          // 0:Dir, 1:Point, 2:Spot
         static int uiIndexInType = 0;   // index inside the selected type list
@@ -967,6 +974,7 @@ void App::RenderGUI()
     {
         ImGui::Begin("[Shadow]");
         ImGui::Text("[Shadow Frustum]");
+        ImGui::Checkbox("Frustum Debug ON", &frustumON);
         ImGui::SliderFloat("Near", &shadowNear, 0.01f, 10000.0f);
         ImGui::SliderFloat("Far", &shadowFar, 0.01f, 10000.0f);
         ImGui::InputFloat("Width", &shadowWidth);
