@@ -221,7 +221,7 @@ cbuffer ScreenFxCB : register(b8)
     
     float plasmaIntensity; 
     float grainIntensity; 
-    float2 screenTexelSize;
+    float2 padding00;
 }
 
 cbuffer BloomCB : register(b9)

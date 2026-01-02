@@ -158,6 +158,7 @@ float3 ApplyFilmGrain(float2 uv, float3 color)
     weight = pow(saturate(weight), 0.75);
 
     // pixel 좌표 기반
+    float2 screenTexelSize = screenSize / 2;
     float2 pixel = uv / max(screenTexelSize, 1e-8.xx);
     float2 p = pixel * max(grain_scale, 1e-3);
 
@@ -174,6 +175,7 @@ float3 ApplyVignette(float2 uv, float3 color)
 {
     // 화면 종횡비 보정
     // screenTexelSize = (1/width, 1/height)
+    float2 screenTexelSize = 1 / screenSize;
     float aspect = screenTexelSize.y / max(screenTexelSize.x, 1e-8); 
     float2 p = uv - vignetteCenter;
     p.x *= aspect;

@@ -202,6 +202,7 @@ void App::StageSetting()
     D3D::transformCBData.shadowView = XMMatrixTranspose(lightView);
     D3D::transformCBData.shadowProjection = XMMatrixTranspose(lightProjection);
     D3D::transformCBData.cameraPos = camera.position;
+    D3D::transformCBData.screenSize = { (float)screenWidth,(float)screenHeight };
 
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;

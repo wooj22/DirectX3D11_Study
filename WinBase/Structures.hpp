@@ -255,8 +255,8 @@ struct alignas(16) ScreenFxCB
     float distortionStrength = 0.008f;       // UV ¿Ö°î °­µµ
 
     float plasmaIntensity = 0.35;       
-    float grainIntensity = 0.05f;       
-    Vector2 screenTexelSize = Vector2(1.0 / 1920.0, 1.0 / 1080.0); 
+    float grainIntensity = 0.05f; 
+    Vector2 padding;
 };
 
 struct alignas(16) BloomCB
