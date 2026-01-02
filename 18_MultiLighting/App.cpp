@@ -391,6 +391,9 @@ void App::StencilPass()
     const UINT stencilRef = 1;          // Stencil Reference Value
     D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestStencilWriteDSS.Get(), stencilRef);
 
+    // RS (임시)
+    D3D::deviceContext.Get()->RSSetState(m_states->CullNone());
+
     // Shader
     D3D::deviceContext->VSSetShader(nullptr, nullptr, 0);   // lighting volume 안에서 setting함
     D3D::deviceContext->PSSetShader(nullptr, nullptr, 0);   // PS x
@@ -410,8 +413,9 @@ void App::StencilPass()
         }
     }
 
-    // DSS 복구
+    // 복구
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
+    D3D::deviceContext->RSSetState(nullptr);
 }
 
 // [ Lighting Pass ]
@@ -504,6 +508,9 @@ void App::LightingPass()
             // Stencil Test on
             D3D::deviceContext->OMSetDepthStencilState(D3D::stencilTestOnlyDSS.Get(), stencilRef);
 
+            // RS (임시)
+            D3D::deviceContext.Get()->RSSetState(m_states->CullNone());
+
             // Light Volume
             if (light.type == LightType::Point)
             {
@@ -535,8 +542,9 @@ void App::LightingPass()
     // Blend State reset
     D3D::deviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 
-    // DSS 복구
+    // 복구
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
+    D3D::deviceContext->RSSetState(nullptr);
 }
 
 
@@ -1175,6 +1183,12 @@ void App::FrustumDebugDraw(const Matrix& frustumView, const Matrix& frustumProj,
     m_batch->Begin();
     Draw(m_batch.get(), frustum, color);
     m_batch->End();
+
+    // UnBind
+    const float blendFactor[4] = { 0,0,0,0 };
+    D3D::deviceContext.Get()->OMSetBlendState(nullptr, blendFactor, 0xFFFFFFFF);
+    D3D::deviceContext.Get()->OMSetDepthStencilState(nullptr, 0);
+    D3D::deviceContext.Get()->RSSetState(nullptr);
 }
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
