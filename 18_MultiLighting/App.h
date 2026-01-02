@@ -6,7 +6,7 @@
 #include "../WinBase/RigidModel.h"
 #include "../WinBase/SkeletalModel.h"
 #include "../WinBase/Material.h"
-//#include "../WinBase/Light.hpp"
+#include "../WinBase/Light.hpp"
 #include "../WinBase/LightVolumeMesh.h"
 #include "../WinBase/SkyBox.h"
 #include "../WinBase/MemoryDebugger.h"
@@ -33,20 +33,35 @@ using namespace DirectX::SimpleMath;
 
 
 // 다중 라이트 처리 프로젝트입니다.
-// Directional, Point, Spot 라이트를 Deferred Rendering 방식으로 처리합니다.
-// 01~17 프로젝트는 DirectionalLight.hpp를 사용하여 하나의 DirectioanlLight를 처리했지만,
-// 이번 프로젝트에서는 Light.hpp를 사용하여 여러 라이트를 하나의 데이터타입으로 처리하고있습니다.
+// Directional, Point, Spot 라이트를 Lighting Volume Rendering 합니다.
 /*
 * [ Render Pass ]
 *   1. ShadowMap Pass                  -> ShadowMap
 *   2. Geometry Pass                   -> G-buffer (Albedo, Normal, MetalRough, Emissive)
-*   3. Stencil Pass
-*   4. Lighting Pass                   -> Scene HDR Color Pass (Deferred Lighting)
+*   3. Stencil Pass                    -> Stencil Buffer (Lighting Volume)
+*   4. Lighting Pass                   -> Scene HDR Color Pass (Ligting Volume + Deferred Lighting)
 *   5. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
 *   6. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
 *   7. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
 *   8. LDR PostProcess Pass            -> LDR (final)
+* 
+* [ Multi Lighting ]
+*  - Directional, Point, Spot 라이트를 모두 처리합니다.
+*  - Shaodw와 IBL은 sunLight로 설정된 하나의 directional에 대해서만 처리합니다.
+*  - Lighting Volume Rendering을 활용하여 관련없는 픽셀에 대한 PS 실행을 최소화합니다.
 *
+* [ Light Volume ]
+*   - Directioanl : Full Screen Quad
+*   - Point : Light Volume (Sphere)
+*   - Spot : Light volume (Cone)
+*   
+*   라이트 볼륨 렌더링을 위해 Stencil Pass가 추가됩니다.
+*   Stencil Pass : Depth test On + Stencil write On 
+                   => 라이트 볼륨을 그리며, 깊이테스트를 통해 표면이 있는 픽셀에만 Stencil을 write
+*   Lighting Pass : Depth test off + Stencil test on + wrtie off
+*                  => Stencil Test를 통해 Stencil Pass에서 표시한 픽셀들에 대해서만
+*                     Pixel Shader를 실행합니다.
+
 * [ G-buffer ]
 *   RT0 : Albedo (RGB)
 *   RT1 : Normal (RGB)
@@ -54,8 +69,6 @@ using namespace DirectX::SimpleMath;
 *   RT3 : Emissive (RGB)
 *   ★ Position은 대역폭 절약을 위해 G-buffer에 저장하지 않고,
 *      Geometry Pass에서 사용한 뎁스 버퍼를 이용해 Position을 복원해 사용합니다.
-* 
-* [ Light Volume ]
 * 
 */
 
@@ -92,8 +105,8 @@ private:
     vector<Light> lights;
 
     // light volume model
-    LightVolumeMesh sphereVolume;
-    LightVolumeMesh coneVolume;
+    LightVolumeMesh* sphereVolume;
+    LightVolumeMesh* coneVolume;
 
     // models
     vector<StaticModel*> spheres;

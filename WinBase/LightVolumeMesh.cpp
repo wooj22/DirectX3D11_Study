@@ -1,58 +1,116 @@
-#include "LightVolumeMesh.h"// ---- LightVolumeMesh methods ----
+#include "LightVolumeMesh.h"
+#include "Light.hpp"
+#include "Structures.hpp"
+#include "D3D.h"
 
-// ---- 내부 헬퍼 (forward decl) ----
-static void CreateVBIB(
-    ID3D11Device* device,
-    const std::vector<Position_Vertex>& verts,
-    const std::vector<uint32_t>& indices,
-    LightVolumeMesh& outMesh);
+#include <vector>
+#include <cstdint>
+#include <cmath>
+#include <algorithm>
 
-static void BuildUnitSphere(
-    int slices, int stacks,
-    std::vector<Position_Vertex>& outVerts,
-    std::vector<uint32_t>& outIndices);
+// Light Volume Type
+enum class LightVolumeType {
+    Sphere,
+    Cone
+};
 
-static void BuildUnitCone(
-    int slices, bool capBase,
-    std::vector<Position_Vertex>& outVerts,
-    std::vector<uint32_t>& outIndices);
+LightVolumeMesh::LightVolumeMesh()
+    : indexCount(0), stride(sizeof(Position_Vertex)),
+    indexFormat(DXGI_FORMAT_R32_UINT), world(Matrix::Identity)
+{
+}
 
-// ---- 외부 생성 함수 ----
-LightVolumeMesh CreateLightVolumeSphere(ID3D11Device* device, int slices, int stacks)
+void LightVolumeMesh::UpdateWolrd(Light& light)
+{
+    if (volumeType == LightVolumeType::Sphere)
+    {
+        Matrix S = Matrix::CreateScale(light.range);
+        Matrix T = Matrix::CreateTranslation(light.position);
+        world = S * T;
+    }
+    else if (volumeType == LightVolumeType::Cone)
+    {
+        float height = light.range;
+        float outerRad = DirectX::XMConvertToRadians(light.outerAngle);
+        float radius = height * tanf(outerRad);
+        
+        Vector3 coneForward(0, 0, 1);
+        Vector3 dir = light.direction;
+        dir.Normalize();
+        Vector3 axis = coneForward.Cross(dir);
+        float angle = acosf(coneForward.Dot(dir));
+
+        Matrix S = Matrix::CreateScale(radius, radius, height);
+        Matrix R = axis.LengthSquared() < 0.0001f
+            ? Matrix::Identity
+            : Matrix::CreateFromAxisAngle(axis, angle);
+        Matrix T = Matrix::CreateTranslation(light.position);
+
+        world = S * R * T;
+    }
+}
+
+void LightVolumeMesh::Draw() const
+{
+    // cb upate
+    D3D::transformCBData.world = XMMatrixTranspose(world);
+    D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
+
+    // pipeline set
+    UINT offset = 0;
+    ID3D11Buffer* vbRaw = vertexBuffer.Get();
+    D3D::deviceContext.Get()->IASetVertexBuffers(0, 1, &vbRaw, &stride, &offset);
+    D3D::deviceContext.Get()->IASetIndexBuffer(indexBuffer.Get(), indexFormat, 0);
+    D3D::deviceContext.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    D3D::deviceContext.Get()->IASetInputLayout(D3D::inputLayout_Position.Get());
+    D3D::deviceContext.Get()->VSSetShader(D3D::VS_LightVolume.Get(), nullptr, 0);
+
+    // draw call
+    D3D::deviceContext.Get()->DrawIndexed(indexCount, 0, 0);
+}
+
+// Helper..
+static void CreateBuffer(ID3D11Device* device, const std::vector<Position_Vertex>& verts,
+    const std::vector<uint32_t>& indices, LightVolumeMesh* outMesh);
+
+static void BuildUnitSphere(int slices, int stacks,
+    std::vector<Position_Vertex>& outVerts, std::vector<uint32_t>& outIndices);
+
+static void BuildUnitCone(int slices, bool capBase,
+    std::vector<Position_Vertex>& outVerts, std::vector<uint32_t>& outIndices);
+
+// Create Method
+LightVolumeMesh* CreateLightVolumeSphere(ID3D11Device* device, int slices, int stacks)
 {
     std::vector<Position_Vertex> verts;
     std::vector<uint32_t> indices;
     BuildUnitSphere(slices, stacks, verts, indices);
 
-    LightVolumeMesh mesh;
-    CreateVBIB(device, verts, indices, mesh);
-    mesh.type = 0;
+    LightVolumeMesh* mesh = new LightVolumeMesh();
+    CreateBuffer(device, verts, indices, mesh);
+    mesh->volumeType = LightVolumeType::Sphere;
     return mesh;
 }
 
-LightVolumeMesh CreateLightVolumeCone(ID3D11Device* device, int slices, bool capBase)
+LightVolumeMesh* CreateLightVolumeCone(ID3D11Device* device, int slices, bool capBase)
 {
     std::vector<Position_Vertex> verts;
     std::vector<uint32_t> indices;
     BuildUnitCone(slices, capBase, verts, indices);
 
-    LightVolumeMesh mesh;
-    CreateVBIB(device, verts, indices, mesh);
-    mesh.type = 1;
+    LightVolumeMesh* mesh = new LightVolumeMesh();
+    CreateBuffer(device, verts, indices, mesh);
+    mesh->volumeType = LightVolumeType::Cone;
     return mesh;
 }
 
-// ---- VB/IB 생성 ----
-static void CreateVBIB(
-    ID3D11Device* device,
-    const std::vector<Position_Vertex>& verts,
-    const std::vector<uint32_t>& indices,
-    LightVolumeMesh& outMesh)
+// Vertex Buffer / Index Buffer
+static void CreateBuffer(ID3D11Device* device, const std::vector<Position_Vertex>& verts,
+    const std::vector<uint32_t>& indices, LightVolumeMesh* outMesh)
 {
-    outMesh = {};
-    outMesh.indexCount = (UINT)indices.size();
-
     // VB
+    outMesh->indexCount = (UINT)indices.size();
+
     D3D11_BUFFER_DESC vbd = {};
     vbd.Usage = D3D11_USAGE_IMMUTABLE;
     vbd.ByteWidth = (UINT)(verts.size() * sizeof(Position_Vertex));
@@ -61,12 +119,7 @@ static void CreateVBIB(
     D3D11_SUBRESOURCE_DATA vinit = {};
     vinit.pSysMem = verts.data();
 
-    HRESULT hr = device->CreateBuffer(&vbd, &vinit, outMesh.vertexBuffer.GetAddressOf());
-    if (FAILED(hr))
-    {
-        // 프로젝트 스타일대로 로그/어설트 처리
-        // throw std::runtime_error("CreateBuffer VB failed");
-    }
+    device->CreateBuffer(&vbd, &vinit, outMesh->vertexBuffer.GetAddressOf());
 
     // IB
     D3D11_BUFFER_DESC ibd = {};
@@ -77,18 +130,12 @@ static void CreateVBIB(
     D3D11_SUBRESOURCE_DATA iinit = {};
     iinit.pSysMem = indices.data();
 
-    hr = device->CreateBuffer(&ibd, &iinit, outMesh.indexBuffer.GetAddressOf());
-    if (FAILED(hr))
-    {
-        // 프로젝트 스타일대로 로그/어설트 처리
-    }
+    device->CreateBuffer(&ibd, &iinit, outMesh->indexBuffer.GetAddressOf());
 }
 
-// ---- Unit Sphere ----
-static void BuildUnitSphere(
-    int slices, int stacks,
-    std::vector<Position_Vertex>& outVerts,
-    std::vector<uint32_t>& outIndices)
+// Sphere Build Helper
+static void BuildUnitSphere(int slices, int stacks,
+    std::vector<Position_Vertex>& outVerts, std::vector<uint32_t>& outIndices)
 {
     outVerts.clear();
     outIndices.clear();
@@ -164,11 +211,9 @@ static void BuildUnitSphere(
     }
 }
 
-// ---- Unit Cone (+Z) ----
-static void BuildUnitCone(
-    int slices, bool capBase,
-    std::vector<Position_Vertex>& outVerts,
-    std::vector<uint32_t>& outIndices)
+// Cone(+z) Build Helper
+static void BuildUnitCone(int slices, bool capBase, 
+    std::vector<Position_Vertex>& outVerts, std::vector<uint32_t>& outIndices)
 {
     outVerts.clear();
     outIndices.clear();

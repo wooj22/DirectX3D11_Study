@@ -75,17 +75,16 @@ bool App::OnInit()
 
     // light
     {
-        D3D::lightingCBData.indirectIntensity = 0.2f;
+        D3D::lightingCBData.indirectIntensity = 0.13f;
         D3D::lightingCBData.useIBL = 1;
 
-        Light directionalLight(LightType::Directional);
+        Light directionalLight(LightType::Directional, true);
         directionalLight.direction = { -0.3f,-0.5, 1 };
         directionalLight.color = { 1.0f, 0.9608f, 0.8980f };
         directionalLight.intensity = 0.1f;
         lights.push_back(directionalLight);
 
         directionalLight.direction = { 0.3f,-0.5, 1 };
-        directionalLight.SetSunLight(true);
         lights.push_back(directionalLight);
 
         Light pointLight(LightType::Point);
@@ -396,13 +395,13 @@ void App::StencilPass()
     {
         if (light.type == LightType::Point)
         {
-            sphereVolume.UpdateWolrd(light);
-            sphereVolume.Draw();
+            sphereVolume->UpdateWolrd(light);
+            sphereVolume->Draw();
         }
         else if (light.type == LightType::Spot)
         {
-            coneVolume.UpdateWolrd(light);
-            coneVolume.Draw();
+            coneVolume->UpdateWolrd(light);
+            coneVolume->Draw();
         }
     }
 
@@ -504,14 +503,14 @@ void App::LightingPass()
             if (light.type == LightType::Point)
             {
                 // Sphere
-                sphereVolume.UpdateWolrd(light);
-                sphereVolume.Draw();
+                sphereVolume->UpdateWolrd(light);
+                sphereVolume->Draw();
             }
             else if (light.type == LightType::Spot)
             {
                 // Cone
-                coneVolume.UpdateWolrd(light);
-                coneVolume.Draw();
+                coneVolume->UpdateWolrd(light);
+                coneVolume->Draw();
             }
         }
     }
