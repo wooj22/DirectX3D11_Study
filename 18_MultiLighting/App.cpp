@@ -392,7 +392,7 @@ void App::StencilPass()
     D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestStencilWriteDSS.Get(), stencilRef);
 
     // RS (임시)
-    D3D::deviceContext.Get()->RSSetState(m_states->CullNone());
+    D3D::deviceContext.Get()->RSSetState(D3D::cullNoneRS.Get());
 
     // Shader
     D3D::deviceContext->VSSetShader(nullptr, nullptr, 0);   // lighting volume 안에서 setting함
@@ -509,7 +509,7 @@ void App::LightingPass()
             D3D::deviceContext->OMSetDepthStencilState(D3D::stencilTestOnlyDSS.Get(), stencilRef);
 
             // RS (임시)
-            D3D::deviceContext.Get()->RSSetState(m_states->CullNone());
+            D3D::deviceContext.Get()->RSSetState(D3D::cullNoneRS.Get());
 
             // Light Volume
             if (light.type == LightType::Point)

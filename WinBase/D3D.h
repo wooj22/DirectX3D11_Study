@@ -100,7 +100,8 @@ public:
     static ComPtr<ID3D11DepthStencilState>   disableDSS;                 // all disable
 
     // RS
-    static ComPtr<ID3D11RasterizerState>     cullfrontRS;              // cullmode = front
+    static ComPtr<ID3D11RasterizerState>     cullfrontRS;             // cullmode = front : 앞면 버리고 뒷면만 남김
+    static ComPtr<ID3D11RasterizerState>     cullNoneRS;              // 컬링 안하고 모든 영역을 그림
 
     // Sampler State
 	static ComPtr<ID3D11SamplerState>	     linearSamplerState;       // linear    

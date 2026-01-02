@@ -49,6 +49,7 @@ using namespace DirectX::SimpleMath;
 *  - Directional, Point, Spot 라이트를 모두 처리합니다.
 *  - Shaodw와 IBL은 sunLight로 설정된 하나의 directional에 대해서만 처리합니다.
 *  - Lighting Volume Rendering을 활용하여 관련없는 픽셀에 대한 PS 실행을 최소화합니다.
+*  - Additive Blending을 통해 라이트별로 실행한 결과를 RTV에 누적합니다.
 *
 * [ Light Volume ]
 *   - Directioanl : Full Screen Quad
@@ -61,6 +62,10 @@ using namespace DirectX::SimpleMath;
 *   Lighting Pass : Depth test off + Stencil test on + wrtie off
 *                  => Stencil Test를 통해 Stencil Pass에서 표시한 픽셀들에 대해서만
 *                     Pixel Shader를 실행합니다.
+* 
+* [ Light Volume Culling ]
+*  - 카메라가 볼륨 밖이면 : CullFront (앞면 버리고 뒷면만 남김)
+*  - 카메라가 볼륨 안이면 : CullBack (뒷면 버리고 앞면만 남김)
 
 * [ G-buffer ]
 *   RT0 : Albedo (RGB)

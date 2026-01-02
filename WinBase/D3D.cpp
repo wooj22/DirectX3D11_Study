@@ -75,6 +75,7 @@ ComPtr<ID3D11DepthStencilState>   D3D::depthTestStencilWriteDSS = nullptr;
 ComPtr<ID3D11DepthStencilState>   D3D::stencilTestOnlyDSS = nullptr;
 ComPtr<ID3D11DepthStencilState>   D3D::disableDSS = nullptr;
 ComPtr<ID3D11RasterizerState>     D3D::cullfrontRS = nullptr;
+ComPtr<ID3D11RasterizerState>     D3D::cullNoneRS = nullptr;
 ComPtr<ID3D11SamplerState>        D3D::linearSamplerState = nullptr;
 ComPtr<ID3D11SamplerState>        D3D::linearClamSamplerState = nullptr;
 ComPtr<ID3D11BlendState>          D3D::alphaBlendState = nullptr;
@@ -567,13 +568,23 @@ bool D3D::CresateStates()
         HR_T(device->CreateDepthStencilState(&dsDesc, disableDSS.GetAddressOf()));
     }
 
-    // create rasterizer state (skybox 큐브의 안쪽이 그려지도록 cull mode front)
+    // create RS (skybox 큐브의 안쪽이 그려지도록 cull mode front)
     {
         D3D11_RASTERIZER_DESC rsDesc = {};
         rsDesc.FillMode = D3D11_FILL_SOLID;
         rsDesc.CullMode = D3D11_CULL_FRONT;
         rsDesc.DepthClipEnable = TRUE;
         HR_T(device->CreateRasterizerState(&rsDesc, cullfrontRS.GetAddressOf()));
+    }
+
+    // create RS
+    {
+        D3D11_RASTERIZER_DESC rsDesc = {};
+        rsDesc.FillMode = D3D11_FILL_SOLID;
+        rsDesc.CullMode = D3D11_CULL_NONE;
+        rsDesc.FrontCounterClockwise = FALSE;
+        rsDesc.DepthClipEnable = TRUE;
+        HR_T(device->CreateRasterizerState(&rsDesc, cullNoneRS.GetAddressOf()));
     }
 
     // create smapler state
