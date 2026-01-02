@@ -59,22 +59,22 @@ using namespace DirectX::SimpleMath;
 *   - Spot : Light volume (Cone)     // InSide라면 Full Screen Quad
 *   
 *   라이트 볼륨 렌더링을 위해 Stencil Pass가 추가됩니다.
-*    1) Stencil Pass : Depth test On + Stencil write On 
+*    1) Stencil Pass : Depth test On/write off + Stencil test on/write On (test는 항상 통과)
                        => 라이트 볼륨을 그리며, 깊이테스트를 통해 표면이 있는 픽셀에만 Stencil을 write
-*    2) Lighting Pass : Depth test off + Stencil test on + wrtie off
+*    2) Lighting Pass : Depth disable + Stencil test on/wrtie off
 *                      => Stencil Test를 통해 Stencil Pass에서 표시한 픽셀들에 대해서만
 *                         Pixel Shader를 실행합니다.
-*                      => 카메라가 볼륨 내부에 있는 경우는 Full Screen Render를 진행한다.
+*                      => 카메라가 볼륨 내부에 있는 경우는 Full Screen Render를 진행합니다.
 * 
 * 
 * [ InSide / OutSide ]
-*  1) InSide : 카메라가 볼륨 밖안 있는 경우
+*  1) Camera Inside Volume : 카메라가 볼륨 안에 있는 경우
 *     라이팅 볼륨을 그리지 않고 그냥 FullScreenPass를 진행한다.
 *     - Stencil Test off, FullScreen Render
 *     - 모든 영역에 대해 PS를 실행하지만, 안전함
 *     - 이걸 CullFront + Z-Fail 처리 하려면 더 복잡함
 * 
-*  2) OutSide : 카메라가 볼륨 안에 있는 경우
+*  2) Camera Outside Volume : 카메라가 볼륨 밖에 있는 경우
 *     라이팅 볼륨 패스를 진행한다.
 *     - Stencil Test on + Lighting Volume Render
 *     - Stencil 패스에서 Stencil이 1로 기록된 픽셀에 대해서만 PS 실행
