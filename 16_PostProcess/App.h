@@ -169,7 +169,7 @@ public:
     virtual void OnUpdate() override;
     virtual void OnRender() override;
 
-    void StageSetting();
+    void DefualtStageSetting();
     void SceneHDRRender();
     void BloomProcess();
     void PostProcess();

@@ -53,7 +53,7 @@ void LightVolumeMesh::UpdateWolrd(Light& light)
 
 void LightVolumeMesh::Draw(Light& light, Camera& camera) const
 {
-    // cb upate
+    // CB upate
     D3D::transformCBData.world = XMMatrixTranspose(world);
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
@@ -73,7 +73,7 @@ void LightVolumeMesh::Draw(Light& light, Camera& camera) const
             D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
     }
     
-    // RS(ÀÓ½Ã) À§¿¡²¨ Á» ÀÌ»óÇÑµ¥ z-fail ¹®Á¦ÀÎÁö ¸ô°Ù
+    // TODO :: RS(ÀÓ½Ã) À§¿¡²¨ Á» ÀÌ»óÇÑµ¥ z-fail ¹®Á¦ÀÎÁö ¸ô°Ù
     D3D::deviceContext.Get()->RSSetState(D3D::cullNoneRS.Get());
 
     // pipeline set

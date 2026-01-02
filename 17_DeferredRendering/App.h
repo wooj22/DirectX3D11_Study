@@ -174,7 +174,7 @@ public:
     virtual void OnUpdate() override;
     virtual void OnRender() override;
 
-    void StageSetting();
+    void DefualtStageSetting();
     void SkyBoxRender();
     void ShadowMapPass();
     void GeometryPass();

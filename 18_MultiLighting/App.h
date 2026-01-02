@@ -80,7 +80,28 @@ using namespace DirectX::SimpleMath;
 class App : public WinApp
 {
 private:
-    ID3D11ShaderResourceView* finalBloomSRV = nullptr;
+    // light
+    vector<Light> lights;
+
+    // light volume
+    LightVolumeMesh* sphereVolume;
+    LightVolumeMesh* coneVolume;
+
+    // model
+    vector<StaticModel*> spheres;
+    vector<StaticModel*> torus;
+    StaticModel* floor = nullptr;
+    StaticModel* tree = nullptr;
+    StaticModel* zelda = nullptr;
+    RigidModel* character = nullptr;
+    SkeletalModel* girl = nullptr;
+    SkeletalModel* enemy = nullptr;
+
+    // matrix
+    Matrix view;
+    Matrix projection;
+    Matrix lightView;
+    Matrix lightProjection;
 
     // skybox
     SkyBox skybox1;
@@ -88,7 +109,7 @@ private:
     SkyBox skybox3;
     SkyBox skybox4;
 
-    // IBL texture
+    // IBL SRV
     ID3D11ShaderResourceView* IBL_IrradianceMap1 = nullptr;
     ID3D11ShaderResourceView* IBL_SpecularEnvMap1 = nullptr;
     ID3D11ShaderResourceView* IBL_BRDF_LUT1 = nullptr;
@@ -105,28 +126,8 @@ private:
     ID3D11ShaderResourceView* IBL_SpecularEnvMap4 = nullptr;
     ID3D11ShaderResourceView* IBL_BRDF_LUT4 = nullptr;
 
-    // light
-    vector<Light> lights;
-
-    // light volume model
-    LightVolumeMesh* sphereVolume;
-    LightVolumeMesh* coneVolume;
-
-    // models
-    vector<StaticModel*> spheres;
-    vector<StaticModel*> torus;
-    StaticModel* floor = nullptr;
-    StaticModel* tree = nullptr;
-    StaticModel* zelda = nullptr;
-    RigidModel* character = nullptr;
-    SkeletalModel* girl = nullptr;
-    SkeletalModel* enemy = nullptr;
-
-    // matrix
-    Matrix view;
-    Matrix projection;
-    Matrix lightView;
-    Matrix lightProjection;
+    // final bloom SRV
+    ID3D11ShaderResourceView* finalBloomSRV = nullptr;
 
     // camera
     float fovDeg = 60.0f;
@@ -194,7 +195,9 @@ public:
     virtual void OnUpdate() override;
     virtual void OnRender() override;
 
-    void StageSetting();
+private:
+    // Rendering Pass
+    void DefualtStageSetting();
     void SkyBoxRender();
     void ShadowMapPass();
     void GeometryPass();
@@ -203,16 +206,16 @@ public:
     void BloomProcess();
     void PostProcess();
 
-    // rendering pipeline
-    bool InitRenderPipeLine();
+    // Init, Uninit
+    bool InitResource();
     void UninitRenderPipeLine();
 
-    // gui 
+    // GUI
     bool InitGUI();
     void UninitGUI();
     void RenderGUI();
 
-    // debug draw
+    // Debug Draw
     void FrustumDebugDraw(const Matrix& frustumView, const Matrix& frustumProj,
         const Matrix& renderView, const Matrix& renderProj, FXMVECTOR color = Colors::Red);
 

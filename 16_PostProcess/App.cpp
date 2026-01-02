@@ -149,7 +149,7 @@ void App::OnUpdate()
 void App::OnRender()
 {
     // Stage Setting
-    StageSetting();         // binding + CB udpate
+    DefualtStageSetting();         // binding + CB udpate
         
     // Render
     SceneHDRRender();       // Gaometry + Lighting + Shadow
@@ -168,7 +168,7 @@ void App::OnRender()
 }
 
 // Stage Setting + CB update
-void App::StageSetting()
+void App::DefualtStageSetting()
 {
     // Stage Setting
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

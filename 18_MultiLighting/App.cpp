@@ -17,141 +17,16 @@ using namespace DirectX::SimpleMath;
 
 #define USE_FLIPMODE 1
 
+// sky box GUI cheaker
 static int currentSkybox = 3;
 const char* skyboxes[] = { "OutDoor", "InDoor", "BlueSky", "RedSky" };
 
-// Main process
+
 bool App::OnInit()
 {
     if (!D3D::Init(hWnd, screenWidth, screenHeight)) return false;
-    if (!InitRenderPipeLine()) return false;
+    if (!InitResource()) return false;
     if (!InitGUI()) return false;
-
-    // skybox
-    skybox1.InitRenderPipeLine(L"../Resource/Skybox/skybox_cubmap.dds");
-    skybox2.InitRenderPipeLine(L"../Resource/Skybox/indoorEnvHDR.dds");
-    skybox3.InitRenderPipeLine(L"../Resource/Skybox/blueskyEnvHDR.dds");
-    skybox4.InitRenderPipeLine(L"../Resource/Skybox/redskyEnvHDR.dds");
-
-    // model
-    floor = AssetManager::Instance().LoadStaticModelAsset("../Resource/Plane.fbx");
-    tree = AssetManager::Instance().LoadStaticModelAsset("../Resource/Tree.fbx");
-    zelda = AssetManager::Instance().LoadStaticModelAsset("../Resource/zeldaPosed001.fbx");
-    character = AssetManager::Instance().LoadRigidModelAsset("../Resource/char.fbx");
-    girl = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Girl.fbx");
-    enemy = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Enemy.fbx");
-
-    for (int i = 0; i < 10; i++)
-    {
-        auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/sphere.fbx");
-        spheres.push_back(model);
-        spheres[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 1000 });
-        spheres[i]->SetScale({ 0.85,0.85,0.85 });
-    }
-
-    for (int i = 0; i < 10; i++)
-    {
-        auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/Torus.fbx");
-        torus.push_back(model);
-        torus[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 500 });
-        torus[i]->SetScale({ 0.7,0.7,0.7 });
-    }
-
-    floor->SetPosition({ 0,-5, 600 });
-    floor->SetScale({ 0.5,0.3,0.5 });
-    tree->SetPosition({ -150, 0, 130 });
-    tree->SetScale({ 80, 80, 80 });
-    zelda->SetPosition({ -180,0,0 });
-    character->SetPosition({ -20,0,0 });
-    girl->SetPosition({ 100,0,70 });
-    enemy->SetPosition({ 250,0,20 });
-
-    // light
-    {
-        D3D::lightingCBData.indirectIntensity = 0.13f;
-        D3D::lightingCBData.useIBL = 1;
-
-        Light directionalLight(LightType::Directional, true);
-        directionalLight.direction = { -0.3f,-0.5, 1 };
-        directionalLight.color = { 1.0f, 0.9608f, 0.8980f };
-        directionalLight.intensity = 0.1f;
-        lights.push_back(directionalLight);
-
-        directionalLight.direction = { 0.3f,-0.5, 1 };
-        lights.push_back(directionalLight);
-
-        Light pointLight(LightType::Point);
-        pointLight.position = { -500,10,0 };
-        pointLight.color = { 1.0f, 0.0f, 0.0f };
-        pointLight.intensity = 1000.0f;
-        pointLight.range = 50.0f;
-        for (int i = 0; i < 3; i++)
-        {
-            pointLight.position.x += 300;
-            lights.push_back(pointLight);
-        }
-
-        Light spotLight(LightType::Spot);
-        spotLight.position = { -650, 100, 0 };
-        spotLight.direction = { 0,-1, 0 };
-        spotLight.color = { 0.0f, 0.0f, 1.0f };
-        spotLight.intensity = 1000.0f;
-        spotLight.range = 200.0f;
-        spotLight.innerAngle = 10.0f;
-        spotLight.outerAngle = 20.0f;
-        for (int i = 0; i < 3; i++)
-        {
-            spotLight.position.x += 300;
-            lights.push_back(spotLight);
-        }
-    }
-
-    // light volume
-    sphereVolume = CreateLightVolumeSphere(D3D::device.Get(), 24, 16);
-    coneVolume = CreateLightVolumeCone(D3D::device.Get(), 24, false);
-
-    // view maxtrix
-    camera.position = { 0, 80, -300 };
-    camera.moveSpeed = 300.f;
-    camera.GetViewMatrix(view);
-
-    // projection matrix 
-    projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
-
-    // debug settup
-    useBaseColorOverride = 1;
-    useMetallicOverride = 1;
-    useRoughnessOverride = 1;
-    D3D::materialCBData.metallicOverride = 0.0f;
-    D3D::materialCBData.roughnessOverride = 1.0f;
-    D3D::lightingCBData.useIBL = 1;
-    D3D::postprocessCBData.isHDR = 1;
-    D3D::postprocessCBData.contrast = 1.0;
-    D3D::postprocessCBData.saturation = 1.0;
-    D3D::screenFxCBData.enableWaterDistortion = 1;
-
-    // memory debugger
-    memory_debugger.Init();
-
-    // debug draw set up
-    m_states = std::make_unique<CommonStates>(D3D::device.Get());
-    m_batch = std::make_unique<PrimitiveBatch<VertexPositionColor>>(D3D::deviceContext.Get());
-    m_effect = std::make_unique<BasicEffect>((D3D::device.Get()));
-    m_effect->SetVertexColorEnabled(true);
-    m_effect->SetView(view);
-    m_effect->SetProjection(projection);
-    {
-        void const* shaderByteCode;
-        size_t byteCodeLength;
-
-        m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
-
-        HR_T(D3D::device.Get()->CreateInputLayout(
-            VertexPositionColor::InputElements, VertexPositionColor::InputElementCount,
-            shaderByteCode, byteCodeLength,
-            m_layout.ReleaseAndGetAddressOf())
-        );
-    }
 
     return true;
 }
@@ -166,15 +41,16 @@ void App::OnUninit()
 
 void App::OnUpdate()
 {
+    // View, Projection
+    camera.GetViewMatrix(view);
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 
-    // model update(local, model matrix)
+    // Local, Model, World
     character->Update();
     girl->Update();
     enemy->Update();
-    camera.GetViewMatrix(view);
     
-    // light update
+    // Shadow View, Projection
     Vector3 lightDir;
     for(auto & light : lights)
     {
@@ -194,17 +70,15 @@ void App::OnUpdate()
 
     // Trim
     if (Input::GetKeyDown('T'))
-    {
         memory_debugger.Trim();
-    }
 }
 
 void App::OnRender()
 {
-    // Stage Setting
-    StageSetting();         // binding + CB udpate
+    // Defualt Stage Setting
+    DefualtStageSetting();         // binding + CB udpate
 
-    // Render
+    // Render Pass
     ShadowMapPass();        // Shadow Map
     GeometryPass();         // G-Buffer
     StencilPass();          // Light Volume Stencil
@@ -228,7 +102,7 @@ void App::OnRender()
 }
 
 // Stage Setting + CB update
-void App::StageSetting()
+void App::DefualtStageSetting()
 {
     // Stage Setting
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -289,6 +163,10 @@ void App::StageSetting()
     D3D::deviceContext->UpdateSubresource(D3D::screenFxBuffer.Get(), 0, nullptr, &D3D::screenFxCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
 }
+
+////////////////////////////////////////////////////////////////////
+/////////////           Rendering Pass                //////////////
+////////////////////////////////////////////////////////////////////
 
 // [ Shadow Map Pass ]
 void App::ShadowMapPass()
@@ -372,7 +250,7 @@ void App::GeometryPass()
 
 // [ Stencil Pass ]
 //  Lighting Volume을 그리며 Stencil Buffer에 라이팅 연산 영역 마크
-//  라이팅 연산 영역이란 ? : 라이팅 볼륨 안의 픽셀중 G-Buffer의 깊이값보다 가까운 픽셀
+//  라이팅 연산 영역이란 ? 라이팅 볼륨 안의 픽셀중 G-Buffer의 깊이값보다 가까운 픽셀
 //  RTV는 바인딩 하지 않고 Stecnil Buffer만 사용한다.
 void App::StencilPass()
 {
@@ -532,7 +410,9 @@ void App::LightingPass()
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
 }
 
-
+// [ Skybox Render ]
+// Deferred 렌더링에서 스카이박스는 Lighting Pass 이후의 
+// 비어있는 픽셀에 기록한다. (Depth Test)
 void App::SkyBoxRender()
 {
     // RTV, DSV
@@ -762,24 +642,164 @@ void App::PostProcess()
     D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
 }
 
-bool App::InitRenderPipeLine()
+
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+
+
+
+bool App::InitResource()
 {
+    // skybox
+    {
+        skybox1.InitRenderPipeLine(L"../Resource/Skybox/skybox_cubmap.dds");
+        skybox2.InitRenderPipeLine(L"../Resource/Skybox/indoorEnvHDR.dds");
+        skybox3.InitRenderPipeLine(L"../Resource/Skybox/blueskyEnvHDR.dds");
+        skybox4.InitRenderPipeLine(L"../Resource/Skybox/redskyEnvHDR.dds");
+    }
+
+    // model
+    {
+        floor = AssetManager::Instance().LoadStaticModelAsset("../Resource/Plane.fbx");
+        tree = AssetManager::Instance().LoadStaticModelAsset("../Resource/Tree.fbx");
+        zelda = AssetManager::Instance().LoadStaticModelAsset("../Resource/zeldaPosed001.fbx");
+        character = AssetManager::Instance().LoadRigidModelAsset("../Resource/char.fbx");
+        girl = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Girl.fbx");
+        enemy = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Enemy.fbx");
+
+        for (int i = 0; i < 10; i++)
+        {
+            auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/sphere.fbx");
+            spheres.push_back(model);
+            spheres[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 1000 });
+            spheres[i]->SetScale({ 0.85,0.85,0.85 });
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/Torus.fbx");
+            torus.push_back(model);
+            torus[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 500 });
+            torus[i]->SetScale({ 0.7,0.7,0.7 });
+        }
+
+        floor->SetPosition({ 0,-5, 600 });
+        floor->SetScale({ 0.5,0.3,0.5 });
+        tree->SetPosition({ -150, 0, 130 });
+        tree->SetScale({ 80, 80, 80 });
+        zelda->SetPosition({ -180,0,0 });
+        character->SetPosition({ -20,0,0 });
+        girl->SetPosition({ 100,0,70 });
+        enemy->SetPosition({ 250,0,20 });
+    }
+
+    // light volume
+    {
+        sphereVolume = CreateLightVolumeSphere(D3D::device.Get(), 24, 16);
+        coneVolume = CreateLightVolumeCone(D3D::device.Get(), 24, false);
+    }
+
+    // light
+    {
+        D3D::lightingCBData.indirectIntensity = 0.05f;
+        D3D::lightingCBData.useIBL = 1;
+
+        Light directionalLight(LightType::Directional, true);
+        directionalLight.direction = { -0.3f,-0.5, 1 };
+        directionalLight.color = { 1.0f, 0.9608f, 0.8980f };
+        directionalLight.intensity = 0.1f;
+        lights.push_back(directionalLight);
+
+        directionalLight.direction = { 0.3f,-0.5, 1 };
+        lights.push_back(directionalLight);
+
+        Light pointLight(LightType::Point);
+        pointLight.position = { -500,10,0 };
+        pointLight.color = { 1.0f, 0.0f, 0.0f };
+        pointLight.intensity = 1000.0f;
+        pointLight.range = 50.0f;
+        for (int i = 0; i < 3; i++)
+        {
+            pointLight.position.x += 300;
+            lights.push_back(pointLight);
+        }
+
+        Light spotLight(LightType::Spot);
+        spotLight.position = { -650, 100, 0 };
+        spotLight.direction = { 0,-1, 0 };
+        spotLight.color = { 0.0f, 0.0f, 1.0f };
+        spotLight.intensity = 1000.0f;
+        spotLight.range = 200.0f;
+        spotLight.innerAngle = 10.0f;
+        spotLight.outerAngle = 20.0f;
+        for (int i = 0; i < 3; i++)
+        {
+            spotLight.position.x += 300;
+            lights.push_back(spotLight);
+        }
+    }
+
+    // view maxtrix
+    camera.position = { 0, 80, -300 };
+    camera.moveSpeed = 300.f;
+    camera.GetViewMatrix(view);
+
+    // projection matrix 
+    projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
+
+    // debug settup
+    useBaseColorOverride = 1;
+    useMetallicOverride = 1;
+    useRoughnessOverride = 1;
+    D3D::materialCBData.metallicOverride = 0.0f;
+    D3D::materialCBData.roughnessOverride = 1.0f;
+    D3D::lightingCBData.useIBL = 1;
+    D3D::postprocessCBData.isHDR = 1;
+    D3D::postprocessCBData.contrast = 1.0;
+    D3D::postprocessCBData.saturation = 1.0;
+    D3D::screenFxCBData.enableWaterDistortion = 1;
+
+    // memory debugger
+    memory_debugger.Init();
+
+    // debug draw set up
+    m_states = std::make_unique<CommonStates>(D3D::device.Get());
+    m_batch = std::make_unique<PrimitiveBatch<VertexPositionColor>>(D3D::deviceContext.Get());
+    m_effect = std::make_unique<BasicEffect>((D3D::device.Get()));
+    m_effect->SetVertexColorEnabled(true);
+    m_effect->SetView(view);
+    m_effect->SetProjection(projection);
+    {
+        void const* shaderByteCode;
+        size_t byteCodeLength;
+
+        m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+
+        HR_T(D3D::device.Get()->CreateInputLayout(
+            VertexPositionColor::InputElements, VertexPositionColor::InputElementCount,
+            shaderByteCode, byteCodeLength,
+            m_layout.ReleaseAndGetAddressOf())
+        );
+    }
+
     // IBL Textures Load
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapDiffuseHDR.dds", nullptr, &IBL_IrradianceMap1);
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap1);
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapBrdf.dds", nullptr, &IBL_BRDF_LUT1);
+    {
+        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapDiffuseHDR.dds", nullptr, &IBL_IrradianceMap1);
+        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap1);
+        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapBrdf.dds", nullptr, &IBL_BRDF_LUT1);
 
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorDiffuseHDR.dds", nullptr, &IBL_IrradianceMap2);
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap2);
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorBrdf.dds", nullptr, &IBL_BRDF_LUT2);
+        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorDiffuseHDR.dds", nullptr, &IBL_IrradianceMap2);
+        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap2);
+        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorBrdf.dds", nullptr, &IBL_BRDF_LUT2);
 
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/blueskyDiffuseHDR.dds", nullptr, &IBL_IrradianceMap3);
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/blueskySpecularHDR.dds", nullptr, &IBL_SpecularEnvMap3);
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/blueskyBrdf.dds", nullptr, &IBL_BRDF_LUT3);
+        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/blueskyDiffuseHDR.dds", nullptr, &IBL_IrradianceMap3);
+        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/blueskySpecularHDR.dds", nullptr, &IBL_SpecularEnvMap3);
+        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/blueskyBrdf.dds", nullptr, &IBL_BRDF_LUT3);
 
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/redskyDiffuseHDR.dds", nullptr, &IBL_IrradianceMap4);
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/redskySpecularHDR.dds", nullptr, &IBL_SpecularEnvMap4);
-    CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/redskyBrdf.dds", nullptr, &IBL_BRDF_LUT4);
+        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/redskyDiffuseHDR.dds", nullptr, &IBL_IrradianceMap4);
+        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/redskySpecularHDR.dds", nullptr, &IBL_SpecularEnvMap4);
+        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/redskyBrdf.dds", nullptr, &IBL_BRDF_LUT4);
+    }
 
     return true;
 }
@@ -787,6 +807,9 @@ bool App::InitRenderPipeLine()
 void App::UninitRenderPipeLine()
 {
     skybox1.UninitRenderPipeLine();
+    skybox2.UninitRenderPipeLine();
+    skybox3.UninitRenderPipeLine();
+    skybox4.UninitRenderPipeLine();
 }
 
 bool App::InitGUI()
@@ -1142,7 +1165,6 @@ void App::RenderGUI()
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
-// Frustum Debug Draw
 void App::FrustumDebugDraw(const Matrix& frustumView, const Matrix& frustumProj,
     const Matrix& renderView, const Matrix& renderProj, FXMVECTOR color)
 {
