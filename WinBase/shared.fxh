@@ -61,7 +61,7 @@ cbuffer TransformCB : register(b0)
     float3 cameraPos;
     int padding1;
     
-    matrix inverseProjection;
+    matrix invViewProjection;
     float2 screenSize;
     float2 padding2;
 }
@@ -297,7 +297,6 @@ struct PS_Skybox_INPUT
 struct PS_FullScreen_Input
 {
     float4 position : SV_POSITION;
-    float2 uv : TEXCOORD;
 };
 
 // ------------------------------------

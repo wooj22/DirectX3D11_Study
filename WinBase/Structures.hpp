@@ -86,7 +86,7 @@ struct alignas(16) TransformCB
     Vector3 cameraPos;
     int padding1;
 
-    Matrix inverseProjection;   // Deferred È­¸é ÁÂÇ¥ -> view ÁÂÇ¥ º¯È¯¿ë
+    Matrix invViewProjection;   // Deferred È­¸é ÁÂÇ¥ -> view ÁÂÇ¥ º¯È¯¿ë
     Vector2 screenSize;
     Vector2 padding2;
 };

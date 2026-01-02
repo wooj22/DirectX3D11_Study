@@ -31,7 +31,7 @@ float3 SampleSrc(float2 uv)
 
 float4 main(PS_FullScreen_Input input) : SV_TARGET
 {
-    float2 uv = input.uv;
+    float2 uv = input.position.xy / screenSize;
     float2 t = srcTexelSize;
 
     // 가벼운 9-tap (근사 가우시안)

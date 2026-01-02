@@ -27,12 +27,12 @@ SamplerState samplerLinear : register(s0);
 
 float4 main(PS_FullScreen_Input input) : SV_TARGET
 { 
-    float2 uv = input.uv;
+    float2 uv = input.position.xy / screenSize;
     float2 sampleUV = uv;
     
     // ScreenFx - Ripple (UV ¿Ö°î) // TODO :: delete
     if (enableRipple)
-        sampleUV = ApplyRippleFx(input.uv);
+        sampleUV = ApplyRippleFx(uv);
         
     // HDR sample
     float3 hdr = sceneHDR.Sample(samplerLinear, sampleUV).rgb;
@@ -80,11 +80,11 @@ float4 main(PS_FullScreen_Input input) : SV_TARGET
     // Plasma
         float3 screenFx = colorGrade;
     if (enablePlasmaOverlay)
-        screenFx = ApplyPlasmaOverlayFx(input.uv, screenFx);
+        screenFx = ApplyPlasmaOverlayFx(uv, screenFx);
     
     // Film Grain
     if(enableFilmGrain)
-        screenFx = ApplyFilmGrainFx(input.uv, screenFx);
+        screenFx = ApplyFilmGrainFx(uv, screenFx);
 
     
     // [ Defalut Gamma ] --------------------------

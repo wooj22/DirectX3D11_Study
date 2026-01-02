@@ -34,29 +34,29 @@ SamplerComparisonState samShadow : register(s1);
 SamplerState samLinearClamp : register(s2);
 
 
-
 float4 main(PS_FullScreen_Input input) : SV_TARGET
 {   
+    // UV
+    float2 uv = input.position.xy / screenSize;
+    
     // --- [ World Position ]  ----------------------------------
-    float depth = depthTex.Sample(samLinearClamp, input.uv).r;
+    float depth = depthTex.Sample(samLinearClamp, uv).r;
 
     if (depth >= 0.999999f)
         return 0;    // ¹è°æ ÇÈ¼¿ ½ºÅµ
     
-    float4 ndc;
-    ndc.x = input.uv.x * 2.0f - 1.0f;
-    ndc.y = (1.0f - input.uv.y) * 2.0f - 1.0f;
-    ndc.z = depth;
-    ndc.w = 1.0f;
-    
-    float4 worldH = mul(ndc, inverseProjection);
-    
-    float w = worldH.w;
-    float3 worldPos = worldH.xyz / w;
+    float4 clip;
+    clip.x = uv.x * 2.0f - 1.0f;
+    clip.y = (1.0f - uv.y) * 2.0f - 1.0f;
+    clip.z = depth;
+    clip.w = 1.0f;
+
+    float4 worldH = mul(clip, invViewProjection);
+    float3 worldPos = worldH.xyz / worldH.w;
 
     
     // --- [ Read Gbuffer ]  ----------------------------------
-    float2 samUV = input.uv;
+    float2 samUV = uv;
     
     float4 base_sample = albedoTex.Sample(samLinearClamp, samUV);
     float3 base_color  = base_sample.rgb;

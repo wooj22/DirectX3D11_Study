@@ -198,7 +198,7 @@ void App::DefualtStageSetting()
     D3D::transformCBData.shadowProjection = XMMatrixTranspose(lightProjection);
     D3D::transformCBData.cameraPos = camera.position;
     XMMATRIX invVP = XMMatrixInverse(nullptr, view * projection);
-    D3D::transformCBData.inverseProjection = XMMatrixTranspose(invVP);
+    D3D::transformCBData.invViewProjection = XMMatrixTranspose(invVP);
     D3D::transformCBData.screenSize = { (float)screenWidth,(float)screenHeight };
 
     D3D::lightingCBData.lightDirection = light.direction;
