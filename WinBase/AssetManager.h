@@ -35,9 +35,9 @@ private:
 
 public:
     // asset managing
-    void LoadStaticModelAsset(StaticModel* model, string filePath);
-    void LoadRigidModelAsset(RigidModel* model, string filePath);
-    void LoadSkeletalModelAsset(SkeletalModel* model, string filePath);
+    StaticModel* LoadStaticModelAsset(string filePath);
+    RigidModel* LoadRigidModelAsset(string filePath);
+    SkeletalModel* LoadSkeletalModelAsset(string filePath);
 
     // singleton instance getter
     static AssetManager& Instance()

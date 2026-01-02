@@ -56,6 +56,5 @@ private:
     // material texture debug
     static const wchar_t* TextureTypeToString(aiTextureType type);
     static void DebugMaterialTextures(aiMaterial* aiMaterial);
-
 };
 

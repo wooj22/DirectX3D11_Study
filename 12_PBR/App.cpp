@@ -24,30 +24,47 @@ bool App::OnInit()
     memory_debugger.Init();
     skybox1.InitRenderPipeLine(L"../Resource/skybox_cubmap.dds");
 
-    // model init
-    floor = new StaticModel();
-    zelda = new StaticModel();
-    character = new RigidModel();
-    girl = new SkeletalModel();
-    enemy = new SkeletalModel();
-    AssetManager::Instance().LoadStaticModelAsset(floor, "../Resource/Plane.fbx");
-    AssetManager::Instance().LoadStaticModelAsset(zelda, "../Resource/zeldaPosed001.fbx");
-    AssetManager::Instance().LoadRigidModelAsset(character, "../Resource/char.fbx");
-    AssetManager::Instance().LoadSkeletalModelAsset(girl, "../Resource/Girl.fbx");
-    AssetManager::Instance().LoadSkeletalModelAsset(enemy, "../Resource/Enemy.fbx");
+    // model
+    floor = AssetManager::Instance().LoadStaticModelAsset("../Resource/Plane.fbx");
+    tree = AssetManager::Instance().LoadStaticModelAsset("../Resource/Tree.fbx");
+    zelda = AssetManager::Instance().LoadStaticModelAsset("../Resource/zeldaPosed001.fbx");
+    character = AssetManager::Instance().LoadRigidModelAsset("../Resource/char.fbx");
+    girl = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Girl.fbx");
+    enemy = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Enemy.fbx");
 
-    floor->SetPosition({ 0,-5, 50 });
-    floor->SetScale({ 0.4,1,0.3 });
-    zelda->SetPosition({ -100,0,0 });
-    character->SetPosition({ 0,0,0 });
+    for (int i = 0; i < 10; i++)
+    {
+        auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/sphere.fbx");
+        spheres.push_back(model);
+        spheres[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 1000 });
+        spheres[i]->SetScale({ 0.85,0.85,0.85 });
+    }
+
+    for (int i = 0; i < 10; i++)
+    {
+        auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/Torus.fbx");
+        torus.push_back(model);
+        torus[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 500 });
+        torus[i]->SetScale({ 0.7,0.7,0.7 });
+    }
+
+    floor->SetPosition({ 0,-5, 600 });
+    floor->SetScale({ 0.5,0.3,0.5 });
+    tree->SetPosition({ -150, 0, 130 });
+    tree->SetScale({ 80, 80, 80 });
+    zelda->SetPosition({ -180,0,0 });
+    character->SetPosition({ -20,0,0 });
     girl->SetPosition({ 100,0,70 });
     enemy->SetPosition({ 250,0,20 });
 
-    // view init
+    // view maxtrix
     camera.position = { 0, 80, -300 };
-    camera.Far = 1000.0f;
+    camera.Far = 2000.0f;
     camera.moveSpeed = 300.f;
     camera.GetViewMatrix(view);
+
+    // projection matrix 
+    projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 
     // light init
     light.direction = { 0,-0.5,1 };
@@ -58,10 +75,9 @@ bool App::OnInit()
     D3D::postprocessCBData.isHDR = 0;
     D3D::postprocessCBData.defaultGamma = 1.7;
 
-    // projection init 
-    projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
-
+    // memory debugger
     memory_debugger.CheakMemoryUsage();
+
     return true;
 }
 
@@ -114,7 +130,6 @@ void App::OnRender()
     D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
     D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
     D3D::deviceContext->PSSetSamplers(2, 1, D3D::linearClamSamplerState.GetAddressOf());
-    //D3D::deviceContext->OMSetBlendState(D3D::blendState.Get(), blendFactor, sampleMask);
 
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
@@ -154,19 +169,26 @@ void App::OnRender()
 
 
     // 1. Depth Only Pass -------------------------------------
-    // static, rigid model
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_shadowMap);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(0, nullptr, D3D::shadowDSV.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+    // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(nullptr, NULL, 0);
 
+    tree->Render();
     zelda->Render();
     character->Render();
+    for (int i = 0; i < 10; i++)
+    {
+        spheres[i]->Render();
+        torus[i]->Render();
+    }
 
-    // skeletal model
+    // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
     girl->Render();
@@ -174,16 +196,23 @@ void App::OnRender()
 
 
     // 2. PBR Mesh Render Pass -------------------------------------
-    // static, rigid model
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     //D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_PBR.Get(), NULL, 0);
+    D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
+
+    // static, rigid model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PS_PBR.Get(), NULL, 0); 
-    D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
+    for (int i = 0; i < 10; i++)
+    {
+        spheres[i]->Render();
+        torus[i]->Render();
+    }
     floor->Render();
+    tree->Render();
     zelda->Render();
     character->Render();
 

@@ -33,33 +33,26 @@ bool App::OnInit()
     skybox4.InitRenderPipeLine(L"../Resource/Skybox/redskyEnvHDR.dds");
 
     // model
-    floor = new StaticModel();
-    tree = new StaticModel();
-    zelda = new StaticModel();
-    character = new RigidModel();
-    girl = new SkeletalModel();
-    enemy = new SkeletalModel();
-    
-    AssetManager::Instance().LoadStaticModelAsset(floor, "../Resource/Plane.fbx");
-    AssetManager::Instance().LoadStaticModelAsset(tree, "../Resource/Tree.fbx");
-    AssetManager::Instance().LoadStaticModelAsset(zelda, "../Resource/zeldaPosed001.fbx");
-    AssetManager::Instance().LoadRigidModelAsset(character, "../Resource/char.fbx");
-    AssetManager::Instance().LoadSkeletalModelAsset(girl, "../Resource/Girl.fbx");
-    AssetManager::Instance().LoadSkeletalModelAsset(enemy, "../Resource/Enemy.fbx");
+    floor = AssetManager::Instance().LoadStaticModelAsset("../Resource/Plane.fbx");
+    tree = AssetManager::Instance().LoadStaticModelAsset("../Resource/Tree.fbx");
+    zelda = AssetManager::Instance().LoadStaticModelAsset("../Resource/zeldaPosed001.fbx");
+    character = AssetManager::Instance().LoadRigidModelAsset("../Resource/char.fbx");
+    girl = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Girl.fbx");
+    enemy = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Enemy.fbx");
 
     for (int i = 0; i < 10; i++)
     {
-        spheres.push_back(new StaticModel());
-        AssetManager::Instance().LoadStaticModelAsset(spheres[i], "../Resource/sphere.fbx");
-        spheres[i]->SetPosition({-900 + i*200.0f, 50.0f, 1000 });
-        spheres[i]->SetScale({0.85,0.85,0.85});
+        auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/sphere.fbx");
+        spheres.push_back(model);
+        spheres[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 1000 });
+        spheres[i]->SetScale({ 0.85,0.85,0.85 });
     }
 
     for (int i = 0; i < 10; i++)
     {
-        torus.push_back(new StaticModel());
-        AssetManager::Instance().LoadStaticModelAsset(torus[i], "../Resource/Torus.fbx");
-        torus[i]->SetPosition({ -900 + i*200.0f, 50.0f, 500 });
+        auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/Torus.fbx");
+        torus.push_back(model);
+        torus[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 500 });
         torus[i]->SetScale({ 0.7,0.7,0.7 });
     }
 

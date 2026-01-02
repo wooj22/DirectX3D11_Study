@@ -24,21 +24,13 @@ bool App::OnInit()
     skybox1.InitRenderPipeLine(L"../Resource/skybox_cubmap.dds");
 
     // model init
-    warrior = new SkeletalModel();
-    AssetManager::Instance().LoadSkeletalModelAsset(warrior, "../Resource/Girl.fbx");
-
-    character = new SkeletalModel();
-    AssetManager::Instance().LoadSkeletalModelAsset(character, "../Resource/Enemy.fbx");
+    warrior = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Girl.fbx");
+    character = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Enemy.fbx");
+    zelda = AssetManager::Instance().LoadStaticModelAsset("../Resource/zeldaPosed001.fbx");
+    tree = AssetManager::Instance().LoadStaticModelAsset("../Resource/Tree.fbx");
+    boxHuman = AssetManager::Instance().LoadRigidModelAsset("../Resource/BoxHuman.fbx");
+    
     character->SetPosition({ 200, 0,0 });
-
-    zelda = new StaticModel();
-    AssetManager::Instance().LoadStaticModelAsset(zelda, "../Resource/zeldaPosed001.fbx");
-
-    tree = new StaticModel();
-    AssetManager::Instance().LoadStaticModelAsset(tree, "../Resource/Tree.fbx");
-
-    boxHuman = new RigidModel();
-    AssetManager::Instance().LoadRigidModelAsset(boxHuman, "../Resource/BoxHuman.fbx");
     zelda->SetPosition({ -150, 0,0 });
     boxHuman->SetPosition({ -320, 0,0 });
     boxHuman->SetScale({ 0.2,0.2,0.2 });

@@ -38,8 +38,10 @@ void DebugPrintSkeletalVertex(const SkeletalSubMesh& mesh)
     OutputDebugStringA(buf);
 }
 
-void AssetManager::LoadStaticModelAsset(StaticModel* model, string filePath)
+StaticModel* AssetManager::LoadStaticModelAsset(string filePath)
 {
+    StaticModel* model = new StaticModel();
+
     string key = filePath;
     auto it = asset_staticmodel.find(key);
 
@@ -49,7 +51,7 @@ void AssetManager::LoadStaticModelAsset(StaticModel* model, string filePath)
         // 인스턴스가 살아있다면 asset 넘겨주기
         if (!it->second.expired()) {
             model->model_data = it->second.lock();
-            return;
+            return model;
         }
         else asset_staticmodel.erase(it);
     }
@@ -59,11 +61,14 @@ void AssetManager::LoadStaticModelAsset(StaticModel* model, string filePath)
     asset_staticmodel[filePath] = model->model_data;
 
     OutputDebugStringA("Load Static Model\n");
+    return model;
 }
 
 
-void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
+RigidModel* AssetManager::LoadRigidModelAsset(string filePath)
 {
+    RigidModel* model = new RigidModel();
+
     string key = filePath;
     auto it = asset_rigidmodel.find(key);
 
@@ -75,7 +80,7 @@ void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
             model->model_data = it->second.lock();
             model->submesh_localMatrices.resize(model->model_data->subMeshes.size());
             model->submesh_modelMatrices.resize(model->model_data->subMeshes.size());
-            return;
+            return model;
         }
         else asset_rigidmodel.erase(it);
     }
@@ -85,11 +90,14 @@ void AssetManager::LoadRigidModelAsset(RigidModel* model, string filePath)
     asset_rigidmodel[filePath] = model->model_data;
 
     OutputDebugStringA("Load Rigid Model\n");
+    return model;
 }
 
 
-void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
+SkeletalModel* AssetManager::LoadSkeletalModelAsset(string filePath)
 {
+    SkeletalModel* model = new SkeletalModel();
+
     string key = filePath;
     auto it = asset_skeletalmodel.find(key);
 
@@ -101,7 +109,7 @@ void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
             model->model_data = it->second.lock();
             model->localMatrix.resize(model->model_data->skeleton.bones.size());
             model->poseMatrix.resize(model->model_data->skeleton.bones.size());
-            return;
+            return model;
         }
         else asset_skeletalmodel.erase(it);
     }
@@ -111,4 +119,5 @@ void AssetManager::LoadSkeletalModelAsset(SkeletalModel* model, string filePath)
     asset_skeletalmodel[filePath] = model->model_data;
 
     OutputDebugStringA("Load Skeletal Model\n");
+    return model;
 }

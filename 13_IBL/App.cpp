@@ -31,21 +31,35 @@ bool App::OnInit()
     skybox2.InitRenderPipeLine(L"../Resource/Skybox/indoorEnvHDR.dds");
 
     // model
-    floor = new StaticModel();
-    zelda = new StaticModel();
-    character = new RigidModel();
-    girl = new SkeletalModel();
-    enemy = new SkeletalModel();
-    AssetManager::Instance().LoadStaticModelAsset(floor, "../Resource/Plane.fbx");
-    AssetManager::Instance().LoadStaticModelAsset(zelda, "../Resource/zeldaPosed001.fbx");
-    AssetManager::Instance().LoadRigidModelAsset(character, "../Resource/char.fbx");
-    AssetManager::Instance().LoadSkeletalModelAsset(girl, "../Resource/Girl.fbx");
-    AssetManager::Instance().LoadSkeletalModelAsset(enemy, "../Resource/Enemy.fbx");
+    floor = AssetManager::Instance().LoadStaticModelAsset("../Resource/Plane.fbx");
+    tree = AssetManager::Instance().LoadStaticModelAsset("../Resource/Tree.fbx");
+    zelda = AssetManager::Instance().LoadStaticModelAsset("../Resource/zeldaPosed001.fbx");
+    character = AssetManager::Instance().LoadRigidModelAsset("../Resource/char.fbx");
+    girl = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Girl.fbx");
+    enemy = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Enemy.fbx");
 
-    floor->SetPosition({ 0,-5, 50 });
-    floor->SetScale({ 0.4,1,0.3 });
-    zelda->SetPosition({ -100,0,0 });
-    character->SetPosition({ 0,0,0 });
+    for (int i = 0; i < 10; i++)
+    {
+        auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/sphere.fbx");
+        spheres.push_back(model);
+        spheres[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 1000 });
+        spheres[i]->SetScale({ 0.85,0.85,0.85 });
+    }
+
+    for (int i = 0; i < 10; i++)
+    {
+        auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/Torus.fbx");
+        torus.push_back(model);
+        torus[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 500 });
+        torus[i]->SetScale({ 0.7,0.7,0.7 });
+    }
+
+    floor->SetPosition({ 0,-5, 600 });
+    floor->SetScale({ 0.5,0.3,0.5 });
+    tree->SetPosition({ -150, 0, 130 });
+    tree->SetScale({ 80, 80, 80 });
+    zelda->SetPosition({ -180,0,0 });
+    character->SetPosition({ -20,0,0 });
     girl->SetPosition({ 100,0,70 });
     enemy->SetPosition({ 250,0,20 });
 
@@ -208,8 +222,14 @@ void App::OnRender()
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(nullptr, NULL, 0);
+    tree->Render(); 
     zelda->Render();
     character->Render();
+    for (int i = 0; i < 10; i++)
+    {
+        spheres[i]->Render();
+        torus[i]->Render();
+    }
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
@@ -241,7 +261,14 @@ void App::OnRender()
         D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT2);
         break;
     }
+    
+    for (int i = 0; i < 10; i++)
+    {
+        spheres[i]->Render();
+        torus[i]->Render();
+    }
     floor->Render();
+    tree->Render();
     zelda->Render();
     character->Render();
 

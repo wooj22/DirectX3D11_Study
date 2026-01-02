@@ -43,7 +43,10 @@ private:
     Matrix lightProjection;
 
     // models
+    vector<StaticModel*> spheres;
+    vector<StaticModel*> torus;
     StaticModel* floor = nullptr;
+    StaticModel* tree = nullptr;
     StaticModel* zelda = nullptr;
     RigidModel* character = nullptr;
     SkeletalModel* girl = nullptr;

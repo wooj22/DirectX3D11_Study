@@ -26,10 +26,9 @@ bool App::OnInit()
     skybox1.InitRenderPipeLine(L"../Resource/skybox_cubmap.dds");
 
     // model init
-    SkeletalModel* warrior = new SkeletalModel();
-    AssetManager::Instance().LoadSkeletalModelAsset(warrior, "../Resource/Girl.fbx");       // 공유자원 사용
-    //ModelLoader::LoadSkeletalMesh(warrior, "../Resource/Girl.fbx");                       // 개별자원 사용 (메모리 낭비)
-    skeletals.push_back(warrior);
+    auto model = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Girl.fbx");    // 공유자원 사용
+    //ModelLoader::LoadSkeletalMesh(warrior, "../Resource/Girl.fbx");                        // 개별자원 사용 (메모리 낭비)
+    skeletals.push_back(model);
 
     // view init
     camera.position = { 0, 80, -450 };
@@ -63,10 +62,9 @@ void App::OnUpdate()
     // Create new model
     if (Input::GetKeyDown('1'))
     {
-        SkeletalModel* warrior = new SkeletalModel();
-        AssetManager::Instance().LoadSkeletalModelAsset(warrior, "../Resource/Girl.fbx");   // 공유자원 사용
+        auto model = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Girl.fbx");   // 공유자원 사용
         //ModelLoader::LoadSkeletalMesh(warrior, "../Resource/Girl.fbx");                   // 개별자원 사용 (메모리 낭비)
-        skeletals.push_back(warrior);
+        skeletals.push_back(model);
 
         static std::random_device rd;
         static std::mt19937 gen(rd());
@@ -78,7 +76,7 @@ void App::OnUpdate()
         Vector3 rotation(randRot(gen), randRot(gen), randRot(gen));
         Vector3 scale(randScale(gen), randScale(gen), randScale(gen));
         
-        warrior->SetTransform(pos, rotation, scale);    
+        model->SetTransform(pos, rotation, scale);
     }
 
     if (Input::GetKeyDown('2'))
