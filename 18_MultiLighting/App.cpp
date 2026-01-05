@@ -62,9 +62,9 @@ void App::OnUpdate()
     shadowCamera.Udate(camera, lightDir, shadowOrthoDesc);
 
     // Local, Model, World
-    character->Update();
-    girl->Update();
-    enemy->Update();
+    for (auto& m : static_models) m->Update();
+    for (auto& m : rigid_models) m->Update();
+    for (auto& m : skeletal_models) m->Update();
     
     // Memory Cheak
     memory_debugger.CheakMemoryUsage();
@@ -185,20 +185,14 @@ void App::ShadowMapPass()
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_ShadowDepth.Get(), NULL, 0);    // alpha discard
-    tree->Render();
-    zelda->Render();
-    character->Render();
-    for (int i = 0; i < 10; i++)
-    {
-        spheres[i]->Render();
-        torus[i]->Render();
-    }
+    for (auto& m : static_models) m->Render();
+    for (auto& m : rigid_models) m->Render();
+    
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
-    girl->Render();
-    enemy->Render();
+    for (auto& m : skeletal_models) m->Render();
 }
 
 // [ Geometry Pass ]
@@ -228,22 +222,13 @@ void App::GeometryPass()
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_Gbuffer.Get(), NULL, 0);
-
-    for (int i = 0; i < 10; i++)
-    {
-        spheres[i]->Render();
-        torus[i]->Render();
-    }
-    floor->Render();
-    tree->Render();
-    zelda->Render();
-    character->Render();
+    for (auto& m : static_models) m->Render();
+    for (auto& m : rigid_models) m->Render();
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
-    girl->Render();
-    enemy->Render();
+    for (auto& m : skeletal_models) m->Render();
 
     // RTV - SRV hazard 방지
     D3D::deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
@@ -548,17 +533,21 @@ bool App::InitResource()
 
     // model
     {
-        floor = AssetManager::Instance().LoadStaticModelAsset("../Resource/Plane.fbx");
-        tree = AssetManager::Instance().LoadStaticModelAsset("../Resource/Tree.fbx");
-        zelda = AssetManager::Instance().LoadStaticModelAsset("../Resource/zeldaPosed001.fbx");
-        character = AssetManager::Instance().LoadRigidModelAsset("../Resource/char.fbx");
-        girl = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Girl.fbx");
-        enemy = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Enemy.fbx");
+        StaticModel* floor = AssetManager::Instance().LoadStaticModelAsset("../Resource/Plane.fbx");
+        StaticModel* tree = AssetManager::Instance().LoadStaticModelAsset("../Resource/Tree.fbx");
+        StaticModel* zelda = AssetManager::Instance().LoadStaticModelAsset("../Resource/zeldaPosed001.fbx");
+        RigidModel* character = AssetManager::Instance().LoadRigidModelAsset("../Resource/char.fbx");
+        SkeletalModel* girl = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Girl.fbx");
+        SkeletalModel* enemy = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Enemy.fbx");
+
+        vector<StaticModel*> spheres;
+        vector<StaticModel*> torus;
 
         for (int i = 0; i < 10; i++)
         {
             auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/sphere.fbx");
             spheres.push_back(model);
+            static_models.push_back(model);
             spheres[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 1000 });
             spheres[i]->SetScale({ 0.85,0.85,0.85 });
         }
@@ -567,6 +556,7 @@ bool App::InitResource()
         {
             auto model = AssetManager::Instance().LoadStaticModelAsset("../Resource/Torus.fbx");
             torus.push_back(model);
+            static_models.push_back(model);
             torus[i]->SetPosition({ -900 + i * 200.0f, 50.0f, 500 });
             torus[i]->SetScale({ 0.7,0.7,0.7 });
         }
@@ -579,6 +569,14 @@ bool App::InitResource()
         character->SetPosition({ -20,0,0 });
         girl->SetPosition({ 100,0,70 });
         enemy->SetPosition({ 250,0,20 });
+
+        // render용 배열에 추가
+        static_models.push_back(floor);
+        static_models.push_back(tree);
+        static_models.push_back(zelda);
+        rigid_models.push_back(character);
+        skeletal_models.push_back(girl);
+        skeletal_models.push_back(enemy);
     }
 
     // light
@@ -846,11 +844,11 @@ void App::RenderGUI()
 
         ImGui::Text("");
         ImGui::Text("[Transform]");
-        ImGui::InputFloat3("position", &character->position.x);
-        ImGui::SliderAngle("Pitch", &character->rotation.x, 0.0f, 360.0f);
-        ImGui::SliderAngle("Yaw", &character->rotation.y, 0.0f, 360.0f);
-        ImGui::SliderAngle("Roll", &character->rotation.z, 0.0f, 360.0f);
-        ImGui::InputFloat3("scale", &character->scale.x);
+        ImGui::InputFloat3("position", &skeletal_models[0]->position.x);
+        ImGui::SliderAngle("Pitch", &skeletal_models[0]->rotation.x, 0.0f, 360.0f);
+        ImGui::SliderAngle("Yaw", &skeletal_models[0]->rotation.y, 0.0f, 360.0f);
+        ImGui::SliderAngle("Roll", &skeletal_models[0]->rotation.z, 0.0f, 360.0f);
+        ImGui::InputFloat3("scale", &skeletal_models[0]->scale.x);
         ImGui::End();
     }
 

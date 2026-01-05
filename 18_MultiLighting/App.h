@@ -109,15 +109,10 @@ private:
     Matrix view;
     Matrix projection;
 
-    // model
-    vector<StaticModel*> spheres;
-    vector<StaticModel*> torus;
-    StaticModel* floor = nullptr;
-    StaticModel* tree = nullptr;
-    StaticModel* zelda = nullptr;
-    RigidModel* character = nullptr;
-    SkeletalModel* girl = nullptr;
-    SkeletalModel* enemy = nullptr;
+    // models
+    vector<StaticModel*> static_models;
+    vector<RigidModel*> rigid_models;
+    vector<SkeletalModel*> skeletal_models;
 
     // skybox
     SkyBox skybox1;
