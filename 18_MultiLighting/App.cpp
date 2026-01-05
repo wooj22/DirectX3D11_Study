@@ -29,6 +29,8 @@ bool App::OnInit()
     if (!InitGUI()) return false;
 
     lightRenderer = new LightRenderer();
+    shadowRenderer = new ShadowRenderer();
+    geometryRenderer = new GeometryRenderer();
 
     return true;
 }
@@ -182,39 +184,7 @@ void App::ShadowMapPass()
 // G-Buffer에 라이팅에 필요한 정보 기록 (albedo, normal, metallic/roughness, emissive, position)
 void App::GeometryPass()
 {
-    // RTV, DSV
-    ID3D11RenderTargetView* gbuffers[] =
-    {
-        D3D::albedoRTV.Get(),
-        D3D::normalRTV.Get(),
-        D3D::metalRoughRTV.Get(),
-        D3D::emissiveRTV.Get()
-    };
-
-    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
-    D3D::deviceContext->OMSetRenderTargets(4, gbuffers, D3D::depthStencilView.Get());
-    D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-    D3D::deviceContext->OMSetDepthStencilState(D3D::defualtDSS.Get(), 0);
-
-    for (int i = 0; i < 4; i++)
-    {
-        D3D::deviceContext->ClearRenderTargetView(gbuffers[i], clearColor);
-    }
-
-    // Static, Rigid Model
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PS_Gbuffer.Get(), NULL, 0);
-    for (auto& m : static_models) m->Render();
-    for (auto& m : rigid_models) m->Render();
-
-    // Skeletal Model
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
-    for (auto& m : skeletal_models) m->Render();
-
-    // RTV - SRV hazard 방지
-    D3D::deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+    geometryRenderer->GeometryPass(view, projection, static_models, rigid_models, skeletal_models);
 }
 
 

@@ -7,12 +7,14 @@
 #include "../WinBase/SkeletalModel.h"
 #include "../WinBase/Material.h"
 #include "../WinBase/SkyBox.h"
-#include "../WinBase/MemoryDebugger.h"
-#include "../WinBase/DebugDraw.h"
 #include "../WinBase/DirectionalShadowCamera.h"
+#include "../WinBase/Light.h"
 #include "../WinBase/LightRenderer.h"
 #include "../WinBase/ShadowRenderer.h"
-#include "../WinBase/Light.h"
+#include "../WinBase/GeometryRenderer.h"
+#include "../WinBase/MemoryDebugger.h"
+#include "../WinBase/DebugDraw.h"
+
 
 #include <iostream>
 using namespace std;
@@ -99,6 +101,7 @@ private:
     // renderer
     LightRenderer* lightRenderer;
     ShadowRenderer* shadowRenderer;
+    GeometryRenderer* geometryRenderer;
 
     // light
     vector<Light> lights;
@@ -203,13 +206,14 @@ public:
     virtual void OnRender() override;
 
 private:
-    // Rendering Pass
     void DefualtStageSetting();
-    void SkyBoxRender();
+
+    // Rendering Pass
     void ShadowMapPass();
     void GeometryPass();
     void StencilPass();
     void LightingPass();
+    void SkyBoxRender();
     void BloomProcess();
     void PostProcess();
 

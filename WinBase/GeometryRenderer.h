@@ -1,0 +1,37 @@
+#pragma once
+#include <vector>
+#include <directxtk/simplemath.h>
+using namespace std;
+using namespace DirectX::SimpleMath;
+
+/*
+    [ Geometry Renderer ]
+
+     G-Buffer에 라이팅에 필요한 정보 기록합니다.
+     
+    ** G-buffer **
+     RT0 : Albedo (RGB)
+     RT1 : Normal (RGB)
+     RT2 : Metallic (R), Roughness (G)
+     RT3 : Emissive (RGB)
+     ★ Position은 대역폭 절약을 위해 G-buffer에 저장하지 않고,
+       Geometry Pass에서 사용한 뎁스 버퍼를 이용해 Position을 복원해 사용합니다.
+*/
+
+class StaticModel;
+class RigidModel;
+class SkeletalModel;
+
+class GeometryRenderer
+{
+private:
+    // g-buffer clear color
+    float clearColor[4] = { 0,0,0,1 };
+
+public:
+    void GeometryPass(const Matrix& view, const Matrix& projection,
+        const vector<StaticModel*>& static_models,
+        const vector<RigidModel*>& rigid_models,
+        const vector<SkeletalModel*>& skeletal_models);
+};
+
