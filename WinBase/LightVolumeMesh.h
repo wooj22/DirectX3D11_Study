@@ -10,10 +10,15 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 using Microsoft::WRL::ComPtr;
 
-struct Light;
+class Light;
 class Camera;
 struct Position_Vertex;
-enum class LightVolumeType;
+
+// Light Volume Type
+enum class LightVolumeType {
+    Sphere,
+    Cone
+};
 
 /*
     [Light Volume Mesh]
@@ -30,7 +35,7 @@ enum class LightVolumeType;
 
 class LightVolumeMesh
 {
-public:  
+private:  
     // volume type
     LightVolumeType volumeType;
 
@@ -46,12 +51,19 @@ public:
 
 public:
     LightVolumeMesh();
-    void UpdateWolrd(Light& light);
-    void Draw(Light& light, Camera& camera) const;
+    void UpdateWolrd(const Light& light);
+    void Draw(const Light& light, const Camera& camera) const;
 
     bool IsInsidePointLight(const Vector3& camPos, const Vector3& lightPos, float radius) const;
     bool IsInsideSpotLight(const Vector3& camPos, const Vector3& lightPos,
         const Vector3& lightDirNormalized, float range, float outerAngleRadians) const;
+
+
+    // friend
+    friend LightVolumeMesh* CreateLightVolumeSphere(ID3D11Device* device, int slices, int stacks);
+    friend LightVolumeMesh* CreateLightVolumeCone(ID3D11Device* device, int slices, bool capBase);
+    friend void CreateBuffer(ID3D11Device* device, const std::vector<Position_Vertex>& verts,
+        const std::vector<uint32_t>& indices, LightVolumeMesh* outMesh);
 };
 
 // ¿ÜºÎ Create Functions

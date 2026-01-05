@@ -137,7 +137,8 @@
     <ClInclude Include="DirectionalShadowCamera.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Input.h" />
-    <ClInclude Include="Light.hpp" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="LightRenderer.h" />
     <ClInclude Include="LightVolumeMesh.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MemoryDebugger.h" />
@@ -167,6 +168,8 @@
     <ClCompile Include="DirectionalShadowCamera.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="LightRenderer.cpp" />
     <ClCompile Include="LightVolumeMesh.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MemoryDebugger.cpp" />

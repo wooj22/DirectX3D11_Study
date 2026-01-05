@@ -1,5 +1,5 @@
 #include "LightVolumeMesh.h"
-#include "Light.hpp"
+#include "Light.h"
 #include "Structures.hpp"
 #include "Camera.h"
 #include "D3D.h"
@@ -9,11 +9,6 @@
 #include <cmath>
 #include <algorithm>
 
-// Light Volume Type
-enum class LightVolumeType {
-    Sphere,
-    Cone
-};
 
 LightVolumeMesh::LightVolumeMesh()
     : indexCount(0), stride(sizeof(Position_Vertex)),
@@ -21,7 +16,7 @@ LightVolumeMesh::LightVolumeMesh()
 {
 }
 
-void LightVolumeMesh::UpdateWolrd(Light& light)
+void LightVolumeMesh::UpdateWolrd(const Light& light)
 {
     if (volumeType == LightVolumeType::Sphere)
     {
@@ -51,7 +46,7 @@ void LightVolumeMesh::UpdateWolrd(Light& light)
     }
 }
 
-void LightVolumeMesh::Draw(Light& light, Camera& camera) const
+void LightVolumeMesh::Draw(const Light& light, const Camera& camera) const
 {
     // CB upate
     D3D::transformCBData.world = XMMatrixTranspose(world);
@@ -151,7 +146,7 @@ LightVolumeMesh* CreateLightVolumeCone(ID3D11Device* device, int slices, bool ca
 }
 
 // Vertex Buffer / Index Buffer
-static void CreateBuffer(ID3D11Device* device, const std::vector<Position_Vertex>& verts,
+void CreateBuffer(ID3D11Device* device, const std::vector<Position_Vertex>& verts,
     const std::vector<uint32_t>& indices, LightVolumeMesh* outMesh)
 {
     // VB
@@ -180,7 +175,7 @@ static void CreateBuffer(ID3D11Device* device, const std::vector<Position_Vertex
 }
 
 // Sphere Build Helper
-static void BuildUnitSphere(int slices, int stacks,
+void BuildUnitSphere(int slices, int stacks,
     std::vector<Position_Vertex>& outVerts, std::vector<uint32_t>& outIndices)
 {
     outVerts.clear();
@@ -258,7 +253,7 @@ static void BuildUnitSphere(int slices, int stacks,
 }
 
 // Cone(+z) Build Helper
-static void BuildUnitCone(int slices, bool capBase, 
+void BuildUnitCone(int slices, bool capBase, 
     std::vector<Position_Vertex>& outVerts, std::vector<uint32_t>& outIndices)
 {
     outVerts.clear();

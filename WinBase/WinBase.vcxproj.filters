@@ -55,9 +55,6 @@
     <Filter Include="02. Mesh\MeshAsset">
       <UniqueIdentifier>{746bad31-e215-44ad-84a2-ab71a17f3d54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Mesh\LightVolumeMesh">
-      <UniqueIdentifier>{d7390ccd-3139-4c00-9746-dbc1085498ec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="07. Shadow">
       <UniqueIdentifier>{faeeb225-2ed0-4881-ba3a-edf392a006de}</UniqueIdentifier>
     </Filter>
@@ -84,6 +81,18 @@
     </Filter>
     <Filter Include="11. Debugger\DebugDraw">
       <UniqueIdentifier>{c65398b7-7f36-4c83-a57b-5a1fc3ca0578}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Light\LightVolumeMesh">
+      <UniqueIdentifier>{d7390ccd-3139-4c00-9746-dbc1085498ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Light\Light">
+      <UniqueIdentifier>{47736204-b589-4418-ba2f-fc8fd453e5aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Light\Old%28Legucy%29">
+      <UniqueIdentifier>{ff955e20-9d2f-4a21-867d-07d68b9a53ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Light\LightRenderer">
+      <UniqueIdentifier>{b7eff898-ae09-4977-be98-d764412f7edf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -119,9 +128,6 @@
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>04. Material</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectionalLight.hpp">
-      <Filter>06. Light</Filter>
     </ClInclude>
     <ClInclude Include="RigidModel.h">
       <Filter>02. Mesh\Rigid</Filter>
@@ -162,17 +168,23 @@
     <ClInclude Include="DebugDraw.h">
       <Filter>11. Debugger\DebugDraw</Filter>
     </ClInclude>
-    <ClInclude Include="Light.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="LightVolumeMesh.h">
-      <Filter>02. Mesh\LightVolumeMesh</Filter>
+      <Filter>06. Light\LightVolumeMesh</Filter>
     </ClInclude>
     <ClInclude Include="Structures.hpp">
       <Filter>01. D3D</Filter>
     </ClInclude>
     <ClInclude Include="DirectionalShadowCamera.h">
       <Filter>07. Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.hpp">
+      <Filter>06. Light\Old%28Legucy%29</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>06. Light\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="LightRenderer.h">
+      <Filter>06. Light\LightRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -237,10 +249,16 @@
       <Filter>11. Debugger\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="LightVolumeMesh.cpp">
-      <Filter>02. Mesh\LightVolumeMesh</Filter>
+      <Filter>06. Light\LightVolumeMesh</Filter>
     </ClCompile>
     <ClCompile Include="DirectionalShadowCamera.cpp">
       <Filter>07. Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>06. Light\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="LightRenderer.cpp">
+      <Filter>06. Light\LightRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -6,12 +6,12 @@
 #include "../WinBase/RigidModel.h"
 #include "../WinBase/SkeletalModel.h"
 #include "../WinBase/Material.h"
-#include "../WinBase/Light.hpp"
-#include "../WinBase/LightVolumeMesh.h"
 #include "../WinBase/SkyBox.h"
 #include "../WinBase/MemoryDebugger.h"
 #include "../WinBase/DebugDraw.h"
 #include "../WinBase/DirectionalShadowCamera.h"
+#include "../WinBase/LightRenderer.h"
+#include "../WinBase/Light.h"
 
 #include <iostream>
 using namespace std;
@@ -98,13 +98,16 @@ private:
     // light
     vector<Light> lights;
 
+    // light Renderer
+    LightRenderer* lightRenderer;
+
     // shadowmap
     DirectionalShadowCamera shadowCamera;
     ShadowOrthoDesc shadowOrthoDesc;
 
-    // light volume
-    LightVolumeMesh* sphereVolume;
-    LightVolumeMesh* coneVolume;
+    // camera
+    Matrix view;
+    Matrix projection;
 
     // model
     vector<StaticModel*> spheres;
@@ -115,10 +118,6 @@ private:
     RigidModel* character = nullptr;
     SkeletalModel* girl = nullptr;
     SkeletalModel* enemy = nullptr;
-
-    // matrix
-    Matrix view;
-    Matrix projection;
 
     // skybox
     SkyBox skybox1;
@@ -146,6 +145,8 @@ private:
     // final bloom SRV
     ID3D11ShaderResourceView* finalBloomSRV = nullptr;
 
+
+    // Debug -----------------------------------------
     // camera
     float fovDeg = 60.0f;
 
