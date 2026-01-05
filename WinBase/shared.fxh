@@ -297,6 +297,7 @@ struct PS_Skybox_INPUT
 struct PS_FullScreen_Input
 {
     float4 position : SV_POSITION;
+    float2 uv : TEXCOORD;
 };
 
 // ------------------------------------

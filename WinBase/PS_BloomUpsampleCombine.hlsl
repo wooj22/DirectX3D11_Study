@@ -21,8 +21,7 @@ SamplerState samLinearClamp : register(s2);
 
 float4 main(PS_FullScreen_Input input) : SV_TARGET
 {
-    float2 uv = input.position.xy / screenSize;
-
+    float2 uv = input.uv;
     float3 big = bloomBig.SampleLevel(samLinearClamp, uv, srcMip).rgb;
     float3 small = bloomSmall.SampleLevel(samLinearClamp, uv, srcMip + 1).rgb; // bilinear พ๗ป๙วร
 

@@ -34,8 +34,8 @@ float PrefilterMask(float lum, float threshold, float knee01)
 
 float4 main(PS_FullScreen_Input input) : SV_TARGET
 {
-    float2 uv = input.position.xy / screenSize;
-    float3 hdr = sceneHDR.Sample(samLinearClamp, uv).rgb;
+    float2 uv = input.uv;
+    float3 hdr = sceneHDR.Sample(samLinearClamp, input.uv).rgb;
 
     // ³Ê¹« ¹àÀº°ª clamp
     if (bloom_clamp > 0.0f)
