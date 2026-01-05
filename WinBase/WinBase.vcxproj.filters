@@ -207,6 +207,9 @@
     <ClInclude Include="D3D.h">
       <Filter>01. Render\D3D</Filter>
     </ClInclude>
+    <ClInclude Include="ShadowRenderer.h">
+      <Filter>01. Render\Renderer\ShadowRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApp.cpp">
@@ -280,6 +283,9 @@
     </ClCompile>
     <ClCompile Include="D3D.cpp">
       <Filter>01. Render\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowRenderer.cpp">
+      <Filter>01. Render\Renderer\ShadowRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

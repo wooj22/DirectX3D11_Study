@@ -11,6 +11,7 @@
 #include "../WinBase/DebugDraw.h"
 #include "../WinBase/DirectionalShadowCamera.h"
 #include "../WinBase/LightRenderer.h"
+#include "../WinBase/ShadowRenderer.h"
 #include "../WinBase/Light.h"
 
 #include <iostream>
@@ -95,11 +96,12 @@ using namespace DirectX::SimpleMath;
 class App : public WinApp
 {
 private:
+    // renderer
+    LightRenderer* lightRenderer;
+    ShadowRenderer* shadowRenderer;
+
     // light
     vector<Light> lights;
-
-    // light Renderer
-    LightRenderer* lightRenderer;
 
     // shadowmap
     DirectionalShadowCamera shadowCamera;

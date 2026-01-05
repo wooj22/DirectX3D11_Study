@@ -148,6 +148,7 @@
     <ClInclude Include="RigidModel.h" />
     <ClInclude Include="RigidModelAsset.hpp" />
     <ClInclude Include="RigidSubMesh.h" />
+    <ClInclude Include="ShadowRenderer.h" />
     <ClInclude Include="SkeletalModel.h" />
     <ClInclude Include="SkeletalModelAsset.hpp" />
     <ClInclude Include="SkeletalSubMesh.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="RigidModel.cpp" />
     <ClCompile Include="RigidSubMesh.cpp" />
+    <ClCompile Include="ShadowRenderer.cpp" />
     <ClCompile Include="SkeletalModel.cpp" />
     <ClCompile Include="SkeletalSubMesh.cpp" />
     <ClCompile Include="SkyBox.cpp" />

@@ -173,26 +173,9 @@ void App::DefualtStageSetting()
 // [ Shadow Map Pass ]
 void App::ShadowMapPass()
 {
-    D3D::transformCBData.view = XMMatrixTranspose(view);
-
-    // RTV, DSV
-    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_shadowMap);
-    D3D::deviceContext->OMSetRenderTargets(0, nullptr, D3D::shadowDSV.Get());
-    D3D::deviceContext->OMSetDepthStencilState(D3D::defualtDSS.Get(), 0);
-    D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-    // Static, Rigid Model
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PS_ShadowDepth.Get(), NULL, 0);    // alpha discard
-    for (auto& m : static_models) m->Render();
-    for (auto& m : rigid_models) m->Render();
-    
-
-    // Skeletal Model
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
-    for (auto& m : skeletal_models) m->Render();
+    Matrix view = shadowCamera.GetView();
+    Matrix projection = shadowCamera.GetProjection();
+    shadowRenderer->ShadowMapPass(view, projection, static_models, rigid_models, skeletal_models);
 }
 
 // [ Geometry Pass ]
