@@ -132,7 +132,7 @@ void App::DefualtStageSetting()
     D3D::deviceContext->PSSetConstantBuffers(8, 1, D3D::screenFxBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(9, 1, D3D::bloomBuffer.GetAddressOf());
 
-    // CB Update
+    // CB Update // TODO 각 렌더러 모듈의 알맞은데서 업데이트 시키기
     D3D::transformCBData.view = XMMatrixTranspose(view);
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::transformCBData.shadowView = XMMatrixTranspose(shadowCamera.GetView());
