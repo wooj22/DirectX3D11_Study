@@ -16,9 +16,6 @@
     <Filter Include="99. Module">
       <UniqueIdentifier>{f88a6b82-7cb9-46b5-9b30-31bca36e08ed}</UniqueIdentifier>
     </Filter>
-    <Filter Include="07. Camera">
-      <UniqueIdentifier>{11c18ae4-18bd-4566-a39a-41a45d6172d1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. Skeleton">
       <UniqueIdentifier>{f9d34f9f-4ca7-4769-ba04-b25e10c55954}</UniqueIdentifier>
     </Filter>
@@ -43,27 +40,6 @@
     <Filter Include="98. Shaders\PixelShader">
       <UniqueIdentifier>{fcced5c6-e224-4bfc-8bce-318e9af81af6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="08. SkyBox">
-      <UniqueIdentifier>{44229881-09b6-497c-b635-10920a56faaa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="09. Resource Manager">
-      <UniqueIdentifier>{831f3da5-ebe6-40a2-b7b0-f93626ce3d47}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="09. Resource Manager\AssetManager">
-      <UniqueIdentifier>{7a6bd753-f479-45fb-8c86-a974586fc682}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="09. Resource Manager\ModelLoader">
-      <UniqueIdentifier>{693aa5dc-b422-402d-9123-9c682806d4dc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="10. Debugger">
-      <UniqueIdentifier>{a8c86706-2c17-455b-8b79-1ff57f3961a0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="10. Debugger\MemoryDebugger">
-      <UniqueIdentifier>{88cb7635-fe67-4418-a62f-dadfef4274b2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="10. Debugger\DebugDraw">
-      <UniqueIdentifier>{c65398b7-7f36-4c83-a57b-5a1fc3ca0578}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. Mesh">
       <UniqueIdentifier>{f1cb7515-c4aa-4ac9-8b1a-f494df7da15a}</UniqueIdentifier>
     </Filter>
@@ -82,6 +58,33 @@
     <Filter Include="02. Mesh\LightVolumeMesh">
       <UniqueIdentifier>{d7390ccd-3139-4c00-9746-dbc1085498ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="07. Shadow">
+      <UniqueIdentifier>{faeeb225-2ed0-4881-ba3a-edf392a006de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Camera">
+      <UniqueIdentifier>{11c18ae4-18bd-4566-a39a-41a45d6172d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="09. SkyBox">
+      <UniqueIdentifier>{44229881-09b6-497c-b635-10920a56faaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="10. Resource Manager">
+      <UniqueIdentifier>{831f3da5-ebe6-40a2-b7b0-f93626ce3d47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="10. Resource Manager\AssetManager">
+      <UniqueIdentifier>{7a6bd753-f479-45fb-8c86-a974586fc682}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="10. Resource Manager\ModelLoader">
+      <UniqueIdentifier>{693aa5dc-b422-402d-9123-9c682806d4dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="11. Debugger">
+      <UniqueIdentifier>{a8c86706-2c17-455b-8b79-1ff57f3961a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="11. Debugger\MemoryDebugger">
+      <UniqueIdentifier>{88cb7635-fe67-4418-a62f-dadfef4274b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="11. Debugger\DebugDraw">
+      <UniqueIdentifier>{c65398b7-7f36-4c83-a57b-5a1fc3ca0578}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinApp.h">
@@ -91,7 +94,7 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>07. Camera</Filter>
+      <Filter>08. Camera</Filter>
     </ClInclude>
     <ClInclude Include="D3D.h">
       <Filter>01. D3D</Filter>
@@ -136,7 +139,7 @@
       <Filter>02. Mesh\Skeletal</Filter>
     </ClInclude>
     <ClInclude Include="SkyBox.h">
-      <Filter>08. SkyBox</Filter>
+      <Filter>09. SkyBox</Filter>
     </ClInclude>
     <ClInclude Include="RigidModelAsset.hpp">
       <Filter>02. Mesh\MeshAsset</Filter>
@@ -148,16 +151,16 @@
       <Filter>02. Mesh\MeshAsset</Filter>
     </ClInclude>
     <ClInclude Include="AssetManager.h">
-      <Filter>09. Resource Manager\AssetManager</Filter>
+      <Filter>10. Resource Manager\AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="ModelLoader.h">
-      <Filter>09. Resource Manager\ModelLoader</Filter>
+      <Filter>10. Resource Manager\ModelLoader</Filter>
     </ClInclude>
     <ClInclude Include="MemoryDebugger.h">
-      <Filter>10. Debugger\MemoryDebugger</Filter>
+      <Filter>11. Debugger\MemoryDebugger</Filter>
     </ClInclude>
     <ClInclude Include="DebugDraw.h">
-      <Filter>10. Debugger\DebugDraw</Filter>
+      <Filter>11. Debugger\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="Light.hpp">
       <Filter>헤더 파일</Filter>
@@ -168,6 +171,9 @@
     <ClInclude Include="Structures.hpp">
       <Filter>01. D3D</Filter>
     </ClInclude>
+    <ClInclude Include="DirectionalShadowCamera.h">
+      <Filter>07. Shadow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApp.cpp">
@@ -177,7 +183,7 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>07. Camera</Filter>
+      <Filter>08. Camera</Filter>
     </ClCompile>
     <ClCompile Include="D3D.cpp">
       <Filter>01. D3D</Filter>
@@ -216,22 +222,25 @@
       <Filter>02. Mesh\Skeletal</Filter>
     </ClCompile>
     <ClCompile Include="SkyBox.cpp">
-      <Filter>08. SkyBox</Filter>
+      <Filter>09. SkyBox</Filter>
     </ClCompile>
     <ClCompile Include="AssetManager.cpp">
-      <Filter>09. Resource Manager\AssetManager</Filter>
+      <Filter>10. Resource Manager\AssetManager</Filter>
     </ClCompile>
     <ClCompile Include="ModelLoader.cpp">
-      <Filter>09. Resource Manager\ModelLoader</Filter>
+      <Filter>10. Resource Manager\ModelLoader</Filter>
     </ClCompile>
     <ClCompile Include="MemoryDebugger.cpp">
-      <Filter>10. Debugger\MemoryDebugger</Filter>
+      <Filter>11. Debugger\MemoryDebugger</Filter>
     </ClCompile>
     <ClCompile Include="DebugDraw.cpp">
-      <Filter>10. Debugger\DebugDraw</Filter>
+      <Filter>11. Debugger\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="LightVolumeMesh.cpp">
       <Filter>02. Mesh\LightVolumeMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalShadowCamera.cpp">
+      <Filter>07. Shadow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -134,6 +134,7 @@
     <ClInclude Include="D3D.h" />
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="DirectionalLight.hpp" />
+    <ClInclude Include="DirectionalShadowCamera.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Light.hpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="D3D.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
+    <ClCompile Include="DirectionalShadowCamera.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="LightVolumeMesh.cpp" />

@@ -11,6 +11,7 @@
 #include "../WinBase/SkyBox.h"
 #include "../WinBase/MemoryDebugger.h"
 #include "../WinBase/DebugDraw.h"
+#include "../WinBase/DirectionalShadowCamera.h"
 
 #include <iostream>
 using namespace std;
@@ -97,6 +98,10 @@ private:
     // light
     vector<Light> lights;
 
+    // shadowmap
+    DirectionalShadowCamera shadowCamera;
+    ShadowOrthoDesc shadowOrthoDesc;
+
     // light volume
     LightVolumeMesh* sphereVolume;
     LightVolumeMesh* coneVolume;
@@ -114,8 +119,6 @@ private:
     // matrix
     Matrix view;
     Matrix projection;
-    Matrix lightView;
-    Matrix lightProjection;
 
     // skybox
     SkyBox skybox1;
@@ -145,14 +148,6 @@ private:
 
     // camera
     float fovDeg = 60.0f;
-
-    // shadow debug
-    float lookPointDist = 500.f;
-    float shadowLightDist = 1000.f;
-    float shadowWidth = 3000.0f;
-    float shadowHeight = 3000.0f;
-    float shadowNear = 0.01f;
-    float shadowFar = 5000.0f;
 
     // PBR debug
     bool useBaseColorOverride = 0;

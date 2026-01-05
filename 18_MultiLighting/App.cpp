@@ -45,14 +45,9 @@ void App::OnUpdate()
     camera.GetViewMatrix(view);
     projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
 
-    // Local, Model, World
-    character->Update();
-    girl->Update();
-    enemy->Update();
-    
     // Shadow View, Projection
     Vector3 lightDir;
-    for(auto & light : lights)
+    for (auto& light : lights)
     {
         if (light.isSunLight)
         {
@@ -60,10 +55,14 @@ void App::OnUpdate()
             break;
         }
     }
-    Vector3 sceneCenter = camera.position + camera.GetForward() * lookPointDist;
-    Vector3 lightPos = sceneCenter - lightDir * shadowLightDist;
-    lightView = XMMatrixLookAtLH(lightPos, sceneCenter, Vector3::Up);
-    lightProjection = XMMatrixOrthographicLH(shadowWidth, shadowHeight, shadowNear, shadowFar);
+    shadowCamera.Udate(camera, lightDir, shadowOrthoDesc);
+
+
+    // Local, Model, World
+    character->Update();
+    girl->Update();
+    enemy->Update();
+    
 
     // Memory Cheak
     memory_debugger.CheakMemoryUsage();
@@ -91,7 +90,8 @@ void App::OnRender()
     if (frustumON)
     {
         //FrustumDebugDraw(view, projection, view, projection, Colors::FloralWhite);
-        FrustumDebugDraw(lightView, lightProjection, view, projection, Colors::GreenYellow);
+        FrustumDebugDraw(shadowCamera.GetView(), shadowCamera.GetProjection(),
+            view, projection, Colors::GreenYellow);
     }
 
     // GUI
@@ -125,8 +125,8 @@ void App::DefualtStageSetting()
     // CB Update
     D3D::transformCBData.view = XMMatrixTranspose(view);
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
-    D3D::transformCBData.shadowView = XMMatrixTranspose(lightView);
-    D3D::transformCBData.shadowProjection = XMMatrixTranspose(lightProjection);
+    D3D::transformCBData.shadowView = XMMatrixTranspose(shadowCamera.GetView());
+    D3D::transformCBData.shadowProjection = XMMatrixTranspose(shadowCamera.GetProjection());
     D3D::transformCBData.cameraPos = camera.position;
     XMMATRIX invVP = XMMatrixInverse(nullptr, view * projection);
     D3D::transformCBData.invViewProjection = XMMatrixTranspose(invVP);
@@ -1019,15 +1019,15 @@ void App::RenderGUI()
         ImGui::Begin("[Shadow]");
         ImGui::Text("[Shadow Frustum]");
         ImGui::Checkbox("Frustum Debug ON", &frustumON);
-        ImGui::SliderFloat("Near", &shadowNear, 0.01f, 10000.0f);
-        ImGui::SliderFloat("Far", &shadowFar, 0.01f, 10000.0f);
-        ImGui::InputFloat("Width", &shadowWidth);
-        ImGui::InputFloat("Height", &shadowHeight);
+        ImGui::SliderFloat("Near", &shadowOrthoDesc.shadowNear, 0.01f, 10000.0f);
+        ImGui::SliderFloat("Far", &shadowOrthoDesc.shadowFar, 0.01f, 10000.0f);
+        ImGui::InputFloat("Width", &shadowOrthoDesc.shadowWidth);
+        ImGui::InputFloat("Height", &shadowOrthoDesc.shadowHeight);
 
         ImGui::Text("");
         ImGui::Text("[Shadow Light Pos]");
-        ImGui::SliderFloat("lookPointDist", &lookPointDist, 1.f, 5000.0f);
-        ImGui::SliderFloat("shadowLightDist", &shadowLightDist, 1.f, 5000.0f);
+        ImGui::SliderFloat("lookPointDist", &shadowOrthoDesc.lookPointDist, 1.f, 5000.0f);
+        ImGui::SliderFloat("shadowLightDist", &shadowOrthoDesc.shadowLightDist, 1.f, 5000.0f);
         ImGui::End();
     }
 
