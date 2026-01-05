@@ -52,6 +52,7 @@ ComPtr<ID3D11ShaderResourceView>   D3D::metalRoughSRV = nullptr;
 ComPtr<ID3D11ShaderResourceView>   D3D::emissiveSRV = nullptr;
 ComPtr<ID3D11ShaderResourceView>   D3D::depthSRV = nullptr;
 
+ComPtr<ID3D11ShaderResourceView>  D3D::finalBloomSRV = nullptr;
 UINT D3D::bloomW = 0;
 UINT D3D::bloomH = 0;
 UINT D3D::bloomMipCount = 1;

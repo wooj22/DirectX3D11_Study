@@ -75,6 +75,7 @@ public:
     static ComPtr<ID3D11ShaderResourceView>  depthSRV;
 
     // Bloom
+    static ComPtr<ID3D11ShaderResourceView>  finalBloomSRV;     // √÷¡æ Bloom SRV
     static UINT bloomW;
     static UINT bloomH;
     static UINT bloomMipCount;

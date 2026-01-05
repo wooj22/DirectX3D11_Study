@@ -147,6 +147,7 @@
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="PostProcessRenderer.h" />
     <ClInclude Include="RigidModel.h" />
     <ClInclude Include="RigidModelAsset.hpp" />
     <ClInclude Include="RigidSubMesh.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="AssetManager.cpp" />
+    <ClCompile Include="PostProcessRenderer.cpp" />
     <ClCompile Include="RigidModel.cpp" />
     <ClCompile Include="RigidSubMesh.cpp" />
     <ClCompile Include="ShadowRenderer.cpp" />

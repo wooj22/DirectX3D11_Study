@@ -216,6 +216,9 @@
     <ClInclude Include="BloomRenderer.h">
       <Filter>01. Render\Renderer\BloomRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="PostProcessRenderer.h">
+      <Filter>01. Render\Renderer\PostProcessRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApp.cpp">
@@ -298,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="BloomRenderer.cpp">
       <Filter>01. Render\Renderer\BloomRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcessRenderer.cpp">
+      <Filter>01. Render\Renderer\PostProcessRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

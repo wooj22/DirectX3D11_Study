@@ -1,4 +1,4 @@
-#include "App.h"
+ï»¿#include "App.h"
 #include "../WinBase/D3D.h"
 #include "../WinBase/Helper.h"
 #include "../WinBase/Camera.h"
@@ -32,6 +32,7 @@ bool App::OnInit()
     shadowRenderer = new ShadowRenderer();
     geometryRenderer = new GeometryRenderer();
     bloomRenderer = new BloomRenderer();
+    postRenderer = new PostProcessRenderer();
 
     return true;
 }
@@ -39,6 +40,10 @@ bool App::OnInit()
 void App::OnUninit()
 {
     delete lightRenderer;
+    delete geometryRenderer;
+    delete shadowRenderer;
+    delete bloomRenderer;
+    delete postRenderer;
 
     UninitGUI();
     UninitRenderPipeLine();
@@ -58,7 +63,7 @@ void App::OnUpdate()
     {
         if (light.isSunLight)
         {
-            lightDir = light.direction;     // sunlight´Â ÇÏ³ª¹Û¿¡ ¾øÀ½
+            lightDir = light.direction;     // sunlightëŠ” í•˜ë‚˜ë°–ì— ì—†ìŒ
             break;
         }
     }
@@ -182,7 +187,7 @@ void App::ShadowMapPass()
 }
 
 // [ Geometry Pass ]
-// G-Buffer¿¡ ¶óÀÌÆÃ¿¡ ÇÊ¿äÇÑ Á¤º¸ ±â·Ï (albedo, normal, metallic/roughness, emissive, position)
+// G-Bufferì— ë¼ì´íŒ…ì— í•„ìš”í•œ ì •ë³´ ê¸°ë¡ (albedo, normal, metallic/roughness, emissive, position)
 void App::GeometryPass()
 {
     geometryRenderer->GeometryPass(view, projection, static_models, rigid_models, skeletal_models);
@@ -190,9 +195,9 @@ void App::GeometryPass()
 
 
 // [ Stencil Pass ]
-//  Lighting VolumeÀ» ±×¸®¸ç Stencil Buffer¿¡ ¶óÀÌÆÃ ¿¬»ê ¿µ¿ª ¸¶Å©
-//  ¶óÀÌÆÃ ¿¬»ê ¿µ¿ªÀÌ¶õ ? ¶óÀÌÆÃ º¼·ý ¾ÈÀÇ ÇÈ¼¿Áß G-BufferÀÇ ±íÀÌ°ªº¸´Ù °¡±î¿î ÇÈ¼¿
-//  RTV´Â ¹ÙÀÎµù ÇÏÁö ¾Ê°í Stecnil Buffer¸¸ »ç¿ëÇÑ´Ù.
+//  Lighting Volumeì„ ê·¸ë¦¬ë©° Stencil Bufferì— ë¼ì´íŒ… ì—°ì‚° ì˜ì—­ ë§ˆí¬
+//  ë¼ì´íŒ… ì—°ì‚° ì˜ì—­ì´ëž€ ? ë¼ì´íŒ… ë³¼ë¥¨ ì•ˆì˜ í”½ì…€ì¤‘ G-Bufferì˜ ê¹Šì´ê°’ë³´ë‹¤ ê°€ê¹Œìš´ í”½ì…€
+//  RTVëŠ” ë°”ì¸ë”© í•˜ì§€ ì•Šê³  Stecnil Bufferë§Œ ì‚¬ìš©í•œë‹¤.
 void App::StencilPass()
 {
     lightRenderer->StencilPass(lights, camera);
@@ -200,9 +205,9 @@ void App::StencilPass()
 
 
 // [ Lighting Pass ]
-//  G-Buffer¸¦ »ùÇÃ¸µÇÏ¿© ¶óÀÌÆÃ °è»ê
+//  G-Bufferë¥¼ ìƒ˜í”Œë§í•˜ì—¬ ë¼ì´íŒ… ê³„ì‚°
 //  Directional : Full Screen Quad
-//  Point, Spot : Light Volume + ¡ÚStencil Test¡Ú
+//  Point, Spot : Light Volume + â˜…Stencil Testâ˜…
 void App::LightingPass()
 {
     // CB
@@ -238,8 +243,8 @@ void App::LightingPass()
 }
 
 // [ Skybox Render ]
-// Deferred ·»´õ¸µ¿¡¼­ ½ºÄ«ÀÌ¹Ú½º´Â Lighting Pass ÀÌÈÄÀÇ 
-// ºñ¾îÀÖ´Â ÇÈ¼¿¿¡ ±â·ÏÇÑ´Ù. (Depth Test)
+// Deferred ë Œë”ë§ì—ì„œ ìŠ¤ì¹´ì´ë°•ìŠ¤ëŠ” Lighting Pass ì´í›„ì˜ 
+// ë¹„ì–´ìžˆëŠ” í”½ì…€ì— ê¸°ë¡í•œë‹¤. (Depth Test)
 void App::SkyBoxRender()
 {
     // RTV, DSV
@@ -274,41 +279,11 @@ void App::BloomProcess()
 
 // [ PostProcess Pass ]
 // ToneMapping(LDR) + PostProcess
-// Tone Mapping ÆÐ½º´Â È­¸éÀ» µ¤´Â FullScreen »ç°¢ÇüÀ» ±×¸®¸é¼­,
-// HDR SRV¸¦ »ùÇÃ¸µÇØ »öÀ» °è»êÇÏ°í, ±× °á°ú¸¦ BackBuffer¿¡ ±â·ÏÇÏ´Â ´Ü°è
+// Tone Mapping íŒ¨ìŠ¤ëŠ” í™”ë©´ì„ ë®ëŠ” FullScreen ì‚¬ê°í˜•ì„ ê·¸ë¦¬ë©´ì„œ,
+// HDR SRVë¥¼ ìƒ˜í”Œë§í•´ ìƒ‰ì„ ê³„ì‚°í•˜ê³ , ê·¸ ê²°ê³¼ë¥¼ BackBufferì— ê¸°ë¡í•˜ëŠ” ë‹¨ê³„
 void App::PostProcess()
 {
-    // clear
-    ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-    D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
-    D3D::deviceContext->PSSetShaderResources(13, 1, nullSRV);
-
-    ID3D11RenderTargetView* nullRTVs[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT] = {};
-    D3D::deviceContext->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, nullRTVs, nullptr);
-
-    // view port
-    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
-
-    // RTV
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), nullptr);
-    D3D::deviceContext->ClearRenderTargetView(D3D::renderTargetView.Get(), clearColor);
-
-    // IA
-    D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    D3D::deviceContext->IASetInputLayout(nullptr);
-
-    // Shaders
-    D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PS_PostProcess.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShaderResources(12, 1, D3D::sceneHDRSRV.GetAddressOf());
-    auto* finalBloomSRV = bloomRenderer->GetBloomSRV();
-    D3D::deviceContext->PSSetShaderResources(13, 1, &finalBloomSRV);
-
-    // Draw Call
-    D3D::deviceContext.Get()->Draw(3, 0);
-
-    // SRV hazard ¹æÁö
-    D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
+    postRenderer->PostProcessPass();
 }
 
 
@@ -366,7 +341,7 @@ bool App::InitResource()
         girl->SetPosition({ 100,0,70 });
         enemy->SetPosition({ 250,0,20 });
 
-        // render¿ë ¹è¿­¿¡ Ãß°¡
+        // renderìš© ë°°ì—´ì— ì¶”ê°€
         static_models.push_back(floor);
         static_models.push_back(tree);
         static_models.push_back(zelda);
@@ -846,11 +821,11 @@ void App::FrustumDebugDraw(const Matrix& frustumView, const Matrix& frustumProj,
 {
     // Frustum Create
     BoundingFrustum frustum{};
-    BoundingFrustum::CreateFromMatrix(frustum, frustumProj); // view space ±âÁØ
+    BoundingFrustum::CreateFromMatrix(frustum, frustumProj); // view space ê¸°ì¤€
     Matrix invFrustumView = frustumView.Invert();
     frustum.Transform(frustum, invFrustumView);        // view -> world
 
-    // Effect Update (render ±âÁØÀº Ç×»ó main camera)
+    // Effect Update (render ê¸°ì¤€ì€ í•­ìƒ main camera)
     m_effect->SetWorld(Matrix::Identity);
     m_effect->SetView(renderView);
     m_effect->SetProjection(renderProj);

@@ -13,6 +13,7 @@
 #include "../WinBase/GeometryRenderer.h"
 #include "../WinBase/LightRenderer.h"
 #include "../WinBase/BloomRenderer.h"
+#include "../WinBase/PostProcessRenderer.h"
 #include "../WinBase/MemoryDebugger.h"
 #include "../WinBase/DebugDraw.h"
 
@@ -100,10 +101,11 @@ class App : public WinApp
 {
 private:
     // renderer
-    ShadowRenderer* shadowRenderer;
-    GeometryRenderer* geometryRenderer;
-    LightRenderer* lightRenderer;
-    BloomRenderer* bloomRenderer;
+    ShadowRenderer*      shadowRenderer;
+    GeometryRenderer*    geometryRenderer;
+    LightRenderer*       lightRenderer;
+    BloomRenderer*       bloomRenderer;
+    PostProcessRenderer* postRenderer;
 
     // light
     vector<Light> lights;

@@ -1,10 +1,10 @@
 #pragma once
-#include <d3d11.h>
 
 /*
     [ Bloom Renderer ]
 
-    씬의 밝은 부분을 추출하여 더 밝게 하고, 빛이 번지는 효과를 출력합니다.
+    씬의 밝은 부분을 추출하여 더 밝게 하고, 빛이 번지는 효과를 추가한 BloomTexture를 생성합니다.
+    PostProcess 단계에서 해당 이미지를 sceneHDR에 더해줍니다.
 
     ** Bloom Pass **
      1. Bloom Prefilter Pass          : sceneHDR의 밝은 부분을 추출
@@ -15,15 +15,9 @@
 class BloomRenderer
 {
 private:
-    ID3D11ShaderResourceView* finalBloomSRV = nullptr;
     float clearColor[4] = { 0,0,0,1 };
 
 public:
     void BloomPass();
-
-    ID3D11ShaderResourceView* GetBloomSRV() const
-    {
-        return finalBloomSRV;
-    }
 };
 

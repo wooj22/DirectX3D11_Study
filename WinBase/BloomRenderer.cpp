@@ -161,6 +161,6 @@ void BloomRenderer::BloomPass()
 
         // Final Bloom Texture
         // accumOnB가 가리키는 Accum 텍스처의 mip0 -> PostProcess에 활용
-        finalBloomSRV = accumOnB ? D3D::accumBSRV.Get() : D3D::accumASRV.Get();
+        D3D::finalBloomSRV = accumOnB ? D3D::accumBSRV.Get() : D3D::accumASRV.Get();
     }
 }
