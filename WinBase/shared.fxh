@@ -63,7 +63,7 @@ cbuffer TransformCB : register(b0)
     
     matrix invViewProjection;
     float2 screenSize;
-    float2 padding2;
+    float2 shadowMapSize;
 }
 
 cbuffer LightingCB : register(b1)

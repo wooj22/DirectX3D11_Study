@@ -50,8 +50,7 @@ float4 main(PS_INPUT input) : SV_TARGET
             float2(-1, 1), float2(0, 1), float2(1, 1)
         };
         
-        float2 ShadowMapSize = { 3000, 3000 }; // 하드코딩
-        float2 texelSize = 1.0 / ShadowMapSize;
+        float2 texelSize = 1.0 / shadowMapSize;
         
         [unroll]
         for (int i = 0; i < 9; i++)

@@ -65,8 +65,7 @@ float4 main(PS_INPUT input) : SV_TARGET
             float2(-1, 0), float2(0, 0), float2(1, 0),
             float2(-1, 1), float2(0, 1), float2(1, 1)
         };
-        float2 shadowmapsize = { 3000, 3000 };
-        float2 texelSize = 1.0 / shadowmapsize; // 텍셀 크기 (ShadowMap 해상도 기준)
+        float2 texelSize = 1.0 / shadowMapSize; // 텍셀 크기 (ShadowMap 해상도 기준)
         shadowFactor = 0.0f;
        
        //  PCF - 9 texel 평균으로 그림자 팩터 계산

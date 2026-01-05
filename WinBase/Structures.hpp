@@ -88,7 +88,7 @@ struct alignas(16) TransformCB
 
     Matrix invViewProjection;   // Deferred 화면 좌표 -> view 좌표 변환용
     Vector2 screenSize;
-    Vector2 padding2;
+    Vector2 shadowMapSize = { 8192,8192 };      // 이렇게 생성 고정함
 };
 
 // LightingCB -> b1
