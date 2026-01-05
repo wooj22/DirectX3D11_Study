@@ -213,6 +213,9 @@
     <ClInclude Include="GeometryRenderer.h">
       <Filter>01. Render\Renderer\GeometryRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="BloomRenderer.h">
+      <Filter>01. Render\Renderer\BloomRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApp.cpp">
@@ -292,6 +295,9 @@
     </ClCompile>
     <ClCompile Include="GeometryRenderer.cpp">
       <Filter>01. Render\Renderer\GeometryRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="BloomRenderer.cpp">
+      <Filter>01. Render\Renderer\BloomRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

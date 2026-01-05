@@ -9,9 +9,10 @@
 #include "../WinBase/SkyBox.h"
 #include "../WinBase/DirectionalShadowCamera.h"
 #include "../WinBase/Light.h"
-#include "../WinBase/LightRenderer.h"
 #include "../WinBase/ShadowRenderer.h"
 #include "../WinBase/GeometryRenderer.h"
+#include "../WinBase/LightRenderer.h"
+#include "../WinBase/BloomRenderer.h"
 #include "../WinBase/MemoryDebugger.h"
 #include "../WinBase/DebugDraw.h"
 
@@ -99,9 +100,10 @@ class App : public WinApp
 {
 private:
     // renderer
-    LightRenderer* lightRenderer;
     ShadowRenderer* shadowRenderer;
     GeometryRenderer* geometryRenderer;
+    LightRenderer* lightRenderer;
+    BloomRenderer* bloomRenderer;
 
     // light
     vector<Light> lights;
@@ -141,9 +143,6 @@ private:
     ID3D11ShaderResourceView* IBL_IrradianceMap4 = nullptr;
     ID3D11ShaderResourceView* IBL_SpecularEnvMap4 = nullptr;
     ID3D11ShaderResourceView* IBL_BRDF_LUT4 = nullptr;
-
-    // final bloom SRV
-    ID3D11ShaderResourceView* finalBloomSRV = nullptr;
 
 
     // Debug -----------------------------------------
