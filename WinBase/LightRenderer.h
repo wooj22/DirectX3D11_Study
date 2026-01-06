@@ -52,7 +52,7 @@ private:
     float clearColor[4] = { 0,0,0,1 };
 
 public:
-    LightRenderer();
+    void Init();
 
     // Rendering
     void StencilPass(const std::vector<Light>& lights, const Camera& camera);

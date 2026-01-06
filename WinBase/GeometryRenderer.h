@@ -35,6 +35,7 @@ private:
     float clearColor[4] = { 0,0,0,1 };
 
 public:
+    void Init() {};
     void GeometryPass(const Matrix& view, const Matrix& projection,
         const vector<StaticModel*>& static_models,
         const vector<RigidModel*>& rigid_models,

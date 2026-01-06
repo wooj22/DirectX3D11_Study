@@ -17,8 +17,6 @@
 #include "../WinBase/PostProcessRenderer.h"
 #include "../WinBase/FrustumRenderer.h"
 #include "../WinBase/MemoryDebugger.h"
-#include "../WinBase/DebugDraw.h"
-
 
 #include <iostream>
 using namespace std;
@@ -32,8 +30,7 @@ using namespace std;
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
-#include <directxtk/CommonStates.h>
-#include <directxtk/Effects.h>
+
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -103,12 +100,12 @@ class App : public WinApp
 {
 private:
     // renderer
-    ShadowRenderer*      shadowRenderer;
-    GeometryRenderer*    geometryRenderer;
-    LightRenderer*       lightRenderer;
-    SkyboxRenderer*      skyboxRenderer;
-    BloomRenderer*       bloomRenderer;
-    PostProcessRenderer* postRenderer;
+    ShadowRenderer       shadowRenderer;
+    GeometryRenderer     geometryRenderer;
+    LightRenderer        lightRenderer;
+    SkyboxRenderer       skyboxRenderer;
+    BloomRenderer        bloomRenderer;
+    PostProcessRenderer  postRenderer;
     FrustumRenderer      frustumRenderer;
 
     // memory debugger

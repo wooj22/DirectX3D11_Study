@@ -6,7 +6,7 @@
 #include "Structures.hpp"
 using namespace std;
 
-LightRenderer::LightRenderer()
+void LightRenderer::Init()
 {
     // light volume create
     sphereVolume = CreateLightVolumeSphere(D3D::device.Get(), 24, 16);

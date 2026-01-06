@@ -22,6 +22,7 @@ class SkeletalModel;
 class ShadowRenderer
 {
 public:
+    void Init() {};
     void ShadowMapPass(const Matrix& view, const Matrix& projection, 
         const vector<StaticModel*>& static_models,
         const vector<RigidModel*>& rigid_models,

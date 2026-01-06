@@ -16,6 +16,7 @@ class SkyBox;
 class SkyboxRenderer
 {
 public:
+    void Init() {};
     void SkyboxPass(const Matrix& view, const Matrix& projection, const SkyBox& skybox);
 };
 

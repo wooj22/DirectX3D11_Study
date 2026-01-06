@@ -21,6 +21,7 @@ private:
     float clearColor[4] = { 0,0,0,1 };
 
 public:
+    void Init() {};
     void BloomPass();
 };
 

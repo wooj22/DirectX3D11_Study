@@ -28,25 +28,23 @@ bool App::OnInit()
     if (!InitResource()) return false;
     if (!InitGUI()) return false;
 
-    shadowRenderer = new ShadowRenderer();
-    geometryRenderer = new GeometryRenderer();
-    lightRenderer = new LightRenderer();
-    skyboxRenderer = new SkyboxRenderer();
-    bloomRenderer = new BloomRenderer();
-    postRenderer = new PostProcessRenderer();
+    // Renderer Init
+    shadowRenderer.Init();
+    geometryRenderer.Init();
+    lightRenderer.Init();
+    skyboxRenderer.Init();
+    bloomRenderer.Init();
+    postRenderer.Init();
+    frustumRenderer.Init(view, projection);
+
+    // Memory Debugger
+    memory_debugger.Init();
 
     return true;
 }
 
 void App::OnUninit()
 {
-    delete shadowRenderer;
-    delete geometryRenderer;
-    delete lightRenderer;
-    delete skyboxRenderer;
-    delete bloomRenderer;
-    delete postRenderer;
-
     UninitGUI();
     UninitRenderPipeLine();
     D3D::UnInit();
@@ -97,39 +95,39 @@ void App::OnRender()
     //////////////////////////////////////////////////////
     
     // 1. Shadow Map Depth Only Pass
-    shadowRenderer->ShadowMapPass(shadowView, shadowProjection, static_models, rigid_models, skeletal_models);
+    shadowRenderer.ShadowMapPass(shadowView, shadowProjection, static_models, rigid_models, skeletal_models);
 
     // 2. Geometry G-buffer Pass
-    geometryRenderer->GeometryPass(view, projection, static_models, rigid_models, skeletal_models);
+    geometryRenderer.GeometryPass(view, projection, static_models, rigid_models, skeletal_models);
 
     // 3. Light Volume Stencil Pass
-    lightRenderer->StencilPass(lights, camera);
+    lightRenderer.StencilPass(lights, camera);
 
     // 4. Lighting Pass
-    lightRenderer->LightingPass(lights, camera);
+    lightRenderer.LightingPass(lights, camera);
 
     // 5. Skybox Pass
     switch (currentSkybox)
     {
     case 0:
-        skyboxRenderer->SkyboxPass(view, projection, skybox1);
+        skyboxRenderer.SkyboxPass(view, projection, skybox1);
         break;
     case 1:
-        skyboxRenderer->SkyboxPass(view, projection, skybox2);
+        skyboxRenderer.SkyboxPass(view, projection, skybox2);
         break;
     case 2:
-        skyboxRenderer->SkyboxPass(view, projection, skybox3);
+        skyboxRenderer.SkyboxPass(view, projection, skybox3);
         break;
     case 3:
-        skyboxRenderer->SkyboxPass(view, projection, skybox4);
+        skyboxRenderer.SkyboxPass(view, projection, skybox4);
         break;
     }
 
     // 6. Bloom Prefilter -> DownSample -> UpSample Pass
-    bloomRenderer->BloomPass();
+    bloomRenderer.BloomPass();
 
     // 7. PostProcess Pass
-    postRenderer->PostProcessPass();
+    postRenderer.PostProcessPass();
 
     //////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////
@@ -362,12 +360,6 @@ bool App::InitResource()
     D3D::postprocessCBData.saturation = 1.0;
     D3D::screenFxCBData.enableWaterDistortion = 1;
 
-    // memory debugger
-    memory_debugger.Init();
-
-    // debug draw set up
-    frustumRenderer.Init(view, projection);
-    
     // IBL Textures Load
     {
         CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapDiffuseHDR.dds", nullptr, &IBL_IrradianceMap1);
