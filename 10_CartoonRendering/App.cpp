@@ -89,7 +89,7 @@ void App::OnRender()
     D3D::deviceContext->PSSetConstantBuffers(5, 1, D3D::outlineBuffer.GetAddressOf());
 
     // skybox render 
-    skybox1.Render(view, projection);
+    skybox1.Draw(view, projection);
 
     // buffer data
     D3D::transformCBData.view = XMMatrixTranspose(view);
@@ -119,26 +119,26 @@ void App::OnRender()
     D3D::deviceContext->VSSetShader(D3D::VS_Skinned_OutLine.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_OutLine.Get(), NULL, 0);
     D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
-    warrior->Render();
+    warrior->Draw();
     D3D::deviceContext->RSSetState(nullptr);
 
     // model render
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_BlinnPhongToon.Get(), NULL, 0);
-    warrior->Render();
+    warrior->Draw();
 
     // [Model 2]
     // outline render
     D3D::deviceContext->VSSetShader(D3D::VS_Skinned_OutLine.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_OutLine.Get(), NULL, 0);
     D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
-    character->Render();
+    character->Draw();
     D3D::deviceContext->RSSetState(nullptr);
 
     // model render
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_BlinnPhongToon.Get(), NULL, 0);
-    character->Render();
+    character->Draw();
 
     // GUI
     RenderGUI();

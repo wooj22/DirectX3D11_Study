@@ -70,6 +70,8 @@ void App::OnUpdate()
         }
     }
     shadowCamera.Udate(camera, lightDir, shadowOrthoDesc);
+    shadowView = shadowCamera.GetView();
+    shadowProjection = shadowCamera.GetProjection();
 
     // Local, Model, World
     for (auto& m : static_models) m->Update();
@@ -89,14 +91,50 @@ void App::OnRender()
     // Defualt Stage Setting
     DefualtStageSetting();         // binding + CB udpate
 
-    // Render Pass
-    ShadowMapPass();        // Shadow Map
-    GeometryPass();         // G-Buffer
-    StencilPass();          // Light Volume Stencil
-    LightingPass();         // Shadow + Lighting
-    SkyBoxRender();         // Skybox
-    BloomProcess();         // Bloom Prefilter -> DownSample -> UpSample
-    PostProcess();          // ToneMapping + PostProcess + ScreenFx
+
+    //////////////////////////////////////////////////////
+    //////////////    Render PipeLine        /////////////
+    //////////////////////////////////////////////////////
+    
+    // 1. Shadow Map Depth Only Pass
+    shadowRenderer->ShadowMapPass(shadowView, shadowProjection, static_models, rigid_models, skeletal_models);
+
+    // 2. Geometry G-buffer Pass
+    geometryRenderer->GeometryPass(view, projection, static_models, rigid_models, skeletal_models);
+
+    // 3. Light Volume Stencil Pass
+    lightRenderer->StencilPass(lights, camera);
+
+    // 4. Lighting Pass
+    lightRenderer->LightingPass(lights, camera);
+
+    // 5. Skybox Pass
+    switch (currentSkybox)
+    {
+    case 0:
+        skyboxRenderer->SkyboxPass(view, projection, skybox1);
+        break;
+    case 1:
+        skyboxRenderer->SkyboxPass(view, projection, skybox2);
+        break;
+    case 2:
+        skyboxRenderer->SkyboxPass(view, projection, skybox3);
+        break;
+    case 3:
+        skyboxRenderer->SkyboxPass(view, projection, skybox4);
+        break;
+    }
+
+    // 6. Bloom Prefilter -> DownSample -> UpSample Pass
+    bloomRenderer->BloomPass();
+
+    // 7. PostProcess Pass
+    postRenderer->PostProcessPass();
+
+    //////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////
+
 
     // Debug Draw
     if (frustumON)
@@ -113,7 +151,7 @@ void App::OnRender()
     D3D::swapChain->Present(1, 0);
 }
 
-// Stage Setting + CB update
+// Defulat Stage Setting + CB update
 void App::DefualtStageSetting()
 {
     // Stage Setting
@@ -201,88 +239,6 @@ void App::DefualtStageSetting()
         break;
     }
 }
-
-////////////////////////////////////////////////////////////////////
-/////////////           Rendering Pass                //////////////
-////////////////////////////////////////////////////////////////////
-
-// [ Shadow Map Pass ]
-void App::ShadowMapPass()
-{
-    Matrix view = shadowCamera.GetView();
-    Matrix projection = shadowCamera.GetProjection();
-    shadowRenderer->ShadowMapPass(view, projection, static_models, rigid_models, skeletal_models);
-}
-
-// [ Geometry Pass ]
-// G-Buffer에 라이팅에 필요한 정보 기록 (albedo, normal, metallic/roughness, emissive, position)
-void App::GeometryPass()
-{
-    geometryRenderer->GeometryPass(view, projection, static_models, rigid_models, skeletal_models);
-}
-
-
-// [ Stencil Pass ]
-//  Lighting Volume을 그리며 Stencil Buffer에 라이팅 연산 영역 마크
-//  라이팅 연산 영역이란 ? 라이팅 볼륨 안의 픽셀중 G-Buffer의 깊이값보다 가까운 픽셀
-//  RTV는 바인딩 하지 않고 Stecnil Buffer만 사용한다.
-void App::StencilPass()
-{
-    lightRenderer->StencilPass(lights, camera);
-}
-
-
-// [ Lighting Pass ]
-//  G-Buffer를 샘플링하여 라이팅 계산
-//  Directional : Full Screen Quad
-//  Point, Spot : Light Volume + ★Stencil Test★
-void App::LightingPass()
-{
-    // Renderer Pass Call
-    lightRenderer->LightingPass(lights, camera);
-}
-
-// [ Skybox Render ]
-// Deferred 렌더링에서 스카이박스는 Lighting Pass 이후의 
-// 비어있는 픽셀에 기록한다. (Depth Test)
-void App::SkyBoxRender()
-{
-    switch (currentSkybox)
-    {
-    case 0:
-        skyboxRenderer->SkyboxPass(view, projection, skybox1);
-        break;
-    case 1:
-        skyboxRenderer->SkyboxPass(view, projection, skybox2);
-        break;
-    case 2:
-        skyboxRenderer->SkyboxPass(view, projection, skybox3);
-        break;
-    case 3:
-        skyboxRenderer->SkyboxPass(view, projection, skybox4);
-        break;
-    }
-}
-
-// [ BloomProcess Pass ]
-// Prefilter -> DownSample+Blur -> UpSample+Combine
-void App::BloomProcess()
-{
-    bloomRenderer->BloomPass();
-}
-
-// [ PostProcess Pass ]
-// ToneMapping(LDR) + PostProcess
-// Tone Mapping 패스는 화면을 덮는 FullScreen 사각형을 그리면서,
-// HDR SRV를 샘플링해 색을 계산하고, 그 결과를 BackBuffer에 기록하는 단계
-void App::PostProcess()
-{
-    postRenderer->PostProcessPass();
-}
-
-
-////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////
 
 
 

@@ -17,6 +17,13 @@ void SkyboxRenderer::SkyboxPass(const Matrix& view, const Matrix& projection, co
     D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
     D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
 
+    // IA
+    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Position.Get());
+
+    // Shader
+    D3D::deviceContext->VSSetShader(D3D::VS_Skybox.Get(), nullptr, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_Skybox.Get(), nullptr, 0);
+
     // CB
     /* 카메라 이동행렬 제거->카메라가 이동해도 큐브는 항상 카메라 원점에 고정
        스카이 박스 정점은 카메라 좌표계에서 항상 +- 1 정도 거리의 정점으로 유지
@@ -31,7 +38,7 @@ void SkyboxRenderer::SkyboxPass(const Matrix& view, const Matrix& projection, co
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
     // Draw
-    skybox.Render(view, projection);
+    skybox.Draw(view, projection);
 
     // clear
     D3D::deviceContext->RSSetState(nullptr);

@@ -120,6 +120,10 @@ private:
     Matrix view;
     Matrix projection;
 
+    // shadow camera
+    Matrix shadowView;
+    Matrix shadowProjection;
+
     // models
     vector<StaticModel*> static_models;
     vector<RigidModel*> rigid_models;
@@ -210,15 +214,6 @@ public:
 
 private:
     void DefualtStageSetting();
-
-    // Rendering Pass
-    void ShadowMapPass();
-    void GeometryPass();
-    void StencilPass();
-    void LightingPass();
-    void SkyBoxRender();
-    void BloomProcess();
-    void PostProcess();
 
     // Init, Uninit
     bool InitResource();

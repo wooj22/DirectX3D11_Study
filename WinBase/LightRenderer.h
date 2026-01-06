@@ -9,6 +9,11 @@
     Gbuffer를 읽고, 라이팅을 계산하여 sceneHDR에 Additive 출력합니다.
     Light Volume을 소유하여, Directional/Point/Spot 라이트를 Ligting Volume Rendering합니다.
 
+
+    ** Light Renderer의 Renderable 객체 **
+     LightVolumeMesh
+
+
     ** Light을 처리하기 위한 Pass **
      1) Stencil Pass : Depth test On/write off + Stencil test on/write On (test는 항상 통과)
                        => 라이트 볼륨을 그리며, 깊이테스트를 통해 표면이 있는 픽셀에만 Stencil을 write

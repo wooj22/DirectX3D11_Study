@@ -178,10 +178,10 @@ void App::OnRender()
     switch (currentSkybox)
     {
     case 0:
-        skybox1.Render(view, projection);
+        skybox1.Draw(view, projection);
         break;
     case 1:
-        skybox2.Render(view, projection);
+        skybox2.Draw(view, projection);
         break;
     }
    
@@ -222,20 +222,20 @@ void App::OnRender()
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(nullptr, NULL, 0);
-    tree->Render(); 
-    zelda->Render();
-    character->Render();
+    tree->Draw(); 
+    zelda->Draw();
+    character->Draw();
     for (int i = 0; i < 10; i++)
     {
-        spheres[i]->Render();
-        torus[i]->Render();
+        spheres[i]->Draw();
+        torus[i]->Draw();
     }
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
-    girl->Render();
-    enemy->Render();
+    girl->Draw();
+    enemy->Draw();
 
 
     // 2. PBR Mesh Render Pass -------------------------------------
@@ -264,20 +264,20 @@ void App::OnRender()
     
     for (int i = 0; i < 10; i++)
     {
-        spheres[i]->Render();
-        torus[i]->Render();
+        spheres[i]->Draw();
+        torus[i]->Draw();
     }
-    floor->Render();
-    tree->Render();
-    zelda->Render();
-    character->Render();
+    floor->Draw();
+    tree->Draw();
+    zelda->Draw();
+    character->Draw();
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
-    girl->Render();
-    enemy->Render();
+    girl->Draw();
+    enemy->Draw();
 
     // 다음 shadowpass에서 SRV를 DSV로 다시 쓰기 위해 연결 해제
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };

@@ -7,15 +7,21 @@ using namespace DirectX::SimpleMath;
 /*
     [ Geometry Renderer ]
 
-     G-Buffer에 라이팅에 필요한 정보 기록합니다.
+     Geometry를 그리기 위한 Stage Setting을 하고,
+     Deferred Rendering을 위해 G-buffer에 라이팅에 필요한 정보를 기록합니다.
+
+
+     ** Geometry Renderer의 Renderable 객체 **
+     StaticModel, RigidModel, SkeletalModel
+
      
-    ** G-buffer **
-     RT0 : Albedo (RGB)
-     RT1 : Normal (RGB)
-     RT2 : Metallic (R), Roughness (G)
-     RT3 : Emissive (RGB)
-     ★ Position은 대역폭 절약을 위해 G-buffer에 저장하지 않고,
-       Geometry Pass에서 사용한 뎁스 버퍼를 이용해 Position을 복원해 사용합니다.
+     ** G-buffer **
+      RT0 : Albedo (RGB)
+      RT1 : Normal (RGB)
+      RT2 : Metallic (R), Roughness (G)
+      RT3 : Emissive (RGB)
+      ★ Position은 대역폭 절약을 위해 G-buffer에 저장하지 않고,
+        Geometry Pass에서 사용한 뎁스 버퍼를 이용해 Position을 복원해 사용합니다.
 */
 
 class StaticModel;

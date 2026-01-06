@@ -115,7 +115,7 @@ void SkeletalModel::Update()
     }
 }
 
-void SkeletalModel::Render()
+void SkeletalModel::Draw()
 {
     // model world
     D3D::transformCBData.world = world.Transpose();
@@ -138,17 +138,19 @@ void SkeletalModel::Render()
         SkeletalSubMesh& sub = model_data->subMeshes[i];
         Material& mat = model_data->materials[i];
 
-        // vertex buffer, indexbuffer
+        // VB, IB
         D3D::deviceContext->IASetVertexBuffers(0, 1, &sub.vertexBuffer, &sub.vertexBufferStride, &sub.vertexBufferOffset);
         D3D::deviceContext->IASetIndexBuffer(sub.indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
-        // texture
+        // SRV
         D3D::deviceContext->PSSetShaderResources(0, 1, &mat.diffuseSRV);
         D3D::deviceContext->PSSetShaderResources(1, 1, &mat.normalSRV);
         D3D::deviceContext->PSSetShaderResources(2, 1, &mat.specualrSRV);
         D3D::deviceContext->PSSetShaderResources(3, 1, &mat.emissiveSRV);
         D3D::deviceContext->PSSetShaderResources(7, 1, &mat.metallicSRV);
         D3D::deviceContext->PSSetShaderResources(8, 1, &mat.roughnessSRV);
+
+        // CB
         D3D::materialCBData.useDiffuse = (model_data->materials[i].textureFlags & TEX_DIFFUSE) != 0;
         D3D::materialCBData.useNormal = (model_data->materials[i].textureFlags & TEX_NORMAL) != 0;
         D3D::materialCBData.useSpecular = (model_data->materials[i].textureFlags & TEX_SPECULAR) != 0;
@@ -157,13 +159,12 @@ void SkeletalModel::Render()
         D3D::materialCBData.useRoughness = (model_data->materials[i].textureFlags & TEX_ROUGHNESS) != 0;
         D3D::materialCBData.roughnessFromShininess = model_data->materials[i].roughnessFromShininess;
 
-        // constant buffer
         D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
         D3D::deviceContext->UpdateSubresource(D3D::materialBuffer.Get(), 0, nullptr, &D3D::materialCBData, 0, 0);
         D3D::deviceContext->UpdateSubresource(D3D::offsetMatrixBuffer.Get(), 0, nullptr, &D3D::offsetCBData, 0, 0);
         D3D::deviceContext->UpdateSubresource(D3D::poseMatrixBuffer.Get(), 0, nullptr, &D3D::poseCBData, 0, 0);
 
-        // draw call
+        // Draw Call
         D3D::deviceContext->DrawIndexed(sub.indexCount, 0, 0);
     }
 }

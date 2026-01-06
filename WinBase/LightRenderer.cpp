@@ -25,14 +25,23 @@ void LightRenderer::StencilPass(const vector<Light>& lights, const Camera& camer
     D3D::deviceContext->OMSetRenderTargets(0, nullptr, D3D::depthStencilView.Get());
     D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(),
         D3D11_CLEAR_STENCIL, 1.0f, 0);  // Stencil만 0으로 초기화
+
+    // DSS
     const UINT stencilRef = 1;          // Stencil Reference Value
     D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestStencilWriteDSS.Get(), stencilRef);
 
+    // RS (원래 outside는 cullBack인데, mesh가 뒤집혀있는듯?)
+    D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
+
+    // IA
+    D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    D3D::deviceContext.Get()->IASetInputLayout(D3D::inputLayout_Position.Get());
+
     // Shader
-    D3D::deviceContext->VSSetShader(nullptr, nullptr, 0);   // lighting volume 안에서 setting함
+    D3D::deviceContext.Get()->VSSetShader(D3D::VS_LightVolume.Get(), nullptr, 0);
     D3D::deviceContext->PSSetShader(nullptr, nullptr, 0);   // PS x
 
-    // Light Volume Draw Call
+    // Render
     for (const Light& light : lights)
     {
         if (light.type == LightType::Point)
@@ -47,8 +56,9 @@ void LightRenderer::StencilPass(const vector<Light>& lights, const Camera& camer
         }
     }
 
-    // 복구
+    // clear
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
+    D3D::deviceContext->RSSetState(nullptr);
 }
 
 
@@ -72,6 +82,11 @@ void LightRenderer::LightingPass(const vector<Light>& lights, const Camera& came
     // Blend State (Additive)
     D3D::deviceContext->OMSetBlendState(D3D::additiveBlendState.Get(), nullptr, 0xffffffff);
 
+    // Sampler
+    D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
+    D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
+    D3D::deviceContext->PSSetSamplers(2, 1, D3D::linearClamSamplerState.GetAddressOf());
+
     // SRV
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(15, 1, D3D::albedoSRV.GetAddressOf());
@@ -80,12 +95,7 @@ void LightRenderer::LightingPass(const vector<Light>& lights, const Camera& came
     D3D::deviceContext->PSSetShaderResources(18, 1, D3D::emissiveSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(19, 1, D3D::depthSRV.GetAddressOf());
 
-    // Sampler
-    D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
-    D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
-    D3D::deviceContext->PSSetSamplers(2, 1, D3D::linearClamSamplerState.GetAddressOf());
-
-    // Light CB update & Draw Call
+    // Render
     for (const Light& light : lights)
     {
         D3D::lightingCBData.lightType = static_cast<int>(light.type);
@@ -105,6 +115,9 @@ void LightRenderer::LightingPass(const vector<Light>& lights, const Camera& came
             // Stencil Test off
             D3D::deviceContext->OMSetDepthStencilState(D3D::disableDSS.Get(), 0);
 
+            // RS
+            D3D::deviceContext.Get()->RSSetState(nullptr);
+
             // Full Screen Quad
             D3D::deviceContext->IASetInputLayout(nullptr);
             D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
@@ -120,6 +133,9 @@ void LightRenderer::LightingPass(const vector<Light>& lights, const Camera& came
                     // Stencil Test off
                     D3D::deviceContext->OMSetDepthStencilState(D3D::disableDSS.Get(), 0);
 
+                    // RS
+                    D3D::deviceContext.Get()->RSSetState(nullptr);
+
                     // Full Screen Quad
                     D3D::deviceContext->IASetInputLayout(nullptr);
                     D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
@@ -130,7 +146,12 @@ void LightRenderer::LightingPass(const vector<Light>& lights, const Camera& came
                     // Stencil Test on
                     D3D::deviceContext->OMSetDepthStencilState(D3D::stencilTestOnlyDSS.Get(), 1);
 
+                    // RS
+                    D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
+
                     // Light Volume
+                    D3D::deviceContext.Get()->IASetInputLayout(D3D::inputLayout_Position.Get());
+                    D3D::deviceContext.Get()->VSSetShader(D3D::VS_LightVolume.Get(), nullptr, 0);
                     sphereVolume->UpdateWolrd(light);
                     sphereVolume->Draw(light, camera);
                 }
@@ -143,6 +164,9 @@ void LightRenderer::LightingPass(const vector<Light>& lights, const Camera& came
                     // Stencil Test off
                     D3D::deviceContext->OMSetDepthStencilState(D3D::disableDSS.Get(), 0);
 
+                    // RS
+                    D3D::deviceContext.Get()->RSSetState(nullptr);
+
                     // Full Screen Quad
                     D3D::deviceContext->IASetInputLayout(nullptr);
                     D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
@@ -153,7 +177,12 @@ void LightRenderer::LightingPass(const vector<Light>& lights, const Camera& came
                     // Stencil Test on
                     D3D::deviceContext->OMSetDepthStencilState(D3D::stencilTestOnlyDSS.Get(), 1);
 
+                    // RS
+                    D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
+
                     // Light Volum
+                    D3D::deviceContext.Get()->IASetInputLayout(D3D::inputLayout_Position.Get());
+                    D3D::deviceContext.Get()->VSSetShader(D3D::VS_LightVolume.Get(), nullptr, 0);
                     coneVolume->UpdateWolrd(light);
                     coneVolume->Draw(light, camera);
                 }
@@ -161,11 +190,10 @@ void LightRenderer::LightingPass(const vector<Light>& lights, const Camera& came
         }
     }
 
-    // Blend State reset
-    D3D::deviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
-
-    // DSS reset
+    // clear
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
+    D3D::deviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+    D3D::deviceContext->RSSetState(nullptr);
 
     // RTV - SRV hazard 방지
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };

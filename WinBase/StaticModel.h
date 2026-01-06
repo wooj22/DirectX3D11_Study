@@ -43,6 +43,6 @@ public:
     void MakeWorld();
 
     void Update();
-    void Render();
+    void Draw();
 };
 

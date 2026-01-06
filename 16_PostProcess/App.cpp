@@ -257,16 +257,16 @@ void App::SceneHDRRender()
     switch (currentSkybox)
     {
     case 0:
-        skybox1.Render(view, projection);
+        skybox1.Draw(view, projection);
         break;
     case 1:
-        skybox2.Render(view, projection);
+        skybox2.Draw(view, projection);
         break;
     case 2:
-        skybox3.Render(view, projection);
+        skybox3.Draw(view, projection);
         break;
     case 3:
-        skybox4.Render(view, projection);
+        skybox4.Draw(view, projection);
         break;
     }
 
@@ -283,20 +283,20 @@ void App::SceneHDRRender()
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_ShadowDepth.Get(), NULL, 0);    // alpha discard
-    tree->Render();
-    zelda->Render();
-    character->Render();
+    tree->Draw();
+    zelda->Draw();
+    character->Draw();
     for (int i = 0; i < 10; i++)
     {
-        spheres[i]->Render();
-        torus[i]->Render();
+        spheres[i]->Draw();
+        torus[i]->Draw();
     }
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
-    girl->Render();
-    enemy->Render();
+    girl->Draw();
+    enemy->Draw();
 
 
     // 2. Scene HDR Color Pass -------------------------------------
@@ -334,20 +334,20 @@ void App::SceneHDRRender()
 
     for (int i = 0; i < 10; i++)
     {
-        spheres[i]->Render();
-        torus[i]->Render();
+        spheres[i]->Draw();
+        torus[i]->Draw();
     }
-    floor->Render();
-    tree->Render();
-    zelda->Render();
-    character->Render();
+    floor->Draw();
+    tree->Draw();
+    zelda->Draw();
+    character->Draw();
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
-    girl->Render();
-    enemy->Render();
+    girl->Draw();
+    enemy->Draw();
 
     // shadowmap SRV hazard ¹æÁö
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };

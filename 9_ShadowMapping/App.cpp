@@ -107,7 +107,7 @@ void App::OnRender()
     D3D::deviceContext->VSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
 
     // skybox render 
-    skybox1.Render(view, projection);
+    skybox1.Draw(view, projection);
 
     // buffer data
     D3D::transformCBData.view = XMMatrixTranspose(view);
@@ -139,15 +139,15 @@ void App::OnRender()
     D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(nullptr, nullptr, 0);
-    warrior->Render();
-    character->Render();
+    warrior->Draw();
+    character->Draw();
 
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
-    zelda->Render();
-    boxHuman->Render();
-    plane->Render();
-    tree->Render();
+    zelda->Draw();
+    boxHuman->Draw();
+    plane->Draw();
+    tree->Draw();
 
     // 2. Render Pass
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
@@ -157,18 +157,18 @@ void App::OnRender()
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_BlinnPhong.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
-    warrior->Render();
-    character->Render();
+    warrior->Draw();
+    character->Draw();
 
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
-    zelda->Render();
-    boxHuman->Render();
-    plane->Render();
+    zelda->Draw();
+    boxHuman->Draw();
+    plane->Draw();
 
     D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
-    tree->Render();
+    tree->Draw();
 
     // 다음 shadowpass에서 SRV를 DSV로 다시 쓰기 위해 연결 해제
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };

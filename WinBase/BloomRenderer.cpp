@@ -2,6 +2,8 @@
 #include "D3D.h"
 #include "Structures.hpp"
 
+// [ BloomProcess Pass ]
+// Prefilter -> DownSample+Blur -> UpSample+Combine
 void BloomRenderer::BloomPass()
 {
     // clear

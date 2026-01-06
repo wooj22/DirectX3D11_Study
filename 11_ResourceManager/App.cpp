@@ -127,7 +127,7 @@ void App::OnRender()
     D3D::deviceContext->PSSetConstantBuffers(5, 1, D3D::outlineBuffer.GetAddressOf());
 
     // skybox render 
-    skybox1.Render(view, projection);
+    skybox1.Draw(view, projection);
 
     // buffer data
     D3D::transformCBData.view = XMMatrixTranspose(view);
@@ -159,7 +159,7 @@ void App::OnRender()
     D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
     for (auto& m : skeletals)
     {
-        m->Render();
+        m->Draw();
     }
     D3D::deviceContext->RSSetState(nullptr);
 
@@ -168,7 +168,7 @@ void App::OnRender()
     D3D::deviceContext->PSSetShader(D3D::PS_BlinnPhongToon.Get(), NULL, 0);
     for (auto& m : skeletals)
     {
-        m->Render();
+        m->Draw();
     }
 
     // GUI

@@ -255,20 +255,20 @@ void App::ShadowMapPass()
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_ShadowDepth.Get(), NULL, 0);    // alpha discard
-    tree->Render();
-    zelda->Render();
-    character->Render();
+    tree->Draw();
+    zelda->Draw();
+    character->Draw();
     for (int i = 0; i < 10; i++)
     {
-        spheres[i]->Render();
-        torus[i]->Render();
+        spheres[i]->Draw();
+        torus[i]->Draw();
     }
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
-    girl->Render();
-    enemy->Render();
+    girl->Draw();
+    enemy->Draw();
 }
 
 // [ Geometry Pass ]
@@ -301,19 +301,19 @@ void App::GeometryPass()
     
     for (int i = 0; i < 10; i++)
     {
-        spheres[i]->Render();
-        torus[i]->Render();
+        spheres[i]->Draw();
+        torus[i]->Draw();
     }
-    floor->Render();
-    tree->Render();
-    zelda->Render();
-    character->Render();
+    floor->Draw();
+    tree->Draw();
+    zelda->Draw();
+    character->Draw();
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
-    girl->Render();
-    enemy->Render();
+    girl->Draw();
+    enemy->Draw();
 
     // RTV - SRV hazard ¹æÁö
     D3D::deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
@@ -402,16 +402,16 @@ void App::SkyBoxRender()
     switch (currentSkybox)
     {
     case 0:
-        skybox1.Render(view, projection);
+        skybox1.Draw(view, projection);
         break;
     case 1:
-        skybox2.Render(view, projection);
+        skybox2.Draw(view, projection);
         break;
     case 2:
-        skybox3.Render(view, projection);
+        skybox3.Draw(view, projection);
         break;
     case 3:
-        skybox4.Render(view, projection);
+        skybox4.Draw(view, projection);
         break;
     }
 }

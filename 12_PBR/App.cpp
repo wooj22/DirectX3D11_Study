@@ -142,7 +142,7 @@ void App::OnRender()
     D3D::deviceContext->PSSetConstantBuffers(7, 1, D3D::postprocessBuffer.GetAddressOf());
 
     // Skybox render  --------------------------------
-    skybox1.Render(view, projection);
+    skybox1.Draw(view, projection);
 
     // buffer data -----------------------------------
     D3D::transformCBData.view = XMMatrixTranspose(view);
@@ -179,20 +179,20 @@ void App::OnRender()
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(nullptr, NULL, 0);
 
-    tree->Render();
-    zelda->Render();
-    character->Render();
+    tree->Draw();
+    zelda->Draw();
+    character->Draw();
     for (int i = 0; i < 10; i++)
     {
-        spheres[i]->Render();
-        torus[i]->Render();
+        spheres[i]->Draw();
+        torus[i]->Draw();
     }
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
-    girl->Render();
-    enemy->Render();
+    girl->Draw();
+    enemy->Draw();
 
 
     // 2. PBR Mesh Render Pass -------------------------------------
@@ -208,20 +208,20 @@ void App::OnRender()
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
     for (int i = 0; i < 10; i++)
     {
-        spheres[i]->Render();
-        torus[i]->Render();
+        spheres[i]->Draw();
+        torus[i]->Draw();
     }
-    floor->Render();
-    tree->Render();
-    zelda->Render();
-    character->Render();
+    floor->Draw();
+    tree->Draw();
+    zelda->Draw();
+    character->Draw();
 
     // skeletal model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
-    girl->Render();
-    enemy->Render();
+    girl->Draw();
+    enemy->Draw();
 
     // 다음 shadowpass에서 SRV를 DSV로 다시 쓰기 위해 연결 해제
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };

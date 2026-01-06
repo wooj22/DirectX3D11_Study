@@ -69,18 +69,11 @@ void SkyBox::InitRenderPipeLine(const std::wstring& filePath)
     );
 }
 
-void SkyBox::Render(const Matrix& view, const Matrix& projection) const
+void SkyBox::Draw(const Matrix& view, const Matrix& projection) const
 {
-    // Vertex, Index
+    // VB, IB
     D3D::deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
     D3D::deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-    // IA
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Position.Get());
-
-    // Shader
-    D3D::deviceContext->VSSetShader(D3D::VS_Skybox.Get(), nullptr, 0);
-    D3D::deviceContext->PSSetShader(D3D::PS_Skybox.Get(), nullptr, 0);
 
     // SRV
     D3D::deviceContext->PSSetShaderResources(4, 1, &skyboxTRV);
