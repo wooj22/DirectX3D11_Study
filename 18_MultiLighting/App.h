@@ -6,7 +6,6 @@
 #include "../WinBase/RigidModel.h"
 #include "../WinBase/SkeletalModel.h"
 #include "../WinBase/Material.h"
-#include "../WinBase/SkyBox.h"
 #include "../WinBase/DirectionalShadowCamera.h"
 #include "../WinBase/Light.h"
 #include "../WinBase/ShadowRenderer.h"
@@ -17,6 +16,7 @@
 #include "../WinBase/PostProcessRenderer.h"
 #include "../WinBase/FrustumRenderer.h"
 #include "../WinBase/MemoryDebugger.h"
+#include "../WinBase/Environment.hpp"
 
 #include <iostream>
 using namespace std;
@@ -40,15 +40,18 @@ using namespace DirectX::SimpleMath;
 // 다중 라이트 처리 프로젝트입니다.
 // Directional, Point, Spot 라이트를 Lighting Volume Rendering 합니다.
 /*
-* [ Render Pass ]
+* [ Render PipeLine ]
 *   1. ShadowMap Pass                  -> ShadowMap
 *   2. Geometry Pass                   -> G-buffer (Albedo, Normal, MetalRough, Emissive)
 *   3. Stencil Pass                    -> Stencil Buffer (Lighting Volume)
 *   4. Lighting Pass                   -> Scene HDR Color Pass (Ligting Volume + Deferred Lighting)
-*   5. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
-*   6. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
-*   7. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
-*   8. LDR PostProcess Pass            -> LDR (final)
+*   5. Skybox Pass                     -> sceneHDR의 빈 픽셀에 Skybox Render
+*   6. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
+*   7. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
+*   8. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
+*   9. LDR PostProcess Pass            -> LDR (final)
+*   10. Frustum Debug Draw
+*   11. GUI Draw
 * 
 * 
 * [ Multi Lighting ]
@@ -131,29 +134,8 @@ private:
     vector<RigidModel*> rigid_models;
     vector<SkeletalModel*> skeletal_models;
 
-    // skybox
-    SkyBox skybox1;
-    SkyBox skybox2;
-    SkyBox skybox3;
-    SkyBox skybox4;
-
-    // IBL SRV
-    ID3D11ShaderResourceView* IBL_IrradianceMap1 = nullptr;
-    ID3D11ShaderResourceView* IBL_SpecularEnvMap1 = nullptr;
-    ID3D11ShaderResourceView* IBL_BRDF_LUT1 = nullptr;
-
-    ID3D11ShaderResourceView* IBL_IrradianceMap2 = nullptr;
-    ID3D11ShaderResourceView* IBL_SpecularEnvMap2 = nullptr;
-    ID3D11ShaderResourceView* IBL_BRDF_LUT2 = nullptr;
-
-    ID3D11ShaderResourceView* IBL_IrradianceMap3 = nullptr;
-    ID3D11ShaderResourceView* IBL_SpecularEnvMap3 = nullptr;
-    ID3D11ShaderResourceView* IBL_BRDF_LUT3 = nullptr;
-
-    ID3D11ShaderResourceView* IBL_IrradianceMap4 = nullptr;
-    ID3D11ShaderResourceView* IBL_SpecularEnvMap4 = nullptr;
-    ID3D11ShaderResourceView* IBL_BRDF_LUT4 = nullptr;
-
+    // environment
+    vector<Environment> environments;
 
     // Debug -----------------------------------------
     // camera

@@ -39,6 +39,7 @@
 
 class Light;
 class LightVolumeMesh;
+class Environment;
 class Camera;
 
 class LightRenderer
@@ -56,6 +57,6 @@ public:
 
     // Rendering
     void StencilPass(const std::vector<Light>& lights, const Camera& camera);
-    void LightingPass(const std::vector<Light>& lights, const Camera& camera);
+    void LightingPass(const std::vector<Light>& lights, const Environment& env, const Camera& camera);
 };
 

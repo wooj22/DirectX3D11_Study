@@ -136,6 +136,7 @@
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="DirectionalLight.hpp" />
     <ClInclude Include="DirectionalShadowCamera.h" />
+    <ClInclude Include="Environment.hpp" />
     <ClInclude Include="FrustumRenderer.h" />
     <ClInclude Include="GeometryRenderer.h" />
     <ClInclude Include="Helper.h" />

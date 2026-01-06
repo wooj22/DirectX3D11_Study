@@ -102,24 +102,10 @@ void App::OnRender()
     lightRenderer.StencilPass(lights, camera);
 
     // 4. Lighting Pass
-    lightRenderer.LightingPass(lights, camera);
+    lightRenderer.LightingPass(lights, environments[currentSkybox], camera);
 
     // 5. Skybox Pass
-    switch (currentSkybox)
-    {
-    case 0:
-        skyboxRenderer.SkyboxPass(view, projection, skybox1);
-        break;
-    case 1:
-        skyboxRenderer.SkyboxPass(view, projection, skybox2);
-        break;
-    case 2:
-        skyboxRenderer.SkyboxPass(view, projection, skybox3);
-        break;
-    case 3:
-        skyboxRenderer.SkyboxPass(view, projection, skybox4);
-        break;
-    }
+    skyboxRenderer.SkyboxPass(view, projection, environments[currentSkybox].skybox);
 
     // 6. Bloom Prefilter -> DownSample -> UpSample Pass
     bloomRenderer.BloomPass();
@@ -127,12 +113,7 @@ void App::OnRender()
     // 7. PostProcess Pass
     postRenderer.PostProcessPass();
 
-    //////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////
-
-
-    // Frustem Debug
+    // 8. Frustem Debug
     if (frustumON)
     {
         // main camera
@@ -143,8 +124,12 @@ void App::OnRender()
             view, projection, Colors::GreenYellow);
     }
 
-    // GUI
+    // 9. GUI
     RenderGUI();
+
+    //////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////
 
     // Present
     D3D::swapChain->Present(1, 0);
@@ -201,45 +186,12 @@ void App::DefualtStageSetting()
     D3D::deviceContext->UpdateSubresource(D3D::postprocessBuffer.Get(), 0, nullptr, &D3D::postprocessCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::screenFxBuffer.Get(), 0, nullptr, &D3D::screenFxCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
-
-    // SRV (이거 어디로 빼야하나)
-    switch (currentSkybox)
-    {
-    case 0:
-        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap1);
-        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap1);
-        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT1);
-        break;
-    case 1:
-        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap2);
-        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap2);
-        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT2);
-        break;
-    case 2:
-        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap3);
-        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap3);
-        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT3);
-        break;
-    case 3:
-        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap4);
-        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap4);
-        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT4);
-        break;
-    }
 }
 
 
 
 bool App::InitResource()
 {
-    // skybox
-    {
-        skybox1.InitRenderPipeLine(L"../Resource/Skybox/skybox_cubmap.dds");
-        skybox2.InitRenderPipeLine(L"../Resource/Skybox/indoorEnvHDR.dds");
-        skybox3.InitRenderPipeLine(L"../Resource/Skybox/blueskyEnvHDR.dds");
-        skybox4.InitRenderPipeLine(L"../Resource/Skybox/redskyEnvHDR.dds");
-    }
-
     // model
     {
         StaticModel* floor = AssetManager::Instance().LoadStaticModelAsset("../Resource/Plane.fbx");
@@ -328,6 +280,34 @@ bool App::InitResource()
         }
     }
 
+    // skybox
+    {
+        // Environment Create Lamda
+        auto CreateEnvironment = [&](const wchar_t* cubmap_path, const wchar_t* irradiance_path, 
+            const wchar_t* specularEnv_path, const wchar_t* brdfLut_path) 
+            {
+                Environment e;
+                e.skybox.InitRenderPipeLine(cubmap_path);
+                CreateDDSTextureFromFile(D3D::device.Get(), irradiance_path, nullptr, e.ibl.irradiance.GetAddressOf());
+                CreateDDSTextureFromFile(D3D::device.Get(), specularEnv_path, nullptr, e.ibl.specularEnv.GetAddressOf());
+                CreateDDSTextureFromFile(D3D::device.Get(), brdfLut_path, nullptr, e.ibl.brdfLut.GetAddressOf());
+
+                environments.push_back(std::move(e));
+            };
+
+        CreateEnvironment(L"../Resource/Skybox/skybox_cubmap.dds", L"../Resource/IBL/skybox_cubemapDiffuseHDR.dds",
+            L"../Resource/IBL/skybox_cubemapSpecularHDR.dds", L"../Resource/IBL/skybox_cubemapBrdf.dds");
+
+        CreateEnvironment(L"../Resource/Skybox/indoorEnvHDR.dds", L"../Resource/IBL/indoorDiffuseHDR.dds",
+            L"../Resource/IBL/indoorSpecularHDR.dds", L"../Resource/IBL/indoorBrdf.dds");
+
+        CreateEnvironment(L"../Resource/Skybox/blueskyEnvHDR.dds", L"../Resource/IBL/blueskyDiffuseHDR.dds",
+            L"../Resource/IBL/blueskySpecularHDR.dds", L"../Resource/IBL/blueskyBrdf.dds");
+
+        CreateEnvironment(L"../Resource/Skybox/redskyEnvHDR.dds", L"../Resource/IBL/redskyDiffuseHDR.dds",
+            L"../Resource/IBL/redskySpecularHDR.dds", L"../Resource/IBL/redskyBrdf.dds");
+    }
+
     // view maxtrix
     camera.position = { 0, 80, -300 };
     camera.moveSpeed = 300.f;
@@ -348,34 +328,12 @@ bool App::InitResource()
     D3D::postprocessCBData.saturation = 1.0;
     D3D::screenFxCBData.enableWaterDistortion = 1;
 
-    // IBL Textures Load
-    {
-        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapDiffuseHDR.dds", nullptr, &IBL_IrradianceMap1);
-        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap1);
-        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/skybox_cubemapBrdf.dds", nullptr, &IBL_BRDF_LUT1);
-
-        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorDiffuseHDR.dds", nullptr, &IBL_IrradianceMap2);
-        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorSpecularHDR.dds", nullptr, &IBL_SpecularEnvMap2);
-        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/indoorBrdf.dds", nullptr, &IBL_BRDF_LUT2);
-
-        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/blueskyDiffuseHDR.dds", nullptr, &IBL_IrradianceMap3);
-        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/blueskySpecularHDR.dds", nullptr, &IBL_SpecularEnvMap3);
-        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/blueskyBrdf.dds", nullptr, &IBL_BRDF_LUT3);
-
-        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/redskyDiffuseHDR.dds", nullptr, &IBL_IrradianceMap4);
-        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/redskySpecularHDR.dds", nullptr, &IBL_SpecularEnvMap4);
-        CreateDDSTextureFromFile(D3D::device.Get(), L"../Resource/IBL/redskyBrdf.dds", nullptr, &IBL_BRDF_LUT4);
-    }
-
     return true;
 }
 
 void App::UninitRenderPipeLine()
 {
-    skybox1.UninitRenderPipeLine();
-    skybox2.UninitRenderPipeLine();
-    skybox3.UninitRenderPipeLine();
-    skybox4.UninitRenderPipeLine();
+
 }
 
 bool App::InitGUI()

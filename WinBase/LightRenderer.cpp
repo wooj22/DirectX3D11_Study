@@ -1,6 +1,7 @@
 #include "LightRenderer.h"
 #include "Light.h"
 #include "LightVolumeMesh.h"
+#include "Environment.hpp"
 #include "Camera.h"
 #include "D3D.h"
 #include "Structures.hpp"
@@ -66,7 +67,7 @@ void LightRenderer::StencilPass(const vector<Light>& lights, const Camera& camer
 //  G-Buffer를 샘플링하여 라이팅 계산
 //  - Directional : Full Screen Quad
 //  - Point, Spot : Light Volume + Stencil Test
-void LightRenderer::LightingPass(const vector<Light>& lights, const Camera& camera)
+void LightRenderer::LightingPass(const vector<Light>& lights, const Environment& env, const Camera& camera)
 {
     // RTV, DSV
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
@@ -94,6 +95,10 @@ void LightRenderer::LightingPass(const vector<Light>& lights, const Camera& came
     D3D::deviceContext->PSSetShaderResources(17, 1, D3D::metalRoughSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(18, 1, D3D::emissiveSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(19, 1, D3D::depthSRV.GetAddressOf());
+
+    D3D::deviceContext->PSSetShaderResources(9, 1, env.ibl.irradiance.GetAddressOf());
+    D3D::deviceContext->PSSetShaderResources(10, 1, env.ibl.specularEnv.GetAddressOf());
+    D3D::deviceContext->PSSetShaderResources(11, 1, env.ibl.brdfLut.GetAddressOf());
 
     // CB
     XMMATRIX invVP = XMMatrixInverse(nullptr, camera.GetView() * camera.GetProjection());
