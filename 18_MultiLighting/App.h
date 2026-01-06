@@ -111,21 +111,16 @@ private:
     PostProcessRenderer  postRenderer;
     FrustumRenderer      frustumRenderer;
 
-    // memory debugger
-    MemoryDebugger memory_debugger;
-
     // light
     vector<Light> lights;
-
-    // shadowmap
-    DirectionalShadowCamera shadowCamera;
-    ShadowOrthoDesc shadowOrthoDesc;
 
     // camera
     Matrix view;
     Matrix projection;
 
     // shadow camera
+    DirectionalShadowCamera shadowCamera;
+    ShadowOrthoDesc shadowOrthoDesc;
     Matrix shadowView;
     Matrix shadowProjection;
 
@@ -137,6 +132,31 @@ private:
     // environment
     vector<Environment> environments;
 
+    // memory debugger
+    MemoryDebugger memory_debugger;
+
+public:
+    // main process
+    virtual bool OnInit() override;
+    virtual void OnUninit() override;
+    virtual void OnUpdate() override;
+    virtual void OnRender() override;
+
+private:
+    void DefualtStageSetting();
+
+    // Init, Uninit
+    bool InitResource();
+    void UninitRenderPipeLine();
+
+    // GUI
+    bool InitGUI();
+    void UninitGUI();
+    void RenderGUI();
+
+    LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
+
+private:
     // Debug -----------------------------------------
     // camera
     float fovDeg = 60.0f;
@@ -176,26 +196,5 @@ private:
     // draw Debug
     bool frustumON = false;
     bool lightVolumeON = false;
-
-public:
-    // main process
-    virtual bool OnInit() override;
-    virtual void OnUninit() override;
-    virtual void OnUpdate() override;
-    virtual void OnRender() override;
-
-private:
-    void DefualtStageSetting();
-
-    // Init, Uninit
-    bool InitResource();
-    void UninitRenderPipeLine();
-
-    // GUI
-    bool InitGUI();
-    void UninitGUI();
-    void RenderGUI();
-
-    LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
 };
 
