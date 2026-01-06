@@ -263,7 +263,7 @@ struct alignas(16) ScreenFxCB
 struct alignas(16) BloomCB
 {
     float bloom_threshold = 1.0f; 
-    float bloom_intensity = 0.5f; 
+    float bloom_intensity = 0.8f; 
     float bloom_scatter = 0.5f;
     float bloom_clamp = 0.0f;
 
