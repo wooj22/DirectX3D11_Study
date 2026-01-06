@@ -79,13 +79,13 @@ void LightRenderer::LightingPass(const vector<Light>& lights, const Camera& came
     // PS
     D3D::deviceContext->PSSetShader(D3D::PS_DeferredLighting.Get(), NULL, 0);
 
-    // Blend State (Additive)
-    D3D::deviceContext->OMSetBlendState(D3D::additiveBlendState.Get(), nullptr, 0xffffffff);
-
     // Sampler
     D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
     D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
     D3D::deviceContext->PSSetSamplers(2, 1, D3D::linearClamSamplerState.GetAddressOf());
+
+    // Blend State (Additive)
+    D3D::deviceContext->OMSetBlendState(D3D::additiveBlendState.Get(), nullptr, 0xffffffff);
 
     // SRV
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
@@ -94,6 +94,12 @@ void LightRenderer::LightingPass(const vector<Light>& lights, const Camera& came
     D3D::deviceContext->PSSetShaderResources(17, 1, D3D::metalRoughSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(18, 1, D3D::emissiveSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(19, 1, D3D::depthSRV.GetAddressOf());
+
+    // CB
+    XMMATRIX invVP = XMMatrixInverse(nullptr, camera.GetView() * camera.GetProjection());
+    D3D::transformCBData.invViewProjection = XMMatrixTranspose(invVP);
+    D3D::transformCBData.cameraPos = camera.position;
+    D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
     // Render
     for (const Light& light : lights)

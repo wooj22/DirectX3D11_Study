@@ -6,6 +6,10 @@ using namespace DirectX::SimpleMath;
 
 class Camera
 {
+private:
+    Matrix view;
+    Matrix projection;
+
 public:
 	Camera();
 	Vector3 rotation;
@@ -24,9 +28,13 @@ public:
 	Vector3 GetForward();
 	Vector3 GetRight();
 
+    Matrix GetView() const { return view; }
+    Matrix GetProjection() const { return projection; }
+
 	void Reset();
-	void Update();
+	void Update(Vector2 screenSize);
 	void GetViewMatrix(Matrix& out);
+	void GetProjectionMatrix(Matrix& out, Vector2 screenSize);
 	void AddInputVector(const Vector3& input);
 	void SetSpeed(float speed) { moveSpeed = speed; }
 	void AddPitch(float value);

@@ -21,6 +21,9 @@ void SkyboxRenderer::SkyboxPass(const Matrix& view, const Matrix& projection, co
     D3D::deviceContext->VSSetShader(D3D::VS_Skybox.Get(), nullptr, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_Skybox.Get(), nullptr, 0);
 
+    // Sampler
+    D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
+
     // RS, DSS
     D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
     D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);

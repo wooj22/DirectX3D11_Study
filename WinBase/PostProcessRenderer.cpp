@@ -29,6 +29,9 @@ void PostProcessRenderer::PostProcessPass()
     D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_PostProcess.Get(), NULL, 0);
 
+    // Sampler
+    D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
+
     // SRV
     D3D::deviceContext->PSSetShaderResources(12, 1, D3D::sceneHDRSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(13, 1, D3D::finalBloomSRV.GetAddressOf());

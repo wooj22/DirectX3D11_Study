@@ -31,6 +31,12 @@ void GeometryRenderer::GeometryPass(const Matrix& view, const Matrix& projection
     // IA
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+    // PS
+    D3D::deviceContext->PSSetShader(D3D::PS_Gbuffer.Get(), NULL, 0);
+
+    // Sampler
+    D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
+
     // CB
     D3D::transformCBData.view = XMMatrixTranspose(view);
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
@@ -39,7 +45,6 @@ void GeometryRenderer::GeometryPass(const Matrix& view, const Matrix& projection
     // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PS_Gbuffer.Get(), NULL, 0);
     for (auto& m : static_models) m->Draw();
     for (auto& m : rigid_models) m->Draw();
 

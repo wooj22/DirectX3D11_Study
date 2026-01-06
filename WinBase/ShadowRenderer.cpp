@@ -18,6 +18,12 @@ void ShadowRenderer::ShadowMapPass(const Matrix& view, const Matrix& projection,
     // IA
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+    // PS
+    D3D::deviceContext->PSSetShader(D3D::PS_ShadowDepth.Get(), NULL, 0);    // alpha discard
+
+    // Sampler
+    D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
+
     // CB
     D3D::transformCBData.shadowView = XMMatrixTranspose(view);
     D3D::transformCBData.shadowProjection = XMMatrixTranspose(projection);
@@ -26,7 +32,6 @@ void ShadowRenderer::ShadowMapPass(const Matrix& view, const Matrix& projection,
     // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
-    D3D::deviceContext->PSSetShader(D3D::PS_ShadowDepth.Get(), NULL, 0);    // alpha discard
     for (auto& m : static_models) m->Draw();
     for (auto& m : rigid_models) m->Draw();
 

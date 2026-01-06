@@ -195,9 +195,6 @@ private:
     bool frustumON = false;
     bool lightVolumeON = false;
 
-    // clear color
-    float clearColor[4] = { 0,0,0,1 };
-
 public:
     // main process
     virtual bool OnInit() override;

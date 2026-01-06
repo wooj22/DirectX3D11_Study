@@ -54,8 +54,8 @@ void App::OnUninit()
 void App::OnUpdate()
 {
     // View, Projection
-    camera.GetViewMatrix(view);
-    projection = XMMatrixPerspectiveFovLH(camera.FovY, screenWidth / (FLOAT)screenHeight, camera.Near, camera.Far);
+    view = camera.GetView();
+    projection = camera.GetProjection();
 
     // Shadow View, Projection
     Vector3 lightDir;
@@ -86,9 +86,7 @@ void App::OnUpdate()
 
 void App::OnRender()
 {
-    // Defualt Stage Setting
-    DefualtStageSetting();         // binding + CB udpate
-
+    DefualtStageSetting();
 
     //////////////////////////////////////////////////////
     //////////////    Render PipeLine        /////////////
@@ -155,11 +153,7 @@ void App::OnRender()
 // Defulat Stage Setting + CB update
 void App::DefualtStageSetting()
 {
-    // Stage Setting
-    D3D::deviceContext->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
-    D3D::deviceContext->PSSetSamplers(1, 1, D3D::shadowSamplerState.GetAddressOf());
-    D3D::deviceContext->PSSetSamplers(2, 1, D3D::linearClamSamplerState.GetAddressOf());
-
+    // Defualt CB Slot Bind
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
     D3D::deviceContext->VSSetConstantBuffers(1, 1, D3D::lightingBuffer.GetAddressOf());
@@ -172,16 +166,10 @@ void App::DefualtStageSetting()
     D3D::deviceContext->PSSetConstantBuffers(8, 1, D3D::screenFxBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(9, 1, D3D::bloomBuffer.GetAddressOf());
 
-    // CB Update // TODO 각 렌더러 모듈의 알맞은데서 업데이트 시키기
-    D3D::transformCBData.view = XMMatrixTranspose(view);
-    D3D::transformCBData.projection = XMMatrixTranspose(projection);
-    D3D::transformCBData.shadowView = XMMatrixTranspose(shadowCamera.GetView());
-    D3D::transformCBData.shadowProjection = XMMatrixTranspose(shadowCamera.GetProjection());
-    D3D::transformCBData.cameraPos = camera.position;
-    XMMATRIX invVP = XMMatrixInverse(nullptr, view * projection);
-    D3D::transformCBData.invViewProjection = XMMatrixTranspose(invVP);
+    // Screen Size (얘 어디로 빼지)
     D3D::transformCBData.screenSize = { (float)screenWidth,(float)screenHeight };
 
+    // Debug CB Update
     D3D::materialCBData.useBaseColorOverride = useBaseColorOverride ? 1 : 0;
     D3D::materialCBData.useEmissiveOverride = useEmissiveOverride ? 1 : 0;
     D3D::materialCBData.useMetallicOverride = useMetallicOverride ? 1 : 0;
@@ -214,7 +202,7 @@ void App::DefualtStageSetting()
     D3D::deviceContext->UpdateSubresource(D3D::screenFxBuffer.Get(), 0, nullptr, &D3D::screenFxCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
 
-    // SRV
+    // SRV (이거 어디로 빼야하나)
     switch (currentSkybox)
     {
     case 0:

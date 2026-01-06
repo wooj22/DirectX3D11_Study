@@ -20,6 +20,9 @@ void BloomRenderer::BloomPass()
     D3D::deviceContext->IASetInputLayout(nullptr);
     D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
 
+    // Sampler
+    D3D::deviceContext->PSSetSamplers(2, 1, D3D::linearClamSamplerState.GetAddressOf());
+
     // 1. Prefilter Pass ------------------------------------
     //  - HDR을 샘플링하여 BloomA의 mip0에 처리할 픽셀만 기록
     //  - sceneHDR read -> mip0 write

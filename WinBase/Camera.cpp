@@ -25,7 +25,7 @@ void Camera::Reset()
 	position = Vector3(0.0f, 0.0f, -5.0f);
 }
 
-void Camera::Update()
+void Camera::Update(Vector2 screenSize)
 {
 	OnInputProcess();
 
@@ -37,6 +37,13 @@ void Camera::Update()
 
 	world = Matrix::CreateFromYawPitchRoll(rotation) *
 		Matrix::CreateTranslation(position);
+
+    Vector3 eye = world.Translation();
+    Vector3 target = world.Translation() + GetForward();
+    Vector3 up = world.Up();
+    view = XMMatrixLookAtLH(eye, target, up);
+
+    projection = XMMatrixPerspectiveFovLH(FovY, screenSize.x / (FLOAT)screenSize.y, Near, Far);
 }
 
 void Camera::GetViewMatrix(Matrix& out)
@@ -45,6 +52,11 @@ void Camera::GetViewMatrix(Matrix& out)
 	Vector3 target = world.Translation() + GetForward();
 	Vector3 up = world.Up();
 	out = XMMatrixLookAtLH(eye, target, up);
+}
+
+void Camera::GetProjectionMatrix(Matrix& out, Vector2 screenSize)
+{
+    projection = XMMatrixPerspectiveFovLH(FovY, screenSize.x / (FLOAT)screenSize.y, Near, Far);
 }
 
 void Camera::AddInputVector(const Math::Vector3& input)
