@@ -36,7 +36,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 
-// Effect 프로젝트입니다.
+// Filpbook Effect 프로젝트입니다.
 /*
 * [ Render PipeLine ]
 *   1. ShadowMap Pass                  -> ShadowMap

@@ -43,7 +43,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17_DeferredRendering", "17_
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "18_MultiLighting", "18_MultiLighting\18_MultiLighting.vcxproj", "{4DC0B875-4878-4C19-8A36-27132288A3B1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19_Effect", "19_Effect\19_Effect.vcxproj", "{54C56E03-242E-4849-9760-9854E36D2C88}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19_FilpbookEffect", "19_FilpbookEffect\19_Effect.vcxproj", "{54C56E03-242E-4849-9760-9854E36D2C88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

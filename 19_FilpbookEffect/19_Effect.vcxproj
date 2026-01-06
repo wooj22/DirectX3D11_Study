@@ -24,6 +24,7 @@
     <ProjectGuid>{54c56e03-242e-4849-9760-9854e36d2c88}</ProjectGuid>
     <RootNamespace>My19Effect</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>19_FilpbookEffect</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
