@@ -118,6 +118,9 @@
     <Filter Include="01. Render\Renderer\6_PostProcessRenderer">
       <UniqueIdentifier>{af4277a1-5e5e-45e8-b963-a06ba04c1dd1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Render\Renderer\7_FrustumRenderer">
+      <UniqueIdentifier>{73986040-9bd9-4022-8708-144c7402dea9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinApp.h">
@@ -225,6 +228,9 @@
     <ClInclude Include="SkyboxRenderer.h">
       <Filter>01. Render\Renderer\4_SkyboxRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="FrustumRenderer.h">
+      <Filter>01. Render\Renderer\7_FrustumRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApp.cpp">
@@ -313,6 +319,9 @@
     </ClCompile>
     <ClCompile Include="SkyboxRenderer.cpp">
       <Filter>01. Render\Renderer\4_SkyboxRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="FrustumRenderer.cpp">
+      <Filter>01. Render\Renderer\7_FrustumRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

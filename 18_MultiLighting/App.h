@@ -15,6 +15,7 @@
 #include "../WinBase/SkyboxRenderer.h"
 #include "../WinBase/BloomRenderer.h"
 #include "../WinBase/PostProcessRenderer.h"
+#include "../WinBase/FrustumRenderer.h"
 #include "../WinBase/MemoryDebugger.h"
 #include "../WinBase/DebugDraw.h"
 
@@ -108,6 +109,10 @@ private:
     SkyboxRenderer*      skyboxRenderer;
     BloomRenderer*       bloomRenderer;
     PostProcessRenderer* postRenderer;
+    FrustumRenderer      frustumRenderer;
+
+    // memory debugger
+    MemoryDebugger memory_debugger;
 
     // light
     vector<Light> lights;
@@ -196,15 +201,6 @@ private:
     // clear color
     float clearColor[4] = { 0,0,0,1 };
 
-    // draw debug
-    unique_ptr<CommonStates> m_states;
-    unique_ptr<PrimitiveBatch<VertexPositionColor>> m_batch;
-    unique_ptr<BasicEffect> m_effect;
-    ComPtr<ID3D11InputLayout> m_layout = nullptr;
-
-    // memory debugger
-    MemoryDebugger memory_debugger;
-
 public:
     // main process
     virtual bool OnInit() override;
@@ -223,10 +219,6 @@ private:
     bool InitGUI();
     void UninitGUI();
     void RenderGUI();
-
-    // Debug Draw
-    void FrustumDebugDraw(const Matrix& frustumView, const Matrix& frustumProj,
-        const Matrix& renderView, const Matrix& renderProj, FXMVECTOR color = Colors::Red);
 
     LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
 };
