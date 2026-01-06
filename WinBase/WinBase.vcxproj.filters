@@ -25,9 +25,6 @@
     <Filter Include="05. Animation">
       <UniqueIdentifier>{f4646f2b-9f6b-47ae-84e9-012255a4cf8b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="06. Light">
-      <UniqueIdentifier>{8ee2a1de-f662-4a05-a77f-53157829c2f7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="98. Shaders">
       <UniqueIdentifier>{b3001ec8-abda-4c8c-81fd-3f888cf00b87}</UniqueIdentifier>
     </Filter>
@@ -37,68 +34,8 @@
     <Filter Include="98. Shaders\PixelShader">
       <UniqueIdentifier>{fcced5c6-e224-4bfc-8bce-318e9af81af6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="07. Shadow">
-      <UniqueIdentifier>{faeeb225-2ed0-4881-ba3a-edf392a006de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="10. Resource Manager">
-      <UniqueIdentifier>{831f3da5-ebe6-40a2-b7b0-f93626ce3d47}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="10. Resource Manager\AssetManager">
-      <UniqueIdentifier>{7a6bd753-f479-45fb-8c86-a974586fc682}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="10. Resource Manager\ModelLoader">
-      <UniqueIdentifier>{693aa5dc-b422-402d-9123-9c682806d4dc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="11. Debugger">
-      <UniqueIdentifier>{a8c86706-2c17-455b-8b79-1ff57f3961a0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="11. Debugger\MemoryDebugger">
-      <UniqueIdentifier>{88cb7635-fe67-4418-a62f-dadfef4274b2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="11. Debugger\DebugDraw">
-      <UniqueIdentifier>{c65398b7-7f36-4c83-a57b-5a1fc3ca0578}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="06. Light\Old%28Legucy%29">
-      <UniqueIdentifier>{ff955e20-9d2f-4a21-867d-07d68b9a53ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render">
-      <UniqueIdentifier>{7d2e5fa0-36e9-4bca-8f16-df6c0d89acee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\D3D">
-      <UniqueIdentifier>{60948084-c99e-4706-98f3-340ff3dd05ad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\Renderer">
-      <UniqueIdentifier>{691c1b98-4d98-4ca2-9e7c-a84edc7a75b4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\RenderPipeLine">
-      <UniqueIdentifier>{4cded5db-c6ed-49e1-b3cf-d7c51bb421d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\Renderer\1_ShadowRenderer">
-      <UniqueIdentifier>{9a9f0503-ea73-43b4-b810-78a2b76f0354}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\Renderer\2_GeometryRenderer">
-      <UniqueIdentifier>{4285f88e-d4ef-47a0-b327-e97e70e4a3bc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\Renderer\3_LightRenderer">
-      <UniqueIdentifier>{b7eff898-ae09-4977-be98-d764412f7edf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\Renderer\4_SkyboxRenderer">
-      <UniqueIdentifier>{22303202-a255-4368-8734-2f1f8e5ab2b5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\Renderer\5_BloomRenderer">
-      <UniqueIdentifier>{0f945b84-1dc7-4c7e-b7a5-2c41a1072aa5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\Renderer\6_PostProcessRenderer">
-      <UniqueIdentifier>{af4277a1-5e5e-45e8-b963-a06ba04c1dd1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\Renderer\7_FrustumRenderer">
-      <UniqueIdentifier>{73986040-9bd9-4022-8708-144c7402dea9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. Renderable">
       <UniqueIdentifier>{f1cb7515-c4aa-4ac9-8b1a-f494df7da15a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="10. Resource Manager\MeshAsset">
-      <UniqueIdentifier>{746bad31-e215-44ad-84a2-ab71a17f3d54}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. Renderable\Skeletal Model">
       <UniqueIdentifier>{37853e5b-dc6e-43e4-9da1-6017a16cf5bd}</UniqueIdentifier>
@@ -115,11 +52,74 @@
     <Filter Include="02. Renderable\LightVolumeMesh">
       <UniqueIdentifier>{d7390ccd-3139-4c00-9746-dbc1085498ec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="09. Camera">
+    <Filter Include="00. D3D">
+      <UniqueIdentifier>{60948084-c99e-4706-98f3-340ff3dd05ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer">
+      <UniqueIdentifier>{7d2e5fa0-36e9-4bca-8f16-df6c0d89acee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Effect">
+      <UniqueIdentifier>{081d3c0c-9fee-4c66-b2ae-e1750d263be5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer\EffectRenderer">
+      <UniqueIdentifier>{306e3e23-4106-480f-97de-e6e30a154bd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer\FrustumRenderer">
+      <UniqueIdentifier>{73986040-9bd9-4022-8708-144c7402dea9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer\PostProcessRenderer">
+      <UniqueIdentifier>{af4277a1-5e5e-45e8-b963-a06ba04c1dd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer\BloomRenderer">
+      <UniqueIdentifier>{0f945b84-1dc7-4c7e-b7a5-2c41a1072aa5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer\SkyboxRenderer">
+      <UniqueIdentifier>{22303202-a255-4368-8734-2f1f8e5ab2b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer\LightRenderer">
+      <UniqueIdentifier>{b7eff898-ae09-4977-be98-d764412f7edf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer\GeometryRenderer">
+      <UniqueIdentifier>{4285f88e-d4ef-47a0-b327-e97e70e4a3bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer\ShadowRenderer">
+      <UniqueIdentifier>{9a9f0503-ea73-43b4-b810-78a2b76f0354}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. Light">
+      <UniqueIdentifier>{8ee2a1de-f662-4a05-a77f-53157829c2f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. Light\Old%28Legucy%29">
+      <UniqueIdentifier>{ff955e20-9d2f-4a21-867d-07d68b9a53ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Shadow">
+      <UniqueIdentifier>{faeeb225-2ed0-4881-ba3a-edf392a006de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="09. Environment">
+      <UniqueIdentifier>{507e9b00-caab-4df4-b91d-1ea4df0451d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="10. Camera">
       <UniqueIdentifier>{11c18ae4-18bd-4566-a39a-41a45d6172d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="08. Environment">
-      <UniqueIdentifier>{507e9b00-caab-4df4-b91d-1ea4df0451d2}</UniqueIdentifier>
+    <Filter Include="11. Resource Manager">
+      <UniqueIdentifier>{831f3da5-ebe6-40a2-b7b0-f93626ce3d47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="11. Resource Manager\AssetManager">
+      <UniqueIdentifier>{7a6bd753-f479-45fb-8c86-a974586fc682}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="11. Resource Manager\ModelLoader">
+      <UniqueIdentifier>{693aa5dc-b422-402d-9123-9c682806d4dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="11. Resource Manager\MeshAsset">
+      <UniqueIdentifier>{746bad31-e215-44ad-84a2-ab71a17f3d54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="12. Debugger">
+      <UniqueIdentifier>{a8c86706-2c17-455b-8b79-1ff57f3961a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="12. Debugger\MemoryDebugger">
+      <UniqueIdentifier>{88cb7635-fe67-4418-a62f-dadfef4274b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="12. Debugger\DebugDraw">
+      <UniqueIdentifier>{c65398b7-7f36-4c83-a57b-5a1fc3ca0578}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -130,7 +130,7 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>09. Camera</Filter>
+      <Filter>10. Camera</Filter>
     </ClInclude>
     <ClInclude Include="Helper.h">
       <Filter>99. Module</Filter>
@@ -172,67 +172,67 @@
       <Filter>02. Renderable\SkyBox</Filter>
     </ClInclude>
     <ClInclude Include="RigidModelAsset.hpp">
-      <Filter>10. Resource Manager\MeshAsset</Filter>
+      <Filter>11. Resource Manager\MeshAsset</Filter>
     </ClInclude>
     <ClInclude Include="SkeletalModelAsset.hpp">
-      <Filter>10. Resource Manager\MeshAsset</Filter>
+      <Filter>11. Resource Manager\MeshAsset</Filter>
     </ClInclude>
     <ClInclude Include="StaticModelAsset.hpp">
-      <Filter>10. Resource Manager\MeshAsset</Filter>
+      <Filter>11. Resource Manager\MeshAsset</Filter>
     </ClInclude>
     <ClInclude Include="AssetManager.h">
-      <Filter>10. Resource Manager\AssetManager</Filter>
+      <Filter>11. Resource Manager\AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="ModelLoader.h">
-      <Filter>10. Resource Manager\ModelLoader</Filter>
+      <Filter>11. Resource Manager\ModelLoader</Filter>
     </ClInclude>
     <ClInclude Include="MemoryDebugger.h">
-      <Filter>11. Debugger\MemoryDebugger</Filter>
+      <Filter>12. Debugger\MemoryDebugger</Filter>
     </ClInclude>
     <ClInclude Include="DebugDraw.h">
-      <Filter>11. Debugger\DebugDraw</Filter>
+      <Filter>12. Debugger\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="LightVolumeMesh.h">
       <Filter>02. Renderable\LightVolumeMesh</Filter>
     </ClInclude>
-    <ClInclude Include="Structures.hpp">
-      <Filter>01. Render</Filter>
-    </ClInclude>
     <ClInclude Include="DirectionalShadowCamera.h">
-      <Filter>07. Shadow</Filter>
+      <Filter>08. Shadow</Filter>
     </ClInclude>
     <ClInclude Include="DirectionalLight.hpp">
-      <Filter>06. Light\Old%28Legucy%29</Filter>
+      <Filter>07. Light\Old%28Legucy%29</Filter>
     </ClInclude>
     <ClInclude Include="LightRenderer.h">
-      <Filter>01. Render\Renderer\3_LightRenderer</Filter>
+      <Filter>01. Renderer\LightRenderer</Filter>
     </ClInclude>
     <ClInclude Include="D3D.h">
-      <Filter>01. Render\D3D</Filter>
+      <Filter>00. D3D</Filter>
     </ClInclude>
     <ClInclude Include="ShadowRenderer.h">
-      <Filter>01. Render\Renderer\1_ShadowRenderer</Filter>
+      <Filter>01. Renderer\ShadowRenderer</Filter>
     </ClInclude>
     <ClInclude Include="GeometryRenderer.h">
-      <Filter>01. Render\Renderer\2_GeometryRenderer</Filter>
+      <Filter>01. Renderer\GeometryRenderer</Filter>
     </ClInclude>
     <ClInclude Include="BloomRenderer.h">
-      <Filter>01. Render\Renderer\5_BloomRenderer</Filter>
+      <Filter>01. Renderer\BloomRenderer</Filter>
     </ClInclude>
     <ClInclude Include="PostProcessRenderer.h">
-      <Filter>01. Render\Renderer\6_PostProcessRenderer</Filter>
+      <Filter>01. Renderer\PostProcessRenderer</Filter>
     </ClInclude>
     <ClInclude Include="SkyboxRenderer.h">
-      <Filter>01. Render\Renderer\4_SkyboxRenderer</Filter>
+      <Filter>01. Renderer\SkyboxRenderer</Filter>
     </ClInclude>
     <ClInclude Include="FrustumRenderer.h">
-      <Filter>01. Render\Renderer\7_FrustumRenderer</Filter>
+      <Filter>01. Renderer\FrustumRenderer</Filter>
     </ClInclude>
     <ClInclude Include="Light.h">
-      <Filter>06. Light</Filter>
+      <Filter>07. Light</Filter>
     </ClInclude>
     <ClInclude Include="Environment.hpp">
-      <Filter>08. Environment</Filter>
+      <Filter>09. Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures.hpp">
+      <Filter>00. D3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -243,7 +243,7 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>09. Camera</Filter>
+      <Filter>10. Camera</Filter>
     </ClCompile>
     <ClCompile Include="Helper.cpp">
       <Filter>99. Module</Filter>
@@ -282,49 +282,49 @@
       <Filter>02. Renderable\SkyBox</Filter>
     </ClCompile>
     <ClCompile Include="AssetManager.cpp">
-      <Filter>10. Resource Manager\AssetManager</Filter>
+      <Filter>11. Resource Manager\AssetManager</Filter>
     </ClCompile>
     <ClCompile Include="ModelLoader.cpp">
-      <Filter>10. Resource Manager\ModelLoader</Filter>
+      <Filter>11. Resource Manager\ModelLoader</Filter>
     </ClCompile>
     <ClCompile Include="MemoryDebugger.cpp">
-      <Filter>11. Debugger\MemoryDebugger</Filter>
+      <Filter>12. Debugger\MemoryDebugger</Filter>
     </ClCompile>
     <ClCompile Include="DebugDraw.cpp">
-      <Filter>11. Debugger\DebugDraw</Filter>
+      <Filter>12. Debugger\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="LightVolumeMesh.cpp">
       <Filter>02. Renderable\LightVolumeMesh</Filter>
     </ClCompile>
     <ClCompile Include="DirectionalShadowCamera.cpp">
-      <Filter>07. Shadow</Filter>
+      <Filter>08. Shadow</Filter>
     </ClCompile>
     <ClCompile Include="LightRenderer.cpp">
-      <Filter>01. Render\Renderer\3_LightRenderer</Filter>
+      <Filter>01. Renderer\LightRenderer</Filter>
     </ClCompile>
     <ClCompile Include="D3D.cpp">
-      <Filter>01. Render\D3D</Filter>
+      <Filter>00. D3D</Filter>
     </ClCompile>
     <ClCompile Include="ShadowRenderer.cpp">
-      <Filter>01. Render\Renderer\1_ShadowRenderer</Filter>
+      <Filter>01. Renderer\ShadowRenderer</Filter>
     </ClCompile>
     <ClCompile Include="GeometryRenderer.cpp">
-      <Filter>01. Render\Renderer\2_GeometryRenderer</Filter>
+      <Filter>01. Renderer\GeometryRenderer</Filter>
     </ClCompile>
     <ClCompile Include="BloomRenderer.cpp">
-      <Filter>01. Render\Renderer\5_BloomRenderer</Filter>
+      <Filter>01. Renderer\BloomRenderer</Filter>
     </ClCompile>
     <ClCompile Include="PostProcessRenderer.cpp">
-      <Filter>01. Render\Renderer\6_PostProcessRenderer</Filter>
+      <Filter>01. Renderer\PostProcessRenderer</Filter>
     </ClCompile>
     <ClCompile Include="SkyboxRenderer.cpp">
-      <Filter>01. Render\Renderer\4_SkyboxRenderer</Filter>
+      <Filter>01. Renderer\SkyboxRenderer</Filter>
     </ClCompile>
     <ClCompile Include="FrustumRenderer.cpp">
-      <Filter>01. Render\Renderer\7_FrustumRenderer</Filter>
+      <Filter>01. Renderer\FrustumRenderer</Filter>
     </ClCompile>
     <ClCompile Include="Light.cpp">
-      <Filter>06. Light</Filter>
+      <Filter>07. Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
