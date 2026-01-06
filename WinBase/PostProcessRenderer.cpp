@@ -25,15 +25,17 @@ void PostProcessRenderer::PostProcessPass()
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D::deviceContext->IASetInputLayout(nullptr);
 
-    // Shaders
+    // Shader
     D3D::deviceContext->VSSetShader(D3D::VS_FullScreen.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_PostProcess.Get(), NULL, 0);
+
+    // SRV
     D3D::deviceContext->PSSetShaderResources(12, 1, D3D::sceneHDRSRV.GetAddressOf());
     D3D::deviceContext->PSSetShaderResources(13, 1, D3D::finalBloomSRV.GetAddressOf());
 
     // Draw Call
     D3D::deviceContext.Get()->Draw(3, 0);
 
-    // SRV hazard ¹æÁö
+    // cleanup
     D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
 }

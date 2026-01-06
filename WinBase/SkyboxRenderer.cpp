@@ -13,16 +13,17 @@ void SkyboxRenderer::SkyboxPass(const Matrix& view, const Matrix& projection, co
     D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
 
-    // RS, DSS
-    D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
-    D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
-
     // IA
+    D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Position.Get());
 
     // Shader
     D3D::deviceContext->VSSetShader(D3D::VS_Skybox.Get(), nullptr, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_Skybox.Get(), nullptr, 0);
+
+    // RS, DSS
+    D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
+    D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
 
     // CB
     /* 카메라 이동행렬 제거->카메라가 이동해도 큐브는 항상 카메라 원점에 고정

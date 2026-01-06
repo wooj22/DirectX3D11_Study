@@ -15,6 +15,9 @@ void ShadowRenderer::ShadowMapPass(const Matrix& view, const Matrix& projection,
     D3D::deviceContext->OMSetDepthStencilState(D3D::defualtDSS.Get(), 0);
     D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
+    // IA
+    D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
     // CB
     D3D::transformCBData.shadowView = XMMatrixTranspose(view);
     D3D::transformCBData.shadowProjection = XMMatrixTranspose(projection);

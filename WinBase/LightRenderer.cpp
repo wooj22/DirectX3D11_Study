@@ -26,13 +26,6 @@ void LightRenderer::StencilPass(const vector<Light>& lights, const Camera& camer
     D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(),
         D3D11_CLEAR_STENCIL, 1.0f, 0);  // Stencil만 0으로 초기화
 
-    // DSS
-    const UINT stencilRef = 1;          // Stencil Reference Value
-    D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestStencilWriteDSS.Get(), stencilRef);
-
-    // RS (원래 outside는 cullBack인데, mesh가 뒤집혀있는듯?)
-    D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
-
     // IA
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D::deviceContext.Get()->IASetInputLayout(D3D::inputLayout_Position.Get());
@@ -40,6 +33,13 @@ void LightRenderer::StencilPass(const vector<Light>& lights, const Camera& camer
     // Shader
     D3D::deviceContext.Get()->VSSetShader(D3D::VS_LightVolume.Get(), nullptr, 0);
     D3D::deviceContext->PSSetShader(nullptr, nullptr, 0);   // PS x
+
+    // DSS
+    const UINT stencilRef = 1;          // Stencil Reference Value
+    D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestStencilWriteDSS.Get(), stencilRef);
+
+    // RS (원래 outside는 cullBack인데, mesh가 뒤집혀있는듯?)
+    D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
 
     // Render
     for (const Light& light : lights)

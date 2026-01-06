@@ -97,26 +97,26 @@
     <Filter Include="01. Render\Renderer">
       <UniqueIdentifier>{691c1b98-4d98-4ca2-9e7c-a84edc7a75b4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Render\Renderer\LightRenderer">
-      <UniqueIdentifier>{b7eff898-ae09-4977-be98-d764412f7edf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\Renderer\ShadowRenderer">
-      <UniqueIdentifier>{9a9f0503-ea73-43b4-b810-78a2b76f0354}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\Renderer\BloomRenderer">
-      <UniqueIdentifier>{0f945b84-1dc7-4c7e-b7a5-2c41a1072aa5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Render\Renderer\PostProcessRenderer">
-      <UniqueIdentifier>{af4277a1-5e5e-45e8-b963-a06ba04c1dd1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Render\RenderPipeLine">
       <UniqueIdentifier>{4cded5db-c6ed-49e1-b3cf-d7c51bb421d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Render\Renderer\GeometryRenderer">
+    <Filter Include="01. Render\Renderer\1_ShadowRenderer">
+      <UniqueIdentifier>{9a9f0503-ea73-43b4-b810-78a2b76f0354}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Render\Renderer\2_GeometryRenderer">
       <UniqueIdentifier>{4285f88e-d4ef-47a0-b327-e97e70e4a3bc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Render\Renderer\SkyboxRenderer">
+    <Filter Include="01. Render\Renderer\3_LightRenderer">
+      <UniqueIdentifier>{b7eff898-ae09-4977-be98-d764412f7edf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Render\Renderer\4_SkyboxRenderer">
       <UniqueIdentifier>{22303202-a255-4368-8734-2f1f8e5ab2b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Render\Renderer\5_BloomRenderer">
+      <UniqueIdentifier>{0f945b84-1dc7-4c7e-b7a5-2c41a1072aa5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Render\Renderer\6_PostProcessRenderer">
+      <UniqueIdentifier>{af4277a1-5e5e-45e8-b963-a06ba04c1dd1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -205,25 +205,25 @@
       <Filter>06. Light\Light</Filter>
     </ClInclude>
     <ClInclude Include="LightRenderer.h">
-      <Filter>01. Render\Renderer\LightRenderer</Filter>
+      <Filter>01. Render\Renderer\3_LightRenderer</Filter>
     </ClInclude>
     <ClInclude Include="D3D.h">
       <Filter>01. Render\D3D</Filter>
     </ClInclude>
     <ClInclude Include="ShadowRenderer.h">
-      <Filter>01. Render\Renderer\ShadowRenderer</Filter>
+      <Filter>01. Render\Renderer\1_ShadowRenderer</Filter>
     </ClInclude>
     <ClInclude Include="GeometryRenderer.h">
-      <Filter>01. Render\Renderer\GeometryRenderer</Filter>
+      <Filter>01. Render\Renderer\2_GeometryRenderer</Filter>
     </ClInclude>
     <ClInclude Include="BloomRenderer.h">
-      <Filter>01. Render\Renderer\BloomRenderer</Filter>
+      <Filter>01. Render\Renderer\5_BloomRenderer</Filter>
     </ClInclude>
     <ClInclude Include="PostProcessRenderer.h">
-      <Filter>01. Render\Renderer\PostProcessRenderer</Filter>
+      <Filter>01. Render\Renderer\6_PostProcessRenderer</Filter>
     </ClInclude>
     <ClInclude Include="SkyboxRenderer.h">
-      <Filter>01. Render\Renderer\SkyboxRenderer</Filter>
+      <Filter>01. Render\Renderer\4_SkyboxRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -294,25 +294,25 @@
       <Filter>06. Light\Light</Filter>
     </ClCompile>
     <ClCompile Include="LightRenderer.cpp">
-      <Filter>01. Render\Renderer\LightRenderer</Filter>
+      <Filter>01. Render\Renderer\3_LightRenderer</Filter>
     </ClCompile>
     <ClCompile Include="D3D.cpp">
       <Filter>01. Render\D3D</Filter>
     </ClCompile>
     <ClCompile Include="ShadowRenderer.cpp">
-      <Filter>01. Render\Renderer\ShadowRenderer</Filter>
+      <Filter>01. Render\Renderer\1_ShadowRenderer</Filter>
     </ClCompile>
     <ClCompile Include="GeometryRenderer.cpp">
-      <Filter>01. Render\Renderer\GeometryRenderer</Filter>
+      <Filter>01. Render\Renderer\2_GeometryRenderer</Filter>
     </ClCompile>
     <ClCompile Include="BloomRenderer.cpp">
-      <Filter>01. Render\Renderer\BloomRenderer</Filter>
+      <Filter>01. Render\Renderer\5_BloomRenderer</Filter>
     </ClCompile>
     <ClCompile Include="PostProcessRenderer.cpp">
-      <Filter>01. Render\Renderer\PostProcessRenderer</Filter>
+      <Filter>01. Render\Renderer\6_PostProcessRenderer</Filter>
     </ClCompile>
     <ClCompile Include="SkyboxRenderer.cpp">
-      <Filter>01. Render\Renderer\SkyboxRenderer</Filter>
+      <Filter>01. Render\Renderer\4_SkyboxRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

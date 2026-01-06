@@ -28,6 +28,9 @@ void GeometryRenderer::GeometryPass(const Matrix& view, const Matrix& projection
         D3D::deviceContext->ClearRenderTargetView(gbuffers[i], clearColor);
     }
 
+    // IA
+    D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
     // CB
     D3D::transformCBData.view = XMMatrixTranspose(view);
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
