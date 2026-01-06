@@ -69,42 +69,24 @@ void SkyBox::InitRenderPipeLine(const std::wstring& filePath)
     );
 }
 
-void SkyBox::Render(Matrix& view, Matrix& projection)
+void SkyBox::Render(const Matrix& view, const Matrix& projection) const
 {
-    // 카메라 이동행렬 제거 -> 카메라가 이동해도 큐브는 항상 카메라 원점에 고정
-    // 스카이 박스 정점은 카메라 좌표계에서 항상 +- 1 정도 거리의 정점으로 유지
-    // 큐브는 투영후 카메라의 Far Plane에 수렴하는 값으로 나오고 z(깊이)는 1근처가 됨
-    Matrix viewNoTranslation = view;
-    viewNoTranslation._41 = 0.0f;
-    viewNoTranslation._42 = 0.0f;
-    viewNoTranslation._43 = 0.0f;
-
-    // Constant buffer Update
-    D3D::transformCBData.view = XMMatrixTranspose(viewNoTranslation);
-    D3D::transformCBData.projection = XMMatrixTranspose(projection);
-    
-
-    // 렌더 파이프라인 바인딩
+    // Vertex, Index
     D3D::deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);
     D3D::deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+    // IA
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Position.Get());
+
+    // Shader
     D3D::deviceContext->VSSetShader(D3D::VS_Skybox.Get(), nullptr, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_Skybox.Get(), nullptr, 0);
-    D3D::deviceContext->PSSetShaderResources(4, 1, &skyboxTRV);
-    D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
-    D3D::deviceContext->PSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
-    D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
-    // Rasterizer, DepthStencilState 설정
-    D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());     
-    D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
+    // SRV
+    D3D::deviceContext->PSSetShaderResources(4, 1, &skyboxTRV);
 
     // Draw
     D3D::deviceContext->DrawIndexed(indexCount, 0, 0);
-
-    // Rasterizer, DepthStencilState 원상복귀
-    D3D::deviceContext->RSSetState(nullptr);
-    D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
 }
 
 void SkyBox::UninitRenderPipeLine()

@@ -12,6 +12,7 @@
 #include "../WinBase/ShadowRenderer.h"
 #include "../WinBase/GeometryRenderer.h"
 #include "../WinBase/LightRenderer.h"
+#include "../WinBase/SkyboxRenderer.h"
 #include "../WinBase/BloomRenderer.h"
 #include "../WinBase/PostProcessRenderer.h"
 #include "../WinBase/MemoryDebugger.h"
@@ -104,6 +105,7 @@ private:
     ShadowRenderer*      shadowRenderer;
     GeometryRenderer*    geometryRenderer;
     LightRenderer*       lightRenderer;
+    SkyboxRenderer*      skyboxRenderer;
     BloomRenderer*       bloomRenderer;
     PostProcessRenderer* postRenderer;
 

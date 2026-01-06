@@ -115,6 +115,9 @@
     <Filter Include="01. Render\Renderer\GeometryRenderer">
       <UniqueIdentifier>{4285f88e-d4ef-47a0-b327-e97e70e4a3bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Render\Renderer\SkyboxRenderer">
+      <UniqueIdentifier>{22303202-a255-4368-8734-2f1f8e5ab2b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinApp.h">
@@ -219,6 +222,9 @@
     <ClInclude Include="PostProcessRenderer.h">
       <Filter>01. Render\Renderer\PostProcessRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="SkyboxRenderer.h">
+      <Filter>01. Render\Renderer\SkyboxRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApp.cpp">
@@ -304,6 +310,9 @@
     </ClCompile>
     <ClCompile Include="PostProcessRenderer.cpp">
       <Filter>01. Render\Renderer\PostProcessRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyboxRenderer.cpp">
+      <Filter>01. Render\Renderer\SkyboxRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

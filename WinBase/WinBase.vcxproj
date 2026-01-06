@@ -157,6 +157,7 @@
     <ClInclude Include="SkeletalSubMesh.h" />
     <ClInclude Include="Skeleton.hpp" />
     <ClInclude Include="SkyBox.h" />
+    <ClInclude Include="SkyboxRenderer.h" />
     <ClInclude Include="StaticModel.h" />
     <ClInclude Include="StaticModelAsset.hpp" />
     <ClInclude Include="StaticSubMesh.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="SkeletalModel.cpp" />
     <ClCompile Include="SkeletalSubMesh.cpp" />
     <ClCompile Include="SkyBox.cpp" />
+    <ClCompile Include="SkyboxRenderer.cpp" />
     <ClCompile Include="StaticModel.cpp" />
     <ClCompile Include="StaticSubMesh.cpp" />
     <ClCompile Include="Time.cpp" />

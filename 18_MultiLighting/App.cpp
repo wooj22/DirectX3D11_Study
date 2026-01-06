@@ -28,9 +28,10 @@ bool App::OnInit()
     if (!InitResource()) return false;
     if (!InitGUI()) return false;
 
-    lightRenderer = new LightRenderer();
     shadowRenderer = new ShadowRenderer();
     geometryRenderer = new GeometryRenderer();
+    lightRenderer = new LightRenderer();
+    skyboxRenderer = new SkyboxRenderer();
     bloomRenderer = new BloomRenderer();
     postRenderer = new PostProcessRenderer();
 
@@ -39,9 +40,10 @@ bool App::OnInit()
 
 void App::OnUninit()
 {
-    delete lightRenderer;
-    delete geometryRenderer;
     delete shadowRenderer;
+    delete geometryRenderer;
+    delete lightRenderer;
+    delete skyboxRenderer;
     delete bloomRenderer;
     delete postRenderer;
 
@@ -147,6 +149,7 @@ void App::DefualtStageSetting()
     D3D::materialCBData.useMetallicOverride = useMetallicOverride ? 1 : 0;
     D3D::materialCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
 
+    D3D::lightingCBData.useIBL = useIBL ? 1 : 0;
     D3D::debugCBData.lightVolumeON = lightVolumeON ? 1 : 0;
 
     D3D::postprocessCBData.useDefaultGamma = usedefalutGamma ? 1 : 0;
@@ -172,6 +175,31 @@ void App::DefualtStageSetting()
     D3D::deviceContext->UpdateSubresource(D3D::postprocessBuffer.Get(), 0, nullptr, &D3D::postprocessCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::screenFxBuffer.Get(), 0, nullptr, &D3D::screenFxCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
+
+    // SRV
+    switch (currentSkybox)
+    {
+    case 0:
+        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap1);
+        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap1);
+        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT1);
+        break;
+    case 1:
+        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap2);
+        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap2);
+        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT2);
+        break;
+    case 2:
+        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap3);
+        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap3);
+        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT3);
+        break;
+    case 3:
+        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap4);
+        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap4);
+        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT4);
+        break;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -210,34 +238,6 @@ void App::StencilPass()
 //  Point, Spot : Light Volume + ★Stencil Test★
 void App::LightingPass()
 {
-    // CB
-    D3D::lightingCBData.useIBL = useIBL ? 1 : 0;
-
-    // SRV
-    switch (currentSkybox)
-    {
-    case 0:
-        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap1);
-        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap1);
-        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT1);
-        break;
-    case 1:
-        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap2);
-        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap2);
-        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT2);
-        break;
-    case 2:
-        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap3);
-        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap3);
-        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT3);
-        break;
-    case 3:
-        D3D::deviceContext->PSSetShaderResources(9, 1, &IBL_IrradianceMap4);
-        D3D::deviceContext->PSSetShaderResources(10, 1, &IBL_SpecularEnvMap4);
-        D3D::deviceContext->PSSetShaderResources(11, 1, &IBL_BRDF_LUT4);
-        break;
-    }
-
     // Renderer Pass Call
     lightRenderer->LightingPass(lights, camera);
 }
@@ -247,25 +247,19 @@ void App::LightingPass()
 // 비어있는 픽셀에 기록한다. (Depth Test)
 void App::SkyBoxRender()
 {
-    // RTV, DSV
-    D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
-    D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
-
-    // Skybox Render  --------------------------------
     switch (currentSkybox)
     {
     case 0:
-        skybox1.Render(view, projection);
+        skyboxRenderer->SkyboxPass(view, projection, skybox1);
         break;
     case 1:
-        skybox2.Render(view, projection);
+        skyboxRenderer->SkyboxPass(view, projection, skybox2);
         break;
     case 2:
-        skybox3.Render(view, projection);
+        skyboxRenderer->SkyboxPass(view, projection, skybox3);
         break;
     case 3:
-        skybox4.Render(view, projection);
+        skyboxRenderer->SkyboxPass(view, projection, skybox4);
         break;
     }
 }

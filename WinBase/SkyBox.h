@@ -33,7 +33,7 @@ class SkyBox
 
 public:
     void InitRenderPipeLine(const std::wstring& filePath);
-    void Render(Matrix& view, Matrix& projection);
+    void Render(const Matrix& view, const Matrix& projection) const;
     void UninitRenderPipeLine();
 };
 
