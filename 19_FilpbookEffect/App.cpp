@@ -238,7 +238,7 @@ bool App::InitResource()
 
     // light
     {
-        D3D::lightingCBData.indirectIntensity = 0.05f;
+        D3D::lightingCBData.indirectIntensity = 0.15f;
         D3D::lightingCBData.useIBL = 1;
 
         Light directionalLight(LightType::Directional, true);
