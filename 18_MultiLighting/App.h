@@ -142,11 +142,13 @@ public:
     virtual void OnRender() override;
 
 private:
-    void DefualtStageSetting();
-
     // Init, Uninit
     bool InitResource();
-    void UninitRenderPipeLine();
+
+    // CB Update
+    void CBSlotBinding();
+    void FrameCBUpdate();
+    void DebugCBUpdate();
 
     // GUI
     bool InitGUI();

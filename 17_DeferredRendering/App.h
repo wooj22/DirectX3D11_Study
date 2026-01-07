@@ -6,10 +6,17 @@
 #include "../WinBase/RigidModel.h"
 #include "../WinBase/SkeletalModel.h"
 #include "../WinBase/Material.h"
-#include "../WinBase/DirectionalLight.hpp"
-#include "../WinBase/SkyBox.h"
+#include "../WinBase/DirectionalShadowCamera.h"
+#include "../WinBase/Light.h"
+#include "../WinBase/ShadowRenderer.h"
+#include "../WinBase/GeometryRenderer.h"
+#include "../WinBase/LightRenderer.h"
+#include "../WinBase/SkyboxRenderer.h"
+#include "../WinBase/BloomRenderer.h"
+#include "../WinBase/PostProcessRenderer.h"
+#include "../WinBase/FrustumRenderer.h"
 #include "../WinBase/MemoryDebugger.h"
-#include "../WinBase/DebugDraw.h"
+#include "../WinBase/Environment.hpp"
 
 #include <iostream>
 using namespace std;
@@ -38,10 +45,11 @@ using namespace DirectX::SimpleMath;
 *   1. ShadowMap Pass                  -> ShadowMap
 *   2. Geometry Pass                   -> G-buffer (Albedo, Normal, MetalRough, Emissive)
 *   3. Lighting Pass                   -> Scene HDR Color Pass (Deferred Lighting)
-*   4. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
-*   5. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
-*   6. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
-*   7. LDR PostProcess Pass            -> LDR (final)
+*   4. Skybox   Pass                   -> Scene HDR의 빈 픽셀에 Skybox Render
+*   5. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
+*   6. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
+*   7. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
+*   8. LDR PostProcess Pass            -> LDR (final)
 *
 * [ G-buffer ]
 *   RT0 : Albedo (RGB)
@@ -68,50 +76,63 @@ using namespace DirectX::SimpleMath;
 class App : public WinApp
 {
 private:
-    ID3D11ShaderResourceView* finalBloomSRV = nullptr;
-
-    // skybox
-    SkyBox skybox1;
-    SkyBox skybox2;
-    SkyBox skybox3;
-    SkyBox skybox4;
-
-    // IBL texture
-    ID3D11ShaderResourceView* IBL_IrradianceMap1 = nullptr;
-    ID3D11ShaderResourceView* IBL_SpecularEnvMap1 = nullptr;
-    ID3D11ShaderResourceView* IBL_BRDF_LUT1 = nullptr;
-
-    ID3D11ShaderResourceView* IBL_IrradianceMap2 = nullptr;
-    ID3D11ShaderResourceView* IBL_SpecularEnvMap2 = nullptr;
-    ID3D11ShaderResourceView* IBL_BRDF_LUT2 = nullptr;
-
-    ID3D11ShaderResourceView* IBL_IrradianceMap3 = nullptr;
-    ID3D11ShaderResourceView* IBL_SpecularEnvMap3 = nullptr;
-    ID3D11ShaderResourceView* IBL_BRDF_LUT3 = nullptr;
-
-    ID3D11ShaderResourceView* IBL_IrradianceMap4 = nullptr;
-    ID3D11ShaderResourceView* IBL_SpecularEnvMap4 = nullptr;
-    ID3D11ShaderResourceView* IBL_BRDF_LUT4 = nullptr;
+    // renderer
+    ShadowRenderer       shadowRenderer;
+    GeometryRenderer     geometryRenderer;
+    LightRenderer        lightRenderer;
+    SkyboxRenderer       skyboxRenderer;
+    BloomRenderer        bloomRenderer;
+    PostProcessRenderer  postRenderer;
+    FrustumRenderer      frustumRenderer;
 
     // light
-    DirectionalLight light;
+    vector<Light> lights;
 
-    // models
-    vector<StaticModel*> spheres;
-    vector<StaticModel*> torus;
-    StaticModel* floor = nullptr;
-    StaticModel* tree = nullptr;
-    StaticModel* zelda = nullptr;
-    RigidModel* character = nullptr;
-    SkeletalModel* girl = nullptr;
-    SkeletalModel* enemy = nullptr;
-
-    // matrix
+    // camera
     Matrix view;
     Matrix projection;
-    Matrix lightView;
-    Matrix lightProjection;
 
+    // shadow camera
+    DirectionalShadowCamera shadowCamera;
+    ShadowOrthoDesc shadowOrthoDesc;
+    Matrix shadowView;
+    Matrix shadowProjection;
+
+    // models
+    vector<StaticModel*> static_models;
+    vector<RigidModel*> rigid_models;
+    vector<SkeletalModel*> skeletal_models;
+
+    // environment
+    vector<Environment> environments;
+
+    // memory debugger
+    MemoryDebugger memory_debugger;
+
+public:
+    // main process
+    virtual bool OnInit() override;
+    virtual void OnUninit() override;
+    virtual void OnUpdate() override;
+    virtual void OnRender() override;
+
+private:
+    // Init, Uninit
+    bool InitResource();
+
+    // CB Update
+    void CBSlotBinding();
+    void FrameCBUpdate();
+    void DebugCBUpdate();
+
+    // GUI
+    bool InitGUI();
+    void UninitGUI();
+    void RenderGUI();
+
+    LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
+
+private:
     // camera
     float fovDeg = 60.0f;
 
@@ -155,46 +176,7 @@ private:
     // IBL debug
     bool useIBL = 1;
 
-    // clear color
-    float clearColor[4] = { 0,0,0,1 };
-
-    // draw debug
-    unique_ptr<CommonStates> m_states;
-    unique_ptr<PrimitiveBatch<VertexPositionColor>> m_batch;
-    unique_ptr<BasicEffect> m_effect;
-    ComPtr<ID3D11InputLayout> m_layout = nullptr;
-
-    // memory debugger
-    MemoryDebugger memory_debugger;
-
-public:
-    // main process
-    virtual bool OnInit() override;
-    virtual void OnUninit() override;
-    virtual void OnUpdate() override;
-    virtual void OnRender() override;
-
-    void DefualtStageSetting();
-    void SkyBoxRender();
-    void ShadowMapPass();
-    void GeometryPass();
-    void LightingPass();
-    void BloomProcess();
-    void PostProcess();
-
-    // rendering pipeline
-    bool InitRenderPipeLine();
-    void UninitRenderPipeLine();
-
-    // gui 
-    bool InitGUI();
-    void UninitGUI();
-    void RenderGUI();
-
-    // debug draw
-    void FrustumDebugDraw(const Matrix& frustumView, const Matrix& frustumProj,
-        const Matrix& renderView, const Matrix& renderProj, FXMVECTOR color = Colors::Red);
-
-    LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
+    // draw Debug
+    bool frustumON = false;
 };
 

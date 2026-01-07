@@ -82,6 +82,7 @@ void App::OnUpdate()
 
 void App::OnRender()
 {
+    // CB
     CBSlotBinding();
     FrameCBUpdate();
     DebugCBUpdate();
@@ -133,7 +134,6 @@ void App::OnRender()
     D3D::swapChain->Present(1, 0);
 }
 
-// Defulat Stage Setting + CB update
 void App::CBSlotBinding()
 {
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());

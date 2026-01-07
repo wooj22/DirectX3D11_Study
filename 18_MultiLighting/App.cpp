@@ -46,7 +46,6 @@ bool App::OnInit()
 void App::OnUninit()
 {
     UninitGUI();
-    UninitRenderPipeLine();
     D3D::UnInit();
     CheckDXGIDebug();
 }
@@ -86,7 +85,9 @@ void App::OnUpdate()
 
 void App::OnRender()
 {
-    DefualtStageSetting();
+    CBSlotBinding();
+    FrameCBUpdate();
+    DebugCBUpdate();
 
     //////////////////////////////////////////////////////
     //////////////    Render PipeLine        /////////////
@@ -135,10 +136,8 @@ void App::OnRender()
     D3D::swapChain->Present(1, 0);
 }
 
-// Defulat Stage Setting + CB update
-void App::DefualtStageSetting()
+void App::CBSlotBinding()
 {
-    // Defualt CB Slot Bind
     D3D::deviceContext->VSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(0, 1, D3D::transformBuffer.GetAddressOf());
     D3D::deviceContext->VSSetConstantBuffers(1, 1, D3D::lightingBuffer.GetAddressOf());
@@ -150,18 +149,28 @@ void App::DefualtStageSetting()
     D3D::deviceContext->PSSetConstantBuffers(7, 1, D3D::postprocessBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(8, 1, D3D::screenFxBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(9, 1, D3D::bloomBuffer.GetAddressOf());
+    D3D::deviceContext->PSSetConstantBuffers(10, 1, D3D::frameBuffer.GetAddressOf());
+}
 
-    // Screen Size (얘 어디로 빼지)
-    D3D::transformCBData.screenSize = { (float)screenWidth,(float)screenHeight };
+void App::FrameCBUpdate()
+{
+    D3D::frameCBData.screenSize = { (float)screenWidth,(float)screenHeight };
+    D3D::frameCBData.time = Time::GetTotalTime();
+    D3D::frameCBData.cameraPos = camera.position;
 
+    D3D::deviceContext->UpdateSubresource(D3D::frameBuffer.Get(), 0, nullptr, &D3D::frameCBData, 0, 0);
+}
+
+void App::DebugCBUpdate()
+{
     // Debug CB Update
+    D3D::lightingCBData.useIBL = useIBL ? 1 : 0;
+    D3D::debugCBData.lightVolumeON = lightVolumeON ? 1 : 0;
+
     D3D::materialCBData.useBaseColorOverride = useBaseColorOverride ? 1 : 0;
     D3D::materialCBData.useEmissiveOverride = useEmissiveOverride ? 1 : 0;
     D3D::materialCBData.useMetallicOverride = useMetallicOverride ? 1 : 0;
     D3D::materialCBData.useRoughnessOverride = useRoughnessOverride ? 1 : 0;
-
-    D3D::lightingCBData.useIBL = useIBL ? 1 : 0;
-    D3D::debugCBData.lightVolumeON = lightVolumeON ? 1 : 0;
 
     D3D::postprocessCBData.useDefaultGamma = usedefalutGamma ? 1 : 0;
     D3D::postprocessCBData.useColorAdjustments = useColorAdjustments ? 1 : 0;
@@ -177,18 +186,16 @@ void App::DefualtStageSetting()
     D3D::postprocessCBData.useGamma = useGamma ? 1 : 0;
     D3D::postprocessCBData.useGain = useGain ? 1 : 0;
 
-    D3D::screenFxCBData.time = Time::GetTotalTime();
     D3D::screenFxCBData.enableWaterDistortion = enableRipple == 1 ? 1 : 0;
     D3D::screenFxCBData.enablePlasmaOverlay = enablePlasmaOverlay == 1 ? 1 : 0;
     D3D::screenFxCBData.enableFilmGrain = enableFilmGrain == 1 ? 1 : 0;
 
+    D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
+    D3D::deviceContext->UpdateSubresource(D3D::materialBuffer.Get(), 0, nullptr, &D3D::materialCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::postprocessBuffer.Get(), 0, nullptr, &D3D::postprocessCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::screenFxBuffer.Get(), 0, nullptr, &D3D::screenFxCBData, 0, 0);
-    D3D::deviceContext->UpdateSubresource(D3D::bloomBuffer.Get(), 0, nullptr, &D3D::bloomCBData, 0, 0);
 }
-
-
 
 bool App::InitResource()
 {
@@ -329,11 +336,6 @@ bool App::InitResource()
     D3D::screenFxCBData.enableWaterDistortion = 1;
 
     return true;
-}
-
-void App::UninitRenderPipeLine()
-{
-
 }
 
 bool App::InitGUI()
