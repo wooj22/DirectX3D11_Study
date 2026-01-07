@@ -139,12 +139,13 @@ public:
     static ComPtr<ID3D11PixelShader> PS_BloomUpsampleCombine;
     static ComPtr<ID3D11PixelShader> PS_Gbuffer;
     static ComPtr<ID3D11PixelShader> PS_DeferredLighting;
+    static ComPtr<ID3D11PixelShader> PS_Effect;
 
     // InputLayout
     static ComPtr<ID3D11InputLayout> inputLayout_Vertex;
     static ComPtr<ID3D11InputLayout> inputLayout_BoneWeightVertex;
     static ComPtr<ID3D11InputLayout> inputLayout_Position;
-    static ComPtr<ID3D11InputLayout> inputLayout_QuadVertex;
+    static ComPtr<ID3D11InputLayout> inputLayout_Particle;
 
     // ConstantBuffer
     static ComPtr<ID3D11Buffer> transformBuffer;

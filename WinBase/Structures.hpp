@@ -300,5 +300,11 @@ struct alignas(16) FrameCB
 // Effect CB -> b11
 struct alignas(16) EffectCB
 {
+    Vector2 atlasGrid;      // (cols, rows)
+    Vector2 invAtlasGrid;   // (1/cols, 1/rows)
 
+    int useInstanceFrame;   // 1: input.frame, 0: frameIndex
+    int totalFrames;
+    float baseSizeScale;
+    float padding;
 };

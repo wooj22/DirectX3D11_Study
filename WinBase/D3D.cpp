@@ -104,11 +104,12 @@ ComPtr<ID3D11PixelShader>         D3D::PS_BloomDownsampleBlur = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::PS_BloomUpsampleCombine = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::PS_Gbuffer = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::PS_DeferredLighting = nullptr;
+ComPtr<ID3D11PixelShader>         D3D::PS_Effect = nullptr;
                      
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_Vertex = nullptr;
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_BoneWeightVertex = nullptr;
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_Position = nullptr;
-ComPtr<ID3D11InputLayout>         D3D::inputLayout_QuadVertex = nullptr;
+ComPtr<ID3D11InputLayout>         D3D::inputLayout_Particle = nullptr;
 
 ComPtr<ID3D11Buffer>              D3D::transformBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::lightingBuffer = nullptr;
@@ -751,7 +752,7 @@ bool D3D::CreateShader()
     }
 
     //---------------------------
-    // 4. Particle Quad
+    // 4. Particle
     {
         // Input Layout
         D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -771,12 +772,18 @@ bool D3D::CreateShader()
         ID3D10Blob* vertexShaderBuffer = nullptr;
         HR_T(CompileShaderFromFile(L"../WinBase/VS_Effect.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
         HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
-            vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_QuadVertex));
+            vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_Particle));
 
         // VS
         HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
             vertexShaderBuffer->GetBufferSize(), NULL, &VS_Effect));
         SAFE_RELEASE(vertexShaderBuffer);
+
+        // PS
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_Effect.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &PS_Effect));
+
     }
 
     //---------------------------

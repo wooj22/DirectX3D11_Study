@@ -38,6 +38,7 @@
 // Texture2D metalRoughTex       : register(t17);
 // Texture2D emissiveTex         : register(t18);
 // Texture2D depthTex            : register(t19);
+// Texture2D effectTex           : register(t20);
 
 // [ SamplerState ]
 // SamplerState samLinear           : register(s0);
@@ -254,7 +255,13 @@ cbuffer FrameCB : register(b10)
 
 cbuffer EffectCB : register(b11)
 {
+    float2 atlasGrid;     
+    float2 invAtlasGrid; 
 
+    int useInstanceFrame; 
+    int totalFrames;
+    float baseSizeScale;
+    float padding17;
 }
 
 
@@ -286,7 +293,7 @@ struct VS_Position_INPUT
     float3 position : POSITION;
 };
 
-struct UV_Particle_INPUT
+struct VS_Particle_INPUT
 {
     // Vertex (ParticleQuadVertex)
     float2 corner   : POSITION;   // slot 0
@@ -331,6 +338,12 @@ struct PS_FullScreen_Input
     float2 uv : TEXCOORD;
 };
 
+struct PS_Particle_INPUT
+{
+    float4 pos : SV_POSITION;
+    float2 uv : TEXCOORD0;
+    float4 color : COLOR0;
+};
 
 // ------------------------------------
 //  PS Output (Deferred Rendering)
