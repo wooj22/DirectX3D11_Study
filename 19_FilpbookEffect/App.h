@@ -99,7 +99,9 @@ public:
     virtual void OnRender() override;
 
 private:
-    void DefualtStageSetting();
+    void CBSlotBinding();
+    void FrameCBUpdate();
+    void DebugCBUpdate();
 
     // Init, Uninit
     bool InitResource();

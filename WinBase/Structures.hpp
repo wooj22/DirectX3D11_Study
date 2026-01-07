@@ -77,17 +77,13 @@ struct alignas(16) TransformCB
 {
     Matrix model;
     Matrix world;
+
     Matrix view;
     Matrix projection;
-    Matrix shadowView;       // ±¤¿ø view
-    Matrix shadowProjection; // ±¤¿ø projection
+    Matrix invViewProjection;  // Deferred È­¸é ÁÂÇ¥ -> view ÁÂÇ¥ º¯È¯¿ë
 
-    Vector3 cameraPos;
-    int padding1;
-
-    Matrix invViewProjection;   // Deferred È­¸é ÁÂÇ¥ -> view ÁÂÇ¥ º¯È¯¿ë
-    Vector2 screenSize;
-    Vector2 shadowMapSize = { 8192,8192 };      // ÀÌ·¸°Ô »ý¼º °íÁ¤ÇÔ
+    Matrix shadowView;         // ±¤¿ø view
+    Matrix shadowProjection;   // ±¤¿ø projection
 };
 
 // LightingCB -> b1
@@ -248,7 +244,7 @@ struct alignas(16) ScreenFxCB
     int enableWaterDistortion = 0;  
     int enablePlasmaOverlay = 0;    
     int enableFilmGrain = 0;        
-    float time;                     
+    int padding1;
 
     float cellScale = 3.0f;                  // Noise Cell Scale         
     float randomIntensity = 43758.5453f;     // Random ÇØ½Ã ºÐ»ê °­µµ
@@ -257,7 +253,7 @@ struct alignas(16) ScreenFxCB
 
     float plasmaIntensity = 0.35;       
     float grainIntensity = 0.05f; 
-    Vector2 padding;
+    Vector2 padding2;
 };
 
 // Bloom CB -> b9

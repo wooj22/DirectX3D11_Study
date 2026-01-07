@@ -103,7 +103,6 @@ void LightRenderer::LightingPass(const vector<Light>& lights, const Environment&
     // CB
     XMMATRIX invVP = XMMatrixInverse(nullptr, camera.GetView() * camera.GetProjection());
     D3D::transformCBData.invViewProjection = XMMatrixTranspose(invVP);
-    D3D::transformCBData.cameraPos = camera.position;
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
     // Render

@@ -55,17 +55,13 @@ cbuffer TransformCB : register(b0)
 {
     matrix model;
     matrix world;
+    
     matrix view;
     matrix projection;
+    matrix invViewProjection;
+    
     matrix shadowView;       
     matrix shadowProjection; 
-    
-    float3 cameraPos;
-    int padding1;
-    
-    matrix invViewProjection;
-    float2 screenSize;
-    float2 shadowMapSize;
 }
 
 cbuffer LightingCB : register(b1)
@@ -215,7 +211,7 @@ cbuffer ScreenFxCB : register(b8)
     int enableRipple;
     int enablePlasmaOverlay;  
     int enableFilmGrain;      
-    float time;
+    int padding11;
     
     float cellScale; 
     float randomIntensity;
@@ -224,7 +220,7 @@ cbuffer ScreenFxCB : register(b8)
     
     float plasmaIntensity; 
     float grainIntensity; 
-    float2 padding00;
+    float2 padding12;
 }
 
 cbuffer BloomCB : register(b9)
@@ -235,25 +231,25 @@ cbuffer BloomCB : register(b9)
     float bloom_clamp;
 
     float3 bloom_tint;
-    int padding11;
+    int padding13;
     
     int srcMip;
     float2 srcTexelSize;
-    int padding12;
+    int padding14;
 }
 
 cbuffer FrameCB : register(b10)
 {
-    float time_;
+    float time;
     float deltaTime;
     int frameIndex;
-    int padding13;
+    int padding15;
 
-    float2 screenSize_;
-    float2 shadowMapSize_;
+    float2 screenSize;
+    float2 shadowMapSize;
 
-    float3 cameraPos_;
-    int padding14;
+    float3 cameraPos;
+    int padding16;
 }
 
 cbuffer EffectCB : register(b11)
