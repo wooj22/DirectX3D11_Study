@@ -9,10 +9,12 @@ class Effect  // 현재는 Filpbook 기준
 {
 public:
     SpriteSheet sheet;
-    Particle particle;
-    bool loop;
-    bool alive;
+    Particle    particle;
+
+    bool  loop = true;
+    bool  alive = true;
+    int   frame = 0;
 
     void Play(Vector3 pos);
-    void Update(float dt);
+    void Update();
 };
