@@ -240,7 +240,7 @@
     <ClInclude Include="ParticleRenderer.h">
       <Filter>01. Renderer\ParticleRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="QuadMesh.h">
+    <ClInclude Include="EffectQuadMesh.h">
       <Filter>02. Renderable\QuadMesh</Filter>
     </ClInclude>
     <ClInclude Include="Effect.h">
@@ -347,7 +347,7 @@
     <ClCompile Include="ParticleRenderer.cpp">
       <Filter>01. Renderer\ParticleRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="QuadMesh.cpp">
+    <ClCompile Include="EffectQuadMesh.cpp">
       <Filter>02. Renderable\QuadMesh</Filter>
     </ClCompile>
     <ClCompile Include="Effect.cpp">
