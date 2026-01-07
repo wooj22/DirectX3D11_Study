@@ -19,10 +19,9 @@ class ParticleRenderer // 현재는 Filpbook 기준
 {
 private:
     ParticleQuadMesh quad;
-    ComPtr<ID3D11Buffer> instanceBuffer;
+    ComPtr<ID3D11Buffer> instanceBuffer = nullptr;
 
 public:
-    ParticleRenderer();
-    void Init() {}
-    void ParticlePass(const vector<Effect*>& effects);
+    void Init();
+    void ParticlePass(const vector<Effect>& effects);
 };

@@ -1,7 +1,7 @@
 #include "ParticleQuadMesh.h"
 #include "D3D.h"
 
-ParticleQuadMesh::ParticleQuadMesh()
+void ParticleQuadMesh::Init()
 {
     // Quad: corner(-0.5~0.5), UV(0~1)
     ParticleQuadVertex vertices[4] =
@@ -30,7 +30,7 @@ ParticleQuadMesh::ParticleQuadMesh()
     D3D11_SUBRESOURCE_DATA vbData = {};
     vbData.pSysMem = vertices;
 
-    HRESULT hr = D3D::device.Get()->CreateBuffer(&vbDesc, &vbData, vertexBuffer.GetAddressOf());
+    D3D::device.Get()->CreateBuffer(&vbDesc, &vbData, vertexBuffer.GetAddressOf());
 
     // --- Index Buffer ---
     D3D11_BUFFER_DESC ibDesc = {};
@@ -42,15 +42,12 @@ ParticleQuadMesh::ParticleQuadMesh()
     D3D11_SUBRESOURCE_DATA ibData = {};
     ibData.pSysMem = indices;
 
-    hr = D3D::device.Get()->CreateBuffer(&ibDesc, &ibData, indexBuffer.GetAddressOf());
+    D3D::device.Get()->CreateBuffer(&ibDesc, &ibData, indexBuffer.GetAddressOf());
 }
 
 void ParticleQuadMesh::DrawIndexedInstanced(UINT instanceCount, ID3D11Buffer* instanceVB, UINT instanceStride)
 {
     auto* ctx = D3D::deviceContext.Get();
-    
-    // IA
-    ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     // VB, IB
     // Vertex Data + Instance Data

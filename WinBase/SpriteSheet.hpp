@@ -7,7 +7,8 @@ using Microsoft::WRL::ComPtr;
 struct SpriteSheet
 {
     ComPtr<ID3D11ShaderResourceView> srv = nullptr;
-    int cols;   
+    int cols;
     int rows;
     float fps;
+    float baseSizeScale;
 };

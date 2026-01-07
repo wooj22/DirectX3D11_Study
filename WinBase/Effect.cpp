@@ -11,7 +11,7 @@ void Effect::Play(Vector3 pos)
 
 void Effect::Update()
 {
-    if (alive) return;
+    if (!alive) return;
 
     float dt = Time::GetDeltaTime();
     particle.age += dt;

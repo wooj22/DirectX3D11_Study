@@ -28,6 +28,7 @@ bool App::OnInit()
     shadowRenderer.Init();
     geometryRenderer.Init();
     lightRenderer.Init();
+    particleRenderer.Init();
     skyboxRenderer.Init();
     bloomRenderer.Init();
     postRenderer.Init();
@@ -72,6 +73,12 @@ void App::OnUpdate()
     for (auto& m : rigid_models) m->Update();
     for (auto& m : skeletal_models) m->Update();
 
+    // Effect
+    for (auto& e : effects)
+    {
+        e.Update();
+    }
+
     // Memory Cheak
     memory_debugger.CheakMemoryUsage();
 
@@ -102,6 +109,9 @@ void App::OnRender()
 
     // 4. Lighting Pass
     lightRenderer.LightingPass(lights, environments[currentSkybox], camera);
+
+    // Effect Pass
+    particleRenderer.ParticlePass(effects);
 
     // 5. Skybox Pass
     skyboxRenderer.SkyboxPass(view, projection, environments[currentSkybox].skybox);
@@ -148,13 +158,15 @@ void App::CBSlotBinding()
     D3D::deviceContext->PSSetConstantBuffers(8, 1, D3D::screenFxBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(9, 1, D3D::bloomBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(10, 1, D3D::frameBuffer.GetAddressOf());
+    D3D::deviceContext->VSSetConstantBuffers(11, 1, D3D::effectBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(11, 1, D3D::effectBuffer.GetAddressOf());
 }
 
 void App::FrameCBUpdate()
 {
-    D3D::frameCBData.screenSize = { (float)screenWidth,(float)screenHeight };
     D3D::frameCBData.time = Time::GetTotalTime();
+    D3D::frameCBData.deltaTime = Time::GetDeltaTime();
+    D3D::frameCBData.screenSize = { (float)screenWidth,(float)screenHeight };
     D3D::frameCBData.cameraPos = camera.position;
 
     D3D::deviceContext->UpdateSubresource(D3D::frameBuffer.Get(), 0, nullptr, &D3D::frameCBData, 0, 0);
@@ -285,6 +297,32 @@ bool App::InitResource()
             spotLight.position.x += 300;
             lights.push_back(spotLight);
         }
+    }
+
+    // effect
+    {
+        Effect e{};
+
+        // SpriteSheet
+        e.sheet.cols = 5;
+        e.sheet.rows = 5;
+        e.sheet.fps = 24.0f;
+        e.sheet.baseSizeScale = 5.0f;
+        const wchar_t* path = L"../Resource/SpriteSheet/Explosion00_5x5.tga";
+        CreateTextureFromFile(D3D::device.Get(), path, e.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
+        assert(e.sheet.srv != nullptr);
+
+        // Particle
+        e.particle.pos = { 0.0f, 130.0f, 80.0f };      
+        e.particle.rotation = 0.0f;
+        e.particle.size = { 50.0f, 60.0f };
+        e.particle.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+        // Lifetime
+        e.particle.age = 0.0f;
+        e.particle.life = 10.0f;
+
+        effects.push_back(e);
     }
 
     // skybox

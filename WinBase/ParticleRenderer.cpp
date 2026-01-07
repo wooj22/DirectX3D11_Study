@@ -1,8 +1,12 @@
 #include "ParticleRenderer.h"
 #include "D3D.h"
 
-ParticleRenderer::ParticleRenderer()
+void ParticleRenderer::Init()
 {
+    // Particle Quad Mesh Create
+    quad.Init();
+
+    // Instance Buffer Create
     UINT maxInstances = 100;
 
     D3D11_BUFFER_DESC desc{};
@@ -13,35 +17,50 @@ ParticleRenderer::ParticleRenderer()
     desc.MiscFlags = 0;
     desc.StructureByteStride = 0;
 
-    D3D::device->CreateBuffer(&desc, nullptr, instanceBuffer.ReleaseAndGetAddressOf());
+    D3D::device.Get()->CreateBuffer(&desc, nullptr, instanceBuffer.ReleaseAndGetAddressOf());
+    assert(instanceBuffer != nullptr);
 }
 
-void ParticleRenderer::ParticlePass(const vector<Effect*>& effects)
+void ParticleRenderer::ParticlePass(const vector<Effect>& effects)
 {
     auto* ctx = D3D::deviceContext.Get();
+
+    // RTV, DSV
+    ctx->RSSetViewports(1, &D3D::viewport_screen);
+    ctx->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
 
     // IA
     ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     ctx->IASetInputLayout(D3D::inputLayout_Particle.Get());
 
+    // DSS
+    ctx->OMSetDepthStencilState(D3D::defualtDSS.Get(), 0);
+
+    // RS
+    ctx->RSSetState(D3D::cullNoneRS.Get());
+
     // Shader
     ctx->VSSetShader(D3D::VS_Effect.Get(), nullptr, 0);
-    ctx->PSSetShader(nullptr, nullptr, 0);
+    ctx->PSSetShader(D3D::PS_Effect.Get(), nullptr, 0);
 
     // SRV
-
+    D3D::deviceContext->PSSetShaderResources(20, 1, effects[0].sheet.srv.GetAddressOf());
 
     // Sampler
     ctx->PSSetSamplers(0, 1, D3D::linearSamplerState.GetAddressOf());
 
-    // State
+    // Blend State (alpha)
     float blendFactor[4] = { 0,0,0,0 };
     ctx->OMSetBlendState(D3D::alphaBlendState.Get(), blendFactor, 0xffffffff);
-    ctx->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
-    ctx->RSSetState(D3D::cullNoneRS.Get());
 
+
+    // TODO :: Effect CB는 SpriteSheet 기준으로 Draw Call을 해야함
+    // 일단 지금은 하나라서 한번에 하는중
     // CB
-
+    D3D::effectCBData.atlasGrid = { (float)effects[0].sheet.cols , (float)effects[0].sheet.rows };
+    D3D::effectCBData.invAtlasGrid = { 1.0f/(float)effects[0].sheet.cols, 1.0f/(float)effects[0].sheet.rows };
+    D3D::effectCBData.baseSizeScale = effects[0].sheet.baseSizeScale;
+    D3D::deviceContext->UpdateSubresource(D3D::effectBuffer.Get(), 0, nullptr, &D3D::effectCBData, 0, 0);
 
     // alive == true인 파티클 배열
     vector<ParticleInstance> instances;
@@ -49,14 +68,14 @@ void ParticleRenderer::ParticlePass(const vector<Effect*>& effects)
 
     for (const auto& e : effects)
     {
-        if (!e || !e->alive) continue;
+        if (!e.alive) continue;
 
         ParticleInstance i{};
-        i.pos = e->particle.pos;
-        i.rotation = e->particle.rotation;
-        i.size = e->particle.size;
-        i.color = e->particle.color;
-        i.frame = e->frame;
+        i.pos = e.particle.pos;
+        i.rotation = e.particle.rotation;
+        i.size = e.particle.size;
+        i.color = e.particle.color;
+        i.frame = e.frame;
 
         instances.push_back(i);
     }
@@ -73,4 +92,7 @@ void ParticleRenderer::ParticlePass(const vector<Effect*>& effects)
     // Render
     // Quad 1개 + Instance N개 -> N번 반복해서 Draw
     quad.DrawIndexedInstanced((UINT)instances.size(), instanceBuffer.Get(), sizeof(ParticleInstance));
+
+    // clear
+    ctx->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 }

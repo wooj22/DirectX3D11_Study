@@ -12,9 +12,7 @@ PS_Particle_INPUT main(VS_Particle_INPUT input)
     PS_Particle_INPUT output = (PS_Particle_INPUT) 0;
     
     // Frame
-    uint f = (useInstanceFrame != 0) ? (uint) input.frame : (uint) frameIndex;
-    if (totalFrames > 0)
-        f = min(f, (uint) (totalFrames - 1));
+    uint f = (uint) input.frame;
 
     // Flipbook UV
     uint cols = (uint) max(1.0, atlasGrid.x);

@@ -285,10 +285,9 @@ struct alignas(16) BloomCB
 // Frame CB -> b10
 struct alignas(16) FrameCB
 {
-    float time;
-    float deltaTime;
-    int frameIndex;
-    int padding1;
+    float    time;
+    float    deltaTime;
+    Vector2  padding1;
 
     Vector2 screenSize;
     Vector2 shadowMapSize = { 8192,8192 };      // 이렇게 생성 고정함
@@ -303,8 +302,6 @@ struct alignas(16) EffectCB
     Vector2 atlasGrid;      // (cols, rows)
     Vector2 invAtlasGrid;   // (1/cols, 1/rows)
 
-    int useInstanceFrame;   // 1: input.frame, 0: frameIndex
-    int totalFrames;
-    float baseSizeScale;
-    float padding;
+    float baseSizeScale = 1.0f;
+    Vector3 padding;
 };

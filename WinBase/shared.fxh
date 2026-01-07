@@ -243,8 +243,7 @@ cbuffer FrameCB : register(b10)
 {
     float time;
     float deltaTime;
-    int frameIndex;
-    int padding15;
+    float2 padding15;
 
     float2 screenSize;
     float2 shadowMapSize;
@@ -258,10 +257,8 @@ cbuffer EffectCB : register(b11)
     float2 atlasGrid;     
     float2 invAtlasGrid; 
 
-    int useInstanceFrame; 
-    int totalFrames;
-    float baseSizeScale;
-    float padding17;
+    float  baseSizeScale;
+    float3 padding17;
 }
 
 

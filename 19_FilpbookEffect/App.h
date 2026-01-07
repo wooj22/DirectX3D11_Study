@@ -11,6 +11,7 @@
 #include "../WinBase/ShadowRenderer.h"
 #include "../WinBase/GeometryRenderer.h"
 #include "../WinBase/LightRenderer.h"
+#include "../WinBase/ParticleRenderer.h"
 #include "../WinBase/SkyboxRenderer.h"
 #include "../WinBase/BloomRenderer.h"
 #include "../WinBase/PostProcessRenderer.h"
@@ -43,6 +44,9 @@ using namespace DirectX::SimpleMath;
 *   2. Geometry Pass                   -> G-buffer (Albedo, Normal, MetalRough, Emissive)
 *   3. Stencil Pass                    -> Stencil Buffer (Lighting Volume)
 *   4. Lighting Pass                   -> Scene HDR Color Pass (Ligting Volume + Deferred Lighting)
+*   
+*   >> 여기 Particle Pass
+* 
 *   5. Skybox Pass                     -> sceneHDR의 빈 픽셀에 Skybox Render
 *   6. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
 *   7. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
@@ -62,6 +66,7 @@ private:
     ShadowRenderer       shadowRenderer;
     GeometryRenderer     geometryRenderer;
     LightRenderer        lightRenderer;
+    ParticleRenderer     particleRenderer;
     SkyboxRenderer       skyboxRenderer;
     BloomRenderer        bloomRenderer;
     PostProcessRenderer  postRenderer;
@@ -69,6 +74,9 @@ private:
 
     // light
     vector<Light> lights;
+
+    // effect
+    vector<Effect> effects;
 
     // camera
     Matrix view;

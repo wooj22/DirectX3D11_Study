@@ -5,10 +5,10 @@ using namespace DirectX::SimpleMath;
 // Effect의 Resource로 사용됩니다. -> CB로 넘길 Data
 struct Particle
 {
-    Vector3 pos;
-    float   rotation;
-    Vector2 size;
-    Vector4 color;
+    Vector3 pos      = Vector3::Zero;
+    float   rotation = 0;
+    Vector2 size     = Vector2::One;
+    Vector4 color    = { 1,1,1,1 };
 
     float  age;
     float  life;

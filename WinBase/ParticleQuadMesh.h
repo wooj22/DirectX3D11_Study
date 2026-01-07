@@ -24,7 +24,7 @@ private:
     UINT stride = sizeof(ParticleQuadVertex);
 
 public:
-    ParticleQuadMesh();
+    void Init();
     void DrawIndexedInstanced(UINT instanceCount, ID3D11Buffer* instanceVB, UINT instanceStride);
 };
 

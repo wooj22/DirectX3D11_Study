@@ -11,5 +11,6 @@ float4 main(PS_Particle_INPUT input) : SV_TARGET
     // alpha cut
     clip(outCol.a - 0.001);
 
-    return outCol;
+    float4 final = outCol;
+    return final;
 }
