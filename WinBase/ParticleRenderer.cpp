@@ -71,5 +71,6 @@ void ParticleRenderer::ParticlePass(const vector<Effect*>& effects)
     ctx->Unmap(instanceBuffer.Get(), 0);    // gpu야 잘썼엉
 
     // Render
+    // Quad 1개 + Instance N개 -> N번 반복해서 Draw
     quad.DrawIndexedInstanced((UINT)instances.size(), instanceBuffer.Get(), sizeof(ParticleInstance));
 }

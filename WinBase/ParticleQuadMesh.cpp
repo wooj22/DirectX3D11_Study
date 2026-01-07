@@ -62,5 +62,6 @@ void ParticleQuadMesh::DrawIndexedInstanced(UINT instanceCount, ID3D11Buffer* in
     ctx->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 
     // Draw Call
+    // Quad 1개 + Instance N개 -> N번 반복해서 Draw
     ctx->DrawIndexedInstanced(indexCount, instanceCount, 0, 0, 0);
 }
