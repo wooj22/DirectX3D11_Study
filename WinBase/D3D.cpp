@@ -751,13 +751,21 @@ bool D3D::CreateShader()
     }
 
     //---------------------------
-    // 4. Quad
+    // 4. Particle Quad
     {
         // Input Layout
         D3D11_INPUT_ELEMENT_DESC layout[] =
         {  
-            { "CORNER",   0, DXGI_FORMAT_R32G32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8,  D3D11_INPUT_PER_VERTEX_DATA, 0 }
+            // --- slot 0 (PER_VERTEX) : ParticleQuadVertex
+            { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT,        0, 0,  D3D11_INPUT_PER_VERTEX_DATA,   0 }, // corner
+            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,        0, 8,  D3D11_INPUT_PER_VERTEX_DATA,   0 }, // uv
+            
+            // --- slot 1 (PER_INSTANCE) : ParticleInstance
+            { "TEXCOORD", 1, DXGI_FORMAT_R32G32B32_FLOAT,     1, 0,  D3D11_INPUT_PER_INSTANCE_DATA, 1 }, // iPos
+            { "TEXCOORD", 2, DXGI_FORMAT_R32_FLOAT,           1, 12, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, // iRot
+            { "TEXCOORD", 3, DXGI_FORMAT_R32G32_FLOAT,        1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, // iSize
+            { "TEXCOORD", 4, DXGI_FORMAT_R32_FLOAT,           1, 24, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, // iFrame
+            { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT,  1, 28, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, // iColor
         };
 
         ID3D10Blob* vertexShaderBuffer = nullptr;

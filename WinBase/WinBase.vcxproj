@@ -153,7 +153,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="PostProcessRenderer.h" />
-    <ClInclude Include="EffectQuadMesh.h" />
+    <ClInclude Include="ParticleQuadMesh.h" />
     <ClInclude Include="RigidModel.h" />
     <ClInclude Include="RigidModelAsset.hpp" />
     <ClInclude Include="RigidSubMesh.h" />
@@ -194,7 +194,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="PostProcessRenderer.cpp" />
-    <ClCompile Include="EffectQuadMesh.cpp" />
+    <ClCompile Include="ParticleQuadMesh.cpp" />
     <ClCompile Include="RigidModel.cpp" />
     <ClCompile Include="RigidSubMesh.cpp" />
     <ClCompile Include="ShadowRenderer.cpp" />

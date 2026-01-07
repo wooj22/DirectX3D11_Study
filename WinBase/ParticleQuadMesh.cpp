@@ -1,10 +1,10 @@
-#include "EffectQuadMesh.h"
+#include "ParticleQuadMesh.h"
 #include "D3D.h"
 
-EffectQuadMesh::EffectQuadMesh()
+ParticleQuadMesh::ParticleQuadMesh()
 {
     // Quad: corner(-0.5~0.5), UV(0~1)
-    QuadVertex vertices[4] =
+    ParticleQuadVertex vertices[4] =
     {
         // left  top
         { Vector2(-0.5f,  0.5f), Vector2(0.0f, 0.0f) },
@@ -45,16 +45,22 @@ EffectQuadMesh::EffectQuadMesh()
     hr = D3D::device.Get()->CreateBuffer(&ibDesc, &ibData, indexBuffer.GetAddressOf());
 }
 
-void EffectQuadMesh::Draw()
+void ParticleQuadMesh::DrawIndexedInstanced(UINT instanceCount, ID3D11Buffer* instanceVB, UINT instanceStride)
 {
+    auto* ctx = D3D::deviceContext.Get();
+    
     // IA
-    D3D::deviceContext.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     // VB, IB
-    UINT offset = 0;
-    D3D::deviceContext.Get()->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
-    D3D::deviceContext.Get()->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
+    // Vertex Data + Instance Data
+    ID3D11Buffer* vbs[] = { vertexBuffer.Get(), instanceVB };
+    UINT strides[] = { stride, instanceStride };
+    UINT offsets[] = { 0, 0 };
+
+    ctx->IASetVertexBuffers(0, 2, vbs, strides, offsets);
+    ctx->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 
     // Draw Call
-    D3D::deviceContext.Get()->DrawIndexed(indexCount, 0, 0);
+    ctx->DrawIndexedInstanced(indexCount, instanceCount, 0, 0, 0);
 }

@@ -25,15 +25,6 @@
     <Filter Include="05. Animation">
       <UniqueIdentifier>{f4646f2b-9f6b-47ae-84e9-012255a4cf8b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="98. Shaders">
-      <UniqueIdentifier>{b3001ec8-abda-4c8c-81fd-3f888cf00b87}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="98. Shaders\VertexShader">
-      <UniqueIdentifier>{837d2599-fb93-4e3b-b6e1-1c5e363dea21}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="98. Shaders\PixelShader">
-      <UniqueIdentifier>{fcced5c6-e224-4bfc-8bce-318e9af81af6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. Renderable">
       <UniqueIdentifier>{f1cb7515-c4aa-4ac9-8b1a-f494df7da15a}</UniqueIdentifier>
     </Filter>
@@ -121,8 +112,17 @@
     <Filter Include="01. Renderer\ParticleRenderer">
       <UniqueIdentifier>{306e3e23-4106-480f-97de-e6e30a154bd0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Renderable\QuadMesh">
+    <Filter Include="02. Renderable\ParticleQuadMesh">
       <UniqueIdentifier>{e9ab5ddc-7c43-4046-8bc1-35fbd740c428}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. Shaders">
+      <UniqueIdentifier>{b3001ec8-abda-4c8c-81fd-3f888cf00b87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. Shaders\VertexShader">
+      <UniqueIdentifier>{837d2599-fb93-4e3b-b6e1-1c5e363dea21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. Shaders\PixelShader">
+      <UniqueIdentifier>{fcced5c6-e224-4bfc-8bce-318e9af81af6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -240,8 +240,8 @@
     <ClInclude Include="ParticleRenderer.h">
       <Filter>01. Renderer\ParticleRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="EffectQuadMesh.h">
-      <Filter>02. Renderable\QuadMesh</Filter>
+    <ClInclude Include="ParticleQuadMesh.h">
+      <Filter>02. Renderable\ParticleQuadMesh</Filter>
     </ClInclude>
     <ClInclude Include="Effect.h">
       <Filter>06. Effect</Filter>
@@ -347,8 +347,8 @@
     <ClCompile Include="ParticleRenderer.cpp">
       <Filter>01. Renderer\ParticleRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="EffectQuadMesh.cpp">
-      <Filter>02. Renderable\QuadMesh</Filter>
+    <ClCompile Include="ParticleQuadMesh.cpp">
+      <Filter>02. Renderable\ParticleQuadMesh</Filter>
     </ClCompile>
     <ClCompile Include="Effect.cpp">
       <Filter>06. Effect</Filter>
@@ -356,78 +356,78 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PS_Skybox.hlsl">
-      <Filter>98. Shaders\PixelShader</Filter>
+      <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="VS_Skybox.hlsl">
-      <Filter>98. Shaders\VertexShader</Filter>
+      <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_BlinnPhongToon.hlsl">
-      <Filter>98. Shaders\PixelShader</Filter>
+      <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="VS_BaseLit_Skinned.hlsl">
-      <Filter>98. Shaders\VertexShader</Filter>
+      <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="VS_BaseLit_Static.hlsl">
-      <Filter>98. Shaders\VertexShader</Filter>
+      <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_OutLine.hlsl">
-      <Filter>98. Shaders\PixelShader</Filter>
+      <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="VS_Skinned_OutLine.hlsl">
-      <Filter>98. Shaders\VertexShader</Filter>
+      <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="VS_ShadowDepth_Skinned.hlsl">
-      <Filter>98. Shaders\VertexShader</Filter>
+      <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_BlinnPhong.hlsl">
-      <Filter>98. Shaders\PixelShader</Filter>
+      <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="VS_ShadowDepth_Static.hlsl">
-      <Filter>98. Shaders\VertexShader</Filter>
+      <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="VS_Fullscreen.hlsl">
-      <Filter>98. Shaders\VertexShader</Filter>
+      <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_PostProcess.hlsl">
-      <Filter>98. Shaders\PixelShader</Filter>
+      <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_ShadowDepth.hlsl">
-      <Filter>98. Shaders\PixelShader</Filter>
+      <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_PBR.hlsl">
-      <Filter>98. Shaders\PixelShader</Filter>
+      <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_BloomUpsampleCombine.hlsl">
-      <Filter>98. Shaders\PixelShader</Filter>
+      <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_BloomDownsampleBlur.hlsl">
-      <Filter>98. Shaders\PixelShader</Filter>
+      <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_BloomPrefilter.hlsl">
-      <Filter>98. Shaders\PixelShader</Filter>
+      <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_DeferredLighting.hlsl">
-      <Filter>98. Shaders\PixelShader</Filter>
+      <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_Gbuffer.hlsl">
-      <Filter>98. Shaders\PixelShader</Filter>
+      <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="VS_LightVolume.hlsl">
-      <Filter>98. Shaders\VertexShader</Filter>
+      <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="VS_Effect.hlsl">
-      <Filter>98. Shaders\VertexShader</Filter>
+      <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shared.fxh">
-      <Filter>98. Shaders</Filter>
+      <Filter>00. Shaders</Filter>
     </None>
     <None Include="PBR_Common.fxh">
-      <Filter>98. Shaders</Filter>
+      <Filter>00. Shaders</Filter>
     </None>
     <None Include="PostFxCommon.fxh">
-      <Filter>98. Shaders</Filter>
+      <Filter>00. Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

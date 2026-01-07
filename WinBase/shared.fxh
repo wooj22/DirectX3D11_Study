@@ -286,10 +286,18 @@ struct VS_Position_INPUT
     float3 position : POSITION;
 };
 
-struct UV_Quad_INPUT
+struct UV_Particle_INPUT
 {
-    float2 corner : CORNER;
-    float2 uv : TEXCOORD0;
+    // Vertex (ParticleQuadVertex)
+    float2 corner   : POSITION;   // slot 0
+    float2 uv       : TEXCOORD0;  // slot 0
+    
+    // Instance (ParticleInstance)
+    float3 pos      : TEXCOORD1;  // slot 1
+    float  rotation : TEXCOORD2;  // slot 1
+    float2 size     : TEXCOORD3;  // slot 1
+    float  frame    : TEXCOORD4;  // slot 1
+    float4 color    : COLOR0;     // slot 1
 };
 
 // ----------------------
