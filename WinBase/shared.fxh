@@ -269,6 +269,12 @@ struct VS_Position_INPUT
     float3 position : POSITION;
 };
 
+struct UV_Quad_INPUT
+{
+    float2 corner : CORNER;
+    float2 uv : TEXCOORD0;
+};
+
 // ----------------------
 //  PS Input (VS Output)
 // ----------------------

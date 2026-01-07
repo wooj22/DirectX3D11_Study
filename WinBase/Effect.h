@@ -1,11 +1,9 @@
 #pragma once
+#include "SpriteSheet.hpp"
+#include "Particle.hpp"
 #include <directxtk/simplemath.h>
 using namespace DirectX::SimpleMath;
 
-
-struct SpriteSheet;
-struct Particle;
-class ParticleRenderer;
 
 class Effect  // 현재는 Filpbook 기준
 {

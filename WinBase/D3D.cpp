@@ -90,6 +90,7 @@ ComPtr<ID3D11VertexShader>        D3D::VS_ShadowDepth_Skinned = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::VS_ShadowDepth_Static = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::VS_FullScreen = nullptr;
 ComPtr<ID3D11VertexShader>        D3D::VS_LightVolume = nullptr;
+ComPtr<ID3D11VertexShader>        D3D::VS_Effect = nullptr;
 
 ComPtr<ID3D11PixelShader>         D3D::PS_BlinnPhong = nullptr;
 ComPtr<ID3D11PixelShader>         D3D::PS_PBR = nullptr;
@@ -107,6 +108,7 @@ ComPtr<ID3D11PixelShader>         D3D::PS_DeferredLighting = nullptr;
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_Vertex = nullptr;
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_BoneWeightVertex = nullptr;
 ComPtr<ID3D11InputLayout>         D3D::inputLayout_Position = nullptr;
+ComPtr<ID3D11InputLayout>         D3D::inputLayout_QuadVertex = nullptr;
 
 ComPtr<ID3D11Buffer>              D3D::transformBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::lightingBuffer = nullptr;
@@ -742,6 +744,27 @@ bool D3D::CreateShader()
         HR_T(device->CreateVertexShader(vertexShaderBuffer3->GetBufferPointer(),
             vertexShaderBuffer3->GetBufferSize(), NULL, &VS_ShadowDepth_Skinned));
         SAFE_RELEASE(vertexShaderBuffer3);
+    }
+
+    //---------------------------
+    // 4. Quad
+    {
+        // Input Layout
+        D3D11_INPUT_ELEMENT_DESC layout[] =
+        {  
+            { "CORNER",   0, DXGI_FORMAT_R32G32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8,  D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        };
+
+        ID3D10Blob* vertexShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_Effect.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
+            vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_QuadVertex));
+
+        // VS
+        HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
+            vertexShaderBuffer->GetBufferSize(), NULL, &VS_Effect));
+        SAFE_RELEASE(vertexShaderBuffer);
     }
 
     //---------------------------

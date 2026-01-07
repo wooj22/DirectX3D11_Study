@@ -1,9 +1,8 @@
 #pragma once
+#include "Effect.h"
+#include "QuadMesh.h"
 #include <vector>
 using namespace std;
-
-class QuadMesh;
-class Effect;
 
 class ParticleRenderer // 현재는 Filpbook 기준
 {

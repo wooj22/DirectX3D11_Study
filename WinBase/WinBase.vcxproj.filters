@@ -61,9 +61,6 @@
     <Filter Include="06. Effect">
       <UniqueIdentifier>{081d3c0c-9fee-4c66-b2ae-e1750d263be5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Renderer\EffectRenderer">
-      <UniqueIdentifier>{306e3e23-4106-480f-97de-e6e30a154bd0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Renderer\FrustumRenderer">
       <UniqueIdentifier>{73986040-9bd9-4022-8708-144c7402dea9}</UniqueIdentifier>
     </Filter>
@@ -120,6 +117,12 @@
     </Filter>
     <Filter Include="12. Debugger\DebugDraw">
       <UniqueIdentifier>{c65398b7-7f36-4c83-a57b-5a1fc3ca0578}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer\ParticleRenderer">
+      <UniqueIdentifier>{306e3e23-4106-480f-97de-e6e30a154bd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Renderable\QuadMesh">
+      <UniqueIdentifier>{e9ab5ddc-7c43-4046-8bc1-35fbd740c428}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -234,6 +237,21 @@
     <ClInclude Include="Structures.hpp">
       <Filter>00. D3D</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleRenderer.h">
+      <Filter>01. Renderer\ParticleRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadMesh.h">
+      <Filter>02. Renderable\QuadMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>06. Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.hpp">
+      <Filter>06. Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteSheet.hpp">
+      <Filter>06. Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApp.cpp">
@@ -326,6 +344,15 @@
     <ClCompile Include="Light.cpp">
       <Filter>07. Light</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleRenderer.cpp">
+      <Filter>01. Renderer\ParticleRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadMesh.cpp">
+      <Filter>02. Renderable\QuadMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>06. Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PS_Skybox.hlsl">
@@ -386,6 +413,9 @@
       <Filter>98. Shaders\PixelShader</Filter>
     </FxCompile>
     <FxCompile Include="VS_LightVolume.hlsl">
+      <Filter>98. Shaders\VertexShader</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Effect.hlsl">
       <Filter>98. Shaders\VertexShader</Filter>
     </FxCompile>
   </ItemGroup>

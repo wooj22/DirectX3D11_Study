@@ -136,6 +136,7 @@
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="DirectionalLight.hpp" />
     <ClInclude Include="DirectionalShadowCamera.h" />
+    <ClInclude Include="Effect.h" />
     <ClInclude Include="Environment.hpp" />
     <ClInclude Include="FrustumRenderer.h" />
     <ClInclude Include="GeometryRenderer.h" />
@@ -147,9 +148,12 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="MemoryDebugger.h" />
     <ClInclude Include="ModelLoader.h" />
+    <ClInclude Include="Particle.hpp" />
+    <ClInclude Include="ParticleRenderer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="PostProcessRenderer.h" />
+    <ClInclude Include="QuadMesh.h" />
     <ClInclude Include="RigidModel.h" />
     <ClInclude Include="RigidModelAsset.hpp" />
     <ClInclude Include="RigidSubMesh.h" />
@@ -160,6 +164,7 @@
     <ClInclude Include="Skeleton.hpp" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="SkyboxRenderer.h" />
+    <ClInclude Include="SpriteSheet.hpp" />
     <ClInclude Include="StaticModel.h" />
     <ClInclude Include="StaticModelAsset.hpp" />
     <ClInclude Include="StaticSubMesh.h" />
@@ -174,6 +179,7 @@
     <ClCompile Include="D3D.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="DirectionalShadowCamera.cpp" />
+    <ClCompile Include="Effect.cpp" />
     <ClCompile Include="FrustumRenderer.cpp" />
     <ClCompile Include="GeometryRenderer.cpp" />
     <ClCompile Include="Helper.cpp" />
@@ -184,9 +190,11 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MemoryDebugger.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
+    <ClCompile Include="ParticleRenderer.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="PostProcessRenderer.cpp" />
+    <ClCompile Include="QuadMesh.cpp" />
     <ClCompile Include="RigidModel.cpp" />
     <ClCompile Include="RigidSubMesh.cpp" />
     <ClCompile Include="ShadowRenderer.cpp" />
@@ -252,6 +260,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="VS_Effect.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="VS_Fullscreen.hlsl">

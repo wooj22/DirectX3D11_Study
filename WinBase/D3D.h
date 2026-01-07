@@ -121,6 +121,7 @@ public:
     static ComPtr<ID3D11VertexShader> VS_ShadowDepth_Static;
     static ComPtr<ID3D11VertexShader> VS_FullScreen;
     static ComPtr<ID3D11VertexShader> VS_LightVolume;
+    static ComPtr<ID3D11VertexShader> VS_Effect;
 
     // Pixel Shader
     static ComPtr<ID3D11PixelShader> PS_BlinnPhong;
@@ -140,6 +141,7 @@ public:
     static ComPtr<ID3D11InputLayout> inputLayout_Vertex;
     static ComPtr<ID3D11InputLayout> inputLayout_BoneWeightVertex;
     static ComPtr<ID3D11InputLayout> inputLayout_Position;
+    static ComPtr<ID3D11InputLayout> inputLayout_QuadVertex;
 
     // ConstantBuffer
     static ComPtr<ID3D11Buffer> transformBuffer;
