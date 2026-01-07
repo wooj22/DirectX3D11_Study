@@ -173,8 +173,24 @@ void App::OnRender()
     D3D::deviceContext->VSSetConstantBuffers(4, 1, D3D::poseMatrixBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(6, 1, D3D::debugBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(7, 1, D3D::postprocessBuffer.GetAddressOf());
+    D3D::deviceContext->PSSetConstantBuffers(10, 1, D3D::frameBuffer.GetAddressOf());
 
     // Skybox Render  --------------------------------
+    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Position.Get());
+    D3D::deviceContext->VSSetShader(D3D::VS_Skybox.Get(), nullptr, 0);
+    D3D::deviceContext->PSSetShader(D3D::PS_Skybox.Get(), nullptr, 0);
+    D3D::deviceContext->RSSetState(D3D::cullfrontRS.Get());
+    D3D::deviceContext->OMSetDepthStencilState(D3D::disableDSS.Get(), 0);
+
+    Matrix viewNoTranslation = view;
+    viewNoTranslation._41 = 0.0f;
+    viewNoTranslation._42 = 0.0f;
+    viewNoTranslation._43 = 0.0f;
+
+    D3D::transformCBData.view = XMMatrixTranspose(viewNoTranslation);
+    D3D::transformCBData.projection = XMMatrixTranspose(projection);
+    D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
+
     switch (currentSkybox)
     {
     case 0:
@@ -184,14 +200,21 @@ void App::OnRender()
         skybox2.Draw(view, projection);
         break;
     }
+
+    // clear
+    D3D::transformCBData.view = XMMatrixTranspose(view);
+    D3D::deviceContext->RSSetState(nullptr);
    
 
     // Buffer Data Update -----------------------------------
+    D3D::frameCBData.screenSize = { (float)screenWidth,(float)screenHeight };
+    D3D::frameCBData.time = Time::GetTotalTime();
+    D3D::frameCBData.cameraPos = camera.position;
+
     D3D::transformCBData.view = XMMatrixTranspose(view);
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::transformCBData.shadowView = XMMatrixTranspose(lightView);
     D3D::transformCBData.shadowProjection = XMMatrixTranspose(lightProjection);
-    D3D::transformCBData.cameraPos = camera.position;
 
     D3D::lightingCBData.lightDirection = light.direction;
     D3D::lightingCBData.lightColor = light.color;
@@ -210,6 +233,7 @@ void App::OnRender()
     D3D::deviceContext->UpdateSubresource(D3D::lightingBuffer.Get(), 0, nullptr, &D3D::lightingCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::debugBuffer.Get(), 0, nullptr, &D3D::debugCBData, 0, 0);
     D3D::deviceContext->UpdateSubresource(D3D::postprocessBuffer.Get(), 0, nullptr, &D3D::postprocessCBData, 0, 0);
+    D3D::deviceContext->UpdateSubresource(D3D::frameBuffer.Get(), 0, nullptr, &D3D::frameCBData, 0, 0);
 
 
     // 1. Depth Only Pass -------------------------------------
