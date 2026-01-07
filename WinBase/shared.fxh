@@ -13,6 +13,8 @@
 // PostProcessCB    -> b7
 // ScreenFxCB       -> b8
 // BloomCB          -> b9
+// FrameCB          -> b10    (얘 b0으로 바인딩하고싶은데 너무 늦음)
+// EffectCB         -> b11
 
 // [ Texture ]
 // Texture2D diffuseMap          : register(t0);
@@ -240,6 +242,25 @@ cbuffer BloomCB : register(b9)
     int padding12;
 }
 
+cbuffer FrameCB : register(b10)
+{
+    float time_;
+    float deltaTime;
+    int frameIndex;
+    int padding13;
+
+    float2 screenSize_;
+    float2 shadowMapSize_;
+
+    float3 cameraPos_;
+    int padding14;
+}
+
+cbuffer EffectCB : register(b11)
+{
+
+}
+
 
 // ----------------------
 //  Vertex Input Layout
@@ -305,6 +326,7 @@ struct PS_FullScreen_Input
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
 };
+
 
 // ------------------------------------
 //  PS Output (Deferred Rendering)

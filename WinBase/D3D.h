@@ -20,6 +20,9 @@ struct DebugCB;
 struct PostProcessCB;
 struct ScreenFxCB;
 struct BloomCB;
+struct FrameCB;
+struct EffectCB;
+
 
 /*
 *   Direct3D 리소스 초기화용 정적 헬퍼 클래스
@@ -154,6 +157,8 @@ public:
     static ComPtr<ID3D11Buffer> postprocessBuffer;
     static ComPtr<ID3D11Buffer> screenFxBuffer;
     static ComPtr<ID3D11Buffer> bloomBuffer;
+    static ComPtr<ID3D11Buffer> frameBuffer;
+    static ComPtr<ID3D11Buffer> effectBuffer;
 
     static TransformCB     transformCBData;
     static LightingCB      lightingCBData;
@@ -165,6 +170,8 @@ public:
     static PostProcessCB   postprocessCBData;
     static ScreenFxCB      screenFxCBData;
     static BloomCB         bloomCBData;
+    static FrameCB         frameCBData;
+    static EffectCB        effectCBData;
 
 
     //--------------------------------

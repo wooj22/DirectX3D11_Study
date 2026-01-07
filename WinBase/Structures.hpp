@@ -181,7 +181,7 @@ struct alignas(16) DebugCB
     Vector3 padding;
 };
 
-// PostProcess CB
+// PostProcess CB -> b7
 struct alignas(16) PostProcessCB
 {
     // Base
@@ -242,6 +242,7 @@ struct alignas(16) PostProcessCB
     int   padding6;
 };
 
+// ScreenFx CB -> b8
 struct alignas(16) ScreenFxCB
 {
     int enableWaterDistortion = 0;  
@@ -259,6 +260,7 @@ struct alignas(16) ScreenFxCB
     Vector2 padding;
 };
 
+// Bloom CB -> b9
 struct alignas(16) BloomCB
 {
     float bloom_threshold = 1.0f; 
@@ -272,4 +274,25 @@ struct alignas(16) BloomCB
     int     srcMip = 0;                      // SampleLevel용 mip 인덱스
     Vector2 srcTexelSize = { 0.0f, 0.0f };   // 패스에서 읽고 있는 mip 레벨의 텍스처 해상도를 기준으로 한 texel size
     int     padding2;
+};
+
+// Frame CB -> b10
+struct alignas(16) FrameCB
+{
+    float time;
+    float deltaTime;
+    int frameIndex;
+    int padding1;
+
+    Vector2 screenSize;
+    Vector2 shadowMapSize = { 8192,8192 };      // 이렇게 생성 고정함
+
+    Vector3 cameraPos;
+    int padding2;
+};
+
+// Effect CB -> b11
+struct alignas(16) EffectCB
+{
+
 };

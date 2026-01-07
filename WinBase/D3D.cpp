@@ -120,6 +120,8 @@ ComPtr<ID3D11Buffer>              D3D::debugBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::postprocessBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::screenFxBuffer = nullptr;
 ComPtr<ID3D11Buffer>              D3D::bloomBuffer = nullptr;
+ComPtr<ID3D11Buffer>              D3D::frameBuffer = nullptr;
+ComPtr<ID3D11Buffer>              D3D::effectBuffer = nullptr;
 
 TransformCB        D3D::transformCBData;
 LightingCB         D3D::lightingCBData;
@@ -131,6 +133,8 @@ DebugCB            D3D::debugCBData;
 PostProcessCB      D3D::postprocessCBData;
 ScreenFxCB         D3D::screenFxCBData;
 BloomCB            D3D::bloomCBData;
+FrameCB            D3D::frameCBData;
+EffectCB           D3D::effectCBData;
 
 
 bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
@@ -1004,7 +1008,28 @@ bool D3D::CreateConstantBuffer()
         constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         constBuffer_Desc.CPUAccessFlags = 0;
         HR_T(device->CreateBuffer(&constBuffer_Desc, nullptr, &bloomBuffer));
+    } 
+    
+    // 11. Frame CB
+    {
+        D3D11_BUFFER_DESC constBuffer_Desc = {};
+        constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
+        constBuffer_Desc.ByteWidth = sizeof(FrameCB);
+        constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        constBuffer_Desc.CPUAccessFlags = 0;
+        HR_T(device->CreateBuffer(&constBuffer_Desc, nullptr, &frameBuffer));
     }
+    
+    // 12. Effect CB
+    {
+        D3D11_BUFFER_DESC constBuffer_Desc = {};
+        constBuffer_Desc.Usage = D3D11_USAGE_DEFAULT;
+        constBuffer_Desc.ByteWidth = sizeof(EffectCB);
+        constBuffer_Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        constBuffer_Desc.CPUAccessFlags = 0;
+        HR_T(device->CreateBuffer(&constBuffer_Desc, nullptr, &effectBuffer));
+    }
+
 
     return true;
 }
