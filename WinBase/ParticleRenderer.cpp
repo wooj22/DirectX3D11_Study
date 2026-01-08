@@ -59,10 +59,12 @@ void ParticleRenderer::ParticlePass(const Matrix& view, const Matrix& projection
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
     // TODO :: Effect CB는 SpriteSheet 기준으로 Draw Call을 해야함
+    // BillBoard도 .. 분기처리 필요
     // 일단 지금은 하나라서 한번에 하는중
     D3D::effectCBData.atlasGrid = { (float)effects[0].sheet.cols , (float)effects[0].sheet.rows };
     D3D::effectCBData.invAtlasGrid = { 1.0f/(float)effects[0].sheet.cols, 1.0f/(float)effects[0].sheet.rows };
     D3D::effectCBData.baseSizeScale = effects[0].sheet.baseSizeScale;
+    D3D::effectCBData.billboardType = (int)effects[0].billboard;
     D3D::deviceContext->UpdateSubresource(D3D::effectBuffer.Get(), 0, nullptr, &D3D::effectCBData, 0, 0);
 
     // alive == true인 파티클 배열

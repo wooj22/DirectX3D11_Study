@@ -13,27 +13,35 @@ PS_Particle_INPUT main(VS_Particle_INPUT input)
     
     // Frame
     uint f = (uint) input.frame;
-
-    // Flipbook UV
+    
     uint cols = (uint) max(1.0, atlasGrid.x);
     uint rows = (uint) max(1.0, atlasGrid.y);
 
     uint fx = f % cols;
-    uint fy = f / cols; // row
+    uint fy = f / cols;
     fy = min(fy, rows - 1);
 
+    // Flipbook UV
     float2 uv = input.uv * invAtlasGrid + float2(fx, fy) * invAtlasGrid;
 
-    // Billboard basis (Right/Up)
+    // Billboard
+    float3 camUp;
     float3 camRight = float3(view._11, view._21, view._31);
-    float3 camUp = float3(view._12, view._22, view._32);
+    
+    if (billboardType == 0)       // ScreenFacing
+    {
+        camUp = float3(view._12, view._22, view._32);
+    }
+    else if(billboardType == 1)   // Y-Axis
+    {
+        camUp = float3(0,1,0);
+    }
 
-    // Translation
+    // locar -> world -> clip
     float2 local = input.corner * (input.size * baseSizeScale);
     local = Rotate2D(local, input.rotation);
 
     float3 worldPos = input.pos + camRight * local.x + camUp * local.y;
-
     float4 viewPos = mul(float4(worldPos, 1.0f), view);
     float4 clipPos = mul(viewPos, projection);
 

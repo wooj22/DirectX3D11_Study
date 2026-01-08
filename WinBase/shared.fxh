@@ -258,7 +258,8 @@ cbuffer EffectCB : register(b11)
     float2 invAtlasGrid; 
 
     float  baseSizeScale;
-    float3 padding17;
+    int billboardType;
+    float2 padding17;
 }
 
 

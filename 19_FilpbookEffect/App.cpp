@@ -302,6 +302,7 @@ bool App::InitResource()
     // effect
     {
         Effect e{};
+        //e.billboard = BillboardType::YAxis;
 
         // SpriteSheet
         e.sheet.cols = 5;

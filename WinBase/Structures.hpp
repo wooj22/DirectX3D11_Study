@@ -303,5 +303,6 @@ struct alignas(16) EffectCB
     Vector2 invAtlasGrid;   // (1/cols, 1/rows)
 
     float baseSizeScale = 1.0f;
-    Vector3 padding;
+    int billboardType;
+    Vector2 padding;
 };
