@@ -3,35 +3,39 @@
 
 void Effect::Play(Vector3 pos)
 {
-    particle.pos = pos;
-    particle.age = 0.0f;
-    alive = true;
-    frame = 0;
+    for (auto& p : particles)
+    {
+        p.pos = pos;
+        p.age = 0.0f;
+    }
 }
 
 void Effect::Update()
 {
-    if (!alive) return;
-
     float dt = Time::GetDeltaTime();
-    particle.age += dt;
-
-    // life cheak
-    if (particle.age >= particle.life)
-    {
-        if (loop)
-            particle.age = fmodf(particle.age, particle.life);
-        else
-        {
-            alive = false;
-            return;
-        }
-    }
-
-    // filpbook frame
     int total = sheet.cols * sheet.rows;
-    frame = (int)floorf(particle.age * sheet.fps);
 
-    if (loop) frame %= total;
-    else frame = min(frame, total - 1);
+    // particle udapte
+    for (auto& p : particles)
+    {
+        if(!p.alive) continue;
+
+        // life
+        p.age += dt;
+        if (p.age >= p.life)
+        {
+            if (loop)
+                p.age = fmodf(p.age, p.life);
+            else
+            {
+                p.alive = false;
+                return;
+            }
+        }
+
+        // frame
+        p.frame = (int)floorf(p.age * sheet.fps);
+        if (loop) p.frame %= total;
+        else p.frame = min(p.frame, total - 1);
+    }
 }

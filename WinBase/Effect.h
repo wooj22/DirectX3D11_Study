@@ -26,12 +26,9 @@ public:
     BillboardType billboard = BillboardType::ScreenFacing;
 
     SpriteSheet sheet;
-    Particle    particle;           // Filpbook
     vector<Particle> particles;     // particle system
 
     bool  loop = true;
-    bool  alive = true;
-    int   frame = 0;
 
     void Play(Vector3 pos);
     void Update();

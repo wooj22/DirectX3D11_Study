@@ -315,14 +315,14 @@ bool App::InitResource()
         assert(e1.sheet.srv != nullptr);
 
         // Particle
-        e1.particle.pos = { -200.0f, 130.0f, 80.0f };
-        e1.particle.rotation = 0.0f;
-        e1.particle.size = { 50.0f, 60.0f };
-        e1.particle.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-        // Lifetime
-        e1.particle.age = 0.0f;
-        e1.particle.life = 10.0f;
+        Particle p1;
+        p1.pos = { -200.0f, 130.0f, 80.0f };
+        p1.rotation = 0.0f;
+        p1.size = { 50.0f, 60.0f };
+        p1.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        p1.age = 0.0f;
+        p1.life = 10.0f;
+        e1.particles.push_back(p1);
 
         effects.push_back(e1);
 
@@ -340,19 +340,19 @@ bool App::InitResource()
         assert(e2.sheet.srv != nullptr);
 
         // Particle
-        e2.particle.pos = { 0.0f, 130.0f, 80.0f };
-        e2.particle.rotation = 0.0f;
-        e2.particle.size = { 50.0f, 60.0f };
-        e2.particle.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        Particle p2;
+       p2.pos = { 0.0f, 130.0f, 80.0f };
+       p2.rotation = 0.0f;
+       p2.size = { 50.0f, 60.0f };
+       p2.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+       p2.age = 0.0f;
+       p2.life = 10.0f;
+       e2.particles.push_back(p2);
 
-        // Lifetime
-        e2.particle.age = 0.0f;
-        e2.particle.life = 10.0f;
-
-        effects.push_back(e2);
+       effects.push_back(e2);
 
 
-        // 3 - 1.
+        // 3.
         Effect e3{};
         e3.billboard = BillboardType::ScreenFacing;
 
@@ -366,14 +366,14 @@ bool App::InitResource()
         assert(e3.sheet.srv != nullptr);
 
         // Particle
-        e3.particle.pos = { 150.0f, 130.0f, 80.0f };
-        e3.particle.rotation = 0.0f;
-        e3.particle.size = { 50.0f, 60.0f };
-        e3.particle.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-        // Lifetime
-        e3.particle.age = 0.0f;
-        e3.particle.life = 10.0f;
+        Particle p3;
+        p3.pos = { 150.0f, 130.0f, 80.0f };
+        p3.rotation = 0.0f;
+        p3.size = { 50.0f, 60.0f };
+        p3.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        p3.age = 0.0f;
+        p3.life = 10.0f;
+        e3.particles.push_back(p3);
 
         effects.push_back(e3);
     }

@@ -24,7 +24,7 @@ using Microsoft::WRL::ComPtr;
       - 추후 : Bating을 통해 여러 Effect 모든 파티클을 타입별로 Draw Call
 */
 
-class ParticleRenderer // 현재는 Filpbook 기준
+class ParticleRenderer
 {
 private:
     ParticleQuadMesh quad;

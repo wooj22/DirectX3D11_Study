@@ -37,7 +37,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 
-// Filpbook Effect 프로젝트입니다.
+// Particle System 프로젝트입니다.
 /*
 * [ Render PipeLine ]
 *   1. ShadowMap Pass                  -> ShadowMap
@@ -59,8 +59,6 @@ using namespace DirectX::SimpleMath;
 *
 *   기하 단위(Quad)로 Draw Call하지 않고,
 *   Instance Buffer를 사용하여 같은 Effect끼리는 한번의 DrawCall로 처리합니다.
-*   사실 Particle System으로의 확장을 위해 이렇게 만든거라, 해당 프로젝트에는 의미 없습니다...
-*   (Filpbook Effect는 Particle이 하나기때문에..)
 *
 *   - Vertex (ParticleQuadVertex) : Quad 기하 Data
 *   - Instance (ParticleInstance) : 매 프레임 살아있는 파티클의 상태 정보를 Update하는 Buffer Data

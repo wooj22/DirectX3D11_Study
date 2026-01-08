@@ -58,8 +58,6 @@ void ParticleRenderer::ParticlePass(const Matrix& view, const Matrix& projection
     // Effect 단위 Local Batcing
     for (const auto& e : effects)
     {
-        if (!e.alive) continue;
-
         // CB
         D3D::effectCBData.atlasGrid = { (float)e.sheet.cols , (float)e.sheet.rows };
         D3D::effectCBData.invAtlasGrid = { 1.0f / (float)e.sheet.cols, 1.0f / (float)e.sheet.rows };
@@ -72,33 +70,19 @@ void ParticleRenderer::ParticlePass(const Matrix& view, const Matrix& projection
 
         // Particle Instance
         vector<ParticleInstance> instances;
-
-
-        // --------------------------
-        // Filp book 전용
-        instances.reserve(1);
-        ParticleInstance i{};
-        i.pos = e.particle.pos;
-        i.rotation = e.particle.rotation;
-        i.size = e.particle.size;
-        i.color = e.particle.color;
-        i.frame = e.frame;
-        instances.push_back(i);
-
-        // Particle System 도입후 이걸로 사용
-        //instances.reserve(e.particles.size());
-        /*for (auto& p : e.particles)
+        instances.reserve(e.particles.size());
+        for (auto& p : e.particles)
         {
+            if (!p.alive) continue;
+
             ParticleInstance i{};
             i.pos = p.pos;
             i.rotation = p.rotation;
             i.size = p.size;
             i.color = p.color;
-            i.frame = e.frame;
+            i.frame = p.frame;
             instances.push_back(i);
-        }*/
-        // --------------------------
-
+        }
         if (instances.empty()) return;
 
         // Instance Buffer
@@ -114,5 +98,7 @@ void ParticleRenderer::ParticlePass(const Matrix& view, const Matrix& projection
     }
 
     // clear
+    ctx->RSSetState(nullptr);
+    ctx->OMSetDepthStencilState(nullptr, 0);
     ctx->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 }
