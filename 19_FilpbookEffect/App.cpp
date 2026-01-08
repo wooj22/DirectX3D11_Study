@@ -301,29 +301,66 @@ bool App::InitResource()
 
     // effect
     {
-        Effect e{};
-        //e.billboard = BillboardType::YAxis;
+        // 1 - 1.
+        Effect e1{};
+        e1.billboard = BillboardType::ScreenFacing;
 
         // SpriteSheet
-        e.sheet.cols = 5;
-        e.sheet.rows = 5;
-        e.sheet.fps = 24.0f;
-        e.sheet.baseSizeScale = 5.0f;
-        const wchar_t* path = L"../Resource/SpriteSheet/Explosion00_5x5.tga";
-        CreateTextureFromFile(D3D::device.Get(), path, e.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
-        assert(e.sheet.srv != nullptr);
+        e1.sheet.cols = 16;
+        e1.sheet.rows = 4;
+        e1.sheet.fps = 24.0f;
+        e1.sheet.baseSizeScale = 5.0f;
+        const wchar_t* path = L"../Resource/SpriteSheet/DiscSmoke01_16x4.tga";
+        CreateTextureFromFile(D3D::device.Get(), path, e1.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
+        assert(e1.sheet.srv != nullptr);
 
         // Particle
-        e.particle.pos = { 0.0f, 130.0f, 80.0f };      
-        e.particle.rotation = 0.0f;
-        e.particle.size = { 50.0f, 60.0f };
-        e.particle.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        e1.particle.pos = { -200.0f, 130.0f, 80.0f };      
+        e1.particle.rotation = 0.0f;
+        e1.particle.size = { 50.0f, 60.0f };
+        e1.particle.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
         // Lifetime
-        e.particle.age = 0.0f;
-        e.particle.life = 10.0f;
+        e1.particle.age = 0.0f;
+        e1.particle.life = 10.0f;
 
-        effects.push_back(e);
+        //effects.push_back(e1);
+
+        // 1 - 2.
+        e1.billboard = BillboardType::YAxis;
+        e1.particle.pos = { 0.0f, 130.0f, 80.0f };
+        //effects.push_back(e1);
+        
+
+        // 2 - 1.
+        Effect e2{};
+        e2.billboard = BillboardType::ScreenFacing;
+  
+        // SpriteSheet
+        e2.sheet.cols = 5;
+        e2.sheet.rows = 5;
+        e2.sheet.fps = 24.0f;
+        e2.sheet.baseSizeScale = 5.0f;
+        const wchar_t* path2 = L"../Resource/SpriteSheet/Explosion00_5x5.tga";
+        CreateTextureFromFile(D3D::device.Get(), path2, e2.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
+        assert(e2.sheet.srv != nullptr);
+
+        // Particle
+        e2.particle.pos = { 200.0f, 130.0f, 80.0f };
+        e2.particle.rotation = 0.0f;
+        e2.particle.size = { 50.0f, 60.0f };
+        e2.particle.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+        // Lifetime
+        e2.particle.age = 0.0f;
+        e2.particle.life = 10.0f;
+
+        effects.push_back(e2);
+
+        // 2 - 2.
+        e2.billboard = BillboardType::YAxis;
+        e2.particle.pos = { 400.0f, 130.0f, 80.0f };
+        effects.push_back(e2);
     }
 
     // skybox
