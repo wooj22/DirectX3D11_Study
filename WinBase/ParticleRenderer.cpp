@@ -71,20 +71,23 @@ void ParticleRenderer::ParticlePass(const Matrix& view, const Matrix& projection
             // SRV
             D3D::deviceContext->PSSetShaderResources(20, 1, e.sheet.srv.GetAddressOf());
 
-            // alive == true인 파티클 배열
+            // Particle Instance
+            // 지금은 Effect에 Particle이 하나지만, 이제 파티클 시스템으로 확장할 예정
+            // 꼭 전체 배칭 하지 않고, 일단 Effect별로 DrawCall하는건 어떨까..?
             vector<ParticleInstance> instances;
-            instances.reserve(effects.size());
+            instances.reserve(e.particles.size());
+            {
+                ParticleInstance i{};
+                i.pos = e.particle.pos;
+                i.rotation = e.particle.rotation;
+                i.size = e.particle.size;
+                i.color = e.particle.color;
+                i.frame = e.frame;
 
-            ParticleInstance i{};
-            i.pos = e.particle.pos;
-            i.rotation = e.particle.rotation;
-            i.size = e.particle.size;
-            i.color = e.particle.color;
-            i.frame = e.frame;
+                instances.push_back(i);
 
-            instances.push_back(i);
-
-            if (instances.empty()) return;
+                if (instances.empty()) return;
+            }
 
             // Instance Buffer
             D3D11_MAPPED_SUBRESOURCE mapped{};
