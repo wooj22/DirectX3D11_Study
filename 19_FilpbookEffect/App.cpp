@@ -360,6 +360,7 @@ bool App::InitResource()
         // 2 - 2.
         e2.billboard = BillboardType::YAxis;
         e2.particle.pos = { 400.0f, 130.0f, 80.0f };
+        e2.frame = 10;
         effects.push_back(e2);
     }
 

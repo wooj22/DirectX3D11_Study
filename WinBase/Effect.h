@@ -4,12 +4,18 @@
 #include <directxtk/simplemath.h>
 using namespace DirectX::SimpleMath;
 
+
+// Billboard Type
 enum class BillboardType
 {
     ScreenFacing,       // Quad가 항상 정면
     YAxis,              // Y축 고정
 };
 
+/*
+    [ Effect ]
+
+*/
 
 class Effect  // 현재는 Filpbook 기준
 {
