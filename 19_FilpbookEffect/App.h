@@ -11,7 +11,7 @@
 #include "../WinBase/ShadowRenderer.h"
 #include "../WinBase/GeometryRenderer.h"
 #include "../WinBase/LightRenderer.h"
-#include "../WinBase/ParticleRenderer.h"
+#include "FilpbookParticleRenderer.h"
 #include "../WinBase/SkyboxRenderer.h"
 #include "../WinBase/BloomRenderer.h"
 #include "../WinBase/PostProcessRenderer.h"
@@ -38,8 +38,6 @@ using namespace DirectX::SimpleMath;
 
 
 // Filpbook Effect 프로젝트입니다.
-// Scene HDR에 DepthTest(Geometry)를 통해 Quad를 그리며
-// UV Animation을 돌립니다.
 /*
 * [ Render PipeLine ]
 *   1. ShadowMap Pass                  -> ShadowMap
@@ -57,15 +55,21 @@ using namespace DirectX::SimpleMath;
 *
 *
 * 
-*  [ Vertex Buffer / Instance Buffer ]
-
-*   여러 이펙트가 있을때 수많은 파티클을 각각 Quad->Draw Call을 하지 않고,
-*   Instance Buffer를 사용하여 같은 Particle Material끼리는 한번의 DrawCall로 처리합니다.
+*  [ Particle Local Batcing ]
+* 
+*   기하 단위(Quad)로 Draw Call하지 않고, 
+*   Instance Buffer를 사용하여 같은 Effect끼리는 한번의 DrawCall로 처리합니다.
+*   사실 Particle System으로의 확장을 위해 이렇게 만든거라, 해당 프로젝트에는 의미 없습니다...
+*   (Filpbook Effect는 Particle이 하나기때문에..)
 *  
 *   - Vertex (ParticleQuadVertex) : Quad 기하 Data
 *   - Instance (ParticleInstance) : 매 프레임 살아있는 파티클의 상태 정보를 Update하는 Buffer Data
 *   => DrawIndexedInstanced
 * 
+* 
+*  [ Billboard Mode ]
+*   1.  ScreenFacing  : Quad의 정면이 항상 카메라를 수직으로 바라봅니다.
+*   2.  YAxis         : Y축을 고정하여 카메라의 좌우 이동, 회전에만 반응합니다.
 * 
 * 
 *  [ Particle Pass를 위한 Stage Setting ]
@@ -87,7 +91,7 @@ private:
     ShadowRenderer       shadowRenderer;
     GeometryRenderer     geometryRenderer;
     LightRenderer        lightRenderer;
-    ParticleRenderer     particleRenderer;
+    FilpbookParticleRenderer particleRenderer;
     SkyboxRenderer       skyboxRenderer;
     BloomRenderer        bloomRenderer;
     PostProcessRenderer  postRenderer;
@@ -97,7 +101,7 @@ private:
     vector<Light> lights;
 
     // effect
-    vector<Effect> effects;
+    vector<FilpbookEffect> effects;
 
     // camera
     Matrix view;

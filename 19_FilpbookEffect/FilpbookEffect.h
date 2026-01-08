@@ -14,20 +14,14 @@ enum class BillboardType
     YAxis,              // Y√‡ ∞Ì¡§
 };
 
-
-/*
-    [ Effect ]
-
-*/
-
-class Effect
+// FilpbookEffect
+class FilpbookEffect
 {
 public:
     BillboardType billboard = BillboardType::ScreenFacing;
 
     SpriteSheet sheet;
     Particle    particle;           // Filpbook
-    vector<Particle> particles;     // particle system
 
     bool  loop = true;
     bool  alive = true;

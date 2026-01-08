@@ -302,7 +302,7 @@ bool App::InitResource()
     // effect
     {
         // 1.
-        Effect e1{};
+        FilpbookEffect e1{};
         e1.billboard = BillboardType::YAxis;
 
         // SpriteSheet
@@ -327,7 +327,7 @@ bool App::InitResource()
         effects.push_back(e1);
 
         // 2.
-        Effect e2{};
+        FilpbookEffect e2{};
         e2.billboard = BillboardType::YAxis;
 
         // SpriteSheet
@@ -353,7 +353,7 @@ bool App::InitResource()
 
         
         // 3 - 1.
-        Effect e3{};
+        FilpbookEffect e3{};
         e3.billboard = BillboardType::ScreenFacing;
   
         // SpriteSheet

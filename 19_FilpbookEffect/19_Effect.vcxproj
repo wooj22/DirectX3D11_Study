@@ -127,10 +127,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="FilpbookEffect.cpp" />
+    <ClCompile Include="FilpbookParticleRenderer.cpp" />
+    <ClCompile Include="ParticleQuadMesh.cpp" />
     <ClCompile Include="winMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="FilpbookEffect.h" />
+    <ClInclude Include="FilpbookParticleRenderer.h" />
+    <ClInclude Include="Particle.hpp" />
+    <ClInclude Include="ParticleQuadMesh.h" />
+    <ClInclude Include="SpriteSheet.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WinBase\WinBase.vcxproj">

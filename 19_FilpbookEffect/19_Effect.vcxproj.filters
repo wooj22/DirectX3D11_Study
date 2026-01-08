@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="FilpbookEffect">
+      <UniqueIdentifier>{ea8ba081-8e5f-487b-a0b4-a02e6f664208}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="winMain.cpp">
@@ -21,10 +24,34 @@
     <ClCompile Include="App.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="FilpbookParticleRenderer.cpp">
+      <Filter>FilpbookEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="FilpbookEffect.cpp">
+      <Filter>FilpbookEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleQuadMesh.cpp">
+      <Filter>FilpbookEffect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="FilpbookParticleRenderer.h">
+      <Filter>FilpbookEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="FilpbookEffect.h">
+      <Filter>FilpbookEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleQuadMesh.h">
+      <Filter>FilpbookEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.hpp">
+      <Filter>FilpbookEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteSheet.hpp">
+      <Filter>FilpbookEffect</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
