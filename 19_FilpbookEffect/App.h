@@ -38,24 +38,45 @@ using namespace DirectX::SimpleMath;
 
 
 // Filpbook Effect 프로젝트입니다.
+// Scene HDR에 DepthTest(Geometry)를 통해 Quad를 그리며
+// UV Animation을 돌립니다.
 /*
 * [ Render PipeLine ]
 *   1. ShadowMap Pass                  -> ShadowMap
 *   2. Geometry Pass                   -> G-buffer (Albedo, Normal, MetalRough, Emissive)
 *   3. Stencil Pass                    -> Stencil Buffer (Lighting Volume)
 *   4. Lighting Pass                   -> Scene HDR Color Pass (Ligting Volume + Deferred Lighting)
-*   
-*   >> 여기 Particle Pass
+*   5. Skybox Pass                     -> sceneHDR의 빈 픽셀에 Skybox Render (Depth Test Onlye)
+*   6. Particle Pass                   -> Scene HDR Effect Render (Depth Test Onlye)
+*   7. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
+*   8. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
+*   9. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
+*   10. LDR PostProcess Pass            -> LDR (final)
+*   11. Frustum Debug Draw
+*   12. GUI Draw
+*
+*
 * 
-*   5. Skybox Pass                     -> sceneHDR의 빈 픽셀에 Skybox Render
-*   6. Bloom Prefilter Pass            -> BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
-*   7. Bloom Downsample Blur Pass      -> BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
-*   8. Bloom Upsample Combine Pass     -> BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
-*   9. LDR PostProcess Pass            -> LDR (final)
-*   10. Frustum Debug Draw
-*   11. GUI Draw
-*
-*
+*  [ Vertex Buffer / Instance Buffer ]
+
+*   여러 이펙트가 있을때 수많은 파티클을 각각 Quad->Draw Call을 하지 않고,
+*   Instance Buffer를 사용하여 같은 Particle Material끼리는 한번의 DrawCall로 처리합니다.
+*  
+*   - Vertex (ParticleQuadVertex) : Quad 기하 Data
+*   - Instance (ParticleInstance) : 매 프레임 살아있는 파티클의 상태 정보를 Update하는 Buffer Data
+*   => DrawIndexedInstanced
+* 
+* 
+* 
+*  [ Particle Pass를 위한 Stage Setting ]
+* 
+*   Particle은 Skybox Pass 이후 SceneHDR에 Quad를 그리며 렌더합니다.
+*   Skybox는 Depth를 wirte 하지 않기 때문에 Depth Test로 지오메트리와는 올바르게 계산되고, 배경은 덮어씌우게 됩니다.
+*   Particle은 Alpha Blend를 켜줘야합니다~!
+* 
+*   - RS : CullMode None 
+*   - DSS : Depth Test Only
+*   - BS : Alpha Blend
 */
 
 

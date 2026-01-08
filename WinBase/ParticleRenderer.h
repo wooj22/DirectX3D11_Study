@@ -23,5 +23,5 @@ private:
 
 public:
     void Init();
-    void ParticlePass(const vector<Effect>& effects);
+    void ParticlePass(const Matrix& view, const Matrix& projection, const vector<Effect>& effects);
 };

@@ -110,19 +110,19 @@ void App::OnRender()
     // 4. Lighting Pass
     lightRenderer.LightingPass(lights, environments[currentSkybox], camera);
 
-    // Effect Pass
-    particleRenderer.ParticlePass(effects);
-
     // 5. Skybox Pass
     skyboxRenderer.SkyboxPass(view, projection, environments[currentSkybox].skybox);
 
-    // 6. Bloom Prefilter -> DownSample -> UpSample Pass
+    // 6. Particle Pass
+    particleRenderer.ParticlePass(view, projection, effects);
+
+    // 7. Bloom Prefilter -> DownSample -> UpSample Pass
     bloomRenderer.BloomPass();
 
-    // 7. PostProcess Pass
+    // 8. PostProcess Pass
     postRenderer.PostProcessPass();
 
-    // 8. Frustem Debug
+    // 9. Frustem Debug
     if (frustumON)
     {
         // main camera

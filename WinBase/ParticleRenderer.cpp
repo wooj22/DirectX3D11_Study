@@ -21,7 +21,7 @@ void ParticleRenderer::Init()
     assert(instanceBuffer != nullptr);
 }
 
-void ParticleRenderer::ParticlePass(const vector<Effect>& effects)
+void ParticleRenderer::ParticlePass(const Matrix& view, const Matrix& projection, const vector<Effect>& effects)
 {
     auto* ctx = D3D::deviceContext.Get();
 
@@ -34,7 +34,7 @@ void ParticleRenderer::ParticlePass(const vector<Effect>& effects)
     ctx->IASetInputLayout(D3D::inputLayout_Particle.Get());
 
     // DSS
-    ctx->OMSetDepthStencilState(D3D::defualtDSS.Get(), 0);
+    ctx->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
 
     // RS
     ctx->RSSetState(D3D::cullNoneRS.Get());
@@ -52,11 +52,14 @@ void ParticleRenderer::ParticlePass(const vector<Effect>& effects)
     // Blend State (alpha)
     float blendFactor[4] = { 0,0,0,0 };
     ctx->OMSetBlendState(D3D::alphaBlendState.Get(), blendFactor, 0xffffffff);
-
+    
+    // CB
+    D3D::transformCBData.view = XMMatrixTranspose(view);
+    D3D::transformCBData.projection = XMMatrixTranspose(projection);
+    D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
     // TODO :: Effect CB는 SpriteSheet 기준으로 Draw Call을 해야함
     // 일단 지금은 하나라서 한번에 하는중
-    // CB
     D3D::effectCBData.atlasGrid = { (float)effects[0].sheet.cols , (float)effects[0].sheet.rows };
     D3D::effectCBData.invAtlasGrid = { 1.0f/(float)effects[0].sheet.cols, 1.0f/(float)effects[0].sheet.rows };
     D3D::effectCBData.baseSizeScale = effects[0].sheet.baseSizeScale;
