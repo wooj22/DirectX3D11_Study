@@ -12,4 +12,8 @@ struct Particle
 
     float  age;
     float  life;
+
+    // TODO :: 파티클 입자도 수명을 갖기
+    // alive
+    // frame
 };

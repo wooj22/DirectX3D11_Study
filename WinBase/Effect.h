@@ -25,7 +25,7 @@ public:
     BillboardType billboard = BillboardType::ScreenFacing;
 
     SpriteSheet sheet;
-    Particle    particle;           // FIlpbook
+    Particle    particle;           // Filpbook
     vector<Particle> particles;     // particle system
 
     bool  loop = true;

@@ -55,51 +55,62 @@ void ParticleRenderer::ParticlePass(const Matrix& view, const Matrix& projection
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
-    // TODO :: Batching
+    // Effect 단위 Local Batcing
+    for (const auto& e : effects)
     {
-        for (const auto& e : effects)
+        if (!e.alive) continue;
+
+        // CB
+        D3D::effectCBData.atlasGrid = { (float)e.sheet.cols , (float)e.sheet.rows };
+        D3D::effectCBData.invAtlasGrid = { 1.0f / (float)e.sheet.cols, 1.0f / (float)e.sheet.rows };
+        D3D::effectCBData.baseSizeScale = e.sheet.baseSizeScale;
+        D3D::effectCBData.billboardType = (int)e.billboard;
+        D3D::deviceContext->UpdateSubresource(D3D::effectBuffer.Get(), 0, nullptr, &D3D::effectCBData, 0, 0);
+
+        // SRV
+        D3D::deviceContext->PSSetShaderResources(20, 1, e.sheet.srv.GetAddressOf());
+
+        // Particle Instance
+        vector<ParticleInstance> instances;
+
+
+        // --------------------------
+        // Filp book 전용
+        instances.reserve(1);
+        ParticleInstance i{};
+        i.pos = e.particle.pos;
+        i.rotation = e.particle.rotation;
+        i.size = e.particle.size;
+        i.color = e.particle.color;
+        i.frame = e.frame;
+        instances.push_back(i);
+
+        // Particle System 도입후 이걸로 사용
+        //instances.reserve(e.particles.size());
+        /*for (auto& p : e.particles)
         {
-            if (!e.alive) continue;
+            ParticleInstance i{};
+            i.pos = p.pos;
+            i.rotation = p.rotation;
+            i.size = p.size;
+            i.color = p.color;
+            i.frame = e.frame;
+            instances.push_back(i);
+        }*/
+        // --------------------------
 
-            // CB
-            D3D::effectCBData.atlasGrid = { (float)e.sheet.cols , (float)e.sheet.rows };
-            D3D::effectCBData.invAtlasGrid = { 1.0f / (float)e.sheet.cols, 1.0f / (float)e.sheet.rows };
-            D3D::effectCBData.baseSizeScale = e.sheet.baseSizeScale;
-            D3D::effectCBData.billboardType = (int)e.billboard;
-            D3D::deviceContext->UpdateSubresource(D3D::effectBuffer.Get(), 0, nullptr, &D3D::effectCBData, 0, 0);
+        if (instances.empty()) return;
 
-            // SRV
-            D3D::deviceContext->PSSetShaderResources(20, 1, e.sheet.srv.GetAddressOf());
+        // Instance Buffer
+        D3D11_MAPPED_SUBRESOURCE mapped{};
 
-            // Particle Instance
-            // 지금은 Effect에 Particle이 하나지만, 이제 파티클 시스템으로 확장할 예정
-            // 꼭 전체 배칭 하지 않고, 일단 Effect별로 DrawCall하는건 어떨까..?
-            vector<ParticleInstance> instances;
-            instances.reserve(e.particles.size());
-            {
-                ParticleInstance i{};
-                i.pos = e.particle.pos;
-                i.rotation = e.particle.rotation;
-                i.size = e.particle.size;
-                i.color = e.particle.color;
-                i.frame = e.frame;
+        ctx->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);               // gpu buffer의 주소를 mapped에 빌려담음
+        memcpy(mapped.pData, instances.data(), instances.size() * sizeof(ParticleInstance));  // gpu buffer 내용 변경
+        ctx->Unmap(instanceBuffer.Get(), 0);    // gpu야 잘썼엉
 
-                instances.push_back(i);
-
-                if (instances.empty()) return;
-            }
-
-            // Instance Buffer
-            D3D11_MAPPED_SUBRESOURCE mapped{};
-
-            ctx->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);               // gpu buffer의 주소를 mapped에 빌려담음
-            memcpy(mapped.pData, instances.data(), instances.size() * sizeof(ParticleInstance));  // gpu buffer 내용 변경
-            ctx->Unmap(instanceBuffer.Get(), 0);    // gpu야 잘썼엉
-
-            // Render
-            // Quad 1개 + Instance N개 -> N번 반복해서 Draw
-            quad.DrawIndexedInstanced((UINT)instances.size(), instanceBuffer.Get(), sizeof(ParticleInstance));
-        }
+        // Render
+        // Quad 1개 + Instance N개 -> N번 반복해서 Draw
+        quad.DrawIndexedInstanced((UINT)instances.size(), instanceBuffer.Get(), sizeof(ParticleInstance));
     }
 
     // clear
