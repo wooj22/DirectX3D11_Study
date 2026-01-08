@@ -310,7 +310,7 @@ bool App::InitResource()
         e1.sheet.rows = 4;
         e1.sheet.fps = 24.0f;
         e1.sheet.baseSizeScale = 5.0f;
-        const wchar_t* path = L"../Resource/SpriteSheet/DiscSmoke01_16x4.tga";
+        const wchar_t* path = L"../Resource/SpriteSheet/DiscSmoke01_16x4";
         CreateTextureFromFile(D3D::device.Get(), path, e1.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
         assert(e1.sheet.srv != nullptr);
 

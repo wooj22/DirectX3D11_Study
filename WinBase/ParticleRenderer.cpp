@@ -61,42 +61,45 @@ void ParticleRenderer::ParticlePass(const Matrix& view, const Matrix& projection
     // TODO :: Effect CB는 SpriteSheet 기준으로 Draw Call을 해야함
     // BillBoard도 .. 분기처리 필요
     // 일단 지금은 하나라서 한번에 하는중
-    D3D::effectCBData.atlasGrid = { (float)effects[0].sheet.cols , (float)effects[0].sheet.rows };
-    D3D::effectCBData.invAtlasGrid = { 1.0f/(float)effects[0].sheet.cols, 1.0f/(float)effects[0].sheet.rows };
-    D3D::effectCBData.baseSizeScale = effects[0].sheet.baseSizeScale;
-    D3D::effectCBData.billboardType = (int)effects[0].billboard;
-    D3D::deviceContext->UpdateSubresource(D3D::effectBuffer.Get(), 0, nullptr, &D3D::effectCBData, 0, 0);
-
-    // alive == true인 파티클 배열
-    vector<ParticleInstance> instances;
-    instances.reserve(effects.size());
-
-    for (const auto& e : effects)
     {
-        if (!e.alive) continue;
+        // CB
+        D3D::effectCBData.atlasGrid = { (float)effects[0].sheet.cols , (float)effects[0].sheet.rows };
+        D3D::effectCBData.invAtlasGrid = { 1.0f / (float)effects[0].sheet.cols, 1.0f / (float)effects[0].sheet.rows };
+        D3D::effectCBData.baseSizeScale = effects[0].sheet.baseSizeScale;
+        D3D::effectCBData.billboardType = (int)effects[0].billboard;
+        D3D::deviceContext->UpdateSubresource(D3D::effectBuffer.Get(), 0, nullptr, &D3D::effectCBData, 0, 0);
 
-        ParticleInstance i{};
-        i.pos = e.particle.pos;
-        i.rotation = e.particle.rotation;
-        i.size = e.particle.size;
-        i.color = e.particle.color;
-        i.frame = e.frame;
+        // alive == true인 파티클 배열
+        vector<ParticleInstance> instances;
+        instances.reserve(effects.size());
 
-        instances.push_back(i);
+        for (const auto& e : effects)
+        {
+            if (!e.alive) continue;
+
+            ParticleInstance i{};
+            i.pos = e.particle.pos;
+            i.rotation = e.particle.rotation;
+            i.size = e.particle.size;
+            i.color = e.particle.color;
+            i.frame = e.frame;
+
+            instances.push_back(i);
+        }
+
+        if (instances.empty()) return;
+
+        // Instance Buffer
+        D3D11_MAPPED_SUBRESOURCE mapped{};
+
+        ctx->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);               // gpu buffer의 주소를 mapped에 빌려담음
+        memcpy(mapped.pData, instances.data(), instances.size() * sizeof(ParticleInstance));  // gpu buffer 내용 변경
+        ctx->Unmap(instanceBuffer.Get(), 0);    // gpu야 잘썼엉
+
+        // Render
+        // Quad 1개 + Instance N개 -> N번 반복해서 Draw
+        quad.DrawIndexedInstanced((UINT)instances.size(), instanceBuffer.Get(), sizeof(ParticleInstance));
     }
-
-    if (instances.empty()) return;
-
-    // Instance Buffer
-    D3D11_MAPPED_SUBRESOURCE mapped{};
-
-    ctx->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);               // gpu buffer의 주소를 mapped에 빌려담음
-    memcpy(mapped.pData, instances.data(), instances.size() * sizeof(ParticleInstance));  // gpu buffer 내용 변경
-    ctx->Unmap(instanceBuffer.Get(), 0);    // gpu야 잘썼엉
-
-    // Render
-    // Quad 1개 + Instance N개 -> N번 반복해서 Draw
-    quad.DrawIndexedInstanced((UINT)instances.size(), instanceBuffer.Get(), sizeof(ParticleInstance));
 
     // clear
     ctx->OMSetBlendState(nullptr, nullptr, 0xffffffff);
