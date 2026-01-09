@@ -1,17 +1,17 @@
 #include "ParticleRenderer.h"
 #include "D3D.h"
 
+UINT maxParticleInstances = 1000;
+
 void ParticleRenderer::Init()
 {
     // Particle Quad Mesh Create
     quad.Init();
 
     // Instance Buffer Create
-    UINT maxInstances = 100;
-
     D3D11_BUFFER_DESC desc{};
     desc.Usage = D3D11_USAGE_DYNAMIC;
-    desc.ByteWidth = sizeof(ParticleInstance) * maxInstances;
+    desc.ByteWidth = sizeof(ParticleInstance) * maxParticleInstances;
     desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;      // Map !
     desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;   // Map !
     desc.MiscFlags = 0;
@@ -55,46 +55,60 @@ void ParticleRenderer::ParticlePass(const Matrix& view, const Matrix& projection
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
-    // Effect 단위 Local Batcing
-    for (const auto& e : effects)
+    // Effect Render
+    vector<ParticleInstance> instances;
+    instances.reserve(256);
+
+    for (const auto& fx : effects)
     {
-        // CB
-        D3D::effectCBData.atlasGrid = { (float)e.sheet.cols , (float)e.sheet.rows };
-        D3D::effectCBData.invAtlasGrid = { 1.0f / (float)e.sheet.cols, 1.0f / (float)e.sheet.rows };
-        D3D::effectCBData.baseSizeScale = e.sheet.baseSizeScale;
-        D3D::effectCBData.billboardType = (int)e.billboard;
-        D3D::deviceContext->UpdateSubresource(D3D::effectBuffer.Get(), 0, nullptr, &D3D::effectCBData, 0, 0);
+        if (!fx.enabled || !fx.playing) continue;
 
-        // SRV
-        D3D::deviceContext->PSSetShaderResources(20, 1, e.sheet.srv.GetAddressOf());
-
-        // Particle Instance
-        vector<ParticleInstance> instances;
-        instances.reserve(e.particles.size());
-        for (auto& p : e.particles)
+        // Emitter 단위 Local Batcing
+        for (const auto& em : fx.emitters)
         {
-            if (!p.alive) continue;
+            if (!em.enabled) continue;
+            if (em.particles.empty())continue;
 
-            ParticleInstance i{};
-            i.pos = p.pos;
-            i.rotation = p.rotation;
-            i.size = p.size;
-            i.color = p.color;
-            i.frame = p.frame;
-            instances.push_back(i);
+            // CB
+            D3D::effectCBData.atlasGrid = { (float)em.sheet.cols , (float)em.sheet.rows };
+            D3D::effectCBData.invAtlasGrid = { 1.0f / (float)em.sheet.cols, 1.0f / (float)em.sheet.rows };
+            D3D::effectCBData.baseSizeScale = em.sheet.baseSizeScale;
+            D3D::effectCBData.billboardType = (int)em.billboard;
+            D3D::deviceContext->UpdateSubresource(D3D::effectBuffer.Get(), 0, nullptr, &D3D::effectCBData, 0, 0);
+
+            // SRV
+            D3D::deviceContext->PSSetShaderResources(20, 1, em.sheet.srv.GetAddressOf());
+
+            // Instance Buffer (particle)
+            instances.clear();
+            instances.reserve(em.particles.size());
+
+            for (const auto& p : em.particles)
+            {
+                ParticleInstance i{};
+                i.pos = p.pos;
+                i.rotation = p.rotation;
+                i.size = p.size;
+                i.color = p.color;
+                i.frame = p.frame;
+                instances.push_back(i);
+            }
+
+            if (instances.empty())
+                continue;
+            
+            // Map
+            D3D11_MAPPED_SUBRESOURCE mapped{};
+
+            ctx->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);               // gpu buffer의 주소를 mapped에 빌려담음
+            memcpy(mapped.pData, instances.data(), instances.size() * sizeof(ParticleInstance));  // gpu buffer 내용 변경
+            ctx->Unmap(instanceBuffer.Get(), 0);    // gpu야 잘썼엉
+
+            // Render
+            // Quad 1개 + Instance N개 -> N번 반복해서 Draw
+            quad.DrawIndexedInstanced((UINT)instances.size(), instanceBuffer.Get(), sizeof(ParticleInstance));
+
         }
-        if (instances.empty()) return;
-
-        // Instance Buffer
-        D3D11_MAPPED_SUBRESOURCE mapped{};
-
-        ctx->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);               // gpu buffer의 주소를 mapped에 빌려담음
-        memcpy(mapped.pData, instances.data(), instances.size() * sizeof(ParticleInstance));  // gpu buffer 내용 변경
-        ctx->Unmap(instanceBuffer.Get(), 0);    // gpu야 잘썼엉
-
-        // Render
-        // Quad 1개 + Instance N개 -> N번 반복해서 Draw
-        quad.DrawIndexedInstanced((UINT)instances.size(), instanceBuffer.Get(), sizeof(ParticleInstance));
     }
 
     // clear

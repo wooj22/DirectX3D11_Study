@@ -137,6 +137,7 @@
     <ClInclude Include="DirectionalLight.hpp" />
     <ClInclude Include="DirectionalShadowCamera.h" />
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="Emitter.h" />
     <ClInclude Include="Environment.hpp" />
     <ClInclude Include="FrustumRenderer.h" />
     <ClInclude Include="GeometryRenderer.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="DirectionalShadowCamera.cpp" />
     <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="Emitter.cpp" />
     <ClCompile Include="FrustumRenderer.cpp" />
     <ClCompile Include="GeometryRenderer.cpp" />
     <ClCompile Include="Helper.cpp" />

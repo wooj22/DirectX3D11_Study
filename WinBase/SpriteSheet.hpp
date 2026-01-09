@@ -7,8 +7,12 @@ using Microsoft::WRL::ComPtr;
 struct SpriteSheet
 {
     ComPtr<ID3D11ShaderResourceView> srv = nullptr;
-    int cols;
-    int rows;
-    float fps;
-    float baseSizeScale;
+    int cols = 1;
+    int rows = 1;
+
+    int frameCount = 1;             // 실제 사용할 프레임 수 (<= cols*rows)
+    bool frameAnimation = true;     // filpbook loop
+
+    float fps = 0.0f;
+    float baseSizeScale = 1.0f;
 };

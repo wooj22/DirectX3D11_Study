@@ -252,6 +252,9 @@
     <ClInclude Include="SpriteSheet.hpp">
       <Filter>06. Effect</Filter>
     </ClInclude>
+    <ClInclude Include="Emitter.h">
+      <Filter>06. Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApp.cpp">
@@ -351,6 +354,9 @@
       <Filter>02. Renderable\ParticleQuadMesh</Filter>
     </ClCompile>
     <ClCompile Include="Effect.cpp">
+      <Filter>06. Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Emitter.cpp">
       <Filter>06. Effect</Filter>
     </ClCompile>
   </ItemGroup>

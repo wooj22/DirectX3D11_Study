@@ -1,18 +1,10 @@
 #pragma once
-#include "SpriteSheet.hpp"
-#include "Particle.hpp"
+#include "Emitter.h"
 #include <vector>
-using std::vector;
 #include <directxtk/simplemath.h>
+using std::vector;
 using namespace DirectX::SimpleMath;
 
-
-// Billboard Type
-enum class BillboardType
-{
-    ScreenFacing,       // Quad가 항상 정면
-    YAxis,              // Y축 고정
-};
 
 
 /*
@@ -23,13 +15,16 @@ enum class BillboardType
 class Effect
 {
 public:
-    BillboardType billboard = BillboardType::ScreenFacing;
+    vector<Emitter> emitters;
+    bool allFinished = true;
 
-    SpriteSheet sheet;
-    vector<Particle> particles;     // particle system
+    Vector3 position = Vector3::Zero;
+    bool    enabled = true;
+    bool    playing = true;
+    bool    looping = true;
 
-    bool  loop = true;
-
-    void Play(Vector3 pos);
+public:
+    void Play();
+    void Stop();
     void Update();
 };

@@ -1,4 +1,4 @@
-#include "App.h"
+Ôªø#include "App.h"
 #include "../WinBase/D3D.h"
 #include "../WinBase/Helper.h"
 #include "../WinBase/AssetManager.h"
@@ -60,7 +60,7 @@ void App::OnUpdate()
     {
         if (light.isSunLight)
         {
-            lightDir = light.direction;     // sunlight¥¬ «œ≥™π€ø° æ¯¿Ω
+            lightDir = light.direction;     // sunlightÎäî ÌïòÎÇòÎ∞ñÏóê ÏóÜÏùå
             break;
         }
     }
@@ -249,7 +249,7 @@ bool App::InitResource()
         girl->SetPosition({ 100,0,70 });
         enemy->SetPosition({ 250,0,20 });
 
-        // renderøÎ πËø≠ø° √ﬂ∞°
+        // renderÏö© Î∞∞Ïó¥Ïóê Ï∂îÍ∞Ä
         static_models.push_back(floor);
         static_models.push_back(tree);
         static_models.push_back(zelda);
@@ -301,81 +301,242 @@ bool App::InitResource()
 
     // effect
     {
-        // 1.
-        Effect e1{};
-        e1.billboard = BillboardType::YAxis;
+        // 1. Filpbook (1 particle)
+        {
+            Effect e1{};
+            e1.enabled = true;
+            e1.playing = true;
+            e1.looping = true;
+            e1.position = { -200.0f, 130.0f, 80.0f };
 
-        // SpriteSheet
-        e1.sheet.cols = 16;
-        e1.sheet.rows = 4;
-        e1.sheet.fps = 24.0f;
-        e1.sheet.baseSizeScale = 5.0f;
-        const wchar_t* path = L"../Resource/SpriteSheet/DiscSmoke01_16x4.tga";
-        CreateTextureFromFile(D3D::device.Get(), path, e1.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
-        assert(e1.sheet.srv != nullptr);
+            Emitter em1{};
+            em1.enabled = true;
+            em1.playing = true;
+            em1.looping = false;
+            em1.duration = 10.0f;
+            em1.maxParticles = 256;
+            em1.localOffset = Vector3::Zero;
+            em1.billboard = BillboardType::YAxis;
 
-        // Particle
-        Particle p1;
-        p1.pos = { -200.0f, 130.0f, 80.0f };
-        p1.rotation = 0.0f;
-        p1.size = { 50.0f, 60.0f };
-        p1.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-        p1.age = 0.0f;
-        p1.life = 10.0f;
-        e1.particles.push_back(p1);
+            em1.emitRate = 0.0f;
+            em1.burstCount = 1;
 
-        effects.push_back(e1);
+            em1.lifeMin = 10.0f;
+            em1.lifeMax = 10.0f;
+            em1.speedMin = 0.0f;
+            em1.speedMax = 0.0f;
+            em1.sizeMin = { 50.0f, 60.0f };
+            em1.sizeMax = { 50.0f, 60.0f };
+            em1.rotationMin = 0.0f;
+            em1.rotationMax = 0.0f;
+            em1.angularMin = 0.0f;
+            em1.angularMax = 0.0f;
 
-        // 2.
-        Effect e2{};
-        e2.billboard = BillboardType::YAxis;
+            em1.sheet.cols = 16;
+            em1.sheet.rows = 4;
+            em1.sheet.frameCount = em1.sheet.cols * em1.sheet.rows;
+            em1.sheet.frameAnimation = true;
+            em1.sheet.fps = 24.0f;
+            em1.sheet.baseSizeScale = 5.0f;
 
-        // SpriteSheet
-        e2.sheet.cols = 16;
-        e2.sheet.rows = 4;
-        e2.sheet.fps = 24.0f;
-        e2.sheet.baseSizeScale = 5.0f;
-        const wchar_t* path2 = L"../Resource/SpriteSheet/Flame03_16x4.tga";
-        CreateTextureFromFile(D3D::device.Get(), path2, e2.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
-        assert(e2.sheet.srv != nullptr);
+            const wchar_t* path = L"../Resource/SpriteSheet/DiscSmoke01_16x4.tga";
+            CreateTextureFromFile(D3D::device.Get(), path, em1.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
+            assert(em1.sheet.srv != nullptr);
 
-        // Particle
-        Particle p2;
-       p2.pos = { 0.0f, 130.0f, 80.0f };
-       p2.rotation = 0.0f;
-       p2.size = { 50.0f, 60.0f };
-       p2.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-       p2.age = 0.0f;
-       p2.life = 10.0f;
-       e2.particles.push_back(p2);
+            e1.emitters.push_back(em1);
+            effects.push_back(e1);
+            effects.back().Play();
+        }
 
-       effects.push_back(e2);
+        // 2. Filpbook (1 particle)
+        {
+            Effect e2{};
+            e2.enabled = true;
+            e2.playing = true;
+            e2.looping = true;
+            e2.position = { 0.0f, 130.0f, 80.0f };
 
+            Emitter em2{};
+            em2.enabled = true;
+            em2.playing = true;
+            em2.looping = false;
+            em2.duration = 10.0f;
+            em2.maxParticles = 256;
+            em2.localOffset = Vector3::Zero;
+            em2.billboard = BillboardType::YAxis;
 
-        // 3.
-        Effect e3{};
-        e3.billboard = BillboardType::ScreenFacing;
+            em2.emitRate = 0.0f;
+            em2.burstCount = 1; 
 
-        // SpriteSheet
-        e3.sheet.cols = 5;
-        e3.sheet.rows = 5;
-        e3.sheet.fps = 24.0f;
-        e3.sheet.baseSizeScale = 5.0f;
-        const wchar_t* path3 = L"../Resource/SpriteSheet/Explosion00_5x5.tga";
-        CreateTextureFromFile(D3D::device.Get(), path3, e3.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
-        assert(e3.sheet.srv != nullptr);
+            em2.lifeMin = 10.0f;
+            em2.lifeMax = 10.0f;
+            em2.speedMin = 0.0f;
+            em2.speedMax = 0.0f;
+            em2.sizeMin = { 50.0f, 60.0f };
+            em2.sizeMax = { 50.0f, 60.0f };
+            em2.rotationMin = 0.0f;
+            em2.rotationMax = 0.0f;
+            em2.angularMin = 0.0f;
+            em2.angularMax = 0.0f;
 
-        // Particle
-        Particle p3;
-        p3.pos = { 150.0f, 130.0f, 80.0f };
-        p3.rotation = 0.0f;
-        p3.size = { 50.0f, 60.0f };
-        p3.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-        p3.age = 0.0f;
-        p3.life = 10.0f;
-        e3.particles.push_back(p3);
+            em2.sheet.cols = 16;
+            em2.sheet.rows = 4;
+            em2.sheet.frameCount = em2.sheet.cols * em2.sheet.rows;
+            em2.sheet.frameAnimation = true;
+            em2.sheet.fps = 24.0f;
+            em2.sheet.baseSizeScale = 5.0f;
 
-        effects.push_back(e3);
+            const wchar_t* path2 = L"../Resource/SpriteSheet/Flame03_16x4.tga";
+            CreateTextureFromFile(D3D::device.Get(), path2, em2.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
+            assert(em2.sheet.srv != nullptr);
+
+            e2.emitters.push_back(em2);
+            effects.push_back(e2);
+            effects.back().Play();
+        }
+
+        // 3. Filpbook (1 particle)
+        {
+            Effect e3{};
+            e3.enabled = true;
+            e3.playing = true;
+            e3.looping = true;
+            e3.position = { 150.0f, 130.0f, 80.0f };
+
+            Emitter em3{};
+            em3.enabled = true;
+            em3.playing = true;
+            em3.looping = false;
+            em3.duration = 10.0f;
+            em3.maxParticles = 256;
+            em3.localOffset = Vector3::Zero;
+            em3.billboard = BillboardType::ScreenFacing;
+
+            em3.emitRate = 0.0f;     
+            em3.burstCount = 1;      
+
+            em3.lifeMin = 10.0f;
+            em3.lifeMax = 10.0f;
+            em3.speedMin = 0.0f;
+            em3.speedMax = 0.0f;
+            em3.sizeMin = { 50.0f, 60.0f };
+            em3.sizeMax = { 50.0f, 60.0f };
+            em3.rotationMin = 0.0f;
+            em3.rotationMax = 0.0f;
+            em3.angularMin = 0.0f;
+            em3.angularMax = 0.0f;
+
+            em3.sheet.cols = 5;
+            em3.sheet.rows = 5;
+            em3.sheet.frameCount = em3.sheet.cols * em3.sheet.rows;
+            em3.sheet.frameAnimation = true;
+            em3.sheet.fps = 24.0f;
+            em3.sheet.baseSizeScale = 5.0f;
+
+            const wchar_t* path3 = L"../Resource/SpriteSheet/Explosion00_5x5.tga";
+            CreateTextureFromFile(D3D::device.Get(), path3, em3.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
+            assert(em3.sheet.srv != nullptr);
+
+            e3.emitters.push_back(em3);
+            effects.push_back(e3);
+            effects.back().Play();
+        }
+
+        // 4. N particle Spawn Emitter
+        {
+            Effect fx{};
+            fx.enabled = true;
+            fx.playing = true;
+            fx.looping = true;                     
+            fx.position = { -100.0f, 130.0f, 300.0f };
+
+            // emitter
+            Emitter em{};
+            em.enabled = true;
+            em.playing = true;
+            em.looping = true;
+            em.duration = 0.0f;
+            em.maxParticles = 256;
+            em.localOffset = Vector3::Zero;
+            em.billboard = BillboardType::ScreenFacing;
+
+            em.emitRate = 10.0f;
+            em.burstCount = 0;
+
+            em.lifeMin = 5.0f;
+            em.lifeMax = 10.0f;
+            em.speedMin = 20.0f;
+            em.speedMax = 40.0f;
+            em.sizeMin = { 20.0f, 20.0f };
+            em.sizeMax = { 20.0f, 20.0f };
+            em.rotationMin = 0.0f;
+            em.rotationMax = 6.0f;
+            em.angularMin = 0.0f;
+            em.angularMax = 0.0f;
+
+            em.sheet.cols = 1;
+            em.sheet.rows = 1;
+            em.sheet.frameCount = 1;
+            em.sheet.frameAnimation = false;
+            em.sheet.fps = 0.0f;
+            em.sheet.baseSizeScale = 1.0f;
+
+            const wchar_t* path3 = L"../Resource/Particle/sakura.png";
+            CreateTextureFromFile(D3D::device.Get(), path3, em.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
+            assert(em.sheet.srv != nullptr);
+
+            fx.emitters.push_back(em);
+            effects.push_back(fx);
+            effects.back().Play();
+        }
+
+        // 5. N particle Spawn Emitter
+        {
+            Effect fx{};
+            fx.enabled = true;
+            fx.playing = true;
+            fx.looping = true;
+            fx.position = { 200.0f, 130.0f, 300.0f };
+
+            // emitter
+            Emitter em{};
+            em.enabled = true;
+            em.playing = true;
+            em.looping = true;
+            em.duration = 0.0f;
+            em.maxParticles = 256;
+            em.localOffset = Vector3::Zero;
+            em.billboard = BillboardType::ScreenFacing;
+
+            em.emitRate = 10.0f;
+            em.burstCount = 0;
+
+            em.lifeMin = 5.0f;
+            em.lifeMax = 10.0f;
+            em.speedMin = 20.0f;
+            em.speedMax = 40.0f;
+            em.sizeMin = { 20.0f, 20.0f };
+            em.sizeMax = { 20.0f, 20.0f };
+            em.rotationMin = 0.0f;
+            em.rotationMax = 6.0f;
+            em.angularMin = 0.0f;
+            em.angularMax = 0.0f;
+
+            em.sheet.cols = 1;
+            em.sheet.rows = 1;
+            em.sheet.frameCount = 1;
+            em.sheet.frameAnimation = false;
+            em.sheet.fps = 0.0f;
+            em.sheet.baseSizeScale = 1.0f;
+
+            const wchar_t* path3 = L"../Resource/Particle/snow2.png";
+            CreateTextureFromFile(D3D::device.Get(), path3, em.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
+            assert(em.sheet.srv != nullptr);
+
+            fx.emitters.push_back(em);
+            effects.push_back(fx);
+            effects.back().Play();
+        }
     }
 
     // skybox

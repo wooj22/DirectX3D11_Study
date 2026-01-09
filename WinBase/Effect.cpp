@@ -1,41 +1,53 @@
 #include "Effect.h"
 #include "Time.h"
 
-void Effect::Play(Vector3 pos)
+
+void Effect::Play()
 {
-    for (auto& p : particles)
+    playing = true;
+    for (auto& e : emitters)
     {
-        p.pos = pos;
-        p.age = 0.0f;
+        e.playing = true;
+        e.elapsed = 0.0f;
+        e.emitAcc = 0.0f;
+        e.particles.clear();
+
+        e.position = position + e.localOffset;
+
+        // burst
+        if (e.burstCount > 0)
+            e.Spawn(e.burstCount);
     }
+}
+
+void Effect::Stop()
+{
+    playing = false;
+    for (auto& e : emitters) e.playing = false;
 }
 
 void Effect::Update()
 {
-    float dt = Time::GetDeltaTime();
-    int total = sheet.cols * sheet.rows;
+    if (!enabled || !playing) return;
 
-    // particle udapte
-    for (auto& p : particles)
+    allFinished = true;
+
+    // emitter udpate
+    for (auto& e : emitters)
     {
-        if(!p.alive) continue;
+        e.position = e.localOffset + position;
+        e.Update();
 
-        // life
-        p.age += dt;
-        if (p.age >= p.life)
-        {
-            if (loop)
-                p.age = fmodf(p.age, p.life);
-            else
-            {
-                p.alive = false;
-                return;
-            }
-        }
+        if (e.playing || !e.particles.empty())
+            allFinished = false;
+    }
 
-        // frame
-        p.frame = (int)floorf(p.age * sheet.fps);
-        if (loop) p.frame %= total;
-        else p.frame = min(p.frame, total - 1);
+    // loop
+    if (allFinished)
+    {
+        if (looping)
+            Play();
+        else
+            playing = false;
     }
 }
