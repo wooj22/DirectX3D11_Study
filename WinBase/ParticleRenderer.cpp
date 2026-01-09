@@ -1,5 +1,7 @@
 #include "ParticleRenderer.h"
 #include "D3D.h"
+#include "Camera.h"
+#include <algorithm>
 
 UINT maxParticleInstances = 1000;
 
@@ -21,9 +23,11 @@ void ParticleRenderer::Init()
     assert(instanceBuffer != nullptr);
 }
 
-void ParticleRenderer::ParticlePass(const Matrix& view, const Matrix& projection, const vector<Effect>& effects)
+void ParticleRenderer::ParticlePass(Camera& camera, const vector<Effect>& effects)
 {
     auto* ctx = D3D::deviceContext.Get();
+    Matrix view = camera.GetView();
+    Matrix projection = camera.GetProjection();
 
     // RTV, DSV
     ctx->RSSetViewports(1, &D3D::viewport_screen);
@@ -55,19 +59,40 @@ void ParticleRenderer::ParticlePass(const Matrix& view, const Matrix& projection
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
-    // Effect Render
-    vector<ParticleInstance> instances;
-    instances.reserve(256);
+
+    // Effect Sort (Back-to-Front)
+    vector<FxSortItem> sortedFx;
+    sortedFx.reserve(effects.size());
+
+    const Vector3 camPos = camera.position; 
+    const Vector3 camForward = camera.GetForward();
 
     for (const auto& fx : effects)
     {
         if (!fx.enabled || !fx.playing) continue;
 
-        // Emitter 단위 Local Batcing
+        Vector3 dist = fx.position - camPos;
+        float key = dist.Dot(camForward);
+        sortedFx.push_back({ &fx, key });
+    }
+
+    std::sort(sortedFx.begin(), sortedFx.end(),
+        [](const FxSortItem& a, const FxSortItem& b) { return a.key > b.key; });
+
+    
+    // Effect Render
+    vector<ParticleInstance> instances;
+    instances.reserve(256);
+
+    for (const auto& item : sortedFx)
+    {
+        const auto& fx = *item.fx;
+
+        // Emitter 단위 Local Batching
         for (const auto& em : fx.emitters)
         {
             if (!em.enabled) continue;
-            if (em.particles.empty())continue;
+            if (em.particles.empty()) continue;
 
             // CB
             D3D::effectCBData.atlasGrid = { (float)em.sheet.cols , (float)em.sheet.rows };
@@ -94,20 +119,16 @@ void ParticleRenderer::ParticlePass(const Matrix& view, const Matrix& projection
                 instances.push_back(i);
             }
 
-            if (instances.empty())
-                continue;
-            
+            if (instances.empty()) continue;
+
             // Map
             D3D11_MAPPED_SUBRESOURCE mapped{};
-
-            ctx->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);               // gpu buffer의 주소를 mapped에 빌려담음
-            memcpy(mapped.pData, instances.data(), instances.size() * sizeof(ParticleInstance));  // gpu buffer 내용 변경
-            ctx->Unmap(instanceBuffer.Get(), 0);    // gpu야 잘썼엉
+            ctx->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+            memcpy(mapped.pData, instances.data(), instances.size() * sizeof(ParticleInstance));
+            ctx->Unmap(instanceBuffer.Get(), 0);
 
             // Render
-            // Quad 1개 + Instance N개 -> N번 반복해서 Draw
             quad.DrawIndexedInstanced((UINT)instances.size(), instanceBuffer.Get(), sizeof(ParticleInstance));
-
         }
     }
 

@@ -114,7 +114,7 @@ void App::OnRender()
     skyboxRenderer.SkyboxPass(view, projection, environments[currentSkybox].skybox);
 
     // 6. Particle Pass
-    particleRenderer.ParticlePass(view, projection, effects);
+    particleRenderer.ParticlePass(camera, effects);
 
     // 7. Bloom Prefilter -> DownSample -> UpSample Pass
     bloomRenderer.BloomPass();
@@ -448,7 +448,7 @@ bool App::InitResource()
             fx.enabled = true;
             fx.playing = true;
             fx.looping = true;                     
-            fx.position = { -100.0f, 130.0f, 300.0f };
+            fx.position = { 400.0f, 130.0f, 300.0f };
 
             // emitter
             Emitter em{};
@@ -496,7 +496,7 @@ bool App::InitResource()
             fx.enabled = true;
             fx.playing = true;
             fx.looping = true;
-            fx.position = { 200.0f, 130.0f, 300.0f };
+            fx.position = { 700.0f, 130.0f, 300.0f };
 
             // emitter
             Emitter em{};

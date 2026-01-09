@@ -24,6 +24,8 @@ using Microsoft::WRL::ComPtr;
       - 추후 : Bating을 통해 여러 Effect 모든 파티클을 타입별로 Draw Call
 */
 
+class Camera;
+
 class ParticleRenderer
 {
 private:
@@ -32,5 +34,5 @@ private:
 
 public:
     void Init();
-    void ParticlePass(const Matrix& view, const Matrix& projection, const vector<Effect>& effects);
+    void ParticlePass(Camera& camera, const vector<Effect>& effects);
 };

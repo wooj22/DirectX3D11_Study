@@ -28,3 +28,12 @@ public:
     void Stop();
     void Update();
 };
+
+
+// Effect는 Depth write를 하지 않기 때문에
+// CPU에서 Back-to-Front 정렬 후 DrawCall
+struct FxSortItem
+{
+    const Effect* fx;
+    float key;       // effect - camera dist (forward)
+};

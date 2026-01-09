@@ -3,6 +3,8 @@
 #include <vector>
 using std::vector;
 
+#include <directxtk/simplemath.h>
+using namespace DirectX::SimpleMath;
 
 // Billboard Type
 enum class BillboardType
