@@ -32,6 +32,7 @@ private:
     ParticleQuadMesh quad;
     ComPtr<ID3D11Buffer> instanceBuffer = nullptr;
 
+    void EnsureInstanceCapacity(UINT required);
 public:
     void Init();
     void ParticlePass(Camera& camera, const vector<Effect>& effects);

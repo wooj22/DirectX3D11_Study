@@ -70,6 +70,10 @@ void Emitter::Update()
             a = a * a;
             p.color.w = dynamicData.startColor.w * a;
         }
+        else if (particleMode == ParticleMode::Fixed)
+        {
+            p.pos = position;
+        }
 
         // frame (filpbook)
         if (sheet.fps > 0.0f && sheet.frameCount > 1)

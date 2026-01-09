@@ -3,7 +3,7 @@
 #include "Camera.h"
 #include <algorithm>
 
-UINT maxParticleInstances = 1000;
+UINT maxParticleInstances = 1024;
 
 void ParticleRenderer::Init()
 {
@@ -21,6 +21,29 @@ void ParticleRenderer::Init()
 
     D3D::device.Get()->CreateBuffer(&desc, nullptr, instanceBuffer.ReleaseAndGetAddressOf());
     assert(instanceBuffer != nullptr);
+}
+
+void ParticleRenderer::EnsureInstanceCapacity(UINT required)
+{
+    if (required <= maxParticleInstances) return;
+
+    // 2배씩 키우기
+    UINT newCap = maxParticleInstances;
+    while (newCap < required) newCap *= 2;
+
+    maxParticleInstances = newCap;
+
+    D3D11_BUFFER_DESC desc{};
+    desc.Usage = D3D11_USAGE_DYNAMIC;
+    desc.ByteWidth = sizeof(ParticleInstance) * maxParticleInstances;
+    desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+    ComPtr<ID3D11Buffer> newBuffer;
+    HRESULT hr = D3D::device->CreateBuffer(&desc, nullptr, newBuffer.GetAddressOf());
+    assert(SUCCEEDED(hr));
+
+    instanceBuffer = newBuffer;
 }
 
 void ParticleRenderer::ParticlePass(Camera& camera, const vector<Effect>& effects)
@@ -120,6 +143,9 @@ void ParticleRenderer::ParticlePass(Camera& camera, const vector<Effect>& effect
             }
 
             if (instances.empty()) continue;
+
+            // instance buffer capacity
+            EnsureInstanceCapacity((UINT)instances.size());
 
             // Map
             D3D11_MAPPED_SUBRESOURCE mapped{};

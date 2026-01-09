@@ -1,11 +1,11 @@
-﻿#include "App.h"
+﻿#define NOMINMAX        // min, max
+#include "App.h"
 #include "../WinBase/D3D.h"
 #include "../WinBase/Helper.h"
 #include "../WinBase/AssetManager.h"
 #include <d3dcompiler.h>
 #include <Directxtk/DDSTextureLoader.h>
 #include <iostream>
-
 #pragma comment(lib,"dxgi.lib")
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib, "dxguid.lib") 
@@ -706,6 +706,146 @@ void App::RenderGUI()
         ImGui::SliderAngle("Yaw", &skeletal_models[0]->rotation.y, 0.0f, 360.0f);
         ImGui::SliderAngle("Roll", &skeletal_models[0]->rotation.z, 0.0f, 360.0f);
         ImGui::InputFloat3("scale", &skeletal_models[0]->scale.x);
+        ImGui::End();
+}
+
+    // Effect
+    {
+        ImGui::Begin("[Effect]");
+        ImGui::Text("[Effect]");
+
+        if (effects.empty())
+        {
+            ImGui::TextDisabled("No Effects.");
+            ImGui::End();
+        }
+        else
+        {
+            static int fxIndex = 0;
+            if (fxIndex < 0) fxIndex = 0;
+            if (fxIndex >= (int)effects.size()) fxIndex = (int)effects.size() - 1;
+
+            ImGui::SliderInt("Effect Index", &fxIndex, 0, (int)effects.size() - 1);
+            Effect& fx = effects[fxIndex];
+
+            // Effect
+            if (ImGui::Button("Play")) fx.Play();
+            ImGui::SameLine();
+            if (ImGui::Button("Stop")) fx.Stop();
+            ImGui::Checkbox("Enabled", &fx.enabled);
+
+            ImGui::SameLine();
+            ImGui::Checkbox("Looping", &fx.looping);
+            ImGui::InputFloat3("FX Position", &fx.position.x);
+
+            // Emitter
+            ImGui::Text("");
+            ImGui::Separator();
+            ImGui::Text("[Emitter]");
+            ImGui::Text("Emitters: %d", (int)fx.emitters.size());
+            
+            if (fx.emitters.empty())
+            {
+                ImGui::TextDisabled("No emitters in this effect.");
+                ImGui::End();
+            }
+            else
+            {
+                static int emIndex = 0;
+                if (emIndex < 0) emIndex = 0;
+                if (emIndex >= (int)fx.emitters.size()) emIndex = (int)fx.emitters.size() - 1;
+
+                ImGui::SliderInt("Emitter Index", &emIndex, 0, (int)fx.emitters.size() - 1);
+                Emitter& em = fx.emitters[emIndex];
+
+                ImGui::Checkbox("Emitter Enabled", &em.enabled);
+                ImGui::SameLine();
+                ImGui::Checkbox("Emitter Playing", &em.playing);
+
+                ImGui::Text("Alive Particles: %d", (int)em.particles.size());
+
+                ImGui::InputFloat3("Emitter Position", &em.position.x);
+                ImGui::InputFloat3("Local Offset", &em.localOffset.x);
+
+                // Billboard
+                {
+                    ImGui::Text("");
+                    ImGui::Text("Billboard");
+                    int bb = (int)em.billboard;
+                    const char* bbItems[] = { "ScreenFacing", "YAxis" };
+                    ImGui::SetNextItemWidth(160.0f);
+                    if (ImGui::Combo("Billboard", &bb, bbItems, IM_ARRAYSIZE(bbItems)))
+                        em.billboard = (BillboardType)bb;
+                }
+
+                // Emission
+                ImGui::Text("");
+                ImGui::Text("Emission");
+                ImGui::DragInt("MaxParticles", &em.maxParticles, 1, 1, 100000);
+                ImGui::DragFloat("EmitRate", &em.emitRate, 0.1f, 0.0f, 100000.0f);
+                ImGui::DragInt("BurstCount", &em.burstCount, 1, 0, 100000);
+                ImGui::DragFloat("Duration", &em.duration, 0.01f, 0.0f, 999999.0f);
+                ImGui::Checkbox("Emission Looping", &em.looping);
+
+                // Dynamic Mode
+                if (em.particleMode == ParticleMode::Dynamic)
+                {
+                    ImGui::SeparatorText("Dynamic Spawn Range Init Data");
+
+                    ImGui::DragFloat("LifeMin", &em.dynamicData.lifeMin, 0.01f, 0.0f, 999999.0f);
+                    ImGui::DragFloat("LifeMax", &em.dynamicData.lifeMax, 0.01f, 0.0f, 999999.0f);
+
+                    ImGui::DragFloat("SpeedMin", &em.dynamicData.speedMin, 0.01f, 0.0f, 999999.0f);
+                    ImGui::DragFloat("SpeedMax", &em.dynamicData.speedMax, 0.01f, 0.0f, 999999.0f);
+
+                    ImGui::DragFloat2("SizeMin", &em.dynamicData.sizeMin.x, 0.1f, 0.0f, 999999.0f);
+                    ImGui::DragFloat2("SizeMax", &em.dynamicData.sizeMax.x, 0.1f, 0.0f, 999999.0f);
+
+                    ImGui::DragFloat("RotMin", &em.dynamicData.rotationMin, 0.01f, -1000.0f, 1000.0f);
+                    ImGui::DragFloat("RotMax", &em.dynamicData.rotationMax, 0.01f, -1000.0f, 1000.0f);
+
+                    ImGui::DragFloat("AngularMin", &em.dynamicData.angularMin, 0.01f, -1000.0f, 1000.0f);
+                    ImGui::DragFloat("AngularMax", &em.dynamicData.angularMax, 0.01f, -1000.0f, 1000.0f);
+
+                    ImGui::ColorEdit4("StartColor", &em.dynamicData.startColor.x);
+
+                    // 방어: min/max 뒤집힘 방지(선택)
+                    if (em.dynamicData.lifeMin > em.dynamicData.lifeMax) em.dynamicData.lifeMin = em.dynamicData.lifeMax;
+                    if (em.dynamicData.speedMin > em.dynamicData.speedMax) em.dynamicData.speedMin = em.dynamicData.speedMax;
+                }
+                if (em.particleMode == ParticleMode::Fixed)
+                {
+                    ImGui::SeparatorText("Fixed Init Data (Single Quad)");
+
+                    ImGui::DragFloat2("Size", &em.fixedData.size.x, 0.1f, 0.0f, 999999.0f);
+                    ImGui::DragFloat("Rotation", &em.fixedData.rotation, 0.01f, -1000.0f, 1000.0f);
+                    ImGui::ColorEdit4("StartColor", &em.fixedData.startColor.x);
+
+                    // Play Mode
+                    {
+                        int m = (int)em.filpbookPlayMode;
+                        const char* items[] = { "Once_Then_Die", "Once_Then_Hold", "Loop" };
+                        ImGui::SetNextItemWidth(200.0f);
+                        if (ImGui::Combo("Flipbook PlayMode", &m, items, IM_ARRAYSIZE(items)))
+                            em.filpbookPlayMode = (FlipbookPlayMode)m;
+                    }
+
+                    ImGui::DragFloat("HoldTime", &em.holdTime, 0.01f, 0.0f, 9999.0f);
+                    ImGui::DragFloat("InfiniteLife", &em.infinite, 1.0f, 0.0f, 9999999.0f);
+                }
+
+                if (ImGui::Button("Clear")) em.particles.clear();
+
+                // SpriteSheet
+                ImGui::SeparatorText("SpriteSheet");
+                ImGui::DragInt("Cols", &em.sheet.cols, 1, 1, 256);
+                ImGui::DragInt("Rows", &em.sheet.rows, 1, 1, 256);
+                ImGui::DragInt("FrameCount", &em.sheet.frameCount, 1, 1, em.sheet.cols * em.sheet.rows);
+                ImGui::DragFloat("FPS", &em.sheet.fps, 0.1f, 0.0f, 240.0f);
+                ImGui::DragFloat("BaseSizeScale", &em.sheet.baseSizeScale, 0.01f, 0.0f, 1000.0f);
+            }
+        }
+
         ImGui::End();
     }
 

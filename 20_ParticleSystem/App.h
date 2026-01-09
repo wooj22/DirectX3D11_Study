@@ -64,7 +64,11 @@ using namespace DirectX::SimpleMath;
 * 
 *   단일 쿼드 Filpbook Effect와 다른 점은 Emitter 개념의 도입입니다.
 *   Effect는 여러 Emitter를 가지며, 각 Emitter가 지정된 규칙에 따라 particle을 매 프레임 Spawn, Update 합니다.
-*   
+*   Emitter에는 Fixed Mode와 Dynamic Mode가 있습니다.
+*   기본 Dynamic Mode(particle system)이며, 
+*   Filpbook Effect를 만들고 싶을 경우 Fixed 모드를 지정하고 fixedData에 값을 할당하면 됩니다.
+*   자세한 설명은 Emitter.h를 읽어주세용
+* 
 *  
 *  [ Effect Back-to-Front Sorting ] 
 *  

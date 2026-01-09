@@ -3,7 +3,7 @@
 #include <vector>
 using std::vector;
 
-// 아직 하드한 부분이 많지만.. 기억하고 그냥 사용하도록 하겠습니ㅏㄷ.
+// 하드한 부분이 많지만...
 
 /*
     [ Emitter ]
@@ -68,8 +68,8 @@ enum class BillboardType
 
 enum class ParticleMode
 {
-    Fixed,               // 고정 생성, 모션 x     -> filpbook Effect
-    Dynamic              // Random 생성, 모션 o   -> particle system
+    Dynamic,            // Random 생성, 모션 o   -> particle system
+    Fixed               // 고정 생성, 모션 x     -> filpbook Effect
 };
 
 enum class FlipbookPlayMode
