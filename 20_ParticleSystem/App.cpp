@@ -301,183 +301,153 @@ bool App::InitResource()
 
     // effect
     {
-        // 1. Filpbook (1 particle)
+        // 1. Filpbook Effect (1 particle)
         {
-            Effect e1{};
-            e1.enabled = true;
-            e1.playing = true;
-            e1.looping = true;
-            e1.position = { -200.0f, 130.0f, 80.0f };
+            Effect fx{};
+            fx.position = { -200.0f, 130.0f, 80.0f };
+            fx.enabled = true;
 
-            Emitter em1{};
-            em1.enabled = true;
-            em1.playing = true;
-            em1.looping = false;
-            em1.duration = 10.0f;
-            em1.maxParticles = 256;
-            em1.localOffset = Vector3::Zero;
-            em1.billboard = BillboardType::YAxis;
+            // Emitter
+            Emitter e{};
+            e.enabled = true;
+            e.maxParticles = 1;
+            e.burstCount = 1;
+            e.billboard = BillboardType::YAxis;
 
-            em1.emitRate = 0.0f;
-            em1.burstCount = 1;
+            e.particleMode = ParticleMode::Fixed;
+            e.fixedData.size = { 50.0f, 60.0f };
+            e.fixedData.rotation = 0.0f;
+            e.fixedData.startColor = { 1,1,1,1 };
 
-            em1.lifeMin = 10.0f;
-            em1.lifeMax = 10.0f;
-            em1.speedMin = 0.0f;
-            em1.speedMax = 0.0f;
-            em1.sizeMin = { 50.0f, 60.0f };
-            em1.sizeMax = { 50.0f, 60.0f };
-            em1.rotationMin = 0.0f;
-            em1.rotationMax = 0.0f;
-            em1.angularMin = 0.0f;
-            em1.angularMax = 0.0f;
+            e.filpbookPlayMode = FlipbookPlayMode::Loop;
+            e.infinite = 300;
 
-            em1.sheet.cols = 16;
-            em1.sheet.rows = 4;
-            em1.sheet.frameCount = em1.sheet.cols * em1.sheet.rows;
-            em1.sheet.frameAnimation = true;
-            em1.sheet.fps = 24.0f;
-            em1.sheet.baseSizeScale = 5.0f;
+            // Sheet
+            e.sheet.cols = 16;
+            e.sheet.rows = 4;
+            e.sheet.frameCount = e.sheet.cols * e.sheet.rows;
+            e.sheet.loop = true;
+            e.sheet.fps = 24.0f;
+            e.sheet.baseSizeScale = 5.0f;
 
             const wchar_t* path = L"../Resource/SpriteSheet/DiscSmoke01_16x4.tga";
-            CreateTextureFromFile(D3D::device.Get(), path, em1.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
-            assert(em1.sheet.srv != nullptr);
+            CreateTextureFromFile(D3D::device.Get(), path, e.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
+            assert(e.sheet.srv != nullptr);
 
-            e1.emitters.push_back(em1);
-            effects.push_back(e1);
+            fx.emitters.push_back(e);
+            effects.push_back(fx);
             effects.back().Play();
         }
 
-        // 2. Filpbook (1 particle)
-        {
-            Effect e2{};
-            e2.enabled = true;
-            e2.playing = true;
-            e2.looping = true;
-            e2.position = { 0.0f, 130.0f, 80.0f };
-
-            Emitter em2{};
-            em2.enabled = true;
-            em2.playing = true;
-            em2.looping = false;
-            em2.duration = 10.0f;
-            em2.maxParticles = 256;
-            em2.localOffset = Vector3::Zero;
-            em2.billboard = BillboardType::YAxis;
-
-            em2.emitRate = 0.0f;
-            em2.burstCount = 1; 
-
-            em2.lifeMin = 10.0f;
-            em2.lifeMax = 10.0f;
-            em2.speedMin = 0.0f;
-            em2.speedMax = 0.0f;
-            em2.sizeMin = { 50.0f, 60.0f };
-            em2.sizeMax = { 50.0f, 60.0f };
-            em2.rotationMin = 0.0f;
-            em2.rotationMax = 0.0f;
-            em2.angularMin = 0.0f;
-            em2.angularMax = 0.0f;
-
-            em2.sheet.cols = 16;
-            em2.sheet.rows = 4;
-            em2.sheet.frameCount = em2.sheet.cols * em2.sheet.rows;
-            em2.sheet.frameAnimation = true;
-            em2.sheet.fps = 24.0f;
-            em2.sheet.baseSizeScale = 5.0f;
-
-            const wchar_t* path2 = L"../Resource/SpriteSheet/Flame03_16x4.tga";
-            CreateTextureFromFile(D3D::device.Get(), path2, em2.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
-            assert(em2.sheet.srv != nullptr);
-
-            e2.emitters.push_back(em2);
-            effects.push_back(e2);
-            effects.back().Play();
-        }
-
-        // 3. Filpbook (1 particle)
-        {
-            Effect e3{};
-            e3.enabled = true;
-            e3.playing = true;
-            e3.looping = true;
-            e3.position = { 150.0f, 130.0f, 80.0f };
-
-            Emitter em3{};
-            em3.enabled = true;
-            em3.playing = true;
-            em3.looping = false;
-            em3.duration = 10.0f;
-            em3.maxParticles = 256;
-            em3.localOffset = Vector3::Zero;
-            em3.billboard = BillboardType::ScreenFacing;
-
-            em3.emitRate = 0.0f;     
-            em3.burstCount = 1;      
-
-            em3.lifeMin = 10.0f;
-            em3.lifeMax = 10.0f;
-            em3.speedMin = 0.0f;
-            em3.speedMax = 0.0f;
-            em3.sizeMin = { 50.0f, 60.0f };
-            em3.sizeMax = { 50.0f, 60.0f };
-            em3.rotationMin = 0.0f;
-            em3.rotationMax = 0.0f;
-            em3.angularMin = 0.0f;
-            em3.angularMax = 0.0f;
-
-            em3.sheet.cols = 5;
-            em3.sheet.rows = 5;
-            em3.sheet.frameCount = em3.sheet.cols * em3.sheet.rows;
-            em3.sheet.frameAnimation = true;
-            em3.sheet.fps = 24.0f;
-            em3.sheet.baseSizeScale = 5.0f;
-
-            const wchar_t* path3 = L"../Resource/SpriteSheet/Explosion00_5x5.tga";
-            CreateTextureFromFile(D3D::device.Get(), path3, em3.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
-            assert(em3.sheet.srv != nullptr);
-
-            e3.emitters.push_back(em3);
-            effects.push_back(e3);
-            effects.back().Play();
-        }
-
-        // 4. N particle Spawn Emitter
+        // 2. Filpbook Effect (1 particle)
         {
             Effect fx{};
             fx.enabled = true;
-            fx.playing = true;
+            fx.position = { 0.0f, 130.0f, 80.0f };
+
+            // Emitter
+            Emitter e{};
+            e.enabled = true;
+            e.maxParticles = 1;
+            e.burstCount = 1;
+            e.billboard = BillboardType::YAxis;
+
+            e.particleMode = ParticleMode::Fixed;
+            e.fixedData.size = { 50.0f, 60.0f };
+            e.fixedData.rotation = 0.0f;
+            e.fixedData.startColor = { 1,1,1,1 };
+
+            e.filpbookPlayMode = FlipbookPlayMode::Loop;
+            e.infinite = 300;
+
+            // Sheet
+            e.sheet.cols = 16;
+            e.sheet.rows = 4;
+            e.sheet.frameCount = e.sheet.cols * e.sheet.rows;
+            e.sheet.loop = true;
+            e.sheet.fps = 24.0f;
+            e.sheet.baseSizeScale = 5.0f;
+
+            const wchar_t* path2 = L"../Resource/SpriteSheet/Flame03_16x4.tga";
+            CreateTextureFromFile(D3D::device.Get(), path2, e.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
+            assert(e.sheet.srv != nullptr);
+
+            fx.emitters.push_back(e);
+            effects.push_back(fx);
+            effects.back().Play();
+        }
+
+        // 3. Filpbook Effect (1 particle)
+        {
+            Effect fx{};
+            fx.enabled = true;
+            fx.position = { 150.0f, 130.0f, 80.0f };
+
+            // Emitter
+            Emitter e{};
+            e.enabled = true;
+            e.maxParticles = 1;
+            e.burstCount = 1;
+            e.billboard = BillboardType::ScreenFacing;
+
+            e.particleMode = ParticleMode::Fixed;
+            e.fixedData.size = { 50.0f, 60.0f };
+            e.fixedData.rotation = 0.0f;
+            e.fixedData.startColor = { 1,1,1,1 };
+
+            e.filpbookPlayMode = FlipbookPlayMode::Loop;
+            e.infinite = 300;
+
+            // Sheet
+            e.sheet.cols = 5;
+            e.sheet.rows = 5;
+            e.sheet.frameCount = e.sheet.cols * e.sheet.rows;
+            e.sheet.loop = true;
+            e.sheet.fps = 24.0f;
+            e.sheet.baseSizeScale = 5.0f;
+
+            const wchar_t* path3 = L"../Resource/SpriteSheet/Explosion00_5x5.tga";
+            CreateTextureFromFile(D3D::device.Get(), path3, e.sheet.srv.GetAddressOf(), TextureColorSpace::SRGB);
+            assert(e.sheet.srv != nullptr);
+
+            fx.emitters.push_back(e);
+            effects.push_back(fx);
+            effects.back().Play();
+        }
+
+        // 4. Dynamic Particle (N particle)
+        {
+            Effect fx{};
+            fx.enabled = true;
             fx.looping = true;                     
             fx.position = { 400.0f, 130.0f, 300.0f };
 
-            // emitter
+            // Emitter
             Emitter em{};
             em.enabled = true;
-            em.playing = true;
-            em.looping = true;
-            em.duration = 0.0f;
-            em.maxParticles = 256;
-            em.localOffset = Vector3::Zero;
+            em.duration = 0.0f;     // 무한
+            em.looping = true;      // 반복
             em.billboard = BillboardType::ScreenFacing;
 
             em.emitRate = 10.0f;
-            em.burstCount = 0;
+            em.burstCount = 10;
 
-            em.lifeMin = 5.0f;
-            em.lifeMax = 10.0f;
-            em.speedMin = 20.0f;
-            em.speedMax = 40.0f;
-            em.sizeMin = { 20.0f, 20.0f };
-            em.sizeMax = { 20.0f, 20.0f };
-            em.rotationMin = 0.0f;
-            em.rotationMax = 6.0f;
-            em.angularMin = 0.0f;
-            em.angularMax = 0.0f;
+            em.dynamicData.lifeMin = 5.0f;
+            em.dynamicData.lifeMax = 10.0f;
+            em.dynamicData.speedMin = 20.0f;
+            em.dynamicData.speedMax = 40.0f;
+            em.dynamicData.sizeMin = { 20.0f, 20.0f };
+            em.dynamicData.sizeMax = { 20.0f, 20.0f };
+            em.dynamicData.rotationMin = 0.0f;
+            em.dynamicData.rotationMax = 6.0f;
+            em.dynamicData.angularMin = 0.0f;
+            em.dynamicData.angularMax = 0.0f;
 
+            // Sheet
             em.sheet.cols = 1;
             em.sheet.rows = 1;
             em.sheet.frameCount = 1;
-            em.sheet.frameAnimation = false;
+            em.sheet.loop = false;
             em.sheet.fps = 0.0f;
             em.sheet.baseSizeScale = 1.0f;
 
@@ -490,42 +460,39 @@ bool App::InitResource()
             effects.back().Play();
         }
 
-        // 5. N particle Spawn Emitter
+        // 5. Dynamic Particle (N particle)
         {
             Effect fx{};
             fx.enabled = true;
-            fx.playing = true;
             fx.looping = true;
             fx.position = { 700.0f, 130.0f, 300.0f };
 
             // emitter
             Emitter em{};
             em.enabled = true;
-            em.playing = true;
-            em.looping = true;
-            em.duration = 0.0f;
-            em.maxParticles = 256;
-            em.localOffset = Vector3::Zero;
+            em.duration = 0.0f;     // 무한
+            em.looping = true;      // 반복
             em.billboard = BillboardType::ScreenFacing;
 
             em.emitRate = 10.0f;
             em.burstCount = 0;
 
-            em.lifeMin = 5.0f;
-            em.lifeMax = 10.0f;
-            em.speedMin = 20.0f;
-            em.speedMax = 40.0f;
-            em.sizeMin = { 20.0f, 20.0f };
-            em.sizeMax = { 20.0f, 20.0f };
-            em.rotationMin = 0.0f;
-            em.rotationMax = 6.0f;
-            em.angularMin = 0.0f;
-            em.angularMax = 0.0f;
+            em.dynamicData.lifeMin = 5.0f;
+            em.dynamicData.lifeMax = 10.0f;
+            em.dynamicData.speedMin = 20.0f;
+            em.dynamicData.speedMax = 40.0f;
+            em.dynamicData.sizeMin = { 20.0f, 20.0f };
+            em.dynamicData.sizeMax = { 20.0f, 20.0f };
+            em.dynamicData.rotationMin = 0.0f;
+            em.dynamicData.rotationMax = 0.0f;
+            em.dynamicData.angularMin = -10.0f;
+            em.dynamicData.angularMax = 10.0f;
 
+            // Sheet
             em.sheet.cols = 1;
             em.sheet.rows = 1;
             em.sheet.frameCount = 1;
-            em.sheet.frameAnimation = false;
+            em.sheet.loop = false;
             em.sheet.fps = 0.0f;
             em.sheet.baseSizeScale = 1.0f;
 

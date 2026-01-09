@@ -53,8 +53,28 @@ using namespace DirectX::SimpleMath;
 *   11. Frustum Debug Draw
 *   12. GUI Draw
 *
-*
-*
+* 
+*  [ Effect 구조 ]
+* 
+*   Effect
+*       L vector<Emitter> : 파티클 생성 규칙
+*   Emitter 
+*       L SpriteSheet 1
+*       L vector<Particle>
+* 
+*   단일 쿼드 Filpbook Effect와 다른 점은 Emitter 개념의 도입입니다.
+*   Effect는 여러 Emitter를 가지며, 각 Emitter가 지정된 규칙에 따라 particle을 매 프레임 Spawn, Update 합니다.
+*   
+*  
+*  [ Effect Back-to-Front Sorting ] 
+*  
+*   Particle Render는 Depth Test Only로 진행됩니다.
+*   때문에 DrawCall을 카메라에 멀리있는 이펙트 순서대로 진행해야합니다.
+*   조금 더 제대로 가면 Emitter 단위로 sorting해야하지만,
+*   아마도 그렇게 복잡한 Effect를 제작하지 않을 것 같아서
+*   Effect단위로만 정렬 후 render 하고 있습니다. (매 프레임 sort)
+* 
+* 
 *  [ Particle Local Batcing ]
 *
 *   기하 단위(Quad)로 Draw Call하지 않고,
@@ -63,8 +83,8 @@ using namespace DirectX::SimpleMath;
 *   - Vertex (ParticleQuadVertex) : Quad 기하 Data
 *   - Instance (ParticleInstance) : 매 프레임 살아있는 파티클의 상태 정보를 Update하는 Buffer Data
 *   => DrawIndexedInstanced
-*
-*
+
+
 *  [ Billboard Mode ]
 *   1.  ScreenFacing  : Quad의 정면이 항상 카메라를 수직으로 바라봅니다.
 *   2.  YAxis         : Y축을 고정하여 카메라의 좌우 이동, 회전에만 반응합니다.

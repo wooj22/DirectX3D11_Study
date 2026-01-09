@@ -2,40 +2,48 @@
 #include "Emitter.h"
 #include "Time.h"
 #include <algorithm>
+#include <directxtk/simplemath.h>
+using namespace DirectX::SimpleMath;
+
 
 void Emitter::Update()
 {
     float dt = Time::GetDeltaTime();
     elapsed += dt;
 
-    // duration
-    if (duration > 0.0f && elapsed >= duration)
+    // Dynamic Emitter Life Cheak
+    if (particleMode == ParticleMode::Dynamic)
     {
-        if (looping)
+        // duration
+        if (duration > 0.0f && elapsed >= duration)
         {
-            elapsed = 0.0f;
-            emitAcc = 0.0f;
+            if (looping)
+            {
+                elapsed = 0.0f;
+                emitAcc = 0.0f;
+            }
+            else
+            {
+                playing = false;    // spawn stop
+            }
         }
-        else
+
+        // emission
+        bool canEmit = (duration <= 0.0f) || (elapsed < duration) || looping;
+        if (canEmit && emitRate > 0.0f)
         {
-            playing = false;    // spawn stop
+            emitAcc += emitRate * dt;
+            int toSpawn = (int)emitAcc;
+            if (toSpawn > 0)
+            {
+                emitAcc -= (float)toSpawn;
+                Spawn(toSpawn);
+            }
         }
     }
 
-    // emission
-    bool canEmit = (duration <= 0.0f) || (elapsed < duration) || looping;
-    if (canEmit && emitRate > 0.0f)
-    {
-        emitAcc += emitRate * dt;
-        int toSpawn = (int)emitAcc;
-        if (toSpawn > 0)
-        {
-            emitAcc -= (float)toSpawn;
-            Spawn(toSpawn);
-        }
-    }
 
-    // particle udpate
+    // Particle Update
     for (auto& p : particles)
     {
         if (!p.alive) continue;
@@ -49,36 +57,37 @@ void Emitter::Update()
         }
 
         // motion
-        p.pos += p.vel * dt;
-        p.rotation += p.angularVel * dt;
-
-        // color
-        if (!sheet.frameAnimation)
+        if(particleMode == ParticleMode::Dynamic)
         {
+            // motion
+            p.pos += p.vel * dt;
+            p.rotation += p.angularVel * dt;
+
+            // alpha fade
             float t = p.age / p.life;
             t = std::clamp(t, 0.0f, 1.0f);
-
             float a = 1.0f - t;
             a = a * a;
-
-            p.color.w = startColor.w * a;
+            p.color.w = dynamicData.startColor.w * a;
         }
-        
 
         // frame (filpbook)
         if (sheet.fps > 0.0f && sheet.frameCount > 1)
         {
             int f = (int)(p.age * sheet.fps);
 
-            if (sheet.frameAnimation)
+            bool loopFrames =
+                (filpbookPlayMode == FlipbookPlayMode::Loop)
+                ? true : sheet.loop;
+
+            if (loopFrames)
             {
                 f %= sheet.frameCount;
                 if (f < 0) f += sheet.frameCount;
             }
             else
             {
-                if (f < 0) f = 0;
-                if (f > sheet.frameCount - 1) f = sheet.frameCount - 1;
+                f = std::clamp(f, 0, sheet.frameCount - 1);
             }
 
             p.frame = f;
@@ -101,6 +110,13 @@ void Emitter::Update()
         }
         ++i;
     }
+
+    // Fixed Emitter Life Cheak
+    if (particleMode == ParticleMode::Fixed)
+    {
+        if (particles.empty())
+            playing = false;
+    }
 }
 
 void Emitter::Spawn(int count)
@@ -108,10 +124,9 @@ void Emitter::Spawn(int count)
     if (count <= 0) return;
     if (!enabled || !playing) return;
 
-    // limit
+    // spawn count limit
     int available = maxParticles - (int)particles.size();
     if (available <= 0) return;
-
     count = std::min(count, available);
 
     // reserve
@@ -121,31 +136,56 @@ void Emitter::Spawn(int count)
     for (int i = 0; i < count; ++i)
     {
         Particle p{};
-
         p.alive = true;
         p.age = 0.0f;
-        p.life = RandRange(lifeMin, lifeMax);
-        if (p.life <= 0.0f) p.life = 0.01f;
-
+        p.frame = 0;
         p.pos = position;
 
-        // velocity
-        float speed = RandRange(speedMin, speedMax);
-        Vector3 dir = RandomUnitVector3();
-        p.vel = dir * speed;
+        if (particleMode == ParticleMode::Dynamic)
+        {
+            // life
+            p.life = RandRange(dynamicData.lifeMin, dynamicData.lifeMax);
+            if (p.life <= 0.0f) p.life = 0.01f;
 
-        // size / rotation
-        p.size.x = RandRange(sizeMin.x, sizeMax.x);
-        p.size.y = RandRange(sizeMin.y, sizeMax.y);
+            // velocity
+            float speed = RandRange(dynamicData.speedMin, dynamicData.speedMax);
+            Vector3 dir = RandomUnitVector3();
+            p.vel = dir * speed;
 
-        p.rotation = RandRange(rotationMin, rotationMax);
-        p.angularVel = RandRange(angularMin, angularMax);
+            // size
+            p.size.x = RandRange(dynamicData.sizeMin.x, dynamicData.sizeMax.x);
+            p.size.y = RandRange(dynamicData.sizeMin.y, dynamicData.sizeMax.y);
 
-        // color
-        p.color = startColor;
+            // rotation
+            p.rotation = RandRange(dynamicData.rotationMin, dynamicData.rotationMax);
+            p.angularVel = RandRange(dynamicData.angularMin, dynamicData.angularMax);
 
-        // flipbook start frame
-        p.frame = 0;
+            // color
+            p.color = dynamicData.startColor;
+        }
+        else if (particleMode == ParticleMode::Fixed)
+        {
+            p.rotation = fixedData.rotation;
+            p.size = fixedData.size;
+            p.color = fixedData.startColor;
+
+            // life
+            float anim = sheet.GetFilpbookDuration();
+            switch (filpbookPlayMode)
+            {
+            case FlipbookPlayMode::Once_Then_Die:
+                p.life = anim;
+                break;
+
+            case FlipbookPlayMode::Once_Then_Hold:
+                p.life = anim + holdTime;
+                break;
+
+            case FlipbookPlayMode::Loop:
+                p.life = infinite;
+                break;
+            }
+        }
 
         particles.push_back(p);
     }

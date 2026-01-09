@@ -5,14 +5,14 @@
 void Effect::Play()
 {
     playing = true;
+
     for (auto& e : emitters)
     {
         e.playing = true;
+        e.position = position + e.localOffset;
         e.elapsed = 0.0f;
         e.emitAcc = 0.0f;
         e.particles.clear();
-
-        e.position = position + e.localOffset;
 
         // burst
         if (e.burstCount > 0)
