@@ -420,7 +420,7 @@ bool App::InitResource()
             Effect fx{};
             fx.enabled = true;
             fx.looping = true;                     
-            fx.position = { -150.0f, 130.0f, 100.0f };
+            fx.position = { -10.0f, 200.0f, 0.0f };
 
             // Emitter
             Emitter em{};
@@ -430,13 +430,13 @@ bool App::InitResource()
             em.billboard = BillboardType::ScreenFacing;
 
             em.emitRate = 10.0f;
-            em.burstCount = 10;
+            em.burstCount = 30;
 
-            em.dynamicData.lifeMin = 5.0f;
-            em.dynamicData.lifeMax = 10.0f;
+            em.dynamicData.lifeMin = 15.0f;
+            em.dynamicData.lifeMax = 120.0f;
             em.dynamicData.speedMin = 20.0f;
             em.dynamicData.speedMax = 40.0f;
-            em.dynamicData.sizeMin = { 20.0f, 20.0f };
+            em.dynamicData.sizeMin = { 15.0f, 15.0f };
             em.dynamicData.sizeMax = { 20.0f, 20.0f };
             em.dynamicData.rotationMin = 0.0f;
             em.dynamicData.rotationMax = 6.0f;
@@ -444,6 +444,10 @@ bool App::InitResource()
             em.dynamicData.angularMax = 0.0f;
             em.dynamicData.colorMin = { 1,1,1,1 };
             em.dynamicData.colorMax = { 1,1,1,1 };
+
+            em.velocityShape = VelocityShape::Cone;
+            em.emitDir = Vector3::Down;
+            em.coneAngleDeg = 50.0f;
 
             // Sheet
             em.sheet.cols = 1;
@@ -467,7 +471,7 @@ bool App::InitResource()
             Effect fx{};
             fx.enabled = true;
             fx.looping = true;
-            fx.position = { 0.0f, 130.0f, 100.0f };
+            fx.position = { 500.0f, 130.0f, 100.0f };
 
             // emitter
             Emitter em{};
@@ -766,7 +770,7 @@ void App::RenderGUI()
 
                 ImGui::Text("Alive Particles: %d", (int)em.particles.size());
 
-                ImGui::InputFloat3("Emitter Position", &em.position.x);
+                ImGui::InputFloat3("Emitter Position(Dont Change)", &em.position.x);
                 ImGui::InputFloat3("Local Offset", &em.localOffset.x);
 
                 // Billboard

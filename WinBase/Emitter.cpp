@@ -2,6 +2,10 @@
 #include "Emitter.h"
 #include "Time.h"
 #include <algorithm>
+
+#include <DirectXMath.h>
+using namespace DirectX;
+
 #include <directxtk/simplemath.h>
 using namespace DirectX::SimpleMath;
 
@@ -151,9 +155,29 @@ void Emitter::Spawn(int count)
             p.life = RandRange(dynamicData.lifeMin, dynamicData.lifeMax);
             if (p.life <= 0.0f) p.life = 0.01f;
 
-            // velocity
+            // velocity (for shape)
             float speed = RandRange(dynamicData.speedMin, dynamicData.speedMax);
-            Vector3 dir = RandomUnitVector3();
+            Vector3 dir;
+
+            switch (velocityShape)
+            {
+            case VelocityShape::Sphere:
+                dir = RandomUnitVector3();
+                break;
+
+            case VelocityShape::Directional:
+                dir = emitDir;
+                dir.Normalize();
+                break;
+
+            case VelocityShape::Cone:
+                dir = RandomDirectionInCone(emitDir, coneAngleDeg);
+                break;
+
+            case VelocityShape::Disk:
+                dir = RandomDirectionOnPlane(emitDir);
+                break;
+            }
             p.vel = dir * speed;
 
             // size
@@ -218,6 +242,71 @@ Vector3 RandomUnitVector3()
 
     v.Normalize();
     return v;
+}
+
+Vector3 RandomDirectionInCone(const Vector3& axis, float angleDeg)
+{
+    Vector3 n = axis;
+    if (n.LengthSquared() < 1e-6f)
+        n = Vector3::Up;
+    n.Normalize();
+
+    // cone half-angle (rad)
+    float angleRad = XMConvertToRadians(angleDeg);
+
+    // cos(theta) 범위
+    float cosMax = cosf(angleRad);
+    float cosTheta = RandRange(cosMax, 1.0f);
+    float sinTheta = sqrtf(1.0f - cosTheta * cosTheta);
+
+    // 원뿔 원주 각
+    float phi = RandRange(0.0f, XM_2PI);
+
+    // axis에 수직인 basis 생성
+    Vector3 tangent;
+    if (fabsf(n.y) < 0.999f)
+        tangent = n.Cross(Vector3::Up);
+    else
+        tangent = n.Cross(Vector3::Right);
+    tangent.Normalize();
+
+    Vector3 bitangent = n.Cross(tangent);
+
+    // 방향 합성
+    Vector3 dir =
+        tangent * (cosf(phi) * sinTheta) +
+        bitangent * (sinf(phi) * sinTheta) +
+        n * cosTheta;
+
+    dir.Normalize();
+    return dir;
+}
+
+Vector3 RandomDirectionOnPlane(const Vector3& normal)
+{
+    Vector3 n = normal;
+    if (n.LengthSquared() < 1e-6f)
+        n = Vector3::Up;
+    n.Normalize();
+
+    // normal에 수직인 basis
+    Vector3 tangent;
+    if (fabsf(n.y) < 0.999f)
+        tangent = n.Cross(Vector3::Up);
+    else
+        tangent = n.Cross(Vector3::Right);
+    tangent.Normalize();
+
+    Vector3 bitangent = n.Cross(tangent);
+
+    float angle = RandRange(0.0f, XM_2PI);
+
+    Vector3 dir =
+        tangent * cosf(angle) +
+        bitangent * sinf(angle);
+
+    dir.Normalize();
+    return dir;
 }
 
 Vector4 RandRange(const Vector4& a, const Vector4& b)

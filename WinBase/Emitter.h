@@ -79,6 +79,14 @@ enum class FlipbookPlayMode
     Loop                 // 계속 반복
 };
 
+enum class VelocityShape
+{
+    Sphere,        // 구
+    Directional,   // 한 방향
+    Cone,          // 원뿔
+    Disk           // 평면
+};
+
 struct SpawnDynamic
 {
     float   lifeMin = 0.5f;
@@ -137,6 +145,11 @@ public:
     SpawnDynamic dynamicData;
     SpawnFixed   fixedData;
 
+    // dynamic shape
+    VelocityShape velocityShape = VelocityShape::Sphere;
+    Vector3       emitDir = Vector3::Up; 
+    float         coneAngleDeg = 30.0f;    
+
     // Filpbook particle life 특수 처리 ⭐
     FlipbookPlayMode filpbookPlayMode = FlipbookPlayMode::Loop;
     float holdTime = 5.0f;
@@ -151,4 +164,6 @@ public:
 float Rand01();
 float RandRange(float a, float b);
 Vector3 RandomUnitVector3();
+Vector3 RandomDirectionInCone(const Vector3& axis, float angleDeg);
+Vector3 RandomDirectionOnPlane(const Vector3& normal);
 Vector4 RandRange(const Vector4& a, const Vector4& b);
