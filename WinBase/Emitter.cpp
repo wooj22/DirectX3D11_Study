@@ -68,7 +68,7 @@ void Emitter::Update()
             t = std::clamp(t, 0.0f, 1.0f);
             float a = 1.0f - t;
             a = a * a;
-            p.color.w = dynamicData.startColor.w * a;
+            p.color.w = dynamicData.colorMax.w * a;
         }
         else if (particleMode == ParticleMode::Fixed)
         {
@@ -165,7 +165,7 @@ void Emitter::Spawn(int count)
             p.angularVel = RandRange(dynamicData.angularMin, dynamicData.angularMax);
 
             // color
-            p.color = dynamicData.startColor;
+            p.color = RandRange(dynamicData.colorMin, dynamicData.colorMax);
         }
         else if (particleMode == ParticleMode::Fixed)
         {
@@ -218,4 +218,14 @@ Vector3 RandomUnitVector3()
 
     v.Normalize();
     return v;
+}
+
+Vector4 RandRange(const Vector4& a, const Vector4& b)
+{
+    return {
+        RandRange(a.x, b.x),
+        RandRange(a.y, b.y),
+        RandRange(a.z, b.z),
+        RandRange(a.w, b.w)
+    };
 }

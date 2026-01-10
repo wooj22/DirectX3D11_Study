@@ -94,7 +94,8 @@ struct SpawnDynamic
     float   angularMin = 0.0f;
     float   angularMax = 0.0f;
 
-    Vector4 startColor = { 1,1,1,1 };       // TODO :: range
+    Vector4 colorMin = { 0,0,0,1 }; 
+    Vector4 colorMax = { 1,1,1,1 }; 
 };
 
 struct SpawnFixed
@@ -150,3 +151,4 @@ public:
 float Rand01();
 float RandRange(float a, float b);
 Vector3 RandomUnitVector3();
+Vector4 RandRange(const Vector4& a, const Vector4& b);

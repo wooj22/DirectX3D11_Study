@@ -304,7 +304,7 @@ bool App::InitResource()
         // 1. Filpbook Effect (1 particle)
         {
             Effect fx{};
-            fx.position = { -200.0f, 130.0f, 80.0f };
+            fx.position = { 150.0f, 130.0f, 250.0f };
             fx.enabled = true;
 
             // Emitter
@@ -343,7 +343,7 @@ bool App::InitResource()
         {
             Effect fx{};
             fx.enabled = true;
-            fx.position = { 0.0f, 130.0f, 80.0f };
+            fx.position = { 300.0f, 130.0f, 250.0f };
 
             // Emitter
             Emitter e{};
@@ -381,7 +381,7 @@ bool App::InitResource()
         {
             Effect fx{};
             fx.enabled = true;
-            fx.position = { 150.0f, 130.0f, 80.0f };
+            fx.position = { 450.0f, 130.0f, 250.0f };
 
             // Emitter
             Emitter e{};
@@ -420,7 +420,7 @@ bool App::InitResource()
             Effect fx{};
             fx.enabled = true;
             fx.looping = true;                     
-            fx.position = { 400.0f, 130.0f, 300.0f };
+            fx.position = { -150.0f, 130.0f, 100.0f };
 
             // Emitter
             Emitter em{};
@@ -442,6 +442,8 @@ bool App::InitResource()
             em.dynamicData.rotationMax = 6.0f;
             em.dynamicData.angularMin = 0.0f;
             em.dynamicData.angularMax = 0.0f;
+            em.dynamicData.colorMin = { 1,1,1,1 };
+            em.dynamicData.colorMax = { 1,1,1,1 };
 
             // Sheet
             em.sheet.cols = 1;
@@ -465,7 +467,7 @@ bool App::InitResource()
             Effect fx{};
             fx.enabled = true;
             fx.looping = true;
-            fx.position = { 700.0f, 130.0f, 300.0f };
+            fx.position = { 0.0f, 130.0f, 100.0f };
 
             // emitter
             Emitter em{};
@@ -807,7 +809,8 @@ void App::RenderGUI()
                     ImGui::DragFloat("AngularMin", &em.dynamicData.angularMin, 0.01f, -1000.0f, 1000.0f);
                     ImGui::DragFloat("AngularMax", &em.dynamicData.angularMax, 0.01f, -1000.0f, 1000.0f);
 
-                    ImGui::ColorEdit4("StartColor", &em.dynamicData.startColor.x);
+                    ImGui::ColorEdit4("ColorMin", &em.dynamicData.colorMin.x);
+                    ImGui::ColorEdit4("ColorMax", &em.dynamicData.colorMax.x);
 
                     // 방어: min/max 뒤집힘 방지(선택)
                     if (em.dynamicData.lifeMin > em.dynamicData.lifeMax) em.dynamicData.lifeMin = em.dynamicData.lifeMax;
