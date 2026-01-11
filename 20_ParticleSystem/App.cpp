@@ -420,7 +420,7 @@ bool App::InitResource()
             Effect fx{};
             fx.enabled = true;
             fx.looping = true;                     
-            fx.position = { -10.0f, 200.0f, 0.0f };
+            fx.position = { -10.0f, 250.0f, 0.0f };
 
             // Emitter
             Emitter em{};
@@ -432,8 +432,8 @@ bool App::InitResource()
             em.emitRate = 10.0f;
             em.burstCount = 30;
 
-            em.dynamicData.lifeMin = 15.0f;
-            em.dynamicData.lifeMax = 120.0f;
+            em.dynamicData.lifeMin = 10.0f;
+            em.dynamicData.lifeMax = 20.0f;
             em.dynamicData.speedMin = 20.0f;
             em.dynamicData.speedMax = 40.0f;
             em.dynamicData.sizeMin = { 15.0f, 15.0f };
@@ -546,6 +546,10 @@ bool App::InitResource()
 
     // debug settup
     D3D::postprocessCBData.isHDR = 1;
+    D3D::bloomCBData.bloom_intensity = 1.1;
+    D3D::postprocessCBData.gain = {0.7,0.7,0.2};
+    D3D::postprocessCBData.gain_strength = 0.5;
+    D3D::postprocessCBData.vignette_intensity = 0.6;
 
     return true;
 }
