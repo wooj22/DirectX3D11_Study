@@ -888,6 +888,19 @@ void App::RenderGUI()
         ImGui::Text("[Shadow Light Pos]");
         ImGui::SliderFloat("lookPointDist", &shadowOrthoDesc.lookPointDist, 1.f, 5000.0f);
         ImGui::SliderFloat("shadowLightDist", &shadowOrthoDesc.shadowLightDist, 1.f, 5000.0f);
+
+        ImGui::Text("");
+        ImGui::Text("[Shadow Map]");
+        ID3D11ShaderResourceView* shadowSRV = D3D::shadowSRV.Get();
+        ImVec2 size(256, 256);
+
+        ImGui::Image(
+            (ImTextureID)shadowSRV,
+            size,
+            ImVec2(0, 1),
+            ImVec2(1, 0)
+        );
+
         ImGui::End();
     }
 
