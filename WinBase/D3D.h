@@ -134,6 +134,7 @@ public:
     inline static ComPtr<ID3D11VertexShader> VS_LightVolume;
     inline static ComPtr<ID3D11VertexShader> VS_Effect;
     inline static ComPtr<ID3D11VertexShader> VS_Skinned_OutLine;
+    inline static ComPtr<ID3D11VertexShader> VS_Decal;
     
 
     // Pixel Shader
@@ -152,6 +153,7 @@ public:
     inline static ComPtr<ID3D11PixelShader> PS_BloomUpsampleCombine;
     inline static ComPtr<ID3D11PixelShader> PS_PostProcess;
     inline static ComPtr<ID3D11PixelShader> PS_OutLine;
+    inline static ComPtr<ID3D11PixelShader> PS_Decal;
 
 
     // ConstantBuffer

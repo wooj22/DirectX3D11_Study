@@ -478,6 +478,12 @@
     <FxCompile Include="PS_ForwardLighting.hlsl">
       <Filter>00. Shaders\PixelShader</Filter>
     </FxCompile>
+    <FxCompile Include="PS_Decal.hlsl">
+      <Filter>00. Shaders\PixelShader</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Decal.hlsl">
+      <Filter>00. Shaders\VertexShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shared.fxh">

@@ -850,6 +850,22 @@ bool D3D::CreateInputLayoutShader()
         SAFE_RELEASE(pixelShaderBuffer);
     }
 
+    //---------------------------
+    // Decal VS, PS
+    {
+        ID3D10Blob* vertexShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_Decal.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(D3D::device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
+            vertexShaderBuffer->GetBufferSize(), NULL, &VS_Decal));
+        SAFE_RELEASE(vertexShaderBuffer);
+
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_Decal.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_Decal));
+        SAFE_RELEASE(pixelShaderBuffer);
+    }
+
     return true;
 }
 

@@ -2,9 +2,9 @@
 
 // Skeletal Mesh OutLine Vertex Shader
 
-PS_OutLine_INPUT main(VS_Weight_INPUT input)
+PS_Position_INPUT main(VS_Weight_INPUT input)
 {
-    PS_OutLine_INPUT output = (PS_OutLine_INPUT) 0;
+    PS_Position_INPUT output = (PS_Position_INPUT) 0;
 
     // skinning
     float4x4 offsetPos[4];

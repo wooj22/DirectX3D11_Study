@@ -18,10 +18,10 @@
 // DecalCB          -> b12
 
 // [ Texture ]
-// Texture2D diffuseMap          : register(t0);
-// Texture2D normalMap           : register(t1);
-// Texture2D specularMap         : register(t2);
-// Texture2D emissiveMap         : register(t3);
+// Texture2D diffuseMap          : register(t0);    // texture resource
+// Texture2D normalMap           : register(t1);    // texture resource
+// Texture2D specularMap         : register(t2);    // texture resource
+// Texture2D emissiveMap         : register(t3);    // texture resource
 // TextureCube skyboxTexture     : register(t4);
 // Texture2D diffuseRamp         : register(t4);
 // Texture2D specualrRamp        : register(t5);
@@ -33,12 +33,12 @@
 // Texture2D IBL_BRDF_LUT        : register(t11);
 // Texture2D sceneHDR            : register(t12);
 // Texture2D bloomA              : register(t13);
-// Texture2D positionTex         : register(t14);       // 사용 x (대역폭 문제로 Depth Buffer 사용)
-// Texture2D albedoTex           : register(t15);
-// Texture2D normalTex           : register(t16);
-// Texture2D metalRoughTex       : register(t17);
-// Texture2D emissiveTex         : register(t18);
-// Texture2D depthTex            : register(t19);
+// Texture2D positionTex         : register(t14);    // 사용 x (대역폭 문제로 Depth Buffer 사용)
+// Texture2D albedoTex           : register(t15);    // gbuffer resource
+// Texture2D normalTex           : register(t16);    // gbuffer resource
+// Texture2D metalRoughTex       : register(t17);    // gbuffer resource
+// Texture2D emissiveTex         : register(t18);    // gbuffer resource
+// Texture2D depthTex            : register(t19);    // gbuffer resource
 // Texture2D effectTex           : register(t20);
 // Texture2D decalTex            : register(t21);
 
@@ -347,7 +347,7 @@ struct PS_INPUT
     float4 posShadow : TEXCOORD1;
 };
 
-struct PS_OutLine_INPUT
+struct PS_Position_INPUT
 {
     float4 pos : SV_POSITION;
 };
