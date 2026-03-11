@@ -22,6 +22,7 @@ struct ScreenFxCB;
 struct BloomCB;
 struct FrameCB;
 struct EffectCB;
+struct DecalCB;
 
 
 /*
@@ -166,6 +167,7 @@ public:
     inline static ComPtr<ID3D11Buffer> bloomBuffer;
     inline static ComPtr<ID3D11Buffer> frameBuffer;
     inline static ComPtr<ID3D11Buffer> effectBuffer;
+    inline static ComPtr<ID3D11Buffer> decalBuffer;
 
     static TransformCB     transformCBData;
     static LightingCB      lightingCBData;
@@ -179,6 +181,7 @@ public:
     static BloomCB         bloomCBData;
     static FrameCB         frameCBData;
     static EffectCB        effectCBData;
+    static DecalCB         decalCBData;
 
 
     //--------------------------------

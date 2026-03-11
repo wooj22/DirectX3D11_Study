@@ -308,3 +308,30 @@ struct alignas(16) EffectCB
     int billboardType;
     Vector2 padding;
 };
+
+// Decal CB -> b12
+struct alignas(16) DecalCB
+{
+    Matrix decalInvWorld;       // decal world->local 변환용 역행렬 (박스 내부 판정 + uv 생성)
+
+    Vector2 tiling;
+    Vector2 offset;
+
+    float opacity;
+    float upThreshold;
+    int   decalType;      // 0=TextureMap, 1=RingEffect
+    float pad0;
+
+    // ring
+    float ringStartTime;
+    float ringDuration;
+    float ringMaxRadius;
+    float ringSpeed;
+
+    float ringThickness;
+    float ringFeather;
+    float pad1;
+
+    Vector3 ringColor;
+    float pad2;
+};

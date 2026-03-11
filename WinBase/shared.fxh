@@ -15,6 +15,7 @@
 // BloomCB          -> b9
 // FrameCB          -> b10    (얘 b0으로 바인딩하고싶은데 너무 늦음)
 // EffectCB         -> b11
+// DecalCB          -> b12
 
 // [ Texture ]
 // Texture2D diffuseMap          : register(t0);
@@ -39,6 +40,7 @@
 // Texture2D emissiveTex         : register(t18);
 // Texture2D depthTex            : register(t19);
 // Texture2D effectTex           : register(t20);
+// Texture2D decalTex            : register(t21);
 
 // [ SamplerState ]
 // SamplerState samLinear           : register(s0);
@@ -264,6 +266,30 @@ cbuffer EffectCB : register(b11)
     float2 padding17;
 }
 
+cbuffer DecalCB : register(b12)
+{
+    matrix decalInvWorld;
+
+    float2 tiling;
+    float2 offset;
+
+    float opacity;
+    float upThreshold;
+    int decalType;
+    float pad0;
+
+    float ringStartTime;
+    float ringDuration;
+    float ringMaxRadius;
+    float ringSpeed;
+    
+    float ringThickness;
+    float ringFeather;
+    float pad1;
+    
+    float3 ringColor;
+    float pad2;
+}
 
 // ----------------------
 //  Vertex Input Layout
