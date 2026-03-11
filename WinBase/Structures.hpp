@@ -134,11 +134,13 @@ struct alignas(16) MaterialCB
 
     // BlinPong
     float ambientFactor;       
-    float diffuseFactor;       
+    float diffuseFactor_;       
     float specularFactor;      
     float shininess;           
 
     // PBR Factor
+    Vector3 diffuseFactor = { 1,1,1 };
+    float alphaFactor = 1.0f;
     float emissiveFactor = 1.0f;
     float metallicFactor = 1.0f;
     float roughnessFactor = 1.0f;

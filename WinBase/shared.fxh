@@ -101,11 +101,13 @@ cbuffer MaterialCB : register(b2)
     
     // BlinPong
     float ambientFactor;
-    float diffuseFactor;
+    float diffuseFactor_;
     float specularFactor;
     float shininess;
     
     // PBR Factor
+    float3 diffuseFactor;
+    float alphaFactor;
     float emissiveFactor;
     float metallicFactor;
     float roughnessFactor;

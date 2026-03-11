@@ -836,6 +836,16 @@ bool D3D::CreateInputLayoutShader()
         SAFE_RELEASE(pixelShaderBuffer);
     }
 
+    //---------------------------
+    // Forward Transparent PS
+    {
+        ID3D10Blob* pixelShaderBuffer = nullptr;
+        HR_T(CompileShaderFromFile(L"../WinBase/PS_ForwardLighting.hlsl", "main", "ps_5_0", &pixelShaderBuffer));
+        HR_T(D3D::device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+            pixelShaderBuffer->GetBufferSize(), NULL, &PS_ForwardLighting));
+        SAFE_RELEASE(pixelShaderBuffer);
+    }
+
     return true;
 }
 

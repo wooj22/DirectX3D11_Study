@@ -1,17 +1,11 @@
 /*
-    [ PBR Pixel Shader ] 
-    * Forward Rendering *
+    [ PBR Forward Transparent Pixel Shader] 
+    * Deferred Rendering *
+
+    Deffered Rendering에서 처리되지 못한 투명 오브젝트들을 Forward Rendering 합니다.
+
     - Direct BRDF(Cook-Torrance)
     - Indirect IBL(BRDF)
-    - Texture Map Support
-        - Diffuse Map (Albedo Map)
-        - Normal Map
-        - Emissive Map
-        - Metallic Map
-        - Roughness Map
-        - IBL_IrradianceMap
-        - IBL_SpecularEnvMap
-        - IBL_BRDF_LUT
     - Shadow Mapping Support
 */
 
@@ -22,10 +16,10 @@
 Texture2D diffuseMap : register(t0);
 Texture2D normalMap : register(t1);
 Texture2D emissiveMap : register(t3);
-Texture2D shadowMap : register(t6);
 Texture2D metallicMap : register(t7);
 Texture2D roughnessMap : register(t8);
 
+Texture2D shadowMap : register(t6);
 TextureCube IBL_IrradianceMap : register(t9);
 TextureCube IBL_SpecularEnvMap : register(t10);
 Texture2D IBL_BRDF_LUT : register(t11);
@@ -37,7 +31,6 @@ SamplerComparisonState samShadow : register(s1);
 SamplerState samLinearClamp : register(s2);
 
 
-
 float4 main(PS_INPUT input) : SV_TARGET
 {
     // --- [Default] ----------------------------------
@@ -47,43 +40,55 @@ float4 main(PS_INPUT input) : SV_TARGET
     float metallic = 0.0f;
     float roughness = 0.0f;
     float alpha = 1.0f;
+
     
+    // --- [ShadowMapping] ---------------------------
     // shadowFactor
     float shadowFactor = 1.0f;
     
-    
-    // --- [ShadowMapping] ---------------------------
-    float currentShadowDepth = input.posShadow.z / input.posShadow.w;
-    float2 uv = input.posShadow.xy / input.posShadow.w;
-    uv.y = -uv.y;
-    uv = uv * 0.5 + 0.5;
-    
-    if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
+    // 하나의 SunLight에 대해서만 Shadow
+    if (isSunLight)
     {
-        float2 offsets[9] =
+        float currentShadowDepth = input.posShadow.z / input.posShadow.w;
+        float2 uv = input.posShadow.xy / input.posShadow.w;
+        uv.y = -uv.y;
+        uv = uv * 0.5 + 0.5;
+    
+        if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
         {
-            float2(-1, -1), float2(0, -1), float2(1, -1),
+            float2 offsets[9] =
+            {
+                float2(-1, -1), float2(0, -1), float2(1, -1),
             float2(-1, 0), float2(0, 0), float2(1, 0),
             float2(-1, 1), float2(0, 1), float2(1, 1)
-        };
-        float2 texelSize = 1.0 / shadowMapSize; // 텍셀 크기 (ShadowMap 해상도 기준)
-        shadowFactor = 0.0f;
+            };
+            float2 texelSize = 1.0 / shadowMapSize;
+            shadowFactor = 0.0f;
        
        //  PCF - 9 texel 평균으로 그림자 팩터 계산
        [unroll]
-        for (int i = 0; i < 9; i++)
-        {
-            float2 sampleUV = uv + offsets[i] * texelSize;
-            shadowFactor += shadowMap.SampleCmpLevelZero(samShadow, sampleUV, currentShadowDepth - 0.001);
+            for (int i = 0; i < 9; i++)
+            {
+                float2 sampleUV = uv + offsets[i] * texelSize;
+                shadowFactor += shadowMap.SampleCmpLevelZero(samShadow, sampleUV, currentShadowDepth - 0.001);
+            }
+            shadowFactor = shadowFactor / 9.0f;
         }
-        shadowFactor = shadowFactor / 9.0f;
     }
+    
 
     
     // --- [Material]  ----------------------------------
-    // base color
+    // base_color, alpha
     if (useDiffuse)
+    {
         base_color = diffuseMap.Sample(samLinear, input.texCoord).rgb;
+        alpha = diffuseMap.Sample(samLinear, input.texCoord).a;
+    }
+    alpha *= alphaFactor;
+    
+    if (alpha < 0.05f)
+        discard; // alpha cutoff
     
     // normal
     float3 N;
@@ -113,13 +118,7 @@ float4 main(PS_INPUT input) : SV_TARGET
         if (roughnessFromShininess)
             roughness = 1 - roughness;
     }
-
-    // alpha
-    if (useDiffuse)
-        alpha = diffuseMap.Sample(samLinear, input.texCoord).a;
-    
-    if (alpha < 0.5)
-        discard;
+ 
     
     // --- [Override] ----------------------------------
     if (useBaseColorOverride)
@@ -134,6 +133,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     roughness = max(roughness, 0.04);
     
     // --- [Factor] -----------------------------------
+    
+    base_color *= diffuseFactor;
     emissive *= emissiveFactor;
     metallic *= metallicFactor;
     float rf = max(roughnessFactor, 0.04);
@@ -141,22 +142,115 @@ float4 main(PS_INPUT input) : SV_TARGET
     
 
 
-    // --- [Vector]  ----------------------------------
-    float3 L = normalize(-lightDirection.xyz);
+    // --- [Vector / Attenuation]  ------------------------------------------
+    float3 L = 0;
+    float attenuation = 1.0f;
+    float spotFactor = 1.0f;
+    
+    // Directional Light
+    if (lightType == 0)
+    {
+        L = normalize(-lightDirection);
+    }
+    // Point Light
+    else if (lightType == 1)
+    {
+        // defualt
+        attenuation = 0.0f;
+        L = 0.0f;
+        
+        // values
+        float3 toLight = lightPos - input.worldPos;
+        float distSq = dot(toLight, toLight);
+        float rangeSq = lightRange * lightRange;
+
+        // 범위
+        if (lightRange > 1e-4f && distSq < rangeSq)
+        {
+            float dist = sqrt(distSq);
+            L = toLight / max(dist, 1e-4f);
+
+            // Range Falloff (fade)
+            float x = distSq / max(rangeSq, 1e-4f);
+            float smooth = saturate(1.0f - x);
+            smooth *= smooth;
+
+            // 물리적 거리 감쇠
+            float invSq = 1.0f / max(distSq, 1e-4f);
+
+            // 최종 감쇠
+            attenuation = smooth * invSq;
+        }
+    }
+    // Spot Light
+    else if (lightType == 2)
+    {
+        // defualt
+        attenuation = 0.0f;
+        spotFactor = 0.0f;
+        L = 0.0f;
+        
+        // values
+        float3 toLight = lightPos - input.worldPos;
+        float distSq = dot(toLight, toLight);
+        float range = lightRange;
+        float rangeSq = range * range;
+
+        // 범위
+        if (range > 1e-4f && distSq < rangeSq)
+        {
+            float dist = sqrt(distSq);
+            L = toLight / max(dist, 1e-4f);
+            
+            // 거리 감쇠
+            float x = distSq / max(rangeSq, 1e-4f);
+            float smoothRange = saturate(1.0f - x);
+            smoothRange *= smoothRange;
+
+            float invSq = 1.0f / max(distSq, 1e-4f);
+            float rangeAttenuation = smoothRange * invSq;
+            
+            // Spot Cone 감쇠
+            float3 spotDir = normalize(lightDirection);
+            float cosTheta = dot(spotDir, -L);
+            float cosInner = cos(radians(innerAngle)); // input은 degree 기준
+            float cosOuter = cos(radians(outerAngle));
+
+            // 뒤집힘 방지
+            float lo = min(cosOuter, cosInner);
+            float hi = max(cosOuter, cosInner);
+
+            float cone = smoothstep(lo, hi, cosTheta);
+            cone = pow(cone, 4.0f);
+            
+            // 최종
+            spotFactor = cone;
+            float inv = 1.0f / max(dist, 1e-4f); // 1/d
+            attenuation = smoothRange * inv * cone;
+            
+             // 콘 밖이면 사실상 0
+            if (spotFactor <= 1e-4f)
+            {
+                attenuation = 0.0f;
+                spotFactor = 0.0f;
+            }
+        }
+    }
+
     float3 V = normalize(cameraPos - input.worldPos);
     float3 H = normalize(L + V);
-    
-    float NdotL = max(dot(N, L), 0.0);
-    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0f);
+    float NdotV = max(dot(N, V), 0.0f);
     
 
+    
     
     // --- [Direct Light]  ----------------------------------
     // Specular BRDF (Cook-Torrance)
     float3 F0 = lerp(float3(0.04f, 0.04f, 0.04f), base_color, metallic);
-    float D = D_NDFGGXTR(N, H, roughness);  // 미세면 정렬정도
-    float3 F = F_Schlick(H, V, F0);         // 프레넬 반사율
-    float G = G_Smith(N, V, L, roughness);  // shadowing & masking
+    float D = D_NDFGGXTR(N, H, roughness); // 미세면 정렬정도
+    float3 F = F_Schlick(H, V, F0); // 프레넬 반사율
+    float G = G_Smith(N, V, L, roughness); // shadowing & masking
     
     float denom = 4.0f * max(NdotL, 0.001) * max(NdotV, 0.001);
     float3 SpecularBRDF = (D * F * G) / denom;
@@ -167,7 +261,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     float3 DiffuseBRDF = (base_color / PI) * kd;
     
     // Final DirectLight
-    float3 DirectColor = (SpecularBRDF + DiffuseBRDF) * lightColor * directIntensity * NdotL;
+    float3 DirectColor = (SpecularBRDF + DiffuseBRDF) * lightColor * directIntensity * (NdotL * attenuation * spotFactor);
 
     
     
@@ -175,7 +269,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     // --- [Indirect Light]  ----------------------------------
     float3 IndirectColor = { 0, 0, 0 };
-    if (useIBL)
+    if (useIBL && isSunLight)
     {
         // Diffuse Term --------------------------
         // Irradiance - diffuse BRDF 적분값

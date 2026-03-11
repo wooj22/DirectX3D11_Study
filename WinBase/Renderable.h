@@ -13,7 +13,7 @@ enum class RenderBlendType
 class Renderable
 {
 public:
-    RenderBlendType blendType = RenderBlendType::Opaque;    // 렌더링 방식 (기본값: 불투명)
+    RenderBlendType blendType = RenderBlendType::Transparent;    // 렌더링 방식 (기본값: 불투명)
     virtual ~Renderable() = default;
 };
 

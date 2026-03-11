@@ -8,14 +8,12 @@ using namespace DirectX::SimpleMath;
 /*
     [ Geometry Renderer ]
 
-     Geometry를 그리기 위한 Stage Setting을 하고,
+     Opaque(불투명) 객체의 Geometry를 그리기 위한 Stage Setting을 하고,
      Deferred Rendering을 위해 G-buffer에 라이팅에 필요한 정보를 기록합니다.
 
-
      ** Geometry Renderer의 Renderable 객체 **
-     StaticModel, RigidModel, SkeletalModel
+     Model (Opaque)
 
-     
      ** G-buffer **
       RT0 : Albedo (RGB)
       RT1 : Normal (RGB)

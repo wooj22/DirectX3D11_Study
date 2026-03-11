@@ -142,6 +142,7 @@ public:
     inline static ComPtr<ID3D11PixelShader> PS_ShadowDepth;
     inline static ComPtr<ID3D11PixelShader> PS_Gbuffer;
     inline static ComPtr<ID3D11PixelShader> PS_DeferredLighting;
+    inline static ComPtr<ID3D11PixelShader> PS_ForwardLighting;
     inline static ComPtr<ID3D11PixelShader> PS_PBR;
     inline static ComPtr<ID3D11PixelShader> PS_Skybox;
     inline static ComPtr<ID3D11PixelShader> PS_Effect;
@@ -187,7 +188,6 @@ public:
 private:
     static bool CreateDX11BaseResource(HWND& hWnd, int screenWidth, int screenHeight);
 
-    static bool CresateStates();
     static bool CreateDSS();
     static bool CreateRS();
     static bool CreateSampler();

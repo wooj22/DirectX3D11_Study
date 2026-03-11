@@ -48,12 +48,12 @@ void DefferedLightingRenderer::StencilPass(const vector<Light>& lights, const Ca
         if (light.type == LightType::Point)
         {
             sphereVolume->UpdateWolrd(light);
-            sphereVolume->Draw(light, camera);
+            sphereVolume->Draw();
         }
         else if (light.type == LightType::Spot)
         {
             coneVolume->UpdateWolrd(light);
-            coneVolume->Draw(light, camera);
+            coneVolume->Draw();
         }
     }
 
@@ -163,7 +163,7 @@ void DefferedLightingRenderer::LightingPass(const vector<Light>& lights, const E
                     D3D::deviceContext.Get()->IASetInputLayout(D3D::inputLayout_Position.Get());
                     D3D::deviceContext.Get()->VSSetShader(D3D::VS_LightVolume.Get(), nullptr, 0);
                     sphereVolume->UpdateWolrd(light);
-                    sphereVolume->Draw(light, camera);
+                    sphereVolume->Draw();
                 }
             }
             else if (light.type == LightType::Spot)
@@ -194,7 +194,7 @@ void DefferedLightingRenderer::LightingPass(const vector<Light>& lights, const E
                     D3D::deviceContext.Get()->IASetInputLayout(D3D::inputLayout_Position.Get());
                     D3D::deviceContext.Get()->VSSetShader(D3D::VS_LightVolume.Get(), nullptr, 0);
                     coneVolume->UpdateWolrd(light);
-                    coneVolume->Draw(light, camera);
+                    coneVolume->Draw();
                 }
             }
         }

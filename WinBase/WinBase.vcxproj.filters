@@ -475,6 +475,9 @@
     <FxCompile Include="PS_BlinnPhong.hlsl">
       <Filter>00. Shaders\PixelShader\BlinPhong</Filter>
     </FxCompile>
+    <FxCompile Include="PS_ForwardLighting.hlsl">
+      <Filter>00. Shaders\PixelShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shared.fxh">

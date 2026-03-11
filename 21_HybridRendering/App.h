@@ -11,6 +11,7 @@
 #include "../WinBase/ShadowRenderer.h"
 #include "../WinBase/GeometryRenderer.h"
 #include "../WinBase/DefferedLightingRenderer.h"
+#include "../WinBase/ForwardTransparentRenderer.h"
 #include "../WinBase/ParticleRenderer.h"
 #include "../WinBase/SkyboxRenderer.h"
 #include "../WinBase/BloomRenderer.h"
@@ -77,6 +78,7 @@ private:
     ShadowRenderer       shadowRenderer;
     GeometryRenderer     geometryRenderer;
     DefferedLightingRenderer        lightRenderer;
+    ForwardTransparentRenderer      forwardTransparentRenderer;
     ParticleRenderer     particleRenderer;
     SkyboxRenderer       skyboxRenderer;
     BloomRenderer        bloomRenderer;

@@ -30,6 +30,7 @@ bool App::OnInit()
     shadowRenderer.Init();
     geometryRenderer.Init();
     lightRenderer.Init();
+    forwardTransparentRenderer.Init();
     particleRenderer.Init();
     skyboxRenderer.Init();
     bloomRenderer.Init();
@@ -114,6 +115,9 @@ void App::OnRender()
 
     // 5. Skybox Pass
     skyboxRenderer.SkyboxPass(view, projection, environments[currentSkybox].skybox);
+
+    // 6. Forward Transparent Pass
+    forwardTransparentRenderer.ForwardTransparentPass(view, projection, static_models, rigid_models, skeletal_models, lights, environments[currentSkybox]);
 
     // 6. Particle Pass
     particleRenderer.ParticlePass(camera, effects);
@@ -698,6 +702,8 @@ void App::RenderGUI()
     {
         ImGui::Begin("Model", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
         ImGui::Text("[Material]");
+        ImGui::SliderFloat3("Diffuse Factor", &D3D::materialCBData.diffuseFactor.x, 0.0f, 1.0f);
+        ImGui::SliderFloat("Alpha Factor", &D3D::materialCBData.alphaFactor, 0.0f, 1.0f);
         ImGui::SliderFloat("Metallic Factor", &D3D::materialCBData.metallicFactor, 0.0f, 1.0f);
         ImGui::SliderFloat("Roughness Factor", &D3D::materialCBData.roughnessFactor, 0.0f, 1.0f);
         ImGui::SliderFloat("Emissve Factor", &D3D::materialCBData.emissiveFactor, 0.0f, 3.0f);

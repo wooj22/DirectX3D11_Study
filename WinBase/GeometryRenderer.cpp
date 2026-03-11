@@ -45,13 +45,26 @@ void GeometryRenderer::GeometryPass(const Matrix& view, const Matrix& projection
     // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_RigidVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Rigid.Get(), NULL, 0);
-    for (auto& m : static_models) m->Draw();
-    for (auto& m : rigid_models) m->Draw();
+    for (auto& m : static_models)
+    {
+        if (m->blendType == RenderBlendType::Opaque)
+            m->Draw();
+    }
+
+    for (auto& m : rigid_models) 
+    {
+        if (m->blendType == RenderBlendType::Opaque)
+            m->Draw();
+    }
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skeletal.Get(), NULL, 0);
-    for (auto& m : skeletal_models) m->Draw();
+    for (auto& m : skeletal_models)
+    {
+        if (m->blendType == RenderBlendType::Opaque)
+            m->Draw();
+    }
 
     // RTV - SRV hazard ¹æÁö
     D3D::deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
