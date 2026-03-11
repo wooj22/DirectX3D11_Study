@@ -1,4 +1,5 @@
 #pragma once
+#include "IRenderer.h"
 #include <vector>
 
 // 아래 Light Renderer는 Deferred Rendering을 기준으로 합니다.
@@ -42,7 +43,7 @@ class LightVolumeMesh;
 class Environment;
 class Camera;
 
-class LightRenderer
+class LightRenderer : public IRenderer
 {
 private:
     // light volume
@@ -53,9 +54,13 @@ private:
     float clearColor[4] = { 0,0,0,1 };
 
 public:
-    void Init();
+    // interface (확장성)
+    ~LightRenderer() override = default;
+    void Initialize() override {};
+    void RenderPass() override {};
 
-    // Rendering
+    // non interface function (Legucy)
+    void Init();
     void StencilPass(const std::vector<Light>& lights, const Camera& camera);
     void LightingPass(const std::vector<Light>& lights, const Environment& env, const Camera& camera);
 };

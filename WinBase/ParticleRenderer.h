@@ -1,4 +1,5 @@
 #pragma once
+#include "IRenderer.h"
 #include "Effect.h"
 #include "ParticleQuadMesh.h"
 #include <vector>
@@ -8,7 +9,7 @@ using std::vector;
 using Microsoft::WRL::ComPtr;
 
 /*
-    [ Particle Renderer ]
+    [ Particle / Effect Renderer ]
 
      Quad(Vertex Buffer) 하나로 여러 Particle(Instance Buffer)를 그린다.
      넘겨받은 effect 배열에서 살아있는 particle의 데이터로 instance 배열을 만들고,
@@ -26,14 +27,21 @@ using Microsoft::WRL::ComPtr;
 
 class Camera;
 
-class ParticleRenderer
+class ParticleRenderer : public IRenderer
 {
 private:
     ParticleQuadMesh quad;
     ComPtr<ID3D11Buffer> instanceBuffer = nullptr;
 
     void EnsureInstanceCapacity(UINT required);
+
 public:
+    // interface (확장성)
+    ~ParticleRenderer() override = default;
+    void Initialize() override {};
+    void RenderPass() override {};
+
+    // non interface function (Legucy)
     void Init();
     void ParticlePass(Camera& camera, const vector<Effect>& effects);
 };

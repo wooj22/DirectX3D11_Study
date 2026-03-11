@@ -1,6 +1,6 @@
 #pragma once
 #define NOMINMAX
-
+#include "Renderable.h"
 #include <DirectXMath.h>
 #include <directxtk/simplemath.h>
 #include <d3d11.h>
@@ -33,7 +33,7 @@ enum class LightVolumeType {
       * Outside : Stencil Test on + CullBack + Lighting Volume Pass
 */
 
-class LightVolumeMesh
+class LightVolumeMesh : public Renderable
 {
 private:  
     // volume type
@@ -51,6 +51,8 @@ private:
 
 public:
     LightVolumeMesh();
+    ~LightVolumeMesh() override = default;
+
     void UpdateWolrd(const Light& light);
     void Draw(const Light& light, const Camera& camera) const;
 

@@ -1,6 +1,7 @@
 #pragma once
-#include <iostream>
+#include "Renderable.h"
 #include "SkeletalModelAsset.hpp"
+#include <iostream>
 #include <string>
 #include <DirectXMath.h>
 #include <directxtk/simplemath.h>
@@ -16,7 +17,7 @@ class DirectionalLight;
 *
 */
 
-class SkeletalModel
+class SkeletalModel : public Renderable
 {
 public:
     /*---- [Model Asset] ----*/         // submeshs, skeleton, materials, animation clips
@@ -39,6 +40,8 @@ public:
 public:
     SkeletalModel();
     SkeletalModel(Vector3 p, Vector3 r, Vector3 s);
+    ~SkeletalModel() override = default;
+
     void InitTransform();
     void SetTransform(Vector3 p, Vector3 r, Vector3 s);
     void SetPosition(Vector3 p);

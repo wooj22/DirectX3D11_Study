@@ -47,6 +47,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19_FilpbookEffect", "19_Fil
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "20_ParticleSystem", "20_ParticleSystem\20_ParticleSystem.vcxproj", "{E723E7B6-01F3-4358-8BC7-10FADECFA24A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "21_HybridRendering", "21_HybridRendering\21_HybridRendering.vcxproj", "{B8C8AE01-A788-4DF6-A451-DC55C567668E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "22_Decal", "22_Decal\22_Decal.vcxproj", "{8D6A3866-9D3A-45FF-A443-4F052090D667}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -231,6 +235,22 @@ Global
 		{E723E7B6-01F3-4358-8BC7-10FADECFA24A}.Release|x64.Build.0 = Release|x64
 		{E723E7B6-01F3-4358-8BC7-10FADECFA24A}.Release|x86.ActiveCfg = Release|Win32
 		{E723E7B6-01F3-4358-8BC7-10FADECFA24A}.Release|x86.Build.0 = Release|Win32
+		{B8C8AE01-A788-4DF6-A451-DC55C567668E}.Debug|x64.ActiveCfg = Debug|x64
+		{B8C8AE01-A788-4DF6-A451-DC55C567668E}.Debug|x64.Build.0 = Debug|x64
+		{B8C8AE01-A788-4DF6-A451-DC55C567668E}.Debug|x86.ActiveCfg = Debug|Win32
+		{B8C8AE01-A788-4DF6-A451-DC55C567668E}.Debug|x86.Build.0 = Debug|Win32
+		{B8C8AE01-A788-4DF6-A451-DC55C567668E}.Release|x64.ActiveCfg = Release|x64
+		{B8C8AE01-A788-4DF6-A451-DC55C567668E}.Release|x64.Build.0 = Release|x64
+		{B8C8AE01-A788-4DF6-A451-DC55C567668E}.Release|x86.ActiveCfg = Release|Win32
+		{B8C8AE01-A788-4DF6-A451-DC55C567668E}.Release|x86.Build.0 = Release|Win32
+		{8D6A3866-9D3A-45FF-A443-4F052090D667}.Debug|x64.ActiveCfg = Debug|x64
+		{8D6A3866-9D3A-45FF-A443-4F052090D667}.Debug|x64.Build.0 = Debug|x64
+		{8D6A3866-9D3A-45FF-A443-4F052090D667}.Debug|x86.ActiveCfg = Debug|Win32
+		{8D6A3866-9D3A-45FF-A443-4F052090D667}.Debug|x86.Build.0 = Debug|Win32
+		{8D6A3866-9D3A-45FF-A443-4F052090D667}.Release|x64.ActiveCfg = Release|x64
+		{8D6A3866-9D3A-45FF-A443-4F052090D667}.Release|x64.Build.0 = Release|x64
+		{8D6A3866-9D3A-45FF-A443-4F052090D667}.Release|x86.ActiveCfg = Release|Win32
+		{8D6A3866-9D3A-45FF-A443-4F052090D667}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

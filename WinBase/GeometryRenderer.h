@@ -1,4 +1,5 @@
 #pragma once
+#include "IRenderer.h"
 #include <vector>
 #include <directxtk/simplemath.h>
 using namespace std;
@@ -28,13 +29,19 @@ class StaticModel;
 class RigidModel;
 class SkeletalModel;
 
-class GeometryRenderer
+class GeometryRenderer : public IRenderer
 {
 private:
     // g-buffer clear color
     float clearColor[4] = { 0,0,0,1 };
 
 public:
+    // interface (Ȯ�强)
+    ~GeometryRenderer() override = default;
+    void Initialize() override {};
+    void RenderPass() override {};
+
+    // non interface function (Legucy)
     void Init() {};
     void GeometryPass(const Matrix& view, const Matrix& projection,
         const vector<StaticModel*>& static_models,

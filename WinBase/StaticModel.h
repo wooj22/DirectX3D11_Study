@@ -1,6 +1,7 @@
 #pragma once
-#include <iostream>
+#include "Renderable.h"
 #include "StaticModelAsset.hpp"
+#include <iostream>
 #include <string>
 #include <DirectXMath.h>
 #include <directxtk/simplemath.h>
@@ -19,7 +20,7 @@ class DirectionalLight;
 * vertex_world = world_matrix * vertex_model(기본저장값)
 */
 
-class StaticModel
+class StaticModel : public Renderable
 {
 public:
     /*---- [Model Asset] ----*/         // submeshs, materials
@@ -35,6 +36,8 @@ public:
 public:
     StaticModel();
     StaticModel(Vector3 p, Vector3 r, Vector3 s);
+    ~StaticModel() override = default;
+
     void InitTransform();
     void SetTransform(Vector3 p, Vector3 r, Vector3 s);
     void SetPosition(Vector3 p);

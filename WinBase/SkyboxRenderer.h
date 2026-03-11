@@ -1,4 +1,5 @@
 #pragma once
+#include "IRenderer.h"
 #include <directxtk/simplemath.h>
 using namespace DirectX::SimpleMath;
 
@@ -13,9 +14,15 @@ using namespace DirectX::SimpleMath;
 
 class SkyBox;
 
-class SkyboxRenderer
+class SkyboxRenderer : public IRenderer
 {
 public:
+    // interface (Ȯ�强)
+    ~SkyboxRenderer() override = default;
+    void Initialize() override {};
+    void RenderPass() override {};
+
+    // non interface function (Legucy)
     void Init() {};
     void SkyboxPass(const Matrix& view, const Matrix& projection, const SkyBox& skybox);
 };

@@ -5,11 +5,13 @@
 #include "../WinBase/AssetManager.h"
 #include <d3dcompiler.h>
 #include <Directxtk/DDSTextureLoader.h>
-#include <iostream>
 #pragma comment(lib,"dxgi.lib")
 #pragma comment (lib, "d3d11.lib")
 #pragma comment(lib, "dxguid.lib") 
 #pragma comment(lib,"d3dcompiler.lib")
+
+#include <iostream>
+#include <algorithm>
 
 #define USE_FLIPMODE 1
 
@@ -117,7 +119,7 @@ void App::OnRender()
     particleRenderer.ParticlePass(camera, effects);
 
     // 7. Bloom Prefilter -> DownSample -> UpSample Pass
-    bloomRenderer.BloomPass();
+    bloomRenderer.RenderPass();
 
     // 8. PostProcess Pass
     postRenderer.PostProcessPass();
@@ -869,7 +871,7 @@ void App::RenderGUI()
         ImGui::SliderFloat("FOV", &fovDeg, 20.0f, 90.0f);
 
         camera.FovY = XMConvertToRadians(fovDeg);
-        camera.FovY = std::clamp(camera.FovY, 0.3f, 1.7f);
+        //camera.FovY = std::clamp(camera.FovY, 0.3f, 1.7f);
         ImGui::InputFloat("Move Speec", &camera.moveSpeed, 0.0f, 0.0f, "%.3f");
         ImGui::End();
     }

@@ -1,4 +1,5 @@
 #pragma once
+#include "Renderable.h"
 #include "Structures.hpp"
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -14,7 +15,7 @@ using Microsoft::WRL::ComPtr;
     - Particle Instance Data를 받아 두 Vertexbuffer를 합쳐 바인딩합니다.
 */
 
-class ParticleQuadMesh
+class ParticleQuadMesh : public Renderable
 {
 private:
     // VB, IB
@@ -24,6 +25,9 @@ private:
     UINT stride = sizeof(ParticleQuadVertex);
 
 public:
+    ParticleQuadMesh() = default;
+    ~ParticleQuadMesh() override = default;
+
     void Init();
     void DrawIndexedInstanced(UINT instanceCount, ID3D11Buffer* instanceVB, UINT instanceStride);
 };

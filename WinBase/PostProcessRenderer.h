@@ -1,4 +1,5 @@
 #pragma once
+#include "IRenderer.h"
 
 /*
     [ PostProcess Renderer ]
@@ -12,13 +13,19 @@
 */
 
 
-class PostProcessRenderer
+class PostProcessRenderer : public IRenderer
 {
 private:
     // clear color
     float clearColor[4] = { 0,0,0,1 };
 
 public:
+    // interface (Ȯ�强)
+    ~PostProcessRenderer() override = default;
+    void Initialize() override {};
+    void RenderPass() override {};
+
+    // non interface function (Legucy)
     void Init() {};
     void PostProcessPass();
 };

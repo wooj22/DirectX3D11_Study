@@ -1,4 +1,5 @@
 #pragma once
+#include "Renderable.h"
 #include <wrl/client.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
@@ -21,7 +22,7 @@ using Microsoft::WRL::ComPtr;
 // 7. 큐브맵 텍스처를 샘플링하여 렌더 과정을 마친다.
 // Skybox를 그린 뒤, DepthStencilState와 RasterizerState를 다시 원상 복귀 시켜줘야 다른 오브젝트들이 올바르게 렌더링된다.
 
-class SkyBox
+class SkyBox : public Renderable
 {
     ID3D11Buffer* vertexBuffer = nullptr;
     ID3D11Buffer* indexBuffer = nullptr;
@@ -32,6 +33,9 @@ class SkyBox
     UINT indexCount = 0;
 
 public:
+    SkyBox() = default;
+    ~SkyBox() override = default;
+
     void InitRenderPipeLine(const std::wstring& filePath);
     void Draw(const Matrix& view, const Matrix& projection) const;
     void UninitRenderPipeLine();

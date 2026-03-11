@@ -1,4 +1,5 @@
 #pragma once
+#include "IRenderer.h"
 #include <vector>
 #include <directxtk/simplemath.h>
 using namespace std;
@@ -19,9 +20,15 @@ class StaticModel;
 class RigidModel;
 class SkeletalModel;
 
-class ShadowRenderer
+class ShadowRenderer : public IRenderer
 {
 public:
+    // interface (Ȯ�强)
+    ~ShadowRenderer() override = default;
+    void Initialize() override {};
+    void RenderPass() override {};
+
+    // non interface function (Legucy)
     void Init() {};
     void ShadowMapPass(const Matrix& view, const Matrix& projection, 
         const vector<StaticModel*>& static_models,

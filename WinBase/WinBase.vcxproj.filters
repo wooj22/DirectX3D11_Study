@@ -124,6 +124,21 @@
     <Filter Include="01. Renderer\ParticleRenderer">
       <UniqueIdentifier>{306e3e23-4106-480f-97de-e6e30a154bd0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Renderer\ForwardTransparentRenderer">
+      <UniqueIdentifier>{f03b9bee-860b-4990-8dab-7b2caddff627}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer\DecalRenderer">
+      <UniqueIdentifier>{2eae9c1d-b0cd-423d-b840-9b1ea7b7b4b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Renderable\DecalVolumeMesh">
+      <UniqueIdentifier>{006e6f43-175f-4fd6-8e14-e0e6480dc957}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer\00_IRenderer">
+      <UniqueIdentifier>{d211a709-3dba-47ca-8b45-1884498a7326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Renderable\00_IRenderable">
+      <UniqueIdentifier>{02da4a1c-2916-48c0-b88d-720cc5ad1c25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinApp.h">
@@ -255,12 +270,24 @@
     <ClInclude Include="Emitter.h">
       <Filter>06. Effect</Filter>
     </ClInclude>
+    <ClInclude Include="ForwardTransparentRenderer.h">
+      <Filter>01. Renderer\ForwardTransparentRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="DecalRenderer.h">
+      <Filter>01. Renderer\DecalRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="DecalVolumeMesh.h">
+      <Filter>02. Renderable\DecalVolumeMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderable.h">
+      <Filter>02. Renderable\00_IRenderable</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderer.h">
+      <Filter>01. Renderer\00_IRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApp.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
@@ -358,6 +385,24 @@
     </ClCompile>
     <ClCompile Include="Emitter.cpp">
       <Filter>06. Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="ForwardTransparentRenderer.cpp">
+      <Filter>01. Renderer\ForwardTransparentRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="DecalRenderer.cpp">
+      <Filter>01. Renderer\DecalRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="DecalVolumeMesh.cpp">
+      <Filter>02. Renderable\DecalVolumeMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderable.cpp">
+      <Filter>02. Renderable\00_IRenderable</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="IRenderer.cpp">
+      <Filter>01. Renderer\00_IRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

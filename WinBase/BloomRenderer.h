@@ -1,4 +1,5 @@
 #pragma once
+#include "IRenderer.h"
 
 /*
     [ Bloom Renderer ]
@@ -15,12 +16,18 @@
      3. Bloom Upsample Combine Pass   : 업샘플 + 가산합산 하면서 최종 Bloom Texture 생성
 */
 
-class BloomRenderer
+class BloomRenderer : public IRenderer
 {
 private:
     float clearColor[4] = { 0,0,0,1 };
 
 public:
+    // interface (확장성)
+    ~BloomRenderer() override = default;
+    void Initialize() override {};
+    void RenderPass() override {};
+
+    // non interface function (Legucy)
     void Init() {};
     void BloomPass();
 };

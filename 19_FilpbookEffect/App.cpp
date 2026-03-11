@@ -30,7 +30,7 @@ bool App::OnInit()
     lightRenderer.Init();
     particleRenderer.Init();
     skyboxRenderer.Init();
-    bloomRenderer.Init();
+    bloomRenderer.Initialize();
     postRenderer.Init();
     frustumRenderer.Init(view, projection);
 

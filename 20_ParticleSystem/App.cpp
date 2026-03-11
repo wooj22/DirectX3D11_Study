@@ -30,7 +30,7 @@ bool App::OnInit()
     lightRenderer.Init();
     particleRenderer.Init();
     skyboxRenderer.Init();
-    bloomRenderer.Init();
+    bloomRenderer.Initialize();
     postRenderer.Init();
     frustumRenderer.Init(view, projection);
 
@@ -117,7 +117,7 @@ void App::OnRender()
     particleRenderer.ParticlePass(camera, effects);
 
     // 7. Bloom Prefilter -> DownSample -> UpSample Pass
-    bloomRenderer.BloomPass();
+    bloomRenderer.RenderPass();
 
     // 8. PostProcess Pass
     postRenderer.PostProcessPass();

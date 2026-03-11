@@ -1,6 +1,7 @@
 #pragma once
-#include <iostream>
+#include "Renderable.h"
 #include "RigidModelAsset.hpp"
+#include <iostream>
 #include <string>
 #include <DirectXMath.h>
 #include <directxtk/simplemath.h>
@@ -20,7 +21,7 @@ class DirectionalLight;
 * vertex_world = world_matrix * modelMatrix * vertex_local(기본저장값, animation 적용)
 */
 
-class RigidModel
+class RigidModel : public Renderable
 {
 public:
     /*---- [Model Asset] ----*/         // submeshs, materials, animation clips
@@ -43,6 +44,8 @@ public:
 public:
     RigidModel();
     RigidModel(Vector3 p, Vector3 r, Vector3 s);
+    ~RigidModel() override = default;
+
     void InitTransform();
     void SetTransform(Vector3 p, Vector3 r, Vector3 s);
     void SetPosition(Vector3 p);
