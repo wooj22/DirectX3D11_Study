@@ -94,7 +94,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     }
     else
     {
-        N = normalize(mul(input.normal, (float3x3) input.finalWorld));
+        N = normalize(input.normal);
     }
     
     // emission
