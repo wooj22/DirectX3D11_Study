@@ -42,8 +42,8 @@ void DefferedLightingRenderer::StencilPass(const vector<Light>& lights, const Ca
     D3D::deviceContext->PSSetShader(nullptr, nullptr, 0);   // PS x
 
     // DSS
-    const UINT stencilRef = 1;          // Stencil Reference Value
-    D3D::deviceContext->OMSetDepthStencilState(D3D::depthTestStencilWriteDSS.Get(), stencilRef);
+    const UINT stencilRef = 0x02;         // Stencil Reference Value
+    D3D::deviceContext->OMSetDepthStencilState(D3D::lightingVolumeDrawDSS.Get(), stencilRef);
 
     // RS (원래 outside는 cullBack인데, mesh가 뒤집혀있는듯?)
     D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
@@ -111,6 +111,8 @@ void DefferedLightingRenderer::LightingPass(const vector<Light>& lights, const E
     D3D::transformCBData.invViewProjection = XMMatrixTranspose(invVP);
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
+    const UINT stencilRef = 0x02;         // Stencil Reference Value
+
     // Render
     for (const Light& light : lights)
     {
@@ -160,7 +162,7 @@ void DefferedLightingRenderer::LightingPass(const vector<Light>& lights, const E
                 else
                 {
                     // Stencil Test on
-                    D3D::deviceContext->OMSetDepthStencilState(D3D::stencilTestOnlyDSS.Get(), 1);
+                    D3D::deviceContext->OMSetDepthStencilState(D3D::lightingVolumeTestDSS.Get(), stencilRef);
 
                     // RS
                     D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());
@@ -191,7 +193,7 @@ void DefferedLightingRenderer::LightingPass(const vector<Light>& lights, const E
                 else
                 {
                     // Stencil Test on
-                    D3D::deviceContext->OMSetDepthStencilState(D3D::stencilTestOnlyDSS.Get(), 1);
+                    D3D::deviceContext->OMSetDepthStencilState(D3D::lightingVolumeTestDSS.Get(), stencilRef);
 
                     // RS
                     D3D::deviceContext.Get()->RSSetState(D3D::cullfrontRS.Get());

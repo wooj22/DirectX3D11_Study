@@ -50,8 +50,10 @@ public:
     // DSS
     inline static ComPtr<ID3D11DepthStencilState>   defualtDSS;                 // depth test on + write on
     inline static ComPtr<ID3D11DepthStencilState>   depthTestOnlyDSS;           // depth test only
-    inline static ComPtr<ID3D11DepthStencilState>   depthTestStencilWriteDSS;   // depth test only / stencil write on (stencil test ALWAYS)
-    inline static ComPtr<ID3D11DepthStencilState>   stencilTestOnlyDSS;         // stencil test only
+    inline static ComPtr<ID3D11DepthStencilState>   groundDrawDSS;              // depth test on + write on / stencil write on (0x01)
+    inline static ComPtr<ID3D11DepthStencilState>   groundTestDSS;              // depth test / stencil test (0x01)
+    inline static ComPtr<ID3D11DepthStencilState>   lightingVolumeDrawDSS;      // depth test only / stencil write on (stencil test ALWAYS) (0x02)
+    inline static ComPtr<ID3D11DepthStencilState>   lightingVolumeTestDSS;      // stencil test only (0x02)
     inline static ComPtr<ID3D11DepthStencilState>   disableDSS;                 // all disable
 
     // RS
