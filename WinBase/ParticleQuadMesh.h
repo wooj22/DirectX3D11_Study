@@ -9,6 +9,8 @@ using Microsoft::WRL::ComPtr;
     [ Particle Quad Mesh ]
 
     이펙트(Flipbook/Particle) 전용 Quad입니다.
+    렌더러가 소유하고 관리합니다.
+
     - 정점에 월드 position이 없고 corner(+uv)만 가지므로,
       일반 Mesh 파이프라인(월드행렬로 변환)에는 그대로 사용할 수 없습니다.
     - 월드 위치는 VS에서 (ParticlePos + CamRight/Up * corner * size)로 계산합니다.

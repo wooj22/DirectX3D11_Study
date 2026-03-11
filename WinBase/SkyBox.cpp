@@ -69,7 +69,7 @@ void SkyBox::InitRenderPipeLine(const std::wstring& filePath)
     );
 }
 
-void SkyBox::Draw(const Matrix& view, const Matrix& projection) const
+void SkyBox::Draw() const
 {
     // VB, IB
     D3D::deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexBufferStride, &vertexBufferOffset);

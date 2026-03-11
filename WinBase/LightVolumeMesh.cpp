@@ -46,7 +46,7 @@ void LightVolumeMesh::UpdateWolrd(const Light& light)
     }
 }
 
-void LightVolumeMesh::Draw(const Light& light, const Camera& camera) const
+void LightVolumeMesh::Draw() const
 {
     // CB
     D3D::transformCBData.world = XMMatrixTranspose(world);

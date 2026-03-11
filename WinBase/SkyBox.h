@@ -37,7 +37,7 @@ public:
     ~SkyBox() override = default;
 
     void InitRenderPipeLine(const std::wstring& filePath);
-    void Draw(const Matrix& view, const Matrix& projection) const;
+    void Draw() const;
     void UninitRenderPipeLine();
 };
 

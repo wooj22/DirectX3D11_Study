@@ -99,7 +99,7 @@ private:
     Matrix shadowView;
     Matrix shadowProjection;
 
-    // models
+    // renderable
     vector<StaticModel*> static_models;
     vector<RigidModel*> rigid_models;
     vector<SkeletalModel*> skeletal_models;

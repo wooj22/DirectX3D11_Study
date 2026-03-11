@@ -21,10 +21,12 @@ enum class LightVolumeType {
 };
 
 /*
-    [Light Volume Mesh]
+    [ Light Volume Mesh ]
 
     Deferred Rendering의 멀티 라이트 처리(Point, Spot)시에
-    라이팅 연산 영역을 필터링 하기 위해 사용하는 Mesh
+    라이팅 연산 영역을 필터링 하기 위해 사용하는 Mesh.
+
+    Renderer가 소유하고 관리합니다.
 
     - Stencil Pass를 통해 라이팅 연산 후보 픽셀을 마킹하고
     - Lighting Pass에서 Stencil Test를 통해 해당 픽셀들에 대해서만 라이팅을 계산한다.
@@ -54,7 +56,7 @@ public:
     ~LightVolumeMesh() override = default;
 
     void UpdateWolrd(const Light& light);
-    void Draw(const Light& light, const Camera& camera) const;
+    void Draw() const;
 
     bool IsInsidePointLight(const Vector3& camPos, const Vector3& lightPos, float radius) const;
     bool IsInsideSpotLight(const Vector3& camPos, const Vector3& lightPos,

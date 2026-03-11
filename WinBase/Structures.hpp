@@ -7,7 +7,7 @@ using namespace DirectX::SimpleMath;
 ////////////    [ Vertex ]     /////////////
 ////////////////////////////////////////////
 
-// Default Model
+// Static / Rigid Mesh
 struct Vertex
 {
     Vector3 position;

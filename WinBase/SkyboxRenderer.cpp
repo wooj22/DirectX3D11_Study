@@ -42,7 +42,7 @@ void SkyboxRenderer::SkyboxPass(const Matrix& view, const Matrix& projection, co
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
     // Draw
-    skybox.Draw(view, projection);
+    skybox.Draw();
 
     // clear
     D3D::deviceContext->RSSetState(nullptr);
