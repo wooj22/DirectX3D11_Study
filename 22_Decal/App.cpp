@@ -256,6 +256,7 @@ bool App::InitResource()
 
         floor->SetPosition({ 0,-5, 600 });
         floor->SetScale({ 0.5,0.3, 1.0 });
+        floor->isGround = true;
         tree->SetPosition({ -150, 0, 130 });
         tree->SetScale({ 80, 80, 80 });
         zelda->SetPosition({ -180,0,0 });

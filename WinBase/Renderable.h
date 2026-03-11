@@ -14,6 +14,8 @@ class Renderable
 {
 public:
     RenderBlendType blendType = RenderBlendType::Opaque;    // 렌더링 방식 (기본값: 불투명)
+    bool isGround = false;
+
     virtual ~Renderable() = default;
 };
 
