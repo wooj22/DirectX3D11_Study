@@ -1,4 +1,4 @@
-#include "LightRenderer.h"
+#include "DefferedLightingRenderer.h"
 #include "Light.h"
 #include "LightVolumeMesh.h"
 #include "Environment.hpp"
@@ -7,7 +7,7 @@
 #include "Structures.hpp"
 using namespace std;
 
-void LightRenderer::Init()
+void DefferedLightingRenderer::Init()
 {
     // light volume create
     sphereVolume = CreateLightVolumeSphere(D3D::device.Get(), 24, 16);
@@ -19,7 +19,7 @@ void LightRenderer::Init()
 //  Lighting Volume을 그리며 Stencil Buffer에 라이팅 연산 영역 마크
 //  라이팅 연산 영역이란 ? 라이팅 볼륨 안의 픽셀중 G-Buffer의 깊이값보다 가까운 픽셀
 //  RTV는 바인딩 하지 않고 Stecnil Buffer만 사용한다.
-void LightRenderer::StencilPass(const vector<Light>& lights, const Camera& camera)
+void DefferedLightingRenderer::StencilPass(const vector<Light>& lights, const Camera& camera)
 {
     // RTV, DSV (Stencil)
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
@@ -67,7 +67,7 @@ void LightRenderer::StencilPass(const vector<Light>& lights, const Camera& camer
 //  G-Buffer를 샘플링하여 라이팅 계산
 //  - Directional : Full Screen Quad
 //  - Point, Spot : Light Volume + Stencil Test
-void LightRenderer::LightingPass(const vector<Light>& lights, const Environment& env, const Camera& camera)
+void DefferedLightingRenderer::LightingPass(const vector<Light>& lights, const Environment& env, const Camera& camera)
 {
     // RTV, DSV
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);

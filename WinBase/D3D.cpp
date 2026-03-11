@@ -597,7 +597,7 @@ bool D3D::CreateInputLayoutShader()
     }
 
     //---------------------------
-    // 2. Static Mesh
+    // 2. Static / Rigid Mesh
     {
         // Input Layout
         D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -610,7 +610,7 @@ bool D3D::CreateInputLayoutShader()
         };
 
         ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
-        HR_T(CompileShaderFromFile(L"../WinBase/VS_BaseLit_Static.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_BaseLit_Rigid.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
         HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
             vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_RigidVertex));
 
@@ -621,7 +621,7 @@ bool D3D::CreateInputLayoutShader()
 
         // ShadowDepth_VS
         ID3D10Blob* vertexShaderBuffer2 = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/VS_ShadowDepth_Static.hlsl", "main", "vs_5_0", &vertexShaderBuffer2));
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_ShadowDepth_Rigid.hlsl", "main", "vs_5_0", &vertexShaderBuffer2));
         HR_T(device->CreateVertexShader(vertexShaderBuffer2->GetBufferPointer(),
             vertexShaderBuffer2->GetBufferSize(), NULL, &VS_ShadowDepth_Rigid));
         SAFE_RELEASE(vertexShaderBuffer2);
@@ -643,7 +643,7 @@ bool D3D::CreateInputLayoutShader()
         };
 
         ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
-        HR_T(CompileShaderFromFile(L"../WinBase/VS_BaseLit_Skinned.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_BaseLit_Skeletal.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
         HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
             vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_BoneWeightVertex));
 
@@ -661,7 +661,7 @@ bool D3D::CreateInputLayoutShader()
 
         // ShadowDepth_VS
         ID3D10Blob* vertexShaderBuffer3 = nullptr;
-        HR_T(CompileShaderFromFile(L"../WinBase/VS_ShadowDepth_Skinned.hlsl", "main", "vs_5_0", &vertexShaderBuffer3));
+        HR_T(CompileShaderFromFile(L"../WinBase/VS_ShadowDepth_Skeletal.hlsl", "main", "vs_5_0", &vertexShaderBuffer3));
         HR_T(device->CreateVertexShader(vertexShaderBuffer3->GetBufferPointer(),
             vertexShaderBuffer3->GetBufferSize(), NULL, &VS_ShadowDepth_Skeletal));
         SAFE_RELEASE(vertexShaderBuffer3);

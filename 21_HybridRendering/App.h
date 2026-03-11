@@ -10,7 +10,7 @@
 #include "../WinBase/Light.h"
 #include "../WinBase/ShadowRenderer.h"
 #include "../WinBase/GeometryRenderer.h"
-#include "../WinBase/LightRenderer.h"
+#include "../WinBase/DefferedLightingRenderer.h"
 #include "../WinBase/ParticleRenderer.h"
 #include "../WinBase/SkyboxRenderer.h"
 #include "../WinBase/BloomRenderer.h"
@@ -76,7 +76,7 @@ private:
     // renderer
     ShadowRenderer       shadowRenderer;
     GeometryRenderer     geometryRenderer;
-    LightRenderer        lightRenderer;
+    DefferedLightingRenderer        lightRenderer;
     ParticleRenderer     particleRenderer;
     SkyboxRenderer       skyboxRenderer;
     BloomRenderer        bloomRenderer;

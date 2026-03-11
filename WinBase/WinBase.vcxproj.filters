@@ -112,9 +112,6 @@
     <Filter Include="01. Renderer\SkyboxRenderer">
       <UniqueIdentifier>{22303202-a255-4368-8734-2f1f8e5ab2b5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Renderer\LightRenderer">
-      <UniqueIdentifier>{b7eff898-ae09-4977-be98-d764412f7edf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Renderer\GeometryRenderer">
       <UniqueIdentifier>{4285f88e-d4ef-47a0-b327-e97e70e4a3bc}</UniqueIdentifier>
     </Filter>
@@ -138,6 +135,12 @@
     </Filter>
     <Filter Include="02. Renderable\00_IRenderable">
       <UniqueIdentifier>{02da4a1c-2916-48c0-b88d-720cc5ad1c25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. Shaders\PixelShader\BlinPhong">
+      <UniqueIdentifier>{4ba8554a-72bf-40f3-879c-02833a4b47fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Renderer\DefferedLightingRenderer">
+      <UniqueIdentifier>{b7eff898-ae09-4977-be98-d764412f7edf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -219,8 +222,8 @@
     <ClInclude Include="DirectionalLight.hpp">
       <Filter>07. Light\Old%28Legucy%29</Filter>
     </ClInclude>
-    <ClInclude Include="LightRenderer.h">
-      <Filter>01. Renderer\LightRenderer</Filter>
+    <ClInclude Include="DefferedLightingRenderer.h">
+      <Filter>01. Renderer\DefferedLightingRenderer</Filter>
     </ClInclude>
     <ClInclude Include="D3D.h">
       <Filter>00. D3D</Filter>
@@ -347,8 +350,8 @@
     <ClCompile Include="DirectionalShadowCamera.cpp">
       <Filter>08. Shadow</Filter>
     </ClCompile>
-    <ClCompile Include="LightRenderer.cpp">
-      <Filter>01. Renderer\LightRenderer</Filter>
+    <ClCompile Include="DefferedLightingRenderer.cpp">
+      <Filter>01. Renderer\DefferedLightingRenderer</Filter>
     </ClCompile>
     <ClCompile Include="D3D.cpp">
       <Filter>00. D3D</Filter>
@@ -412,13 +415,10 @@
     <FxCompile Include="VS_Skybox.hlsl">
       <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_BlinnPhongToon.hlsl">
-      <Filter>00. Shaders\PixelShader</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_BaseLit_Skinned.hlsl">
+    <FxCompile Include="VS_BaseLit_Skeletal.hlsl">
       <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
-    <FxCompile Include="VS_BaseLit_Static.hlsl">
+    <FxCompile Include="VS_BaseLit_Rigid.hlsl">
       <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="PS_OutLine.hlsl">
@@ -427,13 +427,10 @@
     <FxCompile Include="VS_Skinned_OutLine.hlsl">
       <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
-    <FxCompile Include="VS_ShadowDepth_Skinned.hlsl">
+    <FxCompile Include="VS_ShadowDepth_Skeletal.hlsl">
       <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_BlinnPhong.hlsl">
-      <Filter>00. Shaders\PixelShader</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_ShadowDepth_Static.hlsl">
+    <FxCompile Include="VS_ShadowDepth_Rigid.hlsl">
       <Filter>00. Shaders\VertexShader</Filter>
     </FxCompile>
     <FxCompile Include="VS_Fullscreen.hlsl">
@@ -471,6 +468,12 @@
     </FxCompile>
     <FxCompile Include="PS_Effect.hlsl">
       <Filter>00. Shaders\PixelShader</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_BlinnPhongToon.hlsl">
+      <Filter>00. Shaders\PixelShader\BlinPhong</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_BlinnPhong.hlsl">
+      <Filter>00. Shaders\PixelShader\BlinPhong</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

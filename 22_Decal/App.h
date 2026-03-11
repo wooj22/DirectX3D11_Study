@@ -69,7 +69,7 @@ private:
     // renderer
     ShadowRenderer       shadowRenderer;
     GeometryRenderer     geometryRenderer;
-    LightRenderer        lightRenderer;
+    DefferedLightingRenderer        lightRenderer;
     ParticleRenderer     particleRenderer;
     SkyboxRenderer       skyboxRenderer;
     BloomRenderer        bloomRenderer;

@@ -5,13 +5,13 @@
 // 아래 Light Renderer는 Deferred Rendering을 기준으로 합니다.
 
 /*
-    [ Light Renderer ]
+    [ Deffered Lighting Renderer ]
 
-    Gbuffer를 읽고, 라이팅을 계산하여 sceneHDR에 Additive 출력합니다.
+    Gbuffer를 읽고, 최종 가시 픽셀에 대해서만 라이팅을 계산하여 sceneHDR에 Additive 출력합니다.
     Light Volume을 소유하여, Directional/Point/Spot 라이트를 Ligting Volume Rendering합니다.
 
 
-    ** Light Renderer의 Renderable 객체 **
+    ** Deffered Lighting Renderer의 Renderable 객체 **
      LightVolumeMesh
 
 
@@ -43,7 +43,7 @@ class LightVolumeMesh;
 class Environment;
 class Camera;
 
-class LightRenderer : public IRenderer
+class DefferedLightingRenderer : public IRenderer
 {
 private:
     // light volume
@@ -55,7 +55,7 @@ private:
 
 public:
     // interface (확장성)
-    ~LightRenderer() override = default;
+    ~DefferedLightingRenderer() override = default;
     void Initialize() override {};
     void RenderPass() override {};
 

@@ -104,7 +104,7 @@ private:
     // renderer
     ShadowRenderer       shadowRenderer;
     GeometryRenderer     geometryRenderer;
-    LightRenderer        lightRenderer;
+    DefferedLightingRenderer        lightRenderer;
     SkyboxRenderer       skyboxRenderer;
     BloomRenderer        bloomRenderer;
     PostProcessRenderer  postRenderer;
