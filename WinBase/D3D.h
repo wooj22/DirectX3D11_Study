@@ -98,9 +98,9 @@ public:
 
     // Bloom
     inline static ComPtr<ID3D11ShaderResourceView>  finalBloomSRV;     // √÷¡æ Bloom SRV
-    inline static UINT bloomW;
-    inline static UINT bloomH;
-    inline static UINT bloomMipCount;
+    static UINT bloomW;
+    static UINT bloomH;
+    static UINT bloomMipCount;
     inline static ComPtr<ID3D11Texture2D>           bloomATex;
     inline static ComPtr<ID3D11Texture2D>           bloomBTex;
     inline static ComPtr<ID3D11ShaderResourceView>  bloomASRV;

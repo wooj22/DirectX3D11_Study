@@ -10,6 +10,9 @@
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib, "dxguid.lib") 
 
+UINT D3D::bloomW;
+UINT D3D::bloomH;
+UINT D3D::bloomMipCount;
 
 TransformCB        D3D::transformCBData;
 LightingCB         D3D::lightingCBData;

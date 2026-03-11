@@ -152,7 +152,7 @@ private:
     // PostProcess
     bool useColorAdjustments = 0;
     bool useWhiteBalance = 0;
-    bool useLGG = 1;
+    bool useLGG = 0;
     bool useVignette = 1;
     bool useFilmGrain = 0;
     bool useBloom = 1;

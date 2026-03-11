@@ -117,7 +117,7 @@ void App::OnRender()
     particleRenderer.ParticlePass(camera, effects);
 
     // 7. Bloom Prefilter -> DownSample -> UpSample Pass
-    bloomRenderer.RenderPass();
+    bloomRenderer.BloomPass();
 
     // 8. PostProcess Pass
     postRenderer.PostProcessPass();

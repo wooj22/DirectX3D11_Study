@@ -213,16 +213,16 @@ void App::HDRRender()
     switch (currentSkybox)
     {
     case 0:
-        skybox1.Draw(view, projection);
+        skybox1.Draw();
         break;
     case 1:
-        skybox2.Draw(view, projection);
+        skybox2.Draw();
         break;
     case 2:
-        skybox3.Draw(view, projection);
+        skybox3.Draw();
         break;
     case 3:
-        skybox4.Draw(view, projection);
+        skybox4.Draw();
         break;
     }
 

@@ -118,8 +118,8 @@ void App::OnRender()
 {
     // clear
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
-    D3D::deviceContext->ClearRenderTargetView(D3D::renderTargetView.Get(), clearColor);
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::backbufferRTV.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->ClearRenderTargetView(D3D::backbufferRTV.Get(), clearColor);
 
     // death buffer clear
     D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -198,8 +198,8 @@ void App::OnRender()
     D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     // Static, Rigid Model
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
+    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_RigidVertex.Get());
+    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Rigid.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(nullptr, NULL, 0);
 
     tree->Draw();
@@ -213,22 +213,22 @@ void App::OnRender()
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skeletal.Get(), NULL, 0);
     girl->Draw();
     enemy->Draw();
 
 
     // 2. PBR Mesh Render Pass -------------------------------------
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::backbufferRTV.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
     //D3D::deviceContext->OMSetDepthStencilState(D3D::depthStencilState.Get(), 0);
     D3D::deviceContext->PSSetShader(D3D::PS_PBR.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
 
     // static, rigid model
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
+    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_RigidVertex.Get());
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Rigid.Get(), NULL, 0);
     for (int i = 0; i < 10; i++)
     {
         spheres[i]->Draw();
@@ -241,7 +241,7 @@ void App::OnRender()
 
     // skeletal model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skeletal.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     girl->Draw();
     enemy->Draw();

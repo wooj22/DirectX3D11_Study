@@ -194,10 +194,10 @@ void App::OnRender()
     switch (currentSkybox)
     {
     case 0:
-        skybox1.Draw(view, projection);
+        skybox1.Draw();
         break;
     case 1:
-        skybox2.Draw(view, projection);
+        skybox2.Draw();
         break;
     }
 

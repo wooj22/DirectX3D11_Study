@@ -10,7 +10,8 @@
 #include "../WinBase/Light.h"
 #include "../WinBase/ShadowRenderer.h"
 #include "../WinBase/GeometryRenderer.h"
-#include "../WinBase/LightRenderer.h"
+#include "../WinBase/DefferedLightingRenderer.h"
+#include "../WinBase/ForwardTransparentRenderer.h"
 #include "../WinBase/ParticleRenderer.h"
 #include "../WinBase/SkyboxRenderer.h"
 #include "../WinBase/BloomRenderer.h"
@@ -45,7 +46,8 @@ using namespace DirectX::SimpleMath;
 /*
 * [ Render PipeLine ]
 *   1. ShadowMap Pass                     -> ShadowMap
-*   2. Geometry Pass (Opaque)             -> G-buffer (Albedo, Normal, MetalRough, Emissive)
+*   2. Geometry Pass                      -> G-buffer (Albedo, Normal, MetalRough, Emissive)
+*   3. Decal Pass (Opaque)                -> G-buffer에 Decal 정보 추가
 *   3. Deffered Lighting Pass (Opaque)    -> Scene HDR, 최종 가시 픽셀에 대해서만 라이팅 계산
         1) Lighting Volume Stencil Pass
 *       2) Lighting Pass
@@ -60,6 +62,7 @@ using namespace DirectX::SimpleMath;
 *   11. PostProcess / Tone Mapping Pass            -> SDR (final)
 *   12. Frustum Debug Draw
 *   13. GUI Draw
+*
 */
 
 
@@ -70,6 +73,7 @@ private:
     ShadowRenderer       shadowRenderer;
     GeometryRenderer     geometryRenderer;
     DefferedLightingRenderer        lightRenderer;
+    ForwardTransparentRenderer      forwardTransparentRenderer;
     ParticleRenderer     particleRenderer;
     SkyboxRenderer       skyboxRenderer;
     BloomRenderer        bloomRenderer;
@@ -92,7 +96,7 @@ private:
     Matrix shadowView;
     Matrix shadowProjection;
 
-    // models
+    // renderable
     vector<StaticModel*> static_models;
     vector<RigidModel*> rigid_models;
     vector<SkeletalModel*> skeletal_models;
@@ -143,7 +147,7 @@ private:
     // PostProcess
     bool useColorAdjustments = 0;
     bool useWhiteBalance = 0;
-    bool useLGG = 1;
+    bool useLGG = 0;
     bool useVignette = 1;
     bool useFilmGrain = 0;
     bool useBloom = 1;
