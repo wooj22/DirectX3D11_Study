@@ -103,8 +103,8 @@ void App::OnUpdate()
 void App::OnRender()
 {
     // RTV clear
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
-    D3D::deviceContext->ClearRenderTargetView(D3D::renderTargetView.Get(), clearColor);
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::backbufferRTV.GetAddressOf(), D3D::depthStencilView.Get());
+    D3D::deviceContext->ClearRenderTargetView(D3D::backbufferRTV.Get(), clearColor);
 
     // death buffer clear
     D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -186,7 +186,7 @@ void App::OnRender()
     D3D::deviceContext->RSSetState(nullptr);
 
     // model render
-    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skeletal.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_BlinnPhongToon.Get(), NULL, 0);
     for (auto& m : skeletals)
     {

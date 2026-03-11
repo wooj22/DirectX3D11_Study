@@ -274,8 +274,8 @@ void App::HDRRender()
     D3D::deviceContext->ClearDepthStencilView(D3D::shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     // Static, Rigid Model
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Static.Get(), NULL, 0);
+    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_RigidVertex.Get());
+    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Rigid.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_ShadowDepth.Get(), NULL, 0);
     tree->Draw();
     zelda->Draw();
@@ -288,7 +288,7 @@ void App::HDRRender()
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skinned.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_ShadowDepth_Skeletal.Get(), NULL, 0);
     girl->Draw();
     enemy->Draw();
 
@@ -298,8 +298,8 @@ void App::HDRRender()
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);	// viewport binding
     D3D::deviceContext->OMSetRenderTargets(1, D3D::sceneHDRRTV.GetAddressOf(), D3D::depthStencilView.Get());
     D3D::deviceContext->OMSetDepthStencilState(nullptr, 0);
-    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_Vertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Static.Get(), NULL, 0);
+    D3D::deviceContext->IASetInputLayout(D3D::inputLayout_RigidVertex.Get());
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Rigid.Get(), NULL, 0);
     D3D::deviceContext->PSSetShader(D3D::PS_PBR.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     switch (currentSkybox)
@@ -340,7 +340,7 @@ void App::HDRRender()
 
     // Skeletal Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_BoneWeightVertex.Get());
-    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skinned.Get(), NULL, 0);
+    D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skeletal.Get(), NULL, 0);
     D3D::deviceContext->PSSetShaderResources(6, 1, D3D::shadowSRV.GetAddressOf());
     girl->Draw();
     enemy->Draw();
@@ -364,8 +364,8 @@ void App::PostProcessing()
     D3D::deviceContext->PSSetShaderResources(12, 1, nullSRV);
 
     // OM 
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), nullptr);
-    D3D::deviceContext->ClearRenderTargetView(D3D::renderTargetView.Get(), clearColor);
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::backbufferRTV.GetAddressOf(), nullptr);
+    D3D::deviceContext->ClearRenderTargetView(D3D::backbufferRTV.Get(), clearColor);
 
     // IA
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

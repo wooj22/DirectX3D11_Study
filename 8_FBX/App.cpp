@@ -71,8 +71,8 @@ void App::OnUpdate()
 void App::OnRender()
 {
 	// RTV clear
-	D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), D3D::depthStencilView.Get());
-	D3D::deviceContext->ClearRenderTargetView(D3D::renderTargetView.Get(), clearColor);
+	D3D::deviceContext->OMSetRenderTargets(1, D3D::backbufferRTV.GetAddressOf(), D3D::depthStencilView.Get());
+	D3D::deviceContext->ClearRenderTargetView(D3D::backbufferRTV.Get(), clearColor);
 
 	// death buffer clear
 	D3D::deviceContext->ClearDepthStencilView(D3D::depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);

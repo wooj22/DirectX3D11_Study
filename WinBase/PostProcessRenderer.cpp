@@ -18,8 +18,8 @@ void PostProcessRenderer::PostProcessPass()
 
     // RTV
     D3D::deviceContext->RSSetViewports(1, &D3D::viewport_screen);
-    D3D::deviceContext->OMSetRenderTargets(1, D3D::renderTargetView.GetAddressOf(), nullptr);
-    D3D::deviceContext->ClearRenderTargetView(D3D::renderTargetView.Get(), clearColor);
+    D3D::deviceContext->OMSetRenderTargets(1, D3D::backbufferRTV.GetAddressOf(), nullptr);
+    D3D::deviceContext->ClearRenderTargetView(D3D::backbufferRTV.Get(), clearColor);
 
     // IA
     D3D::deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

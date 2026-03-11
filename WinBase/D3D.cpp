@@ -11,119 +11,6 @@
 #pragma comment(lib, "dxguid.lib") 
 
 
-// static member init
-ComPtr<ID3D11Device>		      D3D::device = nullptr;
-ComPtr<ID3D11DeviceContext>       D3D::deviceContext = nullptr;
-ComPtr<IDXGISwapChain>		      D3D::swapChain = nullptr;
-ComPtr<ID3D11Texture2D>           D3D::backbufferTex = nullptr;
-ComPtr<ID3D11RenderTargetView>    D3D::renderTargetView = nullptr;
-ComPtr<ID3D11Texture2D>           D3D::depthStencilTexture = nullptr;
-ComPtr<ID3D11DepthStencilView>    D3D::depthStencilView = nullptr;
-ComPtr<ID3D11DepthStencilView>    D3D::depthStencilReadOnlyView = nullptr;
-
-D3D11_VIEWPORT D3D::viewport_screen = {};
-D3D11_VIEWPORT D3D::viewport_shadowMap = {};
-
-ComPtr<ID3D11Texture2D>           D3D::sceneHDRTex = nullptr;
-ComPtr<ID3D11RenderTargetView>    D3D::sceneHDRRTV = nullptr;
-ComPtr<ID3D11ShaderResourceView>  D3D::sceneHDRSRV = nullptr;
-
-ComPtr<ID3D11Texture2D>           D3D::shadowMap = nullptr;
-ComPtr<ID3D11DepthStencilView>    D3D::shadowDSV = nullptr;
-ComPtr<ID3D11ShaderResourceView>  D3D::shadowSRV = nullptr;
-ComPtr<ID3D11SamplerState>        D3D::shadowSamplerState = nullptr;
-
-ComPtr<ID3D11Texture2D>            D3D::positionTex = nullptr;
-ComPtr<ID3D11Texture2D>            D3D::albedoTex = nullptr;
-ComPtr<ID3D11Texture2D>            D3D::normalTex = nullptr;
-ComPtr<ID3D11Texture2D>            D3D::metalRoughTex = nullptr;
-ComPtr<ID3D11Texture2D>            D3D::emissiveTex = nullptr;
-
-ComPtr<ID3D11RenderTargetView>     D3D::positionRTV = nullptr;
-ComPtr<ID3D11RenderTargetView>     D3D::albedoRTV = nullptr;
-ComPtr<ID3D11RenderTargetView>     D3D::normalRTV = nullptr;
-ComPtr<ID3D11RenderTargetView>     D3D::metalRoughRTV = nullptr;
-ComPtr<ID3D11RenderTargetView>     D3D::emissiveRTV = nullptr;
-
-ComPtr<ID3D11ShaderResourceView>   D3D::positionSRV = nullptr;
-ComPtr<ID3D11ShaderResourceView>   D3D::albedoSRV = nullptr;
-ComPtr<ID3D11ShaderResourceView>   D3D::normalSRV = nullptr;
-ComPtr<ID3D11ShaderResourceView>   D3D::metalRoughSRV = nullptr;
-ComPtr<ID3D11ShaderResourceView>   D3D::emissiveSRV = nullptr;
-ComPtr<ID3D11ShaderResourceView>   D3D::depthSRV = nullptr;
-
-ComPtr<ID3D11ShaderResourceView>  D3D::finalBloomSRV = nullptr;
-UINT D3D::bloomW = 0;
-UINT D3D::bloomH = 0;
-UINT D3D::bloomMipCount = 1;
-ComPtr<ID3D11Texture2D>           D3D::bloomATex = nullptr;
-ComPtr<ID3D11Texture2D>           D3D::bloomBTex = nullptr;
-ComPtr<ID3D11ShaderResourceView>  D3D::bloomASRV = nullptr;
-ComPtr<ID3D11ShaderResourceView>  D3D::bloomBSRV = nullptr;
-std::vector<ComPtr<ID3D11RenderTargetView>> D3D::bloomARTVs;
-std::vector<ComPtr<ID3D11RenderTargetView>> D3D::bloomBRTVs;
-
-ComPtr<ID3D11Texture2D>           D3D::accumATex = nullptr;
-ComPtr<ID3D11Texture2D>           D3D::accumBTex = nullptr;
-ComPtr<ID3D11ShaderResourceView>  D3D::accumASRV = nullptr;
-ComPtr<ID3D11ShaderResourceView>  D3D::accumBSRV = nullptr;
-std::vector<ComPtr<ID3D11RenderTargetView>> D3D::accumARTVs;
-std::vector<ComPtr<ID3D11RenderTargetView>> D3D::accumBRTVs;
-
-ComPtr<ID3D11DepthStencilState>   D3D::defualtDSS = nullptr;
-ComPtr<ID3D11DepthStencilState>   D3D::depthTestOnlyDSS = nullptr;
-ComPtr<ID3D11DepthStencilState>   D3D::depthTestStencilWriteDSS = nullptr;
-ComPtr<ID3D11DepthStencilState>   D3D::stencilTestOnlyDSS = nullptr;
-ComPtr<ID3D11DepthStencilState>   D3D::disableDSS = nullptr;
-ComPtr<ID3D11RasterizerState>     D3D::cullfrontRS = nullptr;
-ComPtr<ID3D11RasterizerState>     D3D::cullNoneRS = nullptr;
-ComPtr<ID3D11SamplerState>        D3D::linearSamplerState = nullptr;
-ComPtr<ID3D11SamplerState>        D3D::linearClamSamplerState = nullptr;
-ComPtr<ID3D11BlendState>          D3D::alphaBlendState = nullptr;
-ComPtr<ID3D11BlendState>          D3D::additiveBlendState = nullptr;
-                                  
-ComPtr<ID3D11VertexShader>        D3D::VS_BaseLit_Static = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::VS_BaseLit_Skinned = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::VS_Skybox = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::VS_Skinned_OutLine = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::VS_ShadowDepth_Skinned = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::VS_ShadowDepth_Static = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::VS_FullScreen = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::VS_LightVolume = nullptr;
-ComPtr<ID3D11VertexShader>        D3D::VS_Effect = nullptr;
-
-ComPtr<ID3D11PixelShader>         D3D::PS_BlinnPhong = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PS_PBR = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PS_BlinnPhongToon = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PS_Skybox = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PS_OutLine = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PS_PostProcess = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PS_ShadowDepth = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PS_BloomPrefilter = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PS_BloomDownsampleBlur = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PS_BloomUpsampleCombine = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PS_Gbuffer = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PS_DeferredLighting = nullptr;
-ComPtr<ID3D11PixelShader>         D3D::PS_Effect = nullptr;
-                     
-ComPtr<ID3D11InputLayout>         D3D::inputLayout_Vertex = nullptr;
-ComPtr<ID3D11InputLayout>         D3D::inputLayout_BoneWeightVertex = nullptr;
-ComPtr<ID3D11InputLayout>         D3D::inputLayout_Position = nullptr;
-ComPtr<ID3D11InputLayout>         D3D::inputLayout_Particle = nullptr;
-
-ComPtr<ID3D11Buffer>              D3D::transformBuffer = nullptr;
-ComPtr<ID3D11Buffer>              D3D::lightingBuffer = nullptr;
-ComPtr<ID3D11Buffer>              D3D::materialBuffer = nullptr;
-ComPtr<ID3D11Buffer>              D3D::offsetMatrixBuffer = nullptr;
-ComPtr<ID3D11Buffer>              D3D::poseMatrixBuffer = nullptr;
-ComPtr<ID3D11Buffer>              D3D::outlineBuffer = nullptr;
-ComPtr<ID3D11Buffer>              D3D::debugBuffer = nullptr;
-ComPtr<ID3D11Buffer>              D3D::postprocessBuffer = nullptr;
-ComPtr<ID3D11Buffer>              D3D::screenFxBuffer = nullptr;
-ComPtr<ID3D11Buffer>              D3D::bloomBuffer = nullptr;
-ComPtr<ID3D11Buffer>              D3D::frameBuffer = nullptr;
-ComPtr<ID3D11Buffer>              D3D::effectBuffer = nullptr;
-
 TransformCB        D3D::transformCBData;
 LightingCB         D3D::lightingCBData;
 MaterialCB         D3D::materialCBData;
@@ -140,50 +27,70 @@ EffectCB           D3D::effectCBData;
 
 bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
 {
-    // 필수 D3D 객체 초기화
-	// swap chain setup struct
-	DXGI_SWAP_CHAIN_DESC swapDesc = {};
-	swapDesc.BufferCount = 1;
-	swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapDesc.OutputWindow = hWnd;
-	swapDesc.Windowed = true;
-	swapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;    // UNORM : PS에서 감마 인코딩 필요, UNORM_SRGB : PS 자동 감마 적용
-	swapDesc.BufferDesc.Width = screenWidth;
-	swapDesc.BufferDesc.Height = screenHeight;
-	swapDesc.BufferDesc.RefreshRate.Numerator = 60;
-	swapDesc.BufferDesc.RefreshRate.Denominator = 1;
-	swapDesc.SampleDesc.Count = 1;
-	swapDesc.SampleDesc.Quality = 0;
+    if (!CreateDX11BaseResource(hWnd, screenWidth, screenHeight)) return false;
 
-	// deviec create debug flag
-	UINT creationFlags = 0;
+    if (!CreateDSS()) return false;
+    if (!CreateRS()) return false;
+    if (!CreateSampler()) return false;
+    if (!CreateBS()) return false;
+
+    if (!CreateHDRResource(screenWidth, screenHeight)) return false;
+    if (!CreateShadowMapResource()) return false;
+    if (!CreateGbufferResource(screenWidth, screenHeight)) return false;
+    if (!CreateBloomResource(screenWidth, screenHeight)) return false;
+
+    if (!CreateInputLayoutShader()) return false;
+    if (!CreateCB()) return false;
+
+	return true;
+}
+
+bool D3D::CreateDX11BaseResource(HWND& hWnd, int screenWidth, int screenHeight)
+{
+    // 필수 D3D 객체 초기화
+    // swap chain setup struct
+    DXGI_SWAP_CHAIN_DESC swapDesc = {};
+    swapDesc.BufferCount = 1;
+    swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swapDesc.OutputWindow = hWnd;
+    swapDesc.Windowed = true;
+    swapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;    // UNORM : PS에서 감마 인코딩 필요, UNORM_SRGB : PS 자동 감마 적용
+    swapDesc.BufferDesc.Width = screenWidth;
+    swapDesc.BufferDesc.Height = screenHeight;
+    swapDesc.BufferDesc.RefreshRate.Numerator = 60;
+    swapDesc.BufferDesc.RefreshRate.Denominator = 1;
+    swapDesc.SampleDesc.Count = 1;
+    swapDesc.SampleDesc.Quality = 0;
+
+    // deviec create debug flag
+    UINT creationFlags = 0;
 #ifdef _DEBUG
-	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+    creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	// create device, device context, swap chain
-	HR_T(D3D11CreateDeviceAndSwapChain(
-		NULL,
-		D3D_DRIVER_TYPE_HARDWARE,
-		NULL,
-		creationFlags,
-		NULL,
-		NULL,
-		D3D11_SDK_VERSION,
-		&swapDesc,
-		&swapChain,
-		&device,
-		NULL,
-		&deviceContext));
+    // create device, device context, swap chain
+    HR_T(D3D11CreateDeviceAndSwapChain(
+        NULL,
+        D3D_DRIVER_TYPE_HARDWARE,
+        NULL,
+        creationFlags,
+        NULL,
+        NULL,
+        D3D11_SDK_VERSION,
+        &swapDesc,
+        &swapChain,
+        &device,
+        NULL,
+        &deviceContext));
 
-	// create RTV					
-	HR_T(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)backbufferTex.GetAddressOf()));			// backbuffer get
-	HR_T(device->CreateRenderTargetView(backbufferTex.Get(), NULL, renderTargetView.GetAddressOf()));	    // RTV create														            // RTV에서 backbuffer texture 참조중 (메모리 관리)
+    // create RTV					
+    HR_T(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)backbufferTex.GetAddressOf()));			// backbuffer get
+    HR_T(device->CreateRenderTargetView(backbufferTex.Get(), NULL, backbufferRTV.GetAddressOf()));	    // RTV create														            // RTV에서 backbuffer texture 참조중 (메모리 관리)
 
-	ID3D11RenderTargetView* rtv = renderTargetView.Get();
-	deviceContext->OMSetRenderTargets(1, &rtv, nullptr);	// render targetview  binding
+    ID3D11RenderTargetView* rtv = backbufferRTV.Get();
+    deviceContext->OMSetRenderTargets(1, &rtv, nullptr);	// render targetview  binding
 
-	// create depth stencil view 
+    // create depth stencil view 
     {
         // texture
         D3D11_TEXTURE2D_DESC descDepth = {};
@@ -191,7 +98,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         descDepth.Height = screenHeight;
         descDepth.MipLevels = 1;
         descDepth.ArraySize = 1;
-        descDepth.Format = DXGI_FORMAT_R24G8_TYPELESS;     
+        descDepth.Format = DXGI_FORMAT_R24G8_TYPELESS;
         descDepth.SampleDesc.Count = 1;
         descDepth.SampleDesc.Quality = 0;
         descDepth.Usage = D3D11_USAGE_DEFAULT;
@@ -208,7 +115,7 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         descDSV.Texture2D.MipSlice = 0;
         descDSV.Flags = 0;
         HR_T(device->CreateDepthStencilView(depthStencilTexture.Get(), &descDSV, depthStencilView.GetAddressOf()));
-    
+
         // read only DSV
         D3D11_DEPTH_STENCIL_VIEW_DESC dsvRODesc = descDSV;
         dsvRODesc.Flags = D3D11_DSV_READ_ONLY_DEPTH | D3D11_DSV_READ_ONLY_STENCIL;
@@ -239,16 +146,198 @@ bool D3D::Init(HWND& hWnd, int screenWidth, int screenHeight)
         deviceContext->RSSetViewports(1, &viewport_screen);	// viewport binding
     }
 
+    return true;
+}
 
-    if (!CreateHDRResource(screenWidth, screenHeight)) return false;
-    if (!CreateShadowMapResource()) return false;
-    if (!CreateDeferredResource(screenWidth, screenHeight)) return false;
-    if (!CreateBloomResource(screenWidth, screenHeight)) return false;
-    if (!CresateStates()) return false;
-    if (!CreateShader()) return false;
-    if (!CreateConstantBuffer()) return false;
+bool D3D::CreateDSS()
+{
+    // create DSS (depth test on + write on)
+    {
+        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+        dsDesc.DepthEnable = TRUE;                              // 깊이 테스트 o  
+        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;     // 버퍼 기록 o
+        dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+        dsDesc.StencilEnable = FALSE;
 
-	return true;
+        HR_T(device->CreateDepthStencilState(&dsDesc, defualtDSS.GetAddressOf()));
+    }
+
+    // create DSS (depth test only)
+    {
+        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+        dsDesc.DepthEnable = TRUE;                              // 깊이 테스트 o  
+        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;    // 버퍼 기록 x
+        dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+        dsDesc.StencilEnable = FALSE;
+
+        HR_T(device->CreateDepthStencilState(&dsDesc, depthTestOnlyDSS.GetAddressOf()));
+    }
+
+    // create DSS (depth test only / stencil write on (stencil test ALWAYS))
+    // Light Volume Stencil Pass
+    {
+        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+        dsDesc.DepthEnable = TRUE;                              // Depth Test ON                          
+        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;    // 버퍼 기록 x        
+        dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;         // 라이트 볼륨 표면이 씬 표면보다 앞이거나 같으면 통과    
+
+        dsDesc.StencilEnable = TRUE;        // Stencil Test ON
+        dsDesc.StencilReadMask = 0xFF;
+        dsDesc.StencilWriteMask = 0xFF;     // Write ON
+
+        // Front Face
+        dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;       // Stencil Test 무조건 통과
+        dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;       // 변경 x
+        dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;  // 변경 x
+        dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;    // Depth, Stencil 통과시 Ref로 Stencil 값 변경
+
+        // Back Face (동일)
+        dsDesc.BackFace = dsDesc.FrontFace;
+
+        HR_T(device->CreateDepthStencilState(&dsDesc, depthTestStencilWriteDSS.GetAddressOf()));
+    }
+
+    // create DSS (stencil test only)
+    // Llight Volume Light Pass
+    {
+        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+        dsDesc.DepthEnable = FALSE;                                 // Depth Test OFF
+        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+        dsDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+
+        dsDesc.StencilEnable = TRUE;       // Stencil Test ON
+        dsDesc.StencilReadMask = 0xFF;
+        dsDesc.StencilWriteMask = 0x00;    // Write OFF
+
+        // Front Face
+        dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;      // stencil == 1(Ref)인 픽셀만 통과
+        dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+        dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+        dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+
+        // Back Face (동일)
+        dsDesc.BackFace = dsDesc.FrontFace;
+
+        HR_T(device->CreateDepthStencilState(
+            &dsDesc,
+            stencilTestOnlyDSS.GetAddressOf()
+        ));
+    }
+
+    // create DSS (all disable)
+    {
+        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+        dsDesc.DepthEnable = FALSE;                              // 깊이 테스트 x
+        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;     // 버퍼 기록 x
+        dsDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+        dsDesc.StencilEnable = FALSE;
+
+        HR_T(device->CreateDepthStencilState(&dsDesc, disableDSS.GetAddressOf()));
+    }
+
+    return true;
+}
+
+bool D3D::CreateRS()
+{
+    // create RS (cull mode front)
+    {
+        D3D11_RASTERIZER_DESC rsDesc = {};
+        rsDesc.FillMode = D3D11_FILL_SOLID;
+        rsDesc.CullMode = D3D11_CULL_FRONT;
+        rsDesc.DepthClipEnable = TRUE;
+        HR_T(device->CreateRasterizerState(&rsDesc, cullfrontRS.GetAddressOf()));
+    }
+
+    // create RS (none culling)
+    {
+        D3D11_RASTERIZER_DESC rsDesc = {};
+        rsDesc.FillMode = D3D11_FILL_SOLID;
+        rsDesc.CullMode = D3D11_CULL_NONE;
+        rsDesc.FrontCounterClockwise = FALSE;
+        rsDesc.DepthClipEnable = TRUE;
+        HR_T(device->CreateRasterizerState(&rsDesc, cullNoneRS.GetAddressOf()));
+    }
+
+    return true;
+}
+
+bool D3D::CreateSampler()
+{
+    // create smapler state (linear)
+    {
+        D3D11_SAMPLER_DESC sample_Desc = {};
+        sample_Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;			// 상하좌우 텍셀 보간
+        sample_Desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;				// 0~1 범위를 벗어난 uv는 소수 부분만 사용
+        sample_Desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+        sample_Desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+        sample_Desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+        sample_Desc.MinLOD = 0;
+        sample_Desc.MaxLOD = D3D11_FLOAT32_MAX;
+        HR_T(device->CreateSamplerState(&sample_Desc, linearSamplerState.GetAddressOf()));
+    }
+
+    // create smapler state (clamp)
+    {
+        D3D11_SAMPLER_DESC sampDesc = {};
+        sampDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+        sampDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+        sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+        HR_T(device->CreateSamplerState(&sampDesc, shadowSamplerState.GetAddressOf()));
+    }
+
+    // create smapler state (linear + clamp) 
+    {
+        D3D11_SAMPLER_DESC sampDesc = {};
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.MipLODBias = 0.0f;
+        sampDesc.MaxAnisotropy = 1;
+        sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+        sampDesc.MinLOD = 0.0f;
+        sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+        HR_T(device->CreateSamplerState(&sampDesc, linearClamSamplerState.GetAddressOf()));
+    }
+
+
+    return true;
+}
+
+bool D3D::CreateBS()
+{
+    // create blend state
+    {
+        D3D11_BLEND_DESC blendDesc = {};
+        blendDesc.RenderTarget[0].BlendEnable = TRUE;
+        blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+        blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+        blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+        blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+        blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+        blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+        blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+        D3D::device->CreateBlendState(&blendDesc, alphaBlendState.GetAddressOf());
+    }
+
+    // create blend state
+    {
+        D3D11_BLEND_DESC blendDesc = {};
+        blendDesc.RenderTarget[0].BlendEnable = TRUE;
+        blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+        blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+        blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+        blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+        blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+        blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+        blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+        D3D::device->CreateBlendState(&blendDesc, additiveBlendState.GetAddressOf());
+    }
+
+    return true;
 }
 
 bool D3D::CreateHDRResource(int screenWidth, int screenHeight)
@@ -331,19 +420,10 @@ bool D3D::CreateShadowMapResource()
     hr = device->CreateShaderResourceView(shadowMap.Get(), &srvDesc, shadowSRV.GetAddressOf());
     if (FAILED(hr)) { OutputDebugStringA("FAILED Create Shadow Shader Resource View"); }
 
-    // Sampler State
-    D3D11_SAMPLER_DESC sampDesc = {};
-    sampDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
-    sampDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-    HR_T(device->CreateSamplerState(&sampDesc, shadowSamplerState.GetAddressOf()));
-
     return true;
 }
 
-bool D3D::CreateDeferredResource(int screenWidth, int screenHeight)
+bool D3D::CreateGbufferResource(int screenWidth, int screenHeight)
 {
     const DXGI_FORMAT POSITION_FMT = DXGI_FORMAT_R16G16B16A16_FLOAT;
     const DXGI_FORMAT ALBEDO_FMT = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -490,171 +570,7 @@ bool D3D::CreateBloomResource(int screenWidth, int screenHeight)
     return true;
 }
 
-bool D3D::CresateStates()
-{
-    // create DSS (depth test on + write on)
-    {
-        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-        dsDesc.DepthEnable = TRUE;                              // 깊이 테스트 o  
-        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;     // 버퍼 기록 o
-        dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
-        dsDesc.StencilEnable = FALSE;
-
-        HR_T(device->CreateDepthStencilState(&dsDesc, defualtDSS.GetAddressOf()));
-    }
-
-    // create DSS (depth test only)
-    {
-        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-        dsDesc.DepthEnable = TRUE;                              // 깊이 테스트 o  
-        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;    // 버퍼 기록 x
-        dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-        dsDesc.StencilEnable = FALSE;
-
-        HR_T(device->CreateDepthStencilState(&dsDesc, depthTestOnlyDSS.GetAddressOf()));
-    }
-
-    // create DSS (depth test only / stencil write on (stencil test ALWAYS))
-    // Light Volume Stencil Pass
-    {
-        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-        dsDesc.DepthEnable = TRUE;                              // Depth Test ON                          
-        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;    // 버퍼 기록 x        
-        dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;         // 라이트 볼륨 표면이 씬 표면보다 앞이거나 같으면 통과    
-
-        dsDesc.StencilEnable = TRUE;        // Stencil Test ON
-        dsDesc.StencilReadMask = 0xFF;
-        dsDesc.StencilWriteMask = 0xFF;     // Write ON
-
-        // Front Face
-        dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;       // Stencil Test 무조건 통과
-        dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;       // 변경 x
-        dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;  // 변경 x
-        dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;    // Depth, Stencil 통과시 Ref로 Stencil 값 변경
-
-        // Back Face (동일)
-        dsDesc.BackFace = dsDesc.FrontFace;
-
-        HR_T(device->CreateDepthStencilState(&dsDesc, depthTestStencilWriteDSS.GetAddressOf()));
-    }
-
-    // create DSS (stencil test only)
-    // Llight Volume Light Pass
-    {
-        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-        dsDesc.DepthEnable = FALSE;                                 // Depth Test OFF
-        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-        dsDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
-
-        dsDesc.StencilEnable = TRUE;       // Stencil Test ON
-        dsDesc.StencilReadMask = 0xFF;
-        dsDesc.StencilWriteMask = 0x00;    // Write OFF
-
-        // Front Face
-        dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;      // stencil == 1(Ref)인 픽셀만 통과
-        dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-        dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
-        dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-
-        // Back Face (동일)
-        dsDesc.BackFace = dsDesc.FrontFace;
-
-        HR_T(device->CreateDepthStencilState(
-            &dsDesc,
-            stencilTestOnlyDSS.GetAddressOf()
-        ));
-    }
-
-    // create DSS (all disable)
-    {
-        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-        dsDesc.DepthEnable = FALSE;                              // 깊이 테스트 x
-        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;     // 버퍼 기록 x
-        dsDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
-        dsDesc.StencilEnable = FALSE;
-
-        HR_T(device->CreateDepthStencilState(&dsDesc, disableDSS.GetAddressOf()));
-    }
-
-    // create RS (skybox 큐브의 안쪽이 그려지도록 cull mode front)
-    {
-        D3D11_RASTERIZER_DESC rsDesc = {};
-        rsDesc.FillMode = D3D11_FILL_SOLID;
-        rsDesc.CullMode = D3D11_CULL_FRONT;
-        rsDesc.DepthClipEnable = TRUE;
-        HR_T(device->CreateRasterizerState(&rsDesc, cullfrontRS.GetAddressOf()));
-    }
-
-    // create RS
-    {
-        D3D11_RASTERIZER_DESC rsDesc = {};
-        rsDesc.FillMode = D3D11_FILL_SOLID;
-        rsDesc.CullMode = D3D11_CULL_NONE;
-        rsDesc.FrontCounterClockwise = FALSE;
-        rsDesc.DepthClipEnable = TRUE;
-        HR_T(device->CreateRasterizerState(&rsDesc, cullNoneRS.GetAddressOf()));
-    }
-
-    // create smapler state
-    {
-        D3D11_SAMPLER_DESC sample_Desc = {};
-        sample_Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;			// 상하좌우 텍셀 보간
-        sample_Desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;				// 0~1 범위를 벗어난 uv는 소수 부분만 사용
-        sample_Desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-        sample_Desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-        sample_Desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-        sample_Desc.MinLOD = 0;
-        sample_Desc.MaxLOD = D3D11_FLOAT32_MAX;
-        HR_T(device->CreateSamplerState(&sample_Desc, linearSamplerState.GetAddressOf()));
-    }
-
-    // create smapler state 
-    {
-        D3D11_SAMPLER_DESC sampDesc = {};
-        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-        sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-        sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-        sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-        sampDesc.MipLODBias = 0.0f;
-        sampDesc.MaxAnisotropy = 1;
-        sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-        sampDesc.MinLOD = 0.0f;
-        sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-        HR_T(device->CreateSamplerState(&sampDesc, linearClamSamplerState.GetAddressOf()));
-    }
-
-    // create blend state
-    {
-        D3D11_BLEND_DESC blendDesc = {};
-        blendDesc.RenderTarget[0].BlendEnable = TRUE;
-        blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-        blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-        blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-        blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-        blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-        blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-        blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-        D3D::device->CreateBlendState(&blendDesc, alphaBlendState.GetAddressOf());
-    }
-
-    // create blend state
-    {
-        D3D11_BLEND_DESC blendDesc = {};
-        blendDesc.RenderTarget[0].BlendEnable = TRUE;
-        blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-        blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
-        blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-        blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-        blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-        blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-        blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-        D3D::device->CreateBlendState(&blendDesc, additiveBlendState.GetAddressOf());
-    }
-
-    return true;
-}
-
-bool D3D::CreateShader()
+bool D3D::CreateInputLayoutShader()
 {
     //---------------------------
     // 1. Skybox
@@ -696,18 +612,18 @@ bool D3D::CreateShader()
         ID3D10Blob* vertexShaderBuffer = nullptr;		// vs mapping
         HR_T(CompileShaderFromFile(L"../WinBase/VS_BaseLit_Static.hlsl", "main", "vs_5_0", &vertexShaderBuffer));
         HR_T(device->CreateInputLayout(layout, ARRAYSIZE(layout),
-            vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_Vertex));
+            vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &inputLayout_RigidVertex));
 
         // VS
         HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-            vertexShaderBuffer->GetBufferSize(), NULL, &VS_BaseLit_Static));
+            vertexShaderBuffer->GetBufferSize(), NULL, &VS_BaseLit_Rigid));
         SAFE_RELEASE(vertexShaderBuffer);
 
         // ShadowDepth_VS
         ID3D10Blob* vertexShaderBuffer2 = nullptr;
         HR_T(CompileShaderFromFile(L"../WinBase/VS_ShadowDepth_Static.hlsl", "main", "vs_5_0", &vertexShaderBuffer2));
         HR_T(device->CreateVertexShader(vertexShaderBuffer2->GetBufferPointer(),
-            vertexShaderBuffer2->GetBufferSize(), NULL, &VS_ShadowDepth_Static));
+            vertexShaderBuffer2->GetBufferSize(), NULL, &VS_ShadowDepth_Rigid));
         SAFE_RELEASE(vertexShaderBuffer2);
     }
 
@@ -733,7 +649,7 @@ bool D3D::CreateShader()
 
         // VS
         HR_T(device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-            vertexShaderBuffer->GetBufferSize(), NULL, &VS_BaseLit_Skinned));
+            vertexShaderBuffer->GetBufferSize(), NULL, &VS_BaseLit_Skeletal));
         SAFE_RELEASE(vertexShaderBuffer);
 
         // Skinned OutLine VS
@@ -747,7 +663,7 @@ bool D3D::CreateShader()
         ID3D10Blob* vertexShaderBuffer3 = nullptr;
         HR_T(CompileShaderFromFile(L"../WinBase/VS_ShadowDepth_Skinned.hlsl", "main", "vs_5_0", &vertexShaderBuffer3));
         HR_T(device->CreateVertexShader(vertexShaderBuffer3->GetBufferPointer(),
-            vertexShaderBuffer3->GetBufferSize(), NULL, &VS_ShadowDepth_Skinned));
+            vertexShaderBuffer3->GetBufferSize(), NULL, &VS_ShadowDepth_Skeletal));
         SAFE_RELEASE(vertexShaderBuffer3);
     }
 
@@ -923,7 +839,7 @@ bool D3D::CreateShader()
     return true;
 }
 
-bool D3D::CreateConstantBuffer()
+bool D3D::CreateCB()
 {
     // 1. TransformCB
     {
@@ -1052,7 +968,7 @@ bool D3D::CreateConstantBuffer()
 void D3D::UnInit()
 {
 	// 스마트 포인터이므로 알아서 해제됨
-	renderTargetView.Reset();
+	backbufferRTV.Reset();
 	deviceContext.Reset();
 	swapChain.Reset();
 	device.Reset();

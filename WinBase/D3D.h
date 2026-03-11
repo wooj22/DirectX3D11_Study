@@ -32,134 +32,139 @@ struct EffectCB;
 class D3D
 {
 public:
-    // 필수
-	static ComPtr<ID3D11Device>		         device;
-	static ComPtr<ID3D11DeviceContext>       deviceContext;
-	static ComPtr<IDXGISwapChain>		     swapChain;
-    static ComPtr<ID3D11Texture2D>           backbufferTex;
-	static ComPtr<ID3D11RenderTargetView>    renderTargetView;          // LDR (final)
-    static ComPtr<ID3D11Texture2D>           depthStencilTexture;
-	static ComPtr<ID3D11DepthStencilView>    depthStencilView;
-    static ComPtr<ID3D11DepthStencilView>    depthStencilReadOnlyView;  // 다중라이팅 안하면 필수 아님
+    // DX11 Base
+	inline static ComPtr<ID3D11Device>		        device;
+	inline static ComPtr<ID3D11DeviceContext>       deviceContext;
+	inline static ComPtr<IDXGISwapChain>		    swapChain;
+    inline static ComPtr<ID3D11Texture2D>           backbufferTex;
+	inline static ComPtr<ID3D11RenderTargetView>    backbufferRTV;          // SDR (final)
+    inline static ComPtr<ID3D11Texture2D>           depthStencilTexture;
+	inline static ComPtr<ID3D11DepthStencilView>    depthStencilView;
+    inline static ComPtr<ID3D11DepthStencilView>    depthStencilReadOnlyView;  // 다중라이팅 안하면 필수 아님
 
     // viewport
-    static D3D11_VIEWPORT viewport_screen;
-    static D3D11_VIEWPORT viewport_shadowMap;
-
-    // HDR
-    static ComPtr<ID3D11Texture2D>           sceneHDRTex;
-    static ComPtr<ID3D11RenderTargetView>    sceneHDRRTV;          // HDR RTV
-    static ComPtr<ID3D11ShaderResourceView>  sceneHDRSRV;          // HDR SRV
-
-    // Shadow
-    static ComPtr<ID3D11Texture2D>           shadowMap;
-    static ComPtr<ID3D11DepthStencilView>    shadowDSV;
-    static ComPtr<ID3D11ShaderResourceView>  shadowSRV;            // ShadowMap Texture
-    static ComPtr<ID3D11SamplerState>        shadowSamplerState;   // clmap
-
-    // Deferred - G-buffer (write: RTV, read: SRV)
-    static ComPtr<ID3D11Texture2D>           positionTex;
-    static ComPtr<ID3D11Texture2D>           albedoTex;
-    static ComPtr<ID3D11Texture2D>           normalTex;
-    static ComPtr<ID3D11Texture2D>           metalRoughTex;
-    static ComPtr<ID3D11Texture2D>           emissiveTex;
-
-    static ComPtr<ID3D11RenderTargetView>    positionRTV;
-    static ComPtr<ID3D11RenderTargetView>    albedoRTV;
-    static ComPtr<ID3D11RenderTargetView>    normalRTV;
-    static ComPtr<ID3D11RenderTargetView>    metalRoughRTV;
-    static ComPtr<ID3D11RenderTargetView>    emissiveRTV;
-
-    static ComPtr<ID3D11ShaderResourceView>  positionSRV;
-    static ComPtr<ID3D11ShaderResourceView>  albedoSRV;
-    static ComPtr<ID3D11ShaderResourceView>  normalSRV;
-    static ComPtr<ID3D11ShaderResourceView>  metalRoughSRV;
-    static ComPtr<ID3D11ShaderResourceView>  emissiveSRV;
-    static ComPtr<ID3D11ShaderResourceView>  depthSRV;
-
-    // Bloom
-    static ComPtr<ID3D11ShaderResourceView>  finalBloomSRV;     // 최종 Bloom SRV
-    static UINT bloomW;
-    static UINT bloomH;
-    static UINT bloomMipCount;
-    static ComPtr<ID3D11Texture2D>           bloomATex;
-    static ComPtr<ID3D11Texture2D>           bloomBTex;
-    static ComPtr<ID3D11ShaderResourceView>  bloomASRV;
-    static ComPtr<ID3D11ShaderResourceView>  bloomBSRV;
-    static std::vector<ComPtr<ID3D11RenderTargetView>> bloomARTVs;
-    static std::vector<ComPtr<ID3D11RenderTargetView>> bloomBRTVs;
-
-    static ComPtr<ID3D11Texture2D>           accumATex;
-    static ComPtr<ID3D11Texture2D>           accumBTex;
-    static ComPtr<ID3D11ShaderResourceView>  accumASRV;
-    static ComPtr<ID3D11ShaderResourceView>  accumBSRV;
-    static std::vector<ComPtr<ID3D11RenderTargetView>> accumARTVs;
-    static std::vector<ComPtr<ID3D11RenderTargetView>> accumBRTVs;
+    inline static D3D11_VIEWPORT viewport_screen;
+    inline static D3D11_VIEWPORT viewport_shadowMap;
 
     // DSS
-    static ComPtr<ID3D11DepthStencilState>   defualtDSS;                 // depth test on + write on
-	static ComPtr<ID3D11DepthStencilState>   depthTestOnlyDSS;           // depth test only
-    static ComPtr<ID3D11DepthStencilState>   depthTestStencilWriteDSS;   // depth test only / stencil write on (stencil test ALWAYS)
-    static ComPtr<ID3D11DepthStencilState>   stencilTestOnlyDSS;         // stencil test only
-    static ComPtr<ID3D11DepthStencilState>   disableDSS;                 // all disable
+    inline static ComPtr<ID3D11DepthStencilState>   defualtDSS;                 // depth test on + write on
+    inline static ComPtr<ID3D11DepthStencilState>   depthTestOnlyDSS;           // depth test only
+    inline static ComPtr<ID3D11DepthStencilState>   depthTestStencilWriteDSS;   // depth test only / stencil write on (stencil test ALWAYS)
+    inline static ComPtr<ID3D11DepthStencilState>   stencilTestOnlyDSS;         // stencil test only
+    inline static ComPtr<ID3D11DepthStencilState>   disableDSS;                 // all disable
 
     // RS
-    static ComPtr<ID3D11RasterizerState>     cullfrontRS;             // cullmode = front : 앞면 버리고 뒷면만 남김
-    static ComPtr<ID3D11RasterizerState>     cullNoneRS;              // 컬링 안하고 모든 영역을 그림
+    inline static ComPtr<ID3D11RasterizerState>     cullfrontRS;              // cullmode = front : 앞면 버리고 뒷면만 남김
+    inline static ComPtr<ID3D11RasterizerState>     cullNoneRS;               // 컬링 안하고 모든 영역을 그림
 
     // Sampler State
-	static ComPtr<ID3D11SamplerState>	     linearSamplerState;       // linear    
-	static ComPtr<ID3D11SamplerState>	     linearClamSamplerState;   // linear + clamp    
+    inline static ComPtr<ID3D11SamplerState>	    linearSamplerState;       // linear    
+    inline static ComPtr<ID3D11SamplerState>	    linearClamSamplerState;   // linear + clamp    
+    inline static ComPtr<ID3D11SamplerState>        shadowSamplerState;       // clmap
 
     // Blend State
-	static ComPtr<ID3D11BlendState>          alphaBlendState;          // alpha
-    static ComPtr<ID3D11BlendState>          additiveBlendState;       // additive (multiple light)
+    inline static ComPtr<ID3D11BlendState>          alphaBlendState;          // alpha
+    inline static ComPtr<ID3D11BlendState>          additiveBlendState;       // additive (multiple light)
 
-    // Vertex Shader
-    static ComPtr<ID3D11VertexShader> VS_BaseLit_Static;
-    static ComPtr<ID3D11VertexShader> VS_BaseLit_Skinned;
-    static ComPtr<ID3D11VertexShader> VS_Skybox;
-    static ComPtr<ID3D11VertexShader> VS_Skinned_OutLine;
-    static ComPtr<ID3D11VertexShader> VS_ShadowDepth_Skinned;
-    static ComPtr<ID3D11VertexShader> VS_ShadowDepth_Static;
-    static ComPtr<ID3D11VertexShader> VS_FullScreen;
-    static ComPtr<ID3D11VertexShader> VS_LightVolume;
-    static ComPtr<ID3D11VertexShader> VS_Effect;
+    // HDR
+    inline static ComPtr<ID3D11Texture2D>           sceneHDRTex;
+    inline static ComPtr<ID3D11RenderTargetView>    sceneHDRRTV;          // HDR RTV
+    inline static ComPtr<ID3D11ShaderResourceView>  sceneHDRSRV;          // HDR SRV
 
-    // Pixel Shader
-    static ComPtr<ID3D11PixelShader> PS_BlinnPhong;
-    static ComPtr<ID3D11PixelShader> PS_PBR;
-    static ComPtr<ID3D11PixelShader> PS_BlinnPhongToon;
-    static ComPtr<ID3D11PixelShader> PS_Skybox;
-    static ComPtr<ID3D11PixelShader> PS_OutLine;
-    static ComPtr<ID3D11PixelShader> PS_PostProcess;
-    static ComPtr<ID3D11PixelShader> PS_ShadowDepth;
-    static ComPtr<ID3D11PixelShader> PS_BloomPrefilter;
-    static ComPtr<ID3D11PixelShader> PS_BloomDownsampleBlur;
-    static ComPtr<ID3D11PixelShader> PS_BloomUpsampleCombine;
-    static ComPtr<ID3D11PixelShader> PS_Gbuffer;
-    static ComPtr<ID3D11PixelShader> PS_DeferredLighting;
-    static ComPtr<ID3D11PixelShader> PS_Effect;
+    // Shadow Resource
+    inline static ComPtr<ID3D11Texture2D>           shadowMap;
+    inline static ComPtr<ID3D11DepthStencilView>    shadowDSV;
+    inline static ComPtr<ID3D11ShaderResourceView>  shadowSRV;            // ShadowMap Texture
+
+    // G-buffer (write: RTV, read: SRV)
+    inline static ComPtr<ID3D11Texture2D>           positionTex;    // 사용 x
+    inline static ComPtr<ID3D11Texture2D>           albedoTex;
+    inline static ComPtr<ID3D11Texture2D>           normalTex;
+    inline static ComPtr<ID3D11Texture2D>           metalRoughTex;
+    inline static ComPtr<ID3D11Texture2D>           emissiveTex;
+
+    inline static ComPtr<ID3D11RenderTargetView>    positionRTV;    // 사용 x
+    inline static ComPtr<ID3D11RenderTargetView>    albedoRTV;
+    inline static ComPtr<ID3D11RenderTargetView>    normalRTV;
+    inline static ComPtr<ID3D11RenderTargetView>    metalRoughRTV;
+    inline static ComPtr<ID3D11RenderTargetView>    emissiveRTV;
+
+    inline static ComPtr<ID3D11ShaderResourceView>  positionSRV;    // 사용 x
+    inline static ComPtr<ID3D11ShaderResourceView>  albedoSRV;
+    inline static ComPtr<ID3D11ShaderResourceView>  normalSRV;
+    inline static ComPtr<ID3D11ShaderResourceView>  metalRoughSRV;
+    inline static ComPtr<ID3D11ShaderResourceView>  emissiveSRV;
+    inline static ComPtr<ID3D11ShaderResourceView>  depthSRV;
+
+    // Bloom
+    inline static ComPtr<ID3D11ShaderResourceView>  finalBloomSRV;     // 최종 Bloom SRV
+    inline static UINT bloomW;
+    inline static UINT bloomH;
+    inline static UINT bloomMipCount;
+    inline static ComPtr<ID3D11Texture2D>           bloomATex;
+    inline static ComPtr<ID3D11Texture2D>           bloomBTex;
+    inline static ComPtr<ID3D11ShaderResourceView>  bloomASRV;
+    inline static ComPtr<ID3D11ShaderResourceView>  bloomBSRV;
+    inline static std::vector<ComPtr<ID3D11RenderTargetView>> bloomARTVs;
+    inline static std::vector<ComPtr<ID3D11RenderTargetView>> bloomBRTVs;
+
+    inline static ComPtr<ID3D11Texture2D>           accumATex;
+    inline static ComPtr<ID3D11Texture2D>           accumBTex;
+    inline static ComPtr<ID3D11ShaderResourceView>  accumASRV;
+    inline static ComPtr<ID3D11ShaderResourceView>  accumBSRV;
+    inline static std::vector<ComPtr<ID3D11RenderTargetView>> accumARTVs;
+    inline static std::vector<ComPtr<ID3D11RenderTargetView>> accumBRTVs;
+
 
     // InputLayout
-    static ComPtr<ID3D11InputLayout> inputLayout_Vertex;
-    static ComPtr<ID3D11InputLayout> inputLayout_BoneWeightVertex;
-    static ComPtr<ID3D11InputLayout> inputLayout_Position;
-    static ComPtr<ID3D11InputLayout> inputLayout_Particle;
+    inline static ComPtr<ID3D11InputLayout> inputLayout_RigidVertex;
+    inline static ComPtr<ID3D11InputLayout> inputLayout_BoneWeightVertex;
+    inline static ComPtr<ID3D11InputLayout> inputLayout_Position;
+    inline static ComPtr<ID3D11InputLayout> inputLayout_Particle;
+
+
+    // Vertex Shader
+    inline static ComPtr<ID3D11VertexShader> VS_ShadowDepth_Rigid;
+    inline static ComPtr<ID3D11VertexShader> VS_ShadowDepth_Skeletal;
+    inline static ComPtr<ID3D11VertexShader> VS_BaseLit_Rigid;
+    inline static ComPtr<ID3D11VertexShader> VS_BaseLit_Skeletal;
+    inline static ComPtr<ID3D11VertexShader> VS_Skybox;
+    inline static ComPtr<ID3D11VertexShader> VS_FullScreen;
+    inline static ComPtr<ID3D11VertexShader> VS_LightVolume;
+    inline static ComPtr<ID3D11VertexShader> VS_Effect;
+    inline static ComPtr<ID3D11VertexShader> VS_Skinned_OutLine;
+    
+
+    // Pixel Shader
+    inline static ComPtr<ID3D11PixelShader> PS_BlinnPhong;
+    inline static ComPtr<ID3D11PixelShader> PS_BlinnPhongToon;
+
+    inline static ComPtr<ID3D11PixelShader> PS_ShadowDepth;
+    inline static ComPtr<ID3D11PixelShader> PS_Gbuffer;
+    inline static ComPtr<ID3D11PixelShader> PS_DeferredLighting;
+    inline static ComPtr<ID3D11PixelShader> PS_PBR;
+    inline static ComPtr<ID3D11PixelShader> PS_Skybox;
+    inline static ComPtr<ID3D11PixelShader> PS_Effect;
+    inline static ComPtr<ID3D11PixelShader> PS_BloomPrefilter;
+    inline static ComPtr<ID3D11PixelShader> PS_BloomDownsampleBlur;
+    inline static ComPtr<ID3D11PixelShader> PS_BloomUpsampleCombine;
+    inline static ComPtr<ID3D11PixelShader> PS_PostProcess;
+    inline static ComPtr<ID3D11PixelShader> PS_OutLine;
+
 
     // ConstantBuffer
-    static ComPtr<ID3D11Buffer> transformBuffer;
-    static ComPtr<ID3D11Buffer> lightingBuffer;
-    static ComPtr<ID3D11Buffer> materialBuffer;
-    static ComPtr<ID3D11Buffer> offsetMatrixBuffer;
-    static ComPtr<ID3D11Buffer> poseMatrixBuffer;
-    static ComPtr<ID3D11Buffer> outlineBuffer;
-    static ComPtr<ID3D11Buffer> debugBuffer;
-    static ComPtr<ID3D11Buffer> postprocessBuffer;
-    static ComPtr<ID3D11Buffer> screenFxBuffer;
-    static ComPtr<ID3D11Buffer> bloomBuffer;
-    static ComPtr<ID3D11Buffer> frameBuffer;
-    static ComPtr<ID3D11Buffer> effectBuffer;
+    inline static ComPtr<ID3D11Buffer> transformBuffer;
+    inline static ComPtr<ID3D11Buffer> lightingBuffer;
+    inline static ComPtr<ID3D11Buffer> materialBuffer;
+    inline static ComPtr<ID3D11Buffer> offsetMatrixBuffer;
+    inline static ComPtr<ID3D11Buffer> poseMatrixBuffer;
+    inline static ComPtr<ID3D11Buffer> outlineBuffer;
+    inline static ComPtr<ID3D11Buffer> debugBuffer;
+    inline static ComPtr<ID3D11Buffer> postprocessBuffer;
+    inline static ComPtr<ID3D11Buffer> screenFxBuffer;
+    inline static ComPtr<ID3D11Buffer> bloomBuffer;
+    inline static ComPtr<ID3D11Buffer> frameBuffer;
+    inline static ComPtr<ID3D11Buffer> effectBuffer;
 
     static TransformCB     transformCBData;
     static LightingCB      lightingCBData;
@@ -180,13 +185,20 @@ public:
 	static void UnInit();
 
 private:
+    static bool CreateDX11BaseResource(HWND& hWnd, int screenWidth, int screenHeight);
+
+    static bool CresateStates();
+    static bool CreateDSS();
+    static bool CreateRS();
+    static bool CreateSampler();
+    static bool CreateBS();
+
     static bool CreateHDRResource(int screenWidth, int screenHeight);
     static bool CreateShadowMapResource();
-    static bool CreateDeferredResource(int screenWidth, int screenHeight);
+    static bool CreateGbufferResource(int screenWidth, int screenHeight);
     static bool CreateBloomResource(int screenWidth, int screenHeight);
-    static bool CresateStates();
-    static bool CreateShader();
-    static bool CreateConstantBuffer();
+    static bool CreateInputLayoutShader();
+    static bool CreateCB();
 
 public:
     // Texture, RTV, SRV Create Utils
