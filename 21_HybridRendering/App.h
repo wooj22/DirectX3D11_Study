@@ -49,17 +49,17 @@ using namespace DirectX::SimpleMath;
 *   3. Deffered Lighting Pass (Opaque)    -> Scene HDR, 최종 가시 픽셀에 대해서만 라이팅 계산
         1) Lighting Volume Stencil Pass
 *       2) Lighting Pass                   
-*   5. Skybox Pass                            -> sceneHDR의 빈 픽셀에 Skybox Render (Depth Test Onlye)
-*   6. Forward Transparent Pss (Transparent)  -> Scene HDR Transparent Render (Depth Test Onlye)
+*   4. Skybox Pass                            -> sceneHDR의 빈 픽셀에 Skybox Render (Depth Test Onlye)
+*   5. Forward Transparent Pss (Transparent)  -> Scene HDR Transparent Render (Depth Test Onlye)
 *                                                Deffered Rendering의 한계를 보완하기 위해 투명 객체는 Forward Rendering으로 처리
-*   7. Effect / Particle Pass                 -> Scene HDR Effect Render (Depth Test Onlye)
-*   8  Bloom Pass                             -> Bloom 이미지 생성
+*   6. Effect / Particle Pass                 -> Scene HDR Effect Render (Depth Test Onlye)
+*   7  Bloom Pass                             -> Bloom 이미지 생성
         1) Bloom Prefilter Pass : BloomA mip0 : Bloom에 밝은 부분만 남긴 base texture
 *       2) Bloom Downsample Blur Pass : BloomA/B mips(ping-pong) : 블러처리된 mipamp 체인 texture
 *       3) Bloom Upsample Combine Pass : BloomFinal(mip0) : mip들을 가산합성한 최종 Bloom texture
-*   11. PostProcess / Tone Mapping Pass            -> SDR (final)
-*   12. Frustum Debug Draw
-*   13. GUI Draw
+*   8. PostProcess / Tone Mapping Pass            -> SDR (final)
+*   9. Frustum Debug Draw
+*   10. GUI Draw
 * 
 * 
 * 

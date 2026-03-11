@@ -104,25 +104,23 @@ void App::OnRender()
     // 1. Shadow Map Depth Only Pass
     shadowRenderer.ShadowMapPass(shadowView, shadowProjection, static_models, rigid_models, skeletal_models);
 
-    // 2. Geometry G-buffer Pass
+    // 2. Geometry G-buffer Pass (Opaque)  
     geometryRenderer.GeometryPass(view, projection, static_models, rigid_models, skeletal_models);
 
-    // 3. Light Volume Stencil Pass
+    // 3. Deffered Lighting Pass (Opaque)
     lightRenderer.StencilPass(lights, camera);
-
-    // 4. Lighting Pass
     lightRenderer.LightingPass(lights, environments[currentSkybox], camera);
 
-    // 5. Skybox Pass
+    // 4. Skybox Pass
     skyboxRenderer.SkyboxPass(view, projection, environments[currentSkybox].skybox);
 
-    // 6. Forward Transparent Pass
+    // 5. Forward Transparent Pass (Transparent)  
     forwardTransparentRenderer.ForwardTransparentPass(view, projection, static_models, rigid_models, skeletal_models, lights, environments[currentSkybox]);
 
-    // 6. Particle Pass
+    // 6. Effect / Particle Pass
     particleRenderer.ParticlePass(camera, effects);
 
-    // 7. Bloom Prefilter -> DownSample -> UpSample Pass
+    // 7. Bloom Pass (Prefilter -> DownSample -> UpSample Pass)
     bloomRenderer.BloomPass();
 
     // 8. PostProcess Pass
@@ -224,6 +222,11 @@ bool App::InitResource()
         RigidModel* character = AssetManager::Instance().LoadRigidModelAsset("../Resource/char.fbx");
         SkeletalModel* girl = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Girl.fbx");
         SkeletalModel* enemy = AssetManager::Instance().LoadSkeletalModelAsset("../Resource/Enemy.fbx");
+
+        // Transparent / Opaque ¼³Á¤
+        tree->blendType = RenderBlendType::Transparent;
+        character->blendType = RenderBlendType::Transparent;
+        girl->blendType = RenderBlendType::Transparent;
 
         vector<StaticModel*> spheres;
         vector<StaticModel*> torus;
@@ -556,6 +559,7 @@ bool App::InitResource()
     D3D::postprocessCBData.gain = { 0.7,0.7,0.2 };
     D3D::postprocessCBData.gain_strength = 0.5;
     D3D::postprocessCBData.vignette_intensity = 0.6;
+    D3D::materialCBData.alphaFactor = 0.6;
 
     return true;
 }
@@ -1059,6 +1063,50 @@ void App::RenderGUI()
 
             ImGui::EndTable();
         }
+        ImGui::End();
+    }
+
+    // Render Queue Stats
+    {
+        int staticOpaque = 0, staticTransparent = 0;
+        int rigidOpaque = 0, rigidTransparent = 0;
+        int skeletalOpaque = 0, skeletalTransparent = 0;
+
+        for (auto* m : static_models)
+        {
+            if (!m) continue;
+            if (m->blendType == RenderBlendType::Transparent) staticTransparent++;
+            else staticOpaque++;
+        }
+
+        for (auto* m : rigid_models)
+        {
+            if (!m) continue;
+            if (m->blendType == RenderBlendType::Transparent) rigidTransparent++;
+            else rigidOpaque++;
+        }
+
+        for (auto* m : skeletal_models)
+        {
+            if (!m) continue;
+            if (m->blendType == RenderBlendType::Transparent) skeletalTransparent++;
+            else skeletalOpaque++;
+        }
+
+        const int totalOpaque =
+            staticOpaque + rigidOpaque + skeletalOpaque;
+
+        const int totalTransparent =
+            staticTransparent + rigidTransparent + skeletalTransparent;
+
+        ImGui::Begin("[Render Stats]");
+        ImGui::Text("Opaque Total      : %d", totalOpaque);
+        ImGui::Text("Transparent Total : %d", totalTransparent);
+        ImGui::Separator();
+
+        ImGui::Text("Static   - Opaque: %d / Transparent: %d", staticOpaque, staticTransparent);
+        ImGui::Text("Rigid    - Opaque: %d / Transparent: %d", rigidOpaque, rigidTransparent);
+        ImGui::Text("Skeletal - Opaque: %d / Transparent: %d", skeletalOpaque, skeletalTransparent);
         ImGui::End();
     }
 
