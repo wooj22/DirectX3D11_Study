@@ -32,6 +32,7 @@ bool App::OnInit()
     lightRenderer.Init();
     forwardTransparentRenderer.Init();
     particleRenderer.Init();
+    decalRenderer.Init();
     skyboxRenderer.Init();
     bloomRenderer.Init();
     postRenderer.Init();
@@ -107,26 +108,29 @@ void App::OnRender()
     // 2. Geometry G-buffer Pass (Opaque)  
     geometryRenderer.GeometryPass(view, projection, static_models, rigid_models, skeletal_models);
 
-    // 3. Deffered Lighting Pass (Opaque)
+    // 3. Decal Pass
+    decalRenderer.DecalPass(camera, decals);
+
+    // 4. Deffered Lighting Pass (Opaque)
     lightRenderer.StencilPass(lights, camera);
     lightRenderer.LightingPass(lights, environments[currentSkybox], camera);
 
-    // 4. Skybox Pass
+    // 5. Skybox Pass
     skyboxRenderer.SkyboxPass(view, projection, environments[currentSkybox].skybox);
 
-    // 5. Forward Transparent Pass (Transparent)  
+    // 6. Forward Transparent Pass (Transparent)  
     forwardTransparentRenderer.ForwardTransparentPass(view, projection, static_models, rigid_models, skeletal_models, lights, environments[currentSkybox]);
 
-    // 6. Effect / Particle Pass
+    // 7. Effect / Particle Pass
     particleRenderer.ParticlePass(camera, effects);
 
-    // 7. Bloom Pass (Prefilter -> DownSample -> UpSample Pass)
+    // 8. Bloom Pass (Prefilter -> DownSample -> UpSample Pass)
     bloomRenderer.BloomPass();
 
-    // 8. PostProcess Pass
+    // 9. PostProcess Pass
     postRenderer.PostProcessPass();
 
-    // 9. Frustem Debug
+    // 10. Frustem Debug
     if (frustumON)
     {
         // main camera
@@ -137,7 +141,7 @@ void App::OnRender()
             view, projection, Colors::GreenYellow);
     }
 
-    // 9. GUI
+    // 11. GUI
     RenderGUI();
 
     //////////////////////////////////////////////////////////
@@ -164,6 +168,7 @@ void App::CBSlotBinding()
     D3D::deviceContext->PSSetConstantBuffers(10, 1, D3D::frameBuffer.GetAddressOf());
     D3D::deviceContext->VSSetConstantBuffers(11, 1, D3D::effectBuffer.GetAddressOf());
     D3D::deviceContext->PSSetConstantBuffers(11, 1, D3D::effectBuffer.GetAddressOf());
+    D3D::deviceContext->PSSetConstantBuffers(12, 1, D3D::decalBuffer.GetAddressOf());
 }
 
 void App::FrameCBUpdate()
@@ -250,7 +255,7 @@ bool App::InitResource()
         }
 
         floor->SetPosition({ 0,-5, 600 });
-        floor->SetScale({ 0.5,0.3,0.5 });
+        floor->SetScale({ 0.5,0.3, 1.0 });
         tree->SetPosition({ -150, 0, 130 });
         tree->SetScale({ 80, 80, 80 });
         zelda->SetPosition({ -180,0,0 });
@@ -547,6 +552,32 @@ bool App::InitResource()
 
         CreateEnvironment(L"../Resource/Skybox/redskyEnvHDR.dds", L"../Resource/IBL/redskyDiffuseHDR.dds",
             L"../Resource/IBL/redskySpecularHDR.dds", L"../Resource/IBL/redskyBrdf.dds");
+    }
+
+    // decal
+    {
+        Decal decal1;
+        decal1.position = { -300.0f, 0.0f, 600.0f };   
+        decal1.scale = { 20.0f, 10.0f, 20.0f };      
+        decal1.opacity = 1.0f;
+        decal1.tiling = { 1.0f, 1.0f };
+        decal1.offset = { 0.0f, 0.0f };
+        CreateTextureFromFile(
+            D3D::device.Get(),
+            L"../Resource/Decal/Blood_Decals_A.tga",
+            decal1.decalSRV.GetAddressOf(),
+            TextureColorSpace::SRGB
+        );
+
+        Decal decal2;
+        decal2.position = { 300.0f, 0.0f, 600.0f };
+        decal2.scale = { 20.0f, 10.0f, 20.0f };
+        decal2.type = DecalType::RingEffect;
+        decal2.opacity = 1.0f;
+        decal2.StartRingEffect(Time::GetTotalTime(), 30.0f, 0.5f);
+
+        decals.push_back(decal1);
+        decals.push_back(decal2);
     }
 
     // camera

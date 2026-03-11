@@ -7,6 +7,12 @@
 #include "Structures.hpp"
 using namespace std;
 
+DefferedLightingRenderer::~DefferedLightingRenderer()
+{
+    if (sphereVolume) delete sphereVolume;
+    if (coneVolume)   delete coneVolume;
+}
+
 void DefferedLightingRenderer::Init()
 {
     // light volume create

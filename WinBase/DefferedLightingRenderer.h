@@ -55,7 +55,7 @@ private:
 
 public:
     // interface (Ȯ�强)
-    ~DefferedLightingRenderer() override = default;
+    ~DefferedLightingRenderer() override;
     void Initialize() override {};
     void RenderPass() override {};
 

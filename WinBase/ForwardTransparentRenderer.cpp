@@ -134,5 +134,5 @@ void ForwardTransparentRenderer::ForwardTransparentPass(const Matrix& view, cons
     context->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-    context->PSSetShaderResources(5, 1, nullSRV);  // shadowMap
+    context->PSSetShaderResources(6, 1, nullSRV);  // shadowMap
 }

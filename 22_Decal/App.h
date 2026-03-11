@@ -10,6 +10,7 @@
 #include "../WinBase/Light.h"
 #include "../WinBase/ShadowRenderer.h"
 #include "../WinBase/GeometryRenderer.h"
+#include "../WinBase/DecalRenderer.h"
 #include "../WinBase/DefferedLightingRenderer.h"
 #include "../WinBase/ForwardTransparentRenderer.h"
 #include "../WinBase/ParticleRenderer.h"
@@ -19,6 +20,7 @@
 #include "../WinBase/FrustumRenderer.h"
 #include "../WinBase/MemoryDebugger.h"
 #include "../WinBase/Environment.hpp"
+#include "../WinBase/Decal.h"
 
 #include <iostream>
 using namespace std;
@@ -75,16 +77,11 @@ private:
     DefferedLightingRenderer        lightRenderer;
     ForwardTransparentRenderer      forwardTransparentRenderer;
     ParticleRenderer     particleRenderer;
+    DecalRenderer        decalRenderer;
     SkyboxRenderer       skyboxRenderer;
     BloomRenderer        bloomRenderer;
     PostProcessRenderer  postRenderer;
     FrustumRenderer      frustumRenderer;
-
-    // light
-    vector<Light> lights;
-
-    // effect
-    vector<Effect> effects;
 
     // camera
     Matrix view;
@@ -100,6 +97,15 @@ private:
     vector<StaticModel*> static_models;
     vector<RigidModel*> rigid_models;
     vector<SkeletalModel*> skeletal_models;
+
+    // light
+    vector<Light> lights;
+
+    // effect
+    vector<Effect> effects;
+
+    // decal
+    vector<Decal> decals;
 
     // environment
     vector<Environment> environments;
