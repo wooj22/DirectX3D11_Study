@@ -42,19 +42,40 @@ void GeometryRenderer::GeometryPass(const Matrix& view, const Matrix& projection
     D3D::transformCBData.projection = XMMatrixTranspose(projection);
     D3D::deviceContext->UpdateSubresource(D3D::transformBuffer.Get(), 0, nullptr, &D3D::transformCBData, 0, 0);
 
+    // stencil Ref
+    const UINT groundStencilRef = 0x01;
+    const UINT noneStencilRef = 0x00;
+
+    // Render
     // Static, Rigid Model
     D3D::deviceContext->IASetInputLayout(D3D::inputLayout_RigidVertex.Get());
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Rigid.Get(), NULL, 0);
     for (auto& m : static_models)
     {
         if (m->blendType == RenderBlendType::Opaque)
+        {
+            // ground stencil mask
+            if (m->isGround)
+                D3D::deviceContext->OMSetDepthStencilState(D3D::groundDrawDSS.Get(), groundStencilRef);
+            else
+                D3D::deviceContext->OMSetDepthStencilState(D3D::groundDrawDSS.Get(), noneStencilRef);
+
             m->Draw();
+        }
     }
 
     for (auto& m : rigid_models) 
     {
         if (m->blendType == RenderBlendType::Opaque)
+        {
+            // ground stencil mask
+            if (m->isGround)
+                D3D::deviceContext->OMSetDepthStencilState(D3D::groundDrawDSS.Get(), groundStencilRef);
+            else
+                D3D::deviceContext->OMSetDepthStencilState(D3D::groundDrawDSS.Get(), noneStencilRef);
+
             m->Draw();
+        }   
     }
 
     // Skeletal Model
@@ -62,8 +83,17 @@ void GeometryRenderer::GeometryPass(const Matrix& view, const Matrix& projection
     D3D::deviceContext->VSSetShader(D3D::VS_BaseLit_Skeletal.Get(), NULL, 0);
     for (auto& m : skeletal_models)
     {
+        // render
         if (m->blendType == RenderBlendType::Opaque)
+        {
+            // ground stencil mask
+            if (m->isGround)
+                D3D::deviceContext->OMSetDepthStencilState(D3D::groundDrawDSS.Get(), groundStencilRef);
+            else
+                D3D::deviceContext->OMSetDepthStencilState(D3D::groundDrawDSS.Get(), noneStencilRef);
+
             m->Draw();
+        }  
     }
 
     // RTV - SRV hazard ¹æÁö

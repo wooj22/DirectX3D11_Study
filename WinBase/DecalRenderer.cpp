@@ -58,10 +58,10 @@ void DecalRenderer::DecalPass(const Camera& camera, const std::vector<Decal>& de
         context->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
 
         // DSS - Stencil Test(ground or all)
-        /*if (decal->isGroundDecal)
+        if (decal.isGroundDecal)
             context->OMSetDepthStencilState(D3D::groundTestDSS.Get(), stencilRef);
         else                               
-            context->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);*/
+            context->OMSetDepthStencilState(D3D::depthTestOnlyDSS.Get(), 0);
 
         // CB - Decal
         D3D::decalCBData.opacity = decal.opacity;

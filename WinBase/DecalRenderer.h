@@ -16,7 +16,6 @@ class Camera;
     - 일반 Decal : DSS depth test only
     - Groudn Decal : DSS depth + stencil test (0x01)
 
-    // 아래 무시. Normal Test는 일단 삭제했고,
     1) Geometry Pass에서 ground를 그릴때 기록된 stencil(0x01)을 test하고
     2) Normal == Vector::Up인 position에 대해서만 Decal을 G-buffer(Albedo)에 기록합니다.
 

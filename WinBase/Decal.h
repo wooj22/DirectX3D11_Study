@@ -21,7 +21,7 @@ enum class DecalType
 /*
     [ Decal ]
 
-    일단 Ground Decal (Stencil Masked)는 안넣음. 오브젝트에 isGround 변수 추가하고 DSS 비트 분리해야됨
+    
 */
 
 class Decal

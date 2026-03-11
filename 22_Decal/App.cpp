@@ -737,7 +737,7 @@ void App::RenderGUI()
     {
         ImGui::Begin("Model", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar);
         ImGui::Text("[Material]");
-        ImGui::SliderFloat3("Diffuse Factor", &D3D::materialCBData.diffuseFactor.x, 0.0f, 1.0f);
+        ImGui::ColorEdit3("Diffuse Factor", &D3D::materialCBData.diffuseFactor.x);
         ImGui::SliderFloat("Alpha Factor", &D3D::materialCBData.alphaFactor, 0.0f, 1.0f);
         ImGui::SliderFloat("Metallic Factor", &D3D::materialCBData.metallicFactor, 0.0f, 1.0f);
         ImGui::SliderFloat("Roughness Factor", &D3D::materialCBData.roughnessFactor, 0.0f, 1.0f);
@@ -1140,6 +1140,74 @@ void App::RenderGUI()
         ImGui::Text("Skeletal - Opaque: %d / Transparent: %d", skeletalOpaque, skeletalTransparent);
         ImGui::End();
     }
+
+    // Decal
+    {
+        ImGui::Begin("[Decal]");
+
+        if (decals.empty())
+        {
+            ImGui::TextDisabled("No Decals.");
+            ImGui::End();
+        }
+        else
+        {
+            static int decalIndex = 0;
+            if (decalIndex < 0) decalIndex = 0;
+            if (decalIndex >= (int)decals.size()) decalIndex = (int)decals.size() - 1;
+
+            ImGui::SliderInt("Decal Index", &decalIndex, 0, (int)decals.size() - 1);
+
+            Decal& decal = decals[decalIndex];
+
+            // type
+            int decalType = (int)decal.type;
+            const char* decalTypeItems[] = { "TextureMap", "RingEffect" };
+            if (ImGui::Combo("Decal Type", &decalType, decalTypeItems, IM_ARRAYSIZE(decalTypeItems)))
+            {
+                decal.type = (DecalType)decalType;
+            }
+
+            ImGui::Separator();
+            ImGui::Text("[Transform]");
+            ImGui::DragFloat3("Position", &decal.position.x, 1.0f);
+            ImGui::DragFloat3("Scale", &decal.scale.x, 0.1f, 0.01f, 1000.0f);
+
+            ImGui::Separator();
+            ImGui::Text("[Decal Common]");
+            ImGui::SliderFloat("Opacity", &decal.opacity, 0.0f, 1.0f);
+            ImGui::Checkbox("Is Ground Decal", &decal.isGroundDecal);
+            ImGui::SliderFloat("Up Threshold", &decal.upThreshold, 0.0f, 1.0f);
+
+            ImGui::DragFloat2("Tiling", &decal.tiling.x, 0.01f, 0.0f, 100.0f);
+            ImGui::DragFloat2("Offset", &decal.offset.x, 0.01f, -10.0f, 10.0f);
+
+            if (decal.type == DecalType::RingEffect)
+            {
+                ImGui::Separator();
+                ImGui::Text("[Ring Effect]");
+
+                ImGui::DragFloat("Ring Start Time", &decal.ringStartTime, 0.01f, 0.0f, 999999.0f);
+                ImGui::DragFloat("Ring Duration", &decal.ringDuration, 0.01f, 0.01f, 999999.0f);
+                ImGui::SliderFloat("Ring Max Radius", &decal.ringMaxRadius, 0.0f, 2.0f);
+                ImGui::SliderFloat("Ring Speed", &decal.ringSpeed, 0.0f, 5.0f);
+                ImGui::SliderFloat("Ring Thickness", &decal.ringThickness, 0.0001f, 0.1f, "%.4f");
+                ImGui::SliderFloat("Ring Feather", &decal.ringFeather, 0.0001f, 0.1f, "%.4f");
+                ImGui::ColorEdit3("Ring Color", &decal.ringColor.x);
+
+                if (ImGui::Button("Restart Ring"))
+                {
+                    decal.StartRingEffect(Time::GetTotalTime(), decal.ringDuration, decal.ringSpeed);
+                }
+            }
+
+            ImGui::Separator();
+            ImGui::Text("Has Texture SRV : %s", decal.decalSRV ? "Yes" : "No");
+        }
+
+        ImGui::End();
+    }
+
 
     // Memory
     {
